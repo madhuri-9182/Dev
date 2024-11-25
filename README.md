@@ -22,7 +22,7 @@ Open your terminal and run:
    npm run dev
    
 ## Routings
-1. **Internal Section**  
+1. **Client Section**  
    ```bash
    /client/dashboard
 
