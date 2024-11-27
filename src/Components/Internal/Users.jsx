@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 function Users() {
   const [showAll, setShowAll] = useState(false); // State to toggle visibility
-  const [hdipShowAll,setHdipShowAll]=useState(false)
+  const [hdipShowAll, setHdipShowAll] = useState(false)
   const data = [
     { name: "Sudeep Pradhan", role: "Admin", mail: "firstname.lastname@abcdef.com", phone: "1234567890", domain: "Ecommerce", client: "Phonepe", access: "Access" },
     { name: "Sandy Pradhan", role: "User", mail: "sandy.pradhan@abcdef.com", phone: "5234567898", domain: "Healthcare", client: "Client 2", access: "Read" },
@@ -28,6 +28,49 @@ function Users() {
   };
   const toggleVisibility2 = () => {
     setHdipShowAll(!hdipShowAll);
+  };
+
+
+
+  const [editClientUser, setEditClientUser] = useState(null);
+
+  const toggleEditClientUser = (index) => {
+    console.log(index);
+    setEditClientUser(index);
+  }
+  const toggleSaveClientUser = (index) => {
+    setEditClientUser(null)
+  }
+  const cancelEdit = (index) => {
+    setEditClientUser(null)
+  }
+
+  const [editHdipUser, setEditHdipUser] = useState("")
+
+  const toggleEditHdipUser = (mail) => {
+    console.log(mail);
+
+    console.log("Clicked on Edit");
+
+    setEditHdipUser(mail)
+  }
+  const toggleSaveHdipUser = (mail) => {
+    console.log("Clicked on Save");
+    setEditHdipUser(mail);
+  }
+  const cancelEditHdipUser = () => {
+    console.log("Clicked on Cancel");
+    setEditHdipUser("")
+  }
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isHdipAddUserPopupVisible,setIsHdipAddUserPopupVisible]=useState(false)
+
+  const togglePopup = () => {
+    setIsPopupVisible(!isPopupVisible);
+  };
+  const toggleHdipAddUserPopup = () => {
+    setIsHdipAddUserPopupVisible(!isHdipAddUserPopupVisible);
   };
 
   return (
@@ -62,7 +105,96 @@ function Users() {
         <div>
           <div className="flex items-center gap-x-5">
             <h1 className="text-md font-semibold">CLIENT USERS</h1>
-            <button className="px-6 py-1 bg-blue-600 text-white rounded-full">+ Add</button>
+            <div className="relative">
+              {/* Main Button */}
+              <button
+                className="px-6 py-1 bg-blue-600 text-white rounded-full"
+                onClick={togglePopup}
+              >
+                + Add
+              </button>
+
+              {/* Popup Div */}
+              {isPopupVisible && (
+                <div className="absolute w-[600%] -top-10 left-full ml-2 p-4 bg-white shadow-lg rounded-lg border">
+                  <div
+                  >
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-gray-600">Client Name</label>
+                      <input
+                        type="text"
+                        placeholder="Phonepe"
+                        className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">User Name</label>
+                      <input
+                        type="text"
+                        placeholder="Ashok Samal"
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
+                      <input
+                        type="mail"
+                        placeholder="rober@xyz.com"
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
+                      <input
+                        type="number"
+                        placeholder="9876543210"
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Domain Name</label>
+                      <input
+                        type="text"
+                        placeholder='zomato'
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Access</label>
+                      {/* <input
+                        type="Date"
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      /> */}
+                      <select name="" id=""
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option value="Access" disabled>Read / Write</option>
+                        <option value="2024-11-28">Read Only</option>
+                        <option value="2024-11-29">Write Only</option>
+                        <option value="2024-11-29">Both</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className='px-[20%] w-full flex items-center justify-between'>
+                    <button
+                      className="mt-2 px-4 py-1 bg-red-500 text-white rounded-full"
+                      onClick={togglePopup}
+                    >
+                      Close
+                    </button>
+                    <button
+                      className="mt-2 px-4 py-1 bg-[#056DDC] text-white rounded-full"
+                      onClick={togglePopup}
+                    >
+                      Save
+                    </button>
+                  </div>
+
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
 
@@ -86,26 +218,101 @@ function Users() {
             {data.slice(0, showAll ? data.length : 3).map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_0.5fr] bg-[#EBEBEB] mt-1 rounded-full items-center justify-center max-h-max"
+                className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_0.5fr]  mt-1 rounded-full items-center justify-center max-h-max`}
               >
-                <div className="px-6 py-1 w-auto">{item.client}</div>
-                <div className="px-3 py-1 w-auto">{item.name}</div>
-                <div className="px-3 py-1 w-auto">{item.mail}</div>
-                <div className="px-3 py-1 w-auto">{item.phone}</div>
-                <div className="px-3 py-1 w-auto">{item.domain}</div>
-                <div className="px-3 py-1 w-auto">{item.access}</div>
-                <div className="px-6 py-1 w-auto flex justify-center">
-                  <button className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 28 28"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                <div className="px-5 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editClientUser !== index}
+                    value={item.client}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editClientUser !== index}
+                    value={item.name}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editClientUser !== index}
+                    value={item.mail}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editClientUser !== index}
+                    value={item.phone}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editClientUser !== index}
+                    value={item.domain}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto"><input
+                  type="text"
+                  disabled={editClientUser !== index}
+                  value={item.access}
+                  className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                    ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                    : ''
+                    }`}
+                /></div>
+                <div className="px-4 py-1 w-full flex items-center justify-center">
+                  {editClientUser === index ?
+                    <div
+                      className='flex items-center justify-center gap-x-2'
                     >
-                      <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
-                    </svg>
-                  </button>
+                      <button
+                        className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
+                        onClick={() => { toggleSaveClientUser(index) }}
+                      >Save</button>
+                      <button
+                        onClick={() => { cancelEdit(index) }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+                      </button>
+
+
+                    </div>
+
+                    :
+                    <button
+                      className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
+                      onClick={() => { toggleEditClientUser(index) }}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
+                      </svg>
+
+                    </button>
+                  }
                 </div>
               </div>
             ))}
@@ -127,7 +334,84 @@ function Users() {
         <div>
           <div className="flex items-center gap-x-5">
             <h1 className="text-md font-semibold">HDIP USERS</h1>
-            <button className="px-6 py-1 bg-blue-600 text-white rounded-full">+ Add</button>
+            <div className="relative">
+              {/* Main Button */}
+              <button
+                className="px-6 py-1 bg-blue-600 text-white rounded-full"
+                onClick={toggleHdipAddUserPopup}
+              >
+                + Add
+              </button>
+
+              {/* Popup Div */}
+              {isHdipAddUserPopupVisible && (
+                <div className="absolute w-[600%] -top-10 left-full ml-2 p-4 bg-white shadow-lg rounded-lg border">
+                  <div
+                  >
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-gray-600">Name</label>
+                      <input
+                        type="text"
+                        placeholder="Phonepe"
+                        className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Access</label>
+                      <select name="" id=""
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        
+                        <option value="Access">Admin / User</option>
+                        <option value="2024-11-28">Admin</option>
+                        <option value="2024-11-29">User</option>
+                      </select>
+                    </div>
+
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
+                      <input
+                        type="mail"
+                        placeholder="rober@xyz.com"
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
+                      <input
+                        type="number"
+                        placeholder="9876543210"
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="p-2 flex items-center justify-center gap-3">
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Client Name</label>
+                      <input
+                        type="text"
+                        placeholder='zomato'
+                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                   
+                  </div>
+                  <div className='px-[20%] w-full flex items-center justify-between'>
+                    <button
+                      className="mt-2 px-4 py-1 bg-red-500 text-white rounded-full"
+                      onClick={toggleHdipAddUserPopup}
+                    >
+                      Close
+                    </button>
+                    <button
+                      className="mt-2 px-4 py-1 bg-[#056DDC] text-white rounded-full"
+                      onClick={toggleHdipAddUserPopup}
+                    >
+                      Save
+                    </button>
+                  </div>
+
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -136,7 +420,7 @@ function Users() {
           <div className="w-full grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] gap-2 text-sm font-semibold">
             <div className="px-6 p-2 w-full">NAME</div>
             <div className="px-4 p-2 w-full">ROLE</div>
-            <div className="px-4 p-2 w-full">PHONE NO</div>
+            <div className="px-4 p-2 w-full">EMAIL</div>
             <div className="px-4 p-2 w-full">PHONE NO</div>
             <div className="px-4 p-2 w-full">CLIENT</div>
             <div className="px-6 p-2 w-full"></div>
@@ -149,27 +433,94 @@ function Users() {
           >
             {data2.slice(0, hdipShowAll ? data2.length : 3).map((item, index) => (
               <div
-                key={index}
-                className="grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] bg-[#EBEBEB] mt-1 rounded-full items-center justify-center max-h-max"
+                key={item.mail}
+                className={`${editHdipUser === item.mail ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] mt-1 rounded-full items-center justify-center max-h-max`}
               >
-                <div className="px-6 py-2 w-auto">{item.client}</div>
-                <div className="px-4 py-2 w-auto">{item.name}</div>
-                <div className="px-4 py-2 w-auto">{item.mail}</div>
-                <div className="px-4 py-2 w-auto">{item.phone}</div>
-                <div className="px-4 py-2 w-auto">{item.domain}</div>
-          
-                <div className="px-3 py-1 w-auto flex justify-center">
-                  <button className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 28 28"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editHdipUser !== item.mail}
+                    value={item.name}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editHdipUser !== item.mail}
+                    value={item.role}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editHdipUser !== item.mail}
+                    value={item.mail}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editHdipUser !== item.mail}
+                    value={item.phone}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+                <div className="px-3 py-1 w-auto">
+                  <input
+                    type="text"
+                    disabled={editHdipUser !== item.mail}
+                    value={item.client}
+                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
+                      : ''
+                      }`}
+                  />
+                </div>
+
+                <div className="px-4 py-1 w-full flex items-center justify-center">
+                  {editHdipUser === item.mail ?
+                    <div
+                      className='flex items-center justify-center gap-x-2'
                     >
-                      <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
-                    </svg>
-                  </button>
+                      <button
+                        className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
+                        onClick={() => { toggleSaveHdipUser(item.mail) }}
+                      >Save</button>
+                      <button
+                        onClick={() => { cancelEditHdipUser(item.mail) }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+                      </button>
+
+
+                    </div>
+
+                    :
+                    <button
+                      className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
+                      onClick={() => { toggleEditHdipUser(item.mail) }}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
+                      </svg>
+
+                    </button>
+                  }
                 </div>
               </div>
             ))}
