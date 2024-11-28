@@ -67,6 +67,21 @@ function Clients() {
     setEditOpen(false);
   };
 
+  const [selectedFilters, setSelectedFilters] = useState({
+    domain: "All",
+    status: "All",
+  });
+
+  const domains = ["All", "Domain 1", "Domain 2", "Domain 3", "Domain 4", "Domain 5"];
+  const statuses = ["All", "Active", "Inactive"];
+
+  const handleSelect = (category, value) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      [category]: value,
+    }));
+  };
+
   return (
     <div className="p-6">
 
@@ -122,38 +137,67 @@ function Clients() {
               </button>
             </div>
             {/* Domain and Status Filters */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="font-medium text-gray-700 text-sm">Domain</div>
-                <div className="flex items-center space-x-2">
-                  <button className="flex items-center space-x-2 px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    <span>All</span>
+            <div className="space-y-2">
+              {/* Domain Filter */}
+              <div className="flex items-center space-x-1">
+                <span className="text-sm font-bold mr-2">Domain</span>
+                {domains.map((domain) => (
+                  <button
+                    key={domain}
+                    onClick={() => handleSelect("domain", domain)}
+                    className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.domain === domain
+                        ? "bg-purple-100 text-purple-700 border-purple-300"
+                        : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                  >
+                    {/* Tick placeholder */}
+                    <span className="w-4 flex justify-center items-center">
+                      {selectedFilters.domain === domain && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-purple-700"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    {domain}
                   </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Domain 1
-                  </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Domain 2
-                  </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Domain 3
-                  </button>
-                </div>
+                ))}
               </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="font-medium text-gray-700 text-sm">Status</div>
-                <div className="flex items-center space-x-2">
-                  <button className="flex items-center space-x-2 px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    <span>All</span>
+              {/* Status Filter */}
+              <div className="flex items-center space-x-1">
+                <span className="text-sm font-bold mr-4">Status</span>
+                {statuses.map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => handleSelect("status", status)}
+                    className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.status === status
+                        ? "bg-purple-100 text-purple-700 border-purple-300"
+                        : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                  >
+                    {/* Tick placeholder */}
+                    <span className="w-4 flex justify-center">
+                      {selectedFilters.status === status && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-purple-700"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    {status}
                   </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Active
-                  </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Inactive
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
             {/* Table Section */}
@@ -178,7 +222,7 @@ function Clients() {
                 <tbody>
                   {clients.map((client, index) => (
                     <tr key={index} className="border-b">
-                      <td className="px-6 py-4 text-blue-600 font-medium">
+                      <td className="px-6 py-4 text-blue-600 font-bold">
                         {client.name}
                       </td>
                       <td className="px-6 py-4">{client.activeJobs}</td>
@@ -218,7 +262,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="Ashok Samal"
-                      className="block w-2/5 border text-center border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -226,7 +270,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="abc.com"
-                      className="block w-2/5 border text-center border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -234,7 +278,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="-"
-                      className="block w-2/5 text-center border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block  w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -242,7 +286,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="-"
-                      className="block w-2/5 text-center border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -250,7 +294,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="SB456BHYTRFD"
-                      className="block w-2/5 text-center border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -258,7 +302,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="Signed"
-                      className="block w-2/5 border text-center border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -266,7 +310,7 @@ function Clients() {
                     <input
                       type="text"
                       placeholder="-"
-                      className="block w-2/5 border text-center border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                   <li className="flex items-center">
@@ -274,7 +318,7 @@ function Clients() {
                     <textarea
                       type="text"
                       placeholder="Add Address"
-                      className="block w-2/5 border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="block  w-[360px] h-[114px] border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
                 </ul>
@@ -301,7 +345,7 @@ function Clients() {
                       className="border p-2 px-4 rounded-full bg-purple-200 font-medium"
                       onClick={handleAddPocOpen}
                     >
-                      +Add POC
+                      + Add
                     </button>
                   </div>
                   <BootstrapDialog
@@ -331,7 +375,7 @@ function Clients() {
                           <label className="w-1/4 text-base font-medium text-gray-600">Client Name</label>
                           <input
                             type="text"
-                            value="Phonepe"
+                            placeholder="Phonepe"
                             className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
@@ -339,7 +383,7 @@ function Clients() {
                           <label className="w-1/4 text-base font-medium text-[#6B6F7B]">POC Name</label>
                           <input
                             type="text"
-                            value="Ashok Samal"
+                            placeholder="Ashok Samal"
                             className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
@@ -347,7 +391,7 @@ function Clients() {
                           <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
                           <input
                             type="number"
-                            value="9876543210"
+                            placeholder="9876543210"
                             className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
@@ -355,7 +399,7 @@ function Clients() {
                           <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
                           <input
                             type="mail"
-                            value="rober@xyz.com"
+                            placeholder="rober@xyz.com"
                             className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
@@ -370,9 +414,9 @@ function Clients() {
                     </DialogContent>
                     <DialogActions>
                       <div className="px-5 py-2">
-                        <button 
-                         onClick={handleAddPocClose}
-                        className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
+                        <button
+                          onClick={handleAddPocClose}
+                          className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
                           SAVE
                         </button>
                       </div>
@@ -446,16 +490,7 @@ function Clients() {
                       />
                     </div>
                     <div className="col-span-1 flex items-center space-x-2">
-                      <button className="p-2 text-gray-500 hover:text-red-500">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M8.6084 13.75H11.3834" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M7.9165 10.4165H12.0832" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
 
-                      </button>
                       <div>
                         <React.Fragment>
                           <div>
@@ -498,7 +533,7 @@ function Clients() {
                                   <label className="w-1/4 text-base font-medium text-[#6B6F7B]">POC Name</label>
                                   <input
                                     type="text"
-                                    value="Robert"
+                                    placeholder="Robert"
                                     className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
@@ -506,7 +541,7 @@ function Clients() {
                                   <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
                                   <input
                                     type="number"
-                                    value="919876543210"
+                                    placeholder="919876543210"
                                     className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
@@ -514,7 +549,7 @@ function Clients() {
                                   <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
                                   <input
                                     type="mail"
-                                    value="rober@xyz.com"
+                                    placeholder="rober@xyz.com"
                                     className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
@@ -536,13 +571,23 @@ function Clients() {
                           </BootstrapDialog>
                         </React.Fragment>
                       </div>
+                      <button className="p-2 text-gray-500 hover:text-red-500">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          <path d="M8.6084 13.75H11.3834" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          <path d="M7.9165 10.4165H12.0832" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-6 flex justify-end">
-                <button className="px-6 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600">
+                <button className="px-6 py-2 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600">
                   Save
                 </button>
               </div>
