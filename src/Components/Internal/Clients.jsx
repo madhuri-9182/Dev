@@ -420,7 +420,7 @@ function Clients() {
                       <div className="px-5 py-2">
                         <button
                           onClick={handleAddPocClose}
-                          className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
+                          className="text-white border py-2  px-5 rounded-full bg-[#056DDC] ">
                           SAVE
                         </button>
                       </div>
