@@ -58,16 +58,16 @@ function Interviewer() {
     <div className='p-6 pt-2 pl-0' >
       <div>
         <div className=' w-full h-full flex flex-col items-center font-[Roboto] ' >
-          <div className='w-full flex pt-[12px] pb-[12px] pr-2 justify-end gap-[60px] ' >
-            <div className='w-[446px] h-[40px] flex justify-around items-center border-2 rounded-[28px] pr-1 pl-1 ' >
+          <div className='w-full flex pt-[12px] pb-[12px] pr-3 justify-end gap-[70px] ' >
+            <div className='w-[466px] h-[40px] flex justify-around items-center border-2 border-[#F4F4F4] bg-[#F4F4F4] rounded-[28px] pr-1 pl-1 ' >
               <input
-                className='  w-[358px] h-[37px] ml-1  text-[#979DA3] border-none focus:outline-none' type="text"
+                className='  w-[358px] h-[37px] ml-1  text-[#979DA3] bg-[#F4F4F4] border-none focus:outline-none' type="text"
                 placeholder='Search job by Name, Email & Mobile Number'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button>
-                <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2050/svg">
+                <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2100/svg">
                   <g clip-path="url(#clip0_775_6734)">
                     <path d="M31.6 29L25.3 22.7C24.8 23.1 24.225 23.4167 23.575 23.65C22.925 23.8833 22.2333 24 21.5 24C19.6833 24 18.1458 23.3708 16.8875 22.1125C15.6292 20.8542 15 19.3167 15 17.5C15 15.6833 15.6292 14.1458 16.8875 12.8875C18.1458 11.6292 19.6833 11 21.5 11C23.3167 11 24.8542 11.6292 26.1125 12.8875C27.3708 14.1458 28 15.6833 28 17.5C28 18.2333 27.8833 18.925 27.65 19.575C27.4167 20.225 27.1 20.8 26.7 21.3L33 27.6L31.6 29ZM21.5 22C22.75 22 23.8125 21.5625 24.6875 20.6875C25.5625 19.8125 26 18.75 26 17.5C26 16.25 25.5625 15.1875 24.6875 14.3125C23.8125 13.4375 22.75 13 21.5 13C20.25 13 19.1875 13.4375 18.3125 14.3125C17.4375 15.1875 17 16.25 17 17.5C17 18.75 17.4375 19.8125 18.3125 20.6875C19.1875 21.5625 20.25 22 21.5 22Z" fill="#49454F" />
                   </g>
@@ -85,25 +85,25 @@ function Interviewer() {
             </div>
           </div>
           <div className='w-[97%] h-[104px] flex justify-between items-center p-2 ' >
-            <div className='w-[205px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal text-[16px] ' >Total Interviewers</span>
               <span className='font-semibold text-[24px] ' >758</span>
             </div>
-            <div className='w-[205px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal text-[16px] ' >0-4 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
-            <div className='w-[205px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal text-[16px] ' >4-8 Years</span>
               <span className='font-semibold text-[24px] ' >56</span>
             </div>
-            <div className='w-[205px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal text-[16px] ' >8-10 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
-            <div className='w-[205px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal text-[16px] ' >10+ Years</span>
-              <span className='font-semibold text-[24px] ' >205</span>
+              <span className='font-semibold text-[24px] ' >210</span>
             </div>
           </div>
           <div className=' w-[97%] flex flex-col p-2 mt-1 mb-1 ' >

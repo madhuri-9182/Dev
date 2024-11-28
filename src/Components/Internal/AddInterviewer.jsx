@@ -149,14 +149,14 @@ function AddInterviewer() {
 
         
 {/* MAIN 3 */}
-        
-<div className='w-full p-2 h-[70px] '>
-        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
-          <li className='flex items-center justify-center gap-x-4 '>
-            <div className='w-1/4  flex items-end justify-end'>
+<div className=' flex flex-col '>
+        <ul className='grid grid-cols-2 gap-4 p-2 '>
+          <li className='flex items-center justify-center gap-x-4  '>
+            <div className='w-1/4  flex items-center justify-center'>
               <label  class=" w-full  text-right ">Total Interview</label>
             </div>
-            <div className='w-1/2 '>
+            <div className=' flex w-1/2'>
+            <div className='flex flex-wrap' >
               <input
                 type="number"
                 placeholder='00'
@@ -164,6 +164,8 @@ function AddInterviewer() {
                 
               />
               Years
+              </div>
+              <div className='flex flex-wrap' >
               <input
                 type="number"
                 placeholder='00'
@@ -173,21 +175,25 @@ function AddInterviewer() {
                 
               />
               Months
+              </div>
             </div>
           </li>
 
           <li className='flex items-center justify-center gap-x-4 '>
-            <div className='w-1/4  flex items-end justify-end'>
-            <label  class=" w-full  text-right ">Interview Experience</label>
+            <div className='w-1/4  flex items-center justify-center'>
+              <label for="" class=" w-full  text-right ">Interview Experience</label>
             </div>
-            <div className='w-1/2 '>
-              <input
+            <div className=' flex w-1/2'>
+            <div className='flex flex-wrap' >
+            <input
                 type="number"
                 placeholder='00'
                 className=" w-[96px] h-[32px] border mr-2 border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
               />
               Years
+              </div>
+              <div className='flex flex-wrap' >
               <input
                 type="number"
                 placeholder='00'
@@ -197,23 +203,26 @@ function AddInterviewer() {
                 
               />
               Months
+              </div>
             </div>
           </li>
         </ul>
       </div>
       <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
+        
+
 
 
 {/* main 4 single div use */}
 
-
-        <div className='w-full p-2  '>
-            
-            <ul className='grid grid-cols-2 gap-4 p-2'>
-                <li className='flex items-center justify-center gap-x-4  '>
-                  <div className='w-full  flex items-center justify-start pl-20 gap-x-4'>
-                    <label  class=" ">Interview Assigned For</label>
-                    <select
+<div className=''>
+        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
+          <li className='flex items-center gap-x-2 justify-center'>
+            <div className='w-[27%]  flex items-center justify-center'>
+              <label  class=" w-full  text-center  ">Interview Assigned For</label>
+            </div>
+            <div className='w-1/2'>
+            <select
                             onChange={handleSelection}
                             value={selectedOption}
                             className="w-[50px] h-[32px] p-3 text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0]">
@@ -223,14 +232,16 @@ function AddInterviewer() {
                             <option value="SDE II">SDE II</option>
                             <option value="SDE III">SDE III</option>
                             <option value="SDE IV">SDE IV</option>
-                      </select>
+              </select>
+            </div>
+          </li>
 
-                  </div>
-                </li>
-                <li className='flex items-center justify-center gap-x-4  '>
-                  <div className='w-full  flex items-center justify-center pr-36 gap-x-4  '>
-                    <label  class=" ">Skills</label>
-                    <select
+          <li className='flex items-center justify-center gap-x-4 '>
+            <div className='w-1/4  flex items-end justify-end'>
+              <label for="" class=" w-full  text-right ">Skills</label>
+            </div>
+            <div className='w-1/2'>
+            <select
                             onChange={handleSkillSelection}
                             value={selectedSkill}
                             className="w-[50px] h-[32px] p-3 text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0]">
@@ -241,10 +252,14 @@ function AddInterviewer() {
                             <option value="DSA">DSA</option>
                             <option value="OOPS">OOPS</option>
                       </select>
-                  </div>
-                </li>
-                <li className=' flex items-center justify-center gap-x-4  '>
-                  <div className='w-[300px]  flex items-center justify-center pl-10 gap-x-4'>
+            </div>
+          </li>
+          <li className='flex items-center justify-center gap-x-4 '>
+            <div className='w-1/4  flex items-center justify-center'>
+              <label for="" class=" w-full "></label>
+            </div>
+            <div className='w-1/2 flex items-center justify-start  '>
+            <div className='w-[300px]  gap-x-4'>
                       <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
                       onClick={()=>removeItem(item)}
                       className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -252,9 +267,14 @@ function AddInterviewer() {
                       </svg>
                       </button> </li>))} </ul>
                   </div>
-                </li>
-                <li className='flex items-center justify-center  gap-x-4 '>
-                  <div className='w-[300px]  flex items-center justify-end gap-x-4 ml-36  '>
+            </div>
+          </li>
+          <li className='flex items-center justify-center gap-x-4 '>
+            <div className='w-1/4  flex items-center justify-center'>
+              <label for="" class=" w-full "></label>
+            </div>
+            <div className='w-1/2 flex items-center justify-start '>
+            <div className='w-[300px]   gap-x-4   '>
                       <ul className='flex flex-wrap justify-start gap-4 items-center ' > {itemsSkills.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
                       onClick={()=>removeSkill(item)}
                       className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -262,16 +282,23 @@ function AddInterviewer() {
                       </svg>
                       </button> </li>))} </ul>
                   </div>
-                </li>
-            </ul>
-        </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      
+
+
+
+
+       
 
 {/* main 5 */}
-            
-<div className='w-full p-2 h-[70px] '>
+
+<div className='mt-4'>
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
-            <div className='w-1/4  flex items-end justify-end '>
+            <div className='w-1/4  flex items-end justify-end'>
               <label  class=" w-full  text-right ">Strength</label>
             </div>
             <div className='w-1/2'>
@@ -289,17 +316,24 @@ function AddInterviewer() {
                           </select>
             </div>
           </li>
-          </ul>
-          </div>
-          <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
+
+          
+        </ul>
+      </div>
+      <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
+
+
+
+            
+
 
              
 
 {/* MAIN 6 */}
 
 
-    <div className='w-full h-[130px] p-2  '>
-        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
+<div className='mt-4'>
+        <ul className='grid grid-cols-2 gap-4 p-2 '>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-1/4  flex items-end justify-end'>
               <label  class=" w-full  text-right ">Upload CV</label>
@@ -316,16 +350,17 @@ function AddInterviewer() {
               </svg>
             </button>
             </div>
-          </li>          
+          </li>
         </ul>
       </div>
-      <div className=' flex justify-end items-center mr-20 ' >
-        <div className=' w-[79px] h-[32px] p-2 flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-normal ' >
-          <button
-
-          >Save</button>
+      
+<div className='mt-4 flex justify-end mr-10 '>
+        
+            <div className=' w-[79px] h-[32px] p-2 flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-normal ' >
+          <button>Save</button>
         </div>
       </div>
+          
       </div>
     </div>
   )
