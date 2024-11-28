@@ -18,8 +18,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
   '& .MuiDialog-paper': {
-    width: '600px', // You can customize this value to whatever you need
-    maxWidth: '80%', // Ensure it doesn't exceed 80% of the screen width
+    width: '400px' // You can customize this value to whatever you need
   },
 }));
 
@@ -75,11 +74,11 @@ function Users() {
   const handleAddHdipUserClose = () => {
     setAddHdipUser(false);
   };
-  const [addClientUser,setAddClientuser]=React.useState(false);
-  const handleAddClientUserOpen=()=>{
+  const [addClientUser, setAddClientuser] = React.useState(false);
+  const handleAddClientUserOpen = () => {
     setAddClientuser(true)
   }
-  const handleAddClientUserClose=()=>{
+  const handleAddClientUserClose = () => {
     setAddClientuser(false)
   }
 
@@ -150,9 +149,14 @@ function Users() {
                 onClose={handleAddClientUserClose}
                 aria-labelledby="add-poc-dialog-title"
                 open={addClientUser}
+                BackdropProps={{
+                  sx: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                  },
+                }}
               >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                  <h1 className='font-bold text-[#056DDC]'>ADD CLIENT USER</h1>
+                  <h1 className='font-bold text-[#056DDC] text-lg text-center'>ADD CLIENT USER</h1>
                 </DialogTitle>
                 <IconButton
                   aria-label="close"
@@ -167,54 +171,53 @@ function Users() {
                   <CloseIcon />
                 </IconButton>
                 <DialogContent dividers>
-                  <div
-                  >
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-gray-600">Client Name</label>
+                  <div className=" w-full flex-col flex items-center justify-center gap-y-2">
+                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                      <label className="w-1/4 text-sm font-medium text-gray-600">Client Name</label>
                       <input
                         type="text"
                         placeholder="Phonepe"
-                        className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">User Name</label>
+                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">User Name</label>
                       <input
                         type="text"
                         placeholder="Ashok Samal"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                   
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
+                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                       <input
                         type="mail"
                         placeholder="rober@xyz.com"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
-                      
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
+                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                       <input
                         type="number"
                         placeholder="9876543210"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Domain</label>
+                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Domain</label>
                       <input
                         type="text"
                         placeholder="Ecommerce"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Access</label>
-                      <select name="" id=""
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                      <label className=" text-sm font-medium text-[#6B6F7B]">Access</label>
+                      <select
+                        name=""
+                        id=""
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
                         <option value="Access" disabled>Read / Write</option>
                         <option value="2024-11-28">Read Only</option>
@@ -223,6 +226,7 @@ function Users() {
                       </select>
                     </div>
                   </div>
+
                 </DialogContent>
                 <DialogActions>
                   <div className="px-5 py-2">
@@ -266,9 +270,9 @@ function Users() {
                     type="text"
                     disabled={editClientUser !== index}
                     value={item.client}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                    className={`block w-full text-left  sm:text-sm px-[5px] py-2 font-normal ${editClientUser === index
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -277,9 +281,9 @@ function Users() {
                     type="text"
                     disabled={editClientUser !== index}
                     value={item.name}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editClientUser === index
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -288,9 +292,9 @@ function Users() {
                     type="text"
                     disabled={editClientUser !== index}
                     value={item.mail}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                    className={`block w-full text-left  sm:text-sm px-[5px] py-2 ${editClientUser === index
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -299,9 +303,9 @@ function Users() {
                     type="text"
                     disabled={editClientUser !== index}
                     value={item.phone}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editClientUser === index
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : ' border border-none'
                       }`}
                   />
                 </div>
@@ -310,9 +314,9 @@ function Users() {
                     type="text"
                     disabled={editClientUser !== index}
                     value={item.domain}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                    className={`block w-full text-left  sm:text-sm px-[5px] py-2 ${editClientUser === index
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -320,9 +324,9 @@ function Users() {
                   type="text"
                   disabled={editClientUser !== index}
                   value={item.access}
-                  className={`block w-full text-left border sm:text-sm px-2 py-2 ${editClientUser === index
+                  className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editClientUser === index
                     ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                    : ''
+                    : ' border border-none'
                     }`}
                 /></div>
                 <div className="px-4 py-1 w-full flex items-center justify-center">
@@ -388,9 +392,15 @@ function Users() {
                 onClose={handleAddHdipUserClose}
                 aria-labelledby="add-poc-dialog-title"
                 open={addHdipUser}
+                BackdropProps={{
+                  sx: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                  },
+                }}
+
               >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                  <h1 className='font-bold text-[#056DDC]'>ADD HDIP USER</h1>
+                  <h1 className='font-bold text-[#056DDC] text-lg text-center'>ADD HDIP USER</h1>
                 </DialogTitle>
                 <IconButton
                   aria-label="close"
@@ -405,58 +415,58 @@ function Users() {
                   <CloseIcon />
                 </IconButton>
                 <DialogContent dividers>
-                  <div
-                  >
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-gray-600">Name</label>
+                  <div>
+                    <div className="p-1 flex flex-col items-start justify-center gap-2">
+                      <label className="w-full text-sm font-medium text-gray-600">Name</label>
                       <input
                         type="text"
                         placeholder="John Doe"
-                        className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Access</label>
-                      <select name="" id=""
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    <div className="p-1 flex flex-col items-start justify-center gap-2">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B]">Access</label>
+                      <select
+                        name=""
+                        id=""
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
-                        
                         <option value="Access">Admin / User</option>
                         <option value="2024-11-28">Admin</option>
                         <option value="2024-11-29">User</option>
                       </select>
                     </div>
-                   
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
+                    <div className="p-1 flex flex-col items-start justify-center gap-2">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                       <input
                         type="mail"
                         placeholder="rober@xyz.com"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
+                    <div className="p-1 flex flex-col items-start justify-center gap-2">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                       <input
                         type="number"
                         placeholder="9876543210"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Client</label>
+                    <div className="p-1 flex flex-col items-start justify-center gap-2">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B]">Client</label>
                       <input
                         type="text"
                         placeholder="HealthPlus"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                   </div>
+
                 </DialogContent>
                 <DialogActions>
                   <div className="px-5 py-2">
                     <button
-                      onClick={handleAddHdipUserClose }
+                      onClick={handleAddHdipUserClose}
                       className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
                       SAVE
                     </button>
@@ -493,9 +503,9 @@ function Users() {
                     type="text"
                     disabled={editHdipUser !== item.mail}
                     value={item.name}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editHdipUser === item.mail
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : ' border border-none'
                       }`}
                   />
                 </div>
@@ -504,9 +514,9 @@ function Users() {
                     type="text"
                     disabled={editHdipUser !== item.mail}
                     value={item.role}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editHdipUser === item.mail
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -515,9 +525,9 @@ function Users() {
                     type="text"
                     disabled={editHdipUser !== item.mail}
                     value={item.mail}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editHdipUser === item.mail
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -526,9 +536,9 @@ function Users() {
                     type="text"
                     disabled={editHdipUser !== item.mail}
                     value={item.phone}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editHdipUser === item.mail
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>
@@ -537,9 +547,9 @@ function Users() {
                     type="text"
                     disabled={editHdipUser !== item.mail}
                     value={item.client}
-                    className={`block w-full text-left border sm:text-sm px-2 py-2 ${editHdipUser === item.mail
+                    className={`block w-full text-left sm:text-sm px-[5px] py-2 ${editHdipUser === item.mail
                       ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : ''
+                      : 'border border-none'
                       }`}
                   />
                 </div>

@@ -21,8 +21,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
   '& .MuiDialog-paper': {
-    width: '600px', // You can customize this value to whatever you need
-    maxWidth: '80%', // Ensure it doesn't exceed 80% of the screen width
+    width: '400px', // You can customize this value to whatever you need
   },
 }));
 
@@ -146,8 +145,8 @@ function Clients() {
                     key={domain}
                     onClick={() => handleSelect("domain", domain)}
                     className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.domain === domain
-                        ? "bg-purple-100 text-purple-700 border-purple-300"
-                        : "bg-white text-gray-700 border-gray-300"
+                      ? "bg-purple-100 text-purple-700 border-purple-300"
+                      : "bg-white text-gray-700 border-gray-300"
                       }`}
                   >
                     {/* Tick placeholder */}
@@ -177,8 +176,8 @@ function Clients() {
                     key={status}
                     onClick={() => handleSelect("status", status)}
                     className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.status === status
-                        ? "bg-purple-100 text-purple-700 border-purple-300"
-                        : "bg-white text-gray-700 border-gray-300"
+                      ? "bg-purple-100 text-purple-700 border-purple-300"
+                      : "bg-white text-gray-700 border-gray-300"
                       }`}
                   >
                     {/* Tick placeholder */}
@@ -269,7 +268,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Website</label>
                     <input
                       type="text"
-                      placeholder="abc.com"
+                      placeholder="https://abc.com"
                       className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -277,7 +276,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Domain</label>
                     <input
                       type="text"
-                      placeholder="-"
+                      placeholder="abc.com"
                       className="block  w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -285,7 +284,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">GSTIN</label>
                     <input
                       type="text"
-                      placeholder="-"
+                      placeholder="22AAAAA0000A1Z5"
                       className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -309,7 +308,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Assigned To</label>
                     <input
                       type="text"
-                      placeholder="-"
+                      placeholder="Select user"
                       className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -352,9 +351,14 @@ function Clients() {
                     onClose={handleAddPocClose}
                     aria-labelledby="add-poc-dialog-title"
                     open={addPocOpen}
+                    BackdropProps={{
+                      sx: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                      },
+                    }}
                   >
                     <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                      <h1 className='font-bold text-[#056DDC]'>ADD POC</h1>
+                      <h1 className='font-bold text-[#056DDC] text-lg text-center'>ADD POC</h1>
                     </DialogTitle>
                     <IconButton
                       aria-label="close"
@@ -369,48 +373,48 @@ function Clients() {
                       <CloseIcon />
                     </IconButton>
                     <DialogContent dividers>
-                      <div
-                      >
-                        <div className="p-2 flex items-center justify-center gap-3">
-                          <label className="w-1/4 text-base font-medium text-gray-600">Client Name</label>
+                      <div>
+                        <div className="p-1 flex flex-col items-start justify-center gap-2">
+                          <label className="w-full text-sm font-medium text-gray-600">Client Name</label>
                           <input
                             type="text"
                             placeholder="Phonepe"
-                            className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
-                        <div className="p-2 flex items-center justify-center gap-3">
-                          <label className="w-1/4 text-base font-medium text-[#6B6F7B]">POC Name</label>
+                        <div className="p-1 flex flex-col items-start justify-center gap-2">
+                          <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
                           <input
                             type="text"
                             placeholder="Ashok Samal"
-                            className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
-                        <div className="p-2 flex items-center justify-center gap-3">
-                          <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
+                        <div className="p-1 flex flex-col items-start justify-center gap-2">
+                          <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                           <input
                             type="number"
                             placeholder="9876543210"
-                            className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
-                        <div className="p-2 flex items-center justify-center gap-3">
-                          <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
+                        <div className="p-1 flex flex-col items-center justify-center gap-2">
+                          <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                           <input
                             type="mail"
                             placeholder="rober@xyz.com"
-                            className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
-                        <div className="p-2 flex items-center justify-center gap-3">
-                          <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Added On</label>
+                        <div className="p-1 flex flex-col items-center justify-center gap-2">
+                          <label className="w-full text-sm font-medium text-[#6B6F7B]">Added On</label>
                           <input
-                            type="Date"
-                            className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            type="date"
+                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
                       </div>
+
                     </DialogContent>
                     <DialogActions>
                       <div className="px-5 py-2">
@@ -510,9 +514,14 @@ function Clients() {
                             onClose={handleEditClose}
                             aria-labelledby="edit-dialog-title"
                             open={editOpen}
+                            BackdropProps={{
+                              sx: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                              },
+                            }}
                           >
                             <DialogTitle sx={{ m: 0, p: 2 }} id="edit-dialog-title">
-                              <h1 className='font-bold text-[#056DDC]'>EDIT POC</h1>
+                              <h1 className='font-bold text-[#056DDC] text-center text-lg'>EDIT POC</h1>
                             </DialogTitle>
                             <IconButton
                               aria-label="close"
@@ -527,30 +536,29 @@ function Clients() {
                               <CloseIcon />
                             </IconButton>
                             <DialogContent dividers>
-                              <div
-                              >
-                                <div className="p-2 flex items-center justify-center gap-3">
-                                  <label className="w-1/4 text-base font-medium text-[#6B6F7B]">POC Name</label>
+                              <div>
+                                <div className="p-1 flex flex-col items-center justify-center gap-2">
+                                  <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
                                   <input
                                     type="text"
                                     placeholder="Robert"
-                                    className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
-                                <div className="p-2 flex items-center justify-center gap-3">
-                                  <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
+                                <div className="p-1 flex flex-col items-center justify-center gap-2">
+                                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                                   <input
                                     type="number"
                                     placeholder="919876543210"
-                                    className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
-                                <div className="p-2 flex items-center justify-center gap-3">
-                                  <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
+                                <div className="p-1 flex flex-col items-center justify-center gap-2">
+                                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                                   <input
                                     type="mail"
                                     placeholder="rober@xyz.com"
-                                    className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
                               </div>
