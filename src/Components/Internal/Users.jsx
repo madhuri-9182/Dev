@@ -1,4 +1,28 @@
-import React, { useState } from 'react';
+import React from "react";
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+  '& .MuiDialog-paper': {
+    width: '600px', // You can customize this value to whatever you need
+    maxWidth: '80%', // Ensure it doesn't exceed 80% of the screen width
+  },
+}));
+
 
 function Users() {
   const [showAll, setShowAll] = useState(false); // State to toggle visibility
@@ -44,6 +68,20 @@ function Users() {
   const cancelEdit = (index) => {
     setEditClientUser(null)
   }
+  const [addHdipUser, setAddHdipUser] = React.useState(false);
+  const handleAddHdipUserOpen = () => {
+    setAddHdipUser(true);
+  };
+  const handleAddHdipUserClose = () => {
+    setAddHdipUser(false);
+  };
+  const [addClientUser,setAddClientuser]=React.useState(false);
+  const handleAddClientUserOpen=()=>{
+    setAddClientuser(true)
+  }
+  const handleAddClientUserClose=()=>{
+    setAddClientuser(false)
+  }
 
   const [editHdipUser, setEditHdipUser] = useState("")
 
@@ -63,15 +101,6 @@ function Users() {
     setEditHdipUser("")
   }
 
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [isHdipAddUserPopupVisible,setIsHdipAddUserPopupVisible]=useState(false)
-
-  const togglePopup = () => {
-    setIsPopupVisible(!isPopupVisible);
-  };
-  const toggleHdipAddUserPopup = () => {
-    setIsHdipAddUserPopupVisible(!isHdipAddUserPopupVisible);
-  };
 
   return (
     <div>
@@ -105,18 +134,39 @@ function Users() {
         <div>
           <div className="flex items-center gap-x-5">
             <h1 className="text-md font-semibold">CLIENT USERS</h1>
-            <div className="relative">
-              {/* Main Button */}
-              <button
-                className="px-6 py-1 bg-blue-600 text-white rounded-full"
-                onClick={togglePopup}
-              >
-                + Add
-              </button>
 
-              {/* Popup Div */}
-              {isPopupVisible && (
-                <div className="absolute w-[600%] -top-10 left-full ml-2 p-4 bg-white shadow-lg rounded-lg border">
+
+
+            <React.Fragment>
+              <div>
+                <button
+                  className="border p-1 px-4 rounded-full bg-[#056DDC] font-medium text-white"
+                  onClick={handleAddClientUserOpen}
+                >
+                  + Add
+                </button>
+              </div>
+              <BootstrapDialog
+                onClose={handleAddClientUserClose}
+                aria-labelledby="add-poc-dialog-title"
+                open={addClientUser}
+              >
+                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
+                  <h1 className='font-bold text-[#056DDC]'>ADD CLIENT USER</h1>
+                </DialogTitle>
+                <IconButton
+                  aria-label="close"
+                  onClick={handleAddClientUserClose}
+                  sx={(theme) => ({
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    color: theme.palette.grey[500],
+                  })}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <DialogContent dividers>
                   <div
                   >
                     <div className="p-2 flex items-center justify-center gap-3">
@@ -135,7 +185,7 @@ function Users() {
                         className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-
+                   
                     <div className="p-2 flex items-center justify-center gap-3">
                       <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
                       <input
@@ -143,6 +193,7 @@ function Users() {
                         placeholder="rober@xyz.com"
                         className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
+                      
                     </div>
                     <div className="p-2 flex items-center justify-center gap-3">
                       <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Phone Number</label>
@@ -153,19 +204,15 @@ function Users() {
                       />
                     </div>
                     <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Domain Name</label>
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Domain</label>
                       <input
                         type="text"
-                        placeholder='zomato'
+                        placeholder="Ecommerce"
                         className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                     <div className="p-2 flex items-center justify-center gap-3">
                       <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Access</label>
-                      {/* <input
-                        type="Date"
-                        className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      /> */}
                       <select name="" id=""
                         className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
@@ -176,24 +223,18 @@ function Users() {
                       </select>
                     </div>
                   </div>
-                  <div className='px-[20%] w-full flex items-center justify-between'>
+                </DialogContent>
+                <DialogActions>
+                  <div className="px-5 py-2">
                     <button
-                      className="mt-2 px-4 py-1 bg-red-500 text-white rounded-full"
-                      onClick={togglePopup}
-                    >
-                      Close
-                    </button>
-                    <button
-                      className="mt-2 px-4 py-1 bg-[#056DDC] text-white rounded-full"
-                      onClick={togglePopup}
-                    >
-                      Save
+                      onClick={handleAddClientUserClose}
+                      className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
+                      SAVE
                     </button>
                   </div>
-
-                </div>
-              )}
-            </div>
+                </DialogActions>
+              </BootstrapDialog>
+            </React.Fragment>
 
           </div>
         </div>
@@ -334,25 +375,43 @@ function Users() {
         <div>
           <div className="flex items-center gap-x-5">
             <h1 className="text-md font-semibold">HDIP USERS</h1>
-            <div className="relative">
-              {/* Main Button */}
-              <button
-                className="px-6 py-1 bg-blue-600 text-white rounded-full"
-                onClick={toggleHdipAddUserPopup}
+            <React.Fragment>
+              <div>
+                <button
+                  className="border p-1 px-4 rounded-full bg-[#056DDC] font-medium text-white"
+                  onClick={handleAddHdipUserOpen}
+                >
+                  + Add
+                </button>
+              </div>
+              <BootstrapDialog
+                onClose={handleAddHdipUserClose}
+                aria-labelledby="add-poc-dialog-title"
+                open={addHdipUser}
               >
-                + Add
-              </button>
-
-              {/* Popup Div */}
-              {isHdipAddUserPopupVisible && (
-                <div className="absolute w-[600%] -top-10 left-full ml-2 p-4 bg-white shadow-lg rounded-lg border">
+                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
+                  <h1 className='font-bold text-[#056DDC]'>ADD HDIP USER</h1>
+                </DialogTitle>
+                <IconButton
+                  aria-label="close"
+                  onClick={handleAddHdipUserClose}
+                  sx={(theme) => ({
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    color: theme.palette.grey[500],
+                  })}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <DialogContent dividers>
                   <div
                   >
                     <div className="p-2 flex items-center justify-center gap-3">
                       <label className="w-1/4 text-base font-medium text-gray-600">Name</label>
                       <input
                         type="text"
-                        placeholder="Phonepe"
+                        placeholder="John Doe"
                         className="p-2 w-3/4 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -367,7 +426,7 @@ function Users() {
                         <option value="2024-11-29">User</option>
                       </select>
                     </div>
-
+                   
                     <div className="p-2 flex items-center justify-center gap-3">
                       <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Mail ID</label>
                       <input
@@ -385,33 +444,26 @@ function Users() {
                       />
                     </div>
                     <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Client Name</label>
+                      <label className="w-1/4 text-base font-medium text-[#6B6F7B]">Client</label>
                       <input
                         type="text"
-                        placeholder='zomato'
+                        placeholder="HealthPlus"
                         className="w-3/4 p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                   
                   </div>
-                  <div className='px-[20%] w-full flex items-center justify-between'>
+                </DialogContent>
+                <DialogActions>
+                  <div className="px-5 py-2">
                     <button
-                      className="mt-2 px-4 py-1 bg-red-500 text-white rounded-full"
-                      onClick={toggleHdipAddUserPopup}
-                    >
-                      Close
-                    </button>
-                    <button
-                      className="mt-2 px-4 py-1 bg-[#056DDC] text-white rounded-full"
-                      onClick={toggleHdipAddUserPopup}
-                    >
-                      Save
+                      onClick={handleAddHdipUserClose }
+                      className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
+                      SAVE
                     </button>
                   </div>
-
-                </div>
-              )}
-            </div>
+                </DialogActions>
+              </BootstrapDialog>
+            </React.Fragment>
           </div>
         </div>
 
