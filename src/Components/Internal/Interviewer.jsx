@@ -52,6 +52,20 @@ function Interviewer() {
     { name: 'Sam Johnson', email: '345@gmail.com', phone: 1234567890, strength: "SQL", language: "Java", experience: 23 },
   ];
 
+  const [selectedFilters, setSelectedFilters] = useState({
+    domain: "All",
+    status: "All",
+  });
+
+  const domains = ["All", "Backend", "Frontend", "DevOps", "AI/ML", "Testing"];
+  const statuses = ["All", "0-4 Years", "4-8 Years", "8-10 Years", "10+ Years" ];
+  const handleSelect = (category, value) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      [category]: value,
+    }));
+  };
+
   
 
   return (
@@ -109,41 +123,70 @@ function Interviewer() {
           <div className=' w-[97%] flex flex-col p-2 mt-1 mb-1 ' >
             <div className='flex justify-between' >
               <div className=" flex  items-center space-x-4 p-1 ">
-                <div className="font-medium text-gray-700 text-sm">Strength</div>
-                <div className="flex items-center space-x-2">
-                  <button className="flex items-center space-x-2 px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="h-4 w-4"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
-                    </svg>
-                    <span>All</span>
+                
+                <div className="space-y-2">
+              {/* Domain Filter */}
+              <div className="flex justify-center font-medium items-center space-x-1">
+                <span className=" font-bold mr-2">Domain</span>
+                {domains.map((domain) => (
+                  <button
+                    key={domain}
+                    onClick={() => handleSelect("domain", domain)}
+                    className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.domain === domain
+                        ? "bg-[#E8DEF8] text-[#4A4459] border-purple-300"
+                        : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                  >
+                    {/* Tick placeholder */}
+                    <span className="w-4 flex justify-center items-center">
+                      {selectedFilters.domain === domain && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-[#4A4459]"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    {domain}
                   </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Backend
+                ))}
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex items-center font-medium space-x-1">
+                <span className=" font-bold mr-4">Status</span>
+                {statuses.map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => handleSelect("status", status)}
+                    className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.status === status
+                        ? "bg-[#E8DEF8] text-[#4A4459] border-purple-300"
+                        : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                  >
+                    {/* Tick placeholder */}
+                    <span className="w-4 flex justify-center">
+                      {selectedFilters.status === status && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-purple-700"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </span>
+                    {status}
                   </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Frontend
-                  </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    DevOps
-                  </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    AI/ML
-                  </button>
-                  <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                    Testing
-                  </button>
-                </div>
+                ))}
+              </div>
+            </div>
               </div>
               <div className='flex gap-2 justify-center items-center ' >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -156,40 +199,7 @@ function Interviewer() {
                 Download Report
               </div>
             </div>
-            <div className="flex items-center space-x-4 p-1 ">
-              <div className="font-medium text-gray-700 text-sm">Experience</div>
-              <div className="flex items-center space-x-2">
-                <button className="flex items-center space-x-2 px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-4 w-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4.5 12.75l6 6 9-13.5"
-                    />
-                  </svg>
-                  <span>All</span>
-                </button>
-                <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                  0-4 Years
-                </button>
-                <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                  4-8 Years
-                </button>
-                <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                  8-10 Years
-                </button>
-                <button className="px-3 py-1 rounded-full font-medium text-gray-700 border border-gray-300 bg-white focus:bg-purple-100 focus:text-purple-700 focus:border-purple-300 text-sm">
-                  10+ Years
-                </button>
-              </div>
-            </div>
+            
           </div>
 
 
