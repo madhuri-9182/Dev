@@ -101,6 +101,17 @@ function Users() {
   }
 
 
+
+ const [addClientAccess,setAddClientAccess]=useState("");
+ const handleAddClientAccessChange=(e)=>{
+  setAddClientAccess(e.target.value)
+ }
+ const [addHdipUserAcess,setAddHdipUserAccess]=useState("");
+ const handelAddHdipClientUserAccessChange=(e)=>{
+  setAddHdipUserAccess(e.target.value)
+ }
+
+
   return (
     <div>
       {/* Search Input Section */}
@@ -111,7 +122,7 @@ function Users() {
             placeholder="Search Client by name"
             className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
           />
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
         </div>
       </div>
 
@@ -204,12 +215,13 @@ function Users() {
                       <select
                         name=""
                         id=""
-                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        onChange={handleAddClientAccessChange}
+                        className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${addClientAccess===""?"text-gray-400":"text-black"}`}
                       >
-                        <option value="" disabled selected className="text-gray-400">Select Access</option>
-                        <option value="2024-11-28">Read Only</option>
-                        <option value="2024-11-29">Write Only</option>
-                        <option value="2024-11-29">Both</option>
+                        <option value="" disabled selected>Select Access</option>
+                        <option value="Read Only" className="text-black">Read Only</option>
+                        <option value="Write Only" className="text-black">Write Only</option>
+                        <option value="Both" className="text-black">Both</option>
                       </select>
                     </div>
                   </div>
@@ -412,15 +424,16 @@ function Users() {
                       />
                     </div>
                     <div className="p-1 flex flex-col items-start justify-center gap-2">
-                      <label className="w-full text-sm font-medium text-[#6B6F7B]">Access</label>
+                    <label className="w-full text-sm font-medium text-[#6B6F7B]">Access</label>
                       <select
                         name=""
                         id=""
-                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        onChange={handelAddHdipClientUserAccessChange}
+                        className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${addHdipUserAcess==""?"text-gray-500":"text-black"}`}
                       >
-                        <option value="Access" selected disabled>Select Access</option>
-                        <option value="2024-11-28">Admin</option>
-                        <option value="2024-11-29">User</option>
+                        <option value="" selected disabled>Select Access</option>
+                        <option value="Admin" className="text-black">Admin</option>
+                        <option value="User" className="text-black">User</option>
                       </select>
                     </div>
                     <div className="p-1 flex flex-col items-start justify-center gap-2">
