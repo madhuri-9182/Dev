@@ -196,6 +196,7 @@ function Agreement() {
               }`}
           >
             {data.slice(0, showAll ? data.length : data.length).map((item, index) => (
+              <div>
               <div
                 key={index}
                 className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.5fr] ml-6 mr-6 mt-2 rounded-[16px] items-center bg-[#EBEBEB80] justify-center max-h-max`}
@@ -203,12 +204,9 @@ function Agreement() {
                 <div className="px-5 py-1 w-auto ">
                   <input
                     type="text"
-                    disabled={editClientUser !== index}
+                    disabled
                     value={item.company}
-                    className={`block w-full text-left font-bold px-[5px] py-2 text-[#056DDC] ${editClientUser === index
-                      ? ' focus:outline-none border border-[#E8DEF8] focus:ring-1 focus:ring-blue-500 rounded-lg'
-                      : 'border border-none'
-                      }`}
+                    className="block w-full text-left font-bold px-[5px] py-2 text-[#056DDC]"
                   />
                 </div>
                 <div className="px-3 py-1 w-auto text-black font-semibold text-[14px] ">
@@ -303,6 +301,7 @@ function Agreement() {
                   }
                 </div>
               </div>
+              </div>
             ))}
           </div>
           <div className='w-full mt-2 h-[56px] flex bg-[#EBEBEB80] rounded-[16px] justify-end items-center pr-12' >
@@ -343,7 +342,7 @@ function Agreement() {
                 <DialogContent dividers>
                   <div className=" w-full flex-col flex items-center justify-center gap-y-2">
                     <div className="p-1 flex flex-col items-start gap-2 w-full">
-                      <label className="w-1/4 text-sm font-medium text-gray-600">Company Name</label>
+                      <label className="w-full text-sm font-medium text-gray-700">Company Name</label>
                       <input
                         type="text"
                         placeholder="Phonepe"
@@ -351,7 +350,7 @@ function Agreement() {
                       />
                     </div>
                     <div className="p-1 flex flex-col items-start gap-2 w-full">
-                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">0-4 Years Rate</label>
+                      <label className="w-full text-sm font-medium text-gray-700">0-4 Years Rate</label>
                       <input
                         type="number"
                         placeholder="2800.00"
@@ -359,7 +358,7 @@ function Agreement() {
                       />
                     </div>
                     <div className="p-1 flex flex-col items-start gap-2 w-full">
-                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">4-6 Years Rate</label>
+                      <label className="w-full text-sm font-medium text-gray-700">4-6 Years Rate</label>
                       <input
                         type="number"
                         placeholder="2800.00"
@@ -367,7 +366,7 @@ function Agreement() {
                       />
                     </div>
                     <div className="p-1 flex flex-col items-start gap-2 w-full">
-                      <label className="w-full text-sm font-medium text-[#6B6F7B]">6-8 Years Rate</label>
+                      <label className="w-full text-sm font-medium text-gray-700">6-8 Years Rate</label>
                       <input
                         type="number"
                         placeholder="2800.00"
@@ -375,7 +374,7 @@ function Agreement() {
                       />
                     </div>
                     <div className="p-1 flex flex-col items-start gap-2 w-full">
-                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">8-10 Years Rate</label>
+                      <label className="w-full text-sm font-medium text-gray-700">8-10 Years Rate</label>
                       <input
                         type="numbers"
                         placeholder="2800.00"
@@ -383,7 +382,7 @@ function Agreement() {
                       />
                     </div>
                     <div className="p-1 flex flex-col items-start gap-2 w-full">
-                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">10+ Years Rate</label>
+                      <label className="w-full text-sm font-medium text-gray-700">10+ Years Rate</label>
                       <input
                         type="numbers"
                         placeholder="2800.00"

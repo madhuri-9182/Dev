@@ -125,9 +125,9 @@ function Interviewer() {
               <div className=" flex  items-center space-x-4 p-1 ">
                 
                 <div className="space-y-2">
-              {/* Domain Filter */}
-              <div className="flex justify-center font-medium items-center space-x-1">
-                <span className=" font-bold mr-2">Strength</span>
+              {/*Strength Filter */}
+              <div className="flex font-medium items-center space-x-1">
+                <span className="flex font-bold mr-2">Strength</span>
                 {domains.map((domain) => (
                   <button
                     key={domain}
@@ -138,25 +138,27 @@ function Interviewer() {
                       }`}
                   >
                     {/* Tick placeholder */}
-                    <span className="w-4 flex justify-center items-center">
+                    
                       {selectedFilters.domain === domain && (
+                        <span className="w-4 flex justify-center items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="w-3 h-3 text-[#4A4459]"
+                          className="w-3 h-3 text-purple-700"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
+                        </span>
                       )}
-                    </span>
+                    
                     {domain}
                   </button>
                 ))}
               </div>
 
-              {/* Status Filter */}
+              {/* Experience Filter */}
               <div className="flex items-center font-medium space-x-1">
                 <span className=" font-bold mr-4">Experience</span>
                 {statuses.map((status) => (
@@ -169,8 +171,9 @@ function Interviewer() {
                       }`}
                   >
                     {/* Tick placeholder */}
-                    <span className="w-4 flex justify-center">
+                    
                       {selectedFilters.status === status && (
+                        <span className="w-4 flex justify-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="w-3 h-3 text-purple-700"
@@ -180,8 +183,9 @@ function Interviewer() {
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
+                        </span>
                       )}
-                    </span>
+                    
                     {status}
                   </button>
                 ))}
@@ -224,7 +228,7 @@ function Interviewer() {
 
                 {data.map((data, index) => (
                   <tr key={index} className={`${index % 2 === 0 ? "bg-" : "bg-[#FFC7001F]"} h-[91px] `} >
-                    <td className='py-3 px-4 max-w-max' >{data.name} </td>
+                    <td className='py-3 px-4 max-w-max font-bold ' >{data.name} </td>
                     <td className='py-3 px-4 max-w-max' >{data.email} </td>
                     <td className='py-3 px-4 max-w-max' >{data.phone}</td>
                     <td className='py-3 px-4 max-w-max' >{data.strength}</td>
