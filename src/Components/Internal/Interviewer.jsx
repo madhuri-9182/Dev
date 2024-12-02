@@ -127,7 +127,7 @@ function Interviewer() {
                 <div className="space-y-2">
               {/* Domain Filter */}
               <div className="flex justify-center font-medium items-center space-x-1">
-                <span className=" font-bold mr-2">Domain</span>
+                <span className=" font-bold mr-2">Strength</span>
                 {domains.map((domain) => (
                   <button
                     key={domain}
@@ -158,7 +158,7 @@ function Interviewer() {
 
               {/* Status Filter */}
               <div className="flex items-center font-medium space-x-1">
-                <span className=" font-bold mr-4">Status</span>
+                <span className=" font-bold mr-4">Experience</span>
                 {statuses.map((status) => (
                   <button
                     key={status}
