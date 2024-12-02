@@ -111,20 +111,7 @@ function Users() {
             placeholder="Search Client by name"
             className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="h-5 w-5 text-gray-500"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-4.35-4.35M16.5 10.5a6 6 0 11-12 0 6 6 0 0112 0z"
-            />
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
         </div>
       </div>
 
@@ -219,7 +206,7 @@ function Users() {
                         id=""
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
-                        <option value="Access" disabled>Read / Write</option>
+                        <option value="" disabled selected className="text-gray-400">Select Access</option>
                         <option value="2024-11-28">Read Only</option>
                         <option value="2024-11-29">Write Only</option>
                         <option value="2024-11-29">Both</option>
@@ -431,7 +418,7 @@ function Users() {
                         id=""
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
-                        <option value="Access">Admin / User</option>
+                        <option value="Access" selected disabled>Select Access</option>
                         <option value="2024-11-28">Admin</option>
                         <option value="2024-11-29">User</option>
                       </select>

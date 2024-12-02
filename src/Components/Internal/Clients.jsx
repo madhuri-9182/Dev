@@ -97,25 +97,12 @@ function Clients() {
                   placeholder="Search Client by name"
                   className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
                 />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-5 w-5 text-gray-500"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-4.35-4.35M16.5 10.5a6 6 0 11-12 0 6 6 0 0112 0z"
-                  />
-                </svg>
+               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
               </div>
 
               {/* Add Client Button */}
               <button
-                className="flex items-center justify-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto"
+                className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto"
                 onClick={() => navigate(`${location.pathname}/addclient`)}
               >
                 <svg
@@ -139,7 +126,7 @@ function Clients() {
             <div className="space-y-2">
               {/* Domain Filter */}
               <div className="flex items-center space-x-1">
-                <span className="text-sm font-bold mr-2">Domain</span>
+                <span className="text-sm font-bold mr-2 flex">Domain</span>
                 {domains.map((domain) => (
                   <button
                     key={domain}
@@ -149,9 +136,9 @@ function Clients() {
                       : "bg-white text-gray-700 border-gray-300"
                       }`}
                   >
-                    {/* Tick placeholder */}
-                    <span className="w-4 flex justify-center items-center">
-                      {selectedFilters.domain === domain && (
+                    {/* Tick container */}
+                    {selectedFilters.domain === domain && (
+                      <span className="w-4 h-4 flex justify-center items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="w-3 h-3 text-purple-700"
@@ -161,8 +148,8 @@ function Clients() {
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                      )}
-                    </span>
+                      </span>
+                    )}
                     {domain}
                   </button>
                 ))}
@@ -180,9 +167,10 @@ function Clients() {
                       : "bg-white text-gray-700 border-gray-300"
                       }`}
                   >
-                    {/* Tick placeholder */}
-                    <span className="w-4 flex justify-center">
+                    {/* Tick container */}
+                    
                       {selectedFilters.status === status && (
+                        <span className="w-4 h-4 flex justify-center items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="w-3 h-3 text-purple-700"
@@ -192,13 +180,15 @@ function Clients() {
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
+                        </span>
                       )}
-                    </span>
+                    
                     {status}
                   </button>
                 ))}
               </div>
             </div>
+
             {/* Table Section */}
             <div className="overflow-x-auto mt-6">
               <table className="min-w-full text-sm text-left text-gray-500 border-collapse">
@@ -410,7 +400,7 @@ function Clients() {
                           <label className="w-full text-sm font-medium text-[#6B6F7B]">Added On</label>
                           <input
                             type="date"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="custom-date-input p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
                       </div>
