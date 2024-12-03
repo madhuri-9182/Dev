@@ -69,7 +69,7 @@ function Interviewer() {
   
 
   return (
-    <div className='p-6 pt-2 pl-0' >
+    <div className='p-6 pt-2 pl-0 font-[Roboto] text-[14px] ' >
       <div>
         <div className=' w-full h-full flex flex-col items-center font-[Roboto] ' >
           <div className='w-full flex pt-[12px] pb-[12px] pr-3 justify-end gap-[70px] ' >
@@ -93,30 +93,30 @@ function Interviewer() {
                 </svg>
               </button>
             </div>
-            <div className=' w-[171px] h-[40px]  flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-medium ' >
+            <div className=' w-[171px] h-[40px] text-[14px]  flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-medium ' >
               <Link to="/internal/addinterviewer" >
                 + Add Interviewers</Link>
             </div>
           </div>
           <div className='w-[97%] h-[104px] flex justify-between items-center p-2 ' >
             <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
-              <span className='font-normal text-[16px] ' >Total Interviewers</span>
+              <span className='font-normal  ' >Total Interviewers</span>
               <span className='font-semibold text-[24px] ' >758</span>
             </div>
             <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
-              <span className='font-normal text-[16px] ' >0-4 Years</span>
+              <span className='font-normal  ' >0-4 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
             <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
-              <span className='font-normal text-[16px] ' >4-8 Years</span>
+              <span className='font-normal  ' >4-8 Years</span>
               <span className='font-semibold text-[24px] ' >56</span>
             </div>
             <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
-              <span className='font-normal text-[16px] ' >8-10 Years</span>
+              <span className='font-normal  ' >8-10 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
             <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
-              <span className='font-normal text-[16px] ' >10+ Years</span>
+              <span className='font-normal  ' >10+ Years</span>
               <span className='font-semibold text-[24px] ' >210</span>
             </div>
           </div>
@@ -127,7 +127,7 @@ function Interviewer() {
                 <div className="space-y-2">
               {/*Strength Filter */}
               <div className="flex font-medium items-center space-x-1">
-                <span className="flex font-bold mr-2">Strength</span>
+                <span className="flex font-bold  mr-2">Strength</span>
                 {domains.map((domain) => (
                   <button
                     key={domain}
@@ -160,7 +160,7 @@ function Interviewer() {
 
               {/* Experience Filter */}
               <div className="flex items-center font-medium space-x-1">
-                <span className=" font-bold mr-4">Experience</span>
+                <span className=" font-bold  mr-4">Experience</span>
                 {statuses.map((status) => (
                   <button
                     key={status}
@@ -208,17 +208,17 @@ function Interviewer() {
 
 
 
-          <div className='w-[90%]' >
+          <div className='w-[92%]' >
             <table className="w-full text-left border-collapse" >
               <thead className='text-black' >
                 <tr className='' >
-                  <th className='py-2 px-4 max-w-max border-b-4 ' >USERS</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 ' >EMAIL ID</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 ' >Phone No</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 ' >Strength</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 ' >Languages</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 ' >Experience</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 ' ></th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >USERS</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >EMAIL ID</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Phone No</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Strength</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Languages</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Experience</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' ></th>
                 </tr>
 
               </thead>
@@ -228,7 +228,7 @@ function Interviewer() {
 
                 {data.map((data, index) => (
                   <tr key={index} className={`${index % 2 === 0 ? "bg-" : "bg-[#FFC7001F]"} h-[91px] `} >
-                    <td className='py-3 px-4 max-w-max font-bold ' >{data.name} </td>
+                    <td className='py-3 px-4 max-w-max font-bold text-[15px] ' >{data.name} </td>
                     <td className='py-3 px-4 max-w-max' >{data.email} </td>
                     <td className='py-3 px-4 max-w-max' >{data.phone}</td>
                     <td className='py-3 px-4 max-w-max' >{data.strength}</td>

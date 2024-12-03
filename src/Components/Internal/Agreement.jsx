@@ -163,9 +163,9 @@ function Agreement() {
 
 
   return (
-    <div>
+    <div className='text-[12px] ' >
       <div className='w-full h-full flex justify-between items-center px-5 mb-12 ' > 
-          <div className='font-semibold' >Years of Experience & Agreed Rates</div>
+          <div className='font-semibold text-[16px] ' >Years of Experience & Agreed Rates</div>
           <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80">
                 <input
                   type="text"
@@ -196,7 +196,7 @@ function Agreement() {
               }`}
           >
             {data.slice(0, showAll ? data.length : data.length).map((item, index) => (
-              <div>
+              <div className='font-semibold  ' >
               <div
                 key={index}
                 className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.5fr] ml-6 mr-6 mt-2 rounded-[16px] items-center bg-[#EBEBEB80] justify-center max-h-max`}
@@ -206,10 +206,10 @@ function Agreement() {
                     type="text"
                     disabled
                     value={item.company}
-                    className="block w-full text-left font-bold px-[5px] py-2 text-[#056DDC]"
+                    className="block w-full text-left font-bold text-[16px] px-[5px] py-2 text-[#056DDC]"
                   />
                 </div>
-                <div className="px-3 py-1 w-auto text-black font-semibold text-[14px] ">
+                <div className="px-3 py-1 w-auto text-black font-semibold  ">
                   <label htmlFor="">0-4 Years</label>
                   <input
                     type="number"
@@ -221,7 +221,7 @@ function Agreement() {
                       }`}
                   />
                 </div>
-                <div className="px-3 py-1 w-auto text-black font-semibold text-[14px] ">
+                <div className="px-3 py-1 w-auto text-black font-semibold  ">
                   <label htmlFor="">4-6 Years</label>
                   <input
                     type="number"
@@ -233,7 +233,7 @@ function Agreement() {
                       }`}
                   />
                 </div>
-                <div className="px-3 py-1 w-auto text-black font-semibold text-[14px] ">
+                <div className="px-3 py-1 w-auto text-black font-semibold  ">
                   <label htmlFor="">6-8 Years</label>
                   <input
                     type="number"
@@ -245,7 +245,7 @@ function Agreement() {
                       }`}
                   />
                 </div>
-                <div className="px-3 py-1 w-auto text-black font-semibold text-[14px] ">
+                <div className="px-3 py-1 w-auto text-black font-semibold  ">
                   <label htmlFor="">8-10 Years</label>
                   <input
                     type="number"
@@ -257,7 +257,7 @@ function Agreement() {
                       }`}
                   />
                 </div>
-                <div className="px-3 py-1 w-auto text-black font-semibold text-[14px] ">
+                <div className="px-3 py-1 w-auto text-black font-semibold  ">
                   <label htmlFor="">10+ Years</label>
                   <input
                     type="number"
@@ -308,7 +308,7 @@ function Agreement() {
           <React.Fragment>
               <div>
                 <button
-                  className="border p-1 px-4 rounded-full  font-bold text-[#056DDC]"
+                  className="border p-1 px-4 rounded-full text-[16px] font-bold text-[#056DDC]"
                   onClick={handleAddClientUserOpen}
                 >
                   + Add New
