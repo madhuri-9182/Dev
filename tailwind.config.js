@@ -6,7 +6,9 @@ export default {
   ],
   theme: {
     extend: {
-
+      fontSize: {
+        sm: ['14px', '20px'], // 14px font size with a 20px line height
+      },
     },
   },
   plugins: [],
