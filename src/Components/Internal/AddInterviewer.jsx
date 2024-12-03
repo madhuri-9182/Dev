@@ -153,7 +153,7 @@ function AddInterviewer() {
         <ul className='grid grid-cols-2 gap-4 p-2 '>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-center justify-center'>
-              <label  class=" w-full  text-right ">Total Interview</label>
+              <label  className=" w-full  text-right ">Total Interview</label>
             </div>
             <div className=' flex '>
             <div className='flex flex-wrap gap-x-0 ' >
