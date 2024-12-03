@@ -6,6 +6,8 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, LoginUsingEmail, LoginUsingNumber } from './Components'
 // Client Imports
 import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics, Integration, Finance, Engagement, Message } from './Components'
+//Agency Imports
+import { AgencyNavigationLayout,AgencyDashboard,AgencyCandidates } from './Components'
 //Internal Imports
 import {InternalNavigationLayout,InternalDashboard,InternalClients,InternalInterviewer,InternalUsers,InternalAgreements,InternalFinance,InternalEngagement,InternalMessages} from "./Components"
 //Interviewer Imports
@@ -47,6 +49,13 @@ const router = createBrowserRouter(
         <Route path='finance' element={<Finance />} />
         <Route path='engagement' element={<Engagement />} />
       </Route>
+
+      //Agency Routes
+      <Route path='agency' element={<AgencyNavigationLayout/>}>
+        <Route path='dashboard' element={<AgencyDashboard/>}/>
+        <Route path='candidates' element={<AgencyCandidates/>}/>
+      </Route>
+
 
       //Internal Routes
       <Route path='internal' element={<InternalNavigationLayout/>}>

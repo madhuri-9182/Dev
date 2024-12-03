@@ -23,6 +23,12 @@ import Finance from "./Client/InterviewPlatform/VerticalNavigationLinks/Finance"
 import Engagement from "./Client/InterviewPlatform/VerticalNavigationLinks/Engagement"
 import Message from "./Client/InterviewPlatform/VerticalNavigationLinks/Message";
 
+//Agency Imports
+import { AgencyNavigationLayout } from "./Agency/NavigationLayout";
+import { AgencyDashboard } from "./Agency/Dashboard";
+import { AgencyCandidates } from "./Agency/Candidates";
+
+
 //Internal Imports
 import { InternalNavigationLayout } from "./Internal/NavigationLayout";
 import {InternalDashboard } from "./Internal/Dashboard"
@@ -49,6 +55,9 @@ export {SignIn,SignUp,ForgetPass,PasswordReset,SignUpSignInLayout,page,LoginUsin
 
 //Client Exports
 export {NavigationLayout,Dashboard,Settings,Jobs,Candidates,Analytics,Integration,Finance,Engagement,Message}
+
+//Agency Exports
+export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates}
 
 
 //Internal Exports
