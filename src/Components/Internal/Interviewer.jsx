@@ -69,10 +69,10 @@ function Interviewer() {
   
 
   return (
-    <div className='p-6 pt-2 pl-0 font-[Roboto] text-[14px] ' >
-      <div>
+    <div className='p-6 pt-0  pl-0 font-[Roboto] text-[14px] ' >
+      <div className='' >
         <div className=' w-full h-full flex flex-col items-center font-[Roboto] ' >
-          <div className='w-full flex pt-[12px] pb-[12px] pr-3 justify-end gap-[70px] ' >
+          <div className='w-full flex  pb-[12px] pr-3 justify-end gap-[70px]  ' >
             <div className='w-[466px] h-[40px] flex justify-around items-center border-2 border-[#F4F4F4] bg-[#F4F4F4] rounded-[28px] pr-1 pl-1 ' >
               <input
                 className='  w-[358px] h-[37px] ml-1  text-[#979DA3] bg-[#F4F4F4] border-none focus:outline-none' type="text"
@@ -81,16 +81,7 @@ function Interviewer() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button>
-                <svg width="48" height="40" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2100/svg">
-                  <g clip-path="url(#clip0_775_6734)">
-                    <path d="M31.6 29L25.3 22.7C24.8 23.1 24.225 23.4167 23.575 23.65C22.925 23.8833 22.2333 24 21.5 24C19.6833 24 18.1458 23.3708 16.8875 22.1125C15.6292 20.8542 15 19.3167 15 17.5C15 15.6833 15.6292 14.1458 16.8875 12.8875C18.1458 11.6292 19.6833 11 21.5 11C23.3167 11 24.8542 11.6292 26.1125 12.8875C27.3708 14.1458 28 15.6833 28 17.5C28 18.2333 27.8833 18.925 27.65 19.575C27.4167 20.225 27.1 20.8 26.7 21.3L33 27.6L31.6 29ZM21.5 22C22.75 22 23.8125 21.5625 24.6875 20.6875C25.5625 19.8125 26 18.75 26 17.5C26 16.25 25.5625 15.1875 24.6875 14.3125C23.8125 13.4375 22.75 13 21.5 13C20.25 13 19.1875 13.4375 18.3125 14.3125C17.4375 15.1875 17 16.25 17 17.5C17 18.75 17.4375 19.8125 18.3125 20.6875C19.1875 21.5625 20.25 22 21.5 22Z" fill="#49454F" />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_775_6734">
-                      <rect x="4" width="40" height="40" rx="20" fill="white" />
-                    </clipPath>
-                  </defs>
-                </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
               </button>
             </div>
             <div className=' w-[171px] h-[40px] text-[14px]  flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-medium ' >

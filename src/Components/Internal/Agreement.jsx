@@ -172,20 +172,7 @@ function Agreement() {
                   placeholder="Search Client by name"
                   className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
                 />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-5 w-5 text-gray-500"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-4.35-4.35M16.5 10.5a6 6 0 11-12 0 6 6 0 0112 0z"
-                  />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
               </div>
           </div>
 
@@ -304,9 +291,9 @@ function Agreement() {
               </div>
             ))}
           </div>
-          <div className='w-full mt-2 h-[56px] flex bg-[#EBEBEB80] rounded-[16px] justify-end items-center pr-12' >
+          <div className='w-[96%] mt-2 ml-6 mr-1 h-[56px] flex bg-[#EBEBEB80] rounded-[16px] items-center justify-end 0  ' >
           <React.Fragment>
-              <div>
+              <div className='' >
                 <button
                   className="border p-1 px-4 rounded-full text-[16px] font-bold text-[#056DDC]"
                   onClick={handleAddClientUserOpen}
@@ -345,7 +332,7 @@ function Agreement() {
                       <label className="w-full text-sm font-medium text-gray-700">Company Name</label>
                       <input
                         type="text"
-                        placeholder="Phonepe"
+                        placeholder="Enter Company Name"
                         className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -353,7 +340,7 @@ function Agreement() {
                       <label className="w-full text-sm font-medium text-gray-700">0-4 Years Rate</label>
                       <input
                         type="number"
-                        placeholder="2800.00"
+                        placeholder="0-4 Years Rate"
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -361,7 +348,7 @@ function Agreement() {
                       <label className="w-full text-sm font-medium text-gray-700">4-6 Years Rate</label>
                       <input
                         type="number"
-                        placeholder="2800.00"
+                        placeholder="4-6 Years Rate"
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -369,7 +356,7 @@ function Agreement() {
                       <label className="w-full text-sm font-medium text-gray-700">6-8 Years Rate</label>
                       <input
                         type="number"
-                        placeholder="2800.00"
+                        placeholder="6-8 Years Rate"
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -377,7 +364,7 @@ function Agreement() {
                       <label className="w-full text-sm font-medium text-gray-700">8-10 Years Rate</label>
                       <input
                         type="numbers"
-                        placeholder="2800.00"
+                        placeholder="8-10 Years Rate"
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
@@ -385,7 +372,7 @@ function Agreement() {
                       <label className="w-full text-sm font-medium text-gray-700">10+ Years Rate</label>
                       <input
                         type="numbers"
-                        placeholder="2800.00"
+                        placeholder="10+ Years Rate"
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>

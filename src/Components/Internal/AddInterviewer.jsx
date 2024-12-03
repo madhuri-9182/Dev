@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 function AddInterviewer() {
-    const [selectedStrength, setSelectedStrength] = useState("Backend")
+    const [selectedStrength, setSelectedStrength] = useState("")
   const [selectedOption, setSelectedOption] = useState('');
   const [items, setItems] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState('');
@@ -30,7 +30,7 @@ function AddInterviewer() {
     }
   }
   const removeSkill=(ItemToRemove)=>{
-    console.log("hii remove clicked SKILLS");
+   
     
     setItemsSkills(itemsSkills.filter(item => item !== ItemToRemove ))
   }
@@ -38,7 +38,7 @@ function AddInterviewer() {
   
 
   const handleStrengthSelection=(e) => {
-    console.log("i am selected");
+    
     
     setSelectedStrength(e.target.value);
   }
@@ -59,7 +59,7 @@ function AddInterviewer() {
             <div className='w-1/2'>
               <input
                 type="text"
-                
+                placeholder='Interviewer Name'
                 className=" w-[360px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
               />
@@ -73,6 +73,7 @@ function AddInterviewer() {
             <div className='w-1/2'>
               <input
                 type="number"
+                placeholder='Phone Number'
                 id=""
                 className=" w-[360px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
@@ -87,6 +88,7 @@ function AddInterviewer() {
               <input
                 type="email"
                 id=""
+                placeholder='Email ID'
                 className=" w-[360px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
               />
@@ -110,7 +112,7 @@ function AddInterviewer() {
             <div className='w-1/2'>
               <input
                 type="text"
-                
+                placeholder='Current Company'
                 className=" w-[360px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
               />
@@ -125,6 +127,7 @@ function AddInterviewer() {
               <input
                 type="text"
                 id=""
+                placeholder='Previous Company'
                 className=" w-[360px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
               />
@@ -138,6 +141,7 @@ function AddInterviewer() {
               <input
                 type="text"
                 id=""
+                placeholder='Current Designation'
                 className=" w-[360px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
                 
               />
@@ -217,16 +221,16 @@ function AddInterviewer() {
 
 <div className=''>
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2 pb-0 '>
-          <li className='flex items-center gap-x-4 justify-center  '>
-            <div className='w-[30%]  flex items-center justify-center'>
+          <li className='flex items-center gap-x-4 justify-center '>
+            <div className='w-[30%]  flex items-center justify-center  '>
               <label  class=" w-full  text-center  ">Interview Assigned For</label>
             </div>
-            <div className='w-1/2  '>
+            <div className='w-1/2  flex justify-start items-center '>
                   <select
                             onChange={handleSelection}
                             value={selectedOption}
-                            className="w-[50px] h-[32px] p-3  text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ">
-                            <option value="" disabled></option>
+                            className="w-[120px] h-[32px] text-center  text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ">
+                            <option value="" disabled>Select Roles</option>
                             <option value="EM">EM</option>
                             <option value="PM">PM</option>
                             <option value="SDE II">SDE II</option>
@@ -238,14 +242,14 @@ function AddInterviewer() {
 
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-center justify-center'>
-              <label for="" class=" w-full  text-right ">Skills</label>
+              <label class=" w-full  text-right ">Skills</label>
             </div>
-            <div className='w-1/2'>
+            <div className='w-1/2  flex justify-start items-center '>
             <select
                             onChange={handleSkillSelection}
                             value={selectedSkill}
-                            className="w-[50px] h-[32px] p-3 text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0]">
-                            <option value="" disabled></option>
+                            className="w-[120px] h-[32px]  text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0]">
+                            <option value="" disabled>Select Skills </option>
                             <option value="Python">Python</option>
                             <option value="Kafka">Kafka</option>
                             <option value="Java">Java</option>
@@ -305,8 +309,9 @@ function AddInterviewer() {
             <select
                             value={selectedStrength}
                             onChange={handleStrengthSelection}
-                            className=" h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0]  "
+                            className={` h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${selectedStrength == "" ? "text-gray-500": "text-black" } `}
                           >
+                            <option value="" selected disabled >Select Strength</option>
                             <option value="Backend">Backend</option>
                             <option value="Frontend">Frontend</option>
                             <option value="Testing">Testing</option>
