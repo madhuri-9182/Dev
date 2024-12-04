@@ -8,10 +8,11 @@ function AddInterviewer() {
   const [itemsSkills,setItemsSkills] = useState([]);
 
   const handleSelection = (e) => {
-    const newOption = e.target.value;
-    setSelectedOption(newOption);
-    if (newOption && !items.includes(newOption)) {
-      setItems([...items, newOption]);
+    const selectedRole = e.target.value;
+    
+    if (selectedRole && !items.includes(selectedRole)) {
+      setItems([...items, selectedRole]);
+      setSelectedOption("");
     }
   }
   
@@ -24,9 +25,10 @@ function AddInterviewer() {
 
   const handleSkillSelection = (e) => {
     const newSkillOption = e.target.value;
-    setSelectedSkill(newSkillOption);
+    
     if (newSkillOption && !itemsSkills.includes(newSkillOption)) {
       setItemsSkills([...itemsSkills, newSkillOption]);
+      setSelectedSkill("");
     }
   }
   const removeSkill=(ItemToRemove)=>{
@@ -220,7 +222,7 @@ function AddInterviewer() {
 {/* main 4 single div use */}
 
 <div className=''>
-        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2 pb-0 '>
+        <ul className='grid grid-cols-2 gap-4 p-2 pb-0 '>
           <li className='flex items-center gap-x-4 justify-center '>
             <div className='w-[30%]  flex items-center justify-center  '>
               <label  class=" w-full  text-center  ">Interview Assigned For</label>
@@ -229,7 +231,7 @@ function AddInterviewer() {
                   <select
                             onChange={handleSelection}
                             value={selectedOption}
-                            className="w-[120px] h-[32px] text-center  text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ">
+                            className={`w-[120px] h-[32px] text-center  text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${ items.length == 0 ? "text-gray-500" : "text-black" } `}>
                             <option value="" disabled>Select Roles</option>
                             <option value="EM">EM</option>
                             <option value="PM">PM</option>
@@ -248,7 +250,7 @@ function AddInterviewer() {
             <select
                             onChange={handleSkillSelection}
                             value={selectedSkill}
-                            className="w-[120px] h-[32px]  text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0]">
+                            className={`w-[120px] h-[32px]  text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${itemsSkills.length == 0 ? "text-gray-500" : "text-black" } `}>
                             <option value="" disabled>Select Skills </option>
                             <option value="Python">Python</option>
                             <option value="Kafka">Kafka</option>
@@ -258,11 +260,11 @@ function AddInterviewer() {
                       </select>
             </div>
           </li>
-          <li className='flex items-center justify-center gap-x-4 '>
+          <li className='flex items-center justify-center gap-x-4  '>
             <div className='w-[30%]  flex items-center justify-center'>
               <label for="" class=" w-full "></label>
             </div>
-            <div className='w-1/2 flex items-center justify-start  '>
+            <div className='w-1/2 flex items-center justify-start '>
             <div className='w-[300px]  gap-x-4'>
                       <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
                       onClick={()=>removeItem(item)}
