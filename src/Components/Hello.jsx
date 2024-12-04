@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 function Hello() {
 
   const navigate = useNavigate();
-
+// Hello
     const naviToAuth = () =>{
       navigate('/auth/signup')
     }
