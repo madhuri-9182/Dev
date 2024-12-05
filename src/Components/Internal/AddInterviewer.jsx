@@ -56,7 +56,7 @@ function AddInterviewer() {
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label  class=" w-full  text-right ">Interviewer Name</label>
+              <label  className=" w-full  text-right ">Interviewer Name</label>
             </div>
             <div className='w-1/2'>
               <input
@@ -70,7 +70,7 @@ function AddInterviewer() {
 
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label for="" class=" w-full  text-right ">Phone Number</label>
+              <label for="" className=" w-full  text-right ">Phone Number</label>
             </div>
             <div className='w-1/2'>
               <input
@@ -84,7 +84,7 @@ function AddInterviewer() {
           </li>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label for="" class=" w-full  text-right ">Email ID</label>
+              <label for="" className=" w-full  text-right ">Email ID</label>
             </div>
             <div className='w-1/2'>
               <input
@@ -109,7 +109,7 @@ function AddInterviewer() {
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label  class=" w-full  text-right ">Current Company</label>
+              <label  className=" w-full  text-right ">Current Company</label>
             </div>
             <div className='w-1/2'>
               <input
@@ -123,7 +123,7 @@ function AddInterviewer() {
 
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label for="" class=" w-full  text-right ">Previous Company</label>
+              <label for="" className=" w-full  text-right ">Previous Company</label>
             </div>
             <div className='w-1/2'>
               <input
@@ -137,7 +137,7 @@ function AddInterviewer() {
           </li>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label for="" class=" w-full  text-right ">Current Designation</label>
+              <label for="" className=" w-full  text-right ">Current Designation</label>
             </div>
             <div className='w-1/2'>
               <input
@@ -155,63 +155,37 @@ function AddInterviewer() {
 
         
 {/* MAIN 3 */}
-<div className=' flex flex-col '>
-        <ul className='grid grid-cols-2 gap-4 p-2 '>
+
+<div className=''>
+        <ul className='grid grid-cols-2 gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
-            <div className='w-[30%]  flex items-center justify-center'>
-              <label  className=" w-full  text-right ">Total Interview</label>
+            <div className='w-[30%]  flex items-end justify-end'>
+              <label  className=" w-full  text-right ">Total Experience</label>
             </div>
-            <div className=' flex '>
-            <div className='flex flex-wrap gap-x-0 ' >
-              <input
-                type="number"
-                placeholder='00'
-                className=" w-[96px] h-[32px] border mr-2 border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
-                
-              />
-              Years
-              </div>
-              <div className='flex flex-wrap' >
-              <input
-                type="number"
-                placeholder='00'
-                min="0"
-                max="12"
-                className=" w-[96px] h-[32px] border ml-2 mr-2 border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
-                
-              />
-              Months
+            <div className='flex-col justify-center items-center w-1/2  '>
+              <div className='flex items-center gap-4 ' >
+                <input type="number" placeholder='Years' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <span>Years</span>
+                <input type="number" placeholder='Months' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <span>Months</span>
               </div>
             </div>
           </li>
 
           <li className='flex items-center justify-center gap-x-4  '>
-            <div className='w-[30%]  flex items-center justify-center'>
-              <label for="" class=" w-full  text-right ">Interview Experience</label>
+            <div className='w-[30%]  flex items-end justify-end'>
+              <label  className=" w-full  text-right ">Interview Experience</label>
             </div>
-            <div className=' flex'>
-            <div className='flex flex-wrap' >
-            <input
-                type="number"
-                placeholder='00'
-                className=" w-[96px] h-[32px] border mr-2 border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
-                
-              />
-              Years
-              </div>
-              <div className='flex flex-wrap' >
-              <input
-                type="number"
-                placeholder='00'
-                min="0"
-                max="12"
-                className=" w-[96px] h-[32px] border ml-2 mr-2 border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
-                
-              />
-              Months
+            <div className='flex-col justify-center items-center w-1/2  '>
+              <div className='flex items-center gap-4 ' >
+                <input type="number" placeholder='Years' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <span>Years</span>
+                <input type="number" placeholder='Months' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <span>Months</span>
               </div>
             </div>
           </li>
+          
         </ul>
       </div>
       <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
@@ -225,7 +199,7 @@ function AddInterviewer() {
         <ul className='grid grid-cols-2 gap-4 p-2 pb-0 '>
           <li className='flex items-center gap-x-4 justify-center '>
             <div className='w-[30%]  flex items-center justify-center  '>
-              <label  class=" w-full  text-center  ">Interview Assigned For</label>
+              <label  className=" w-full  text-center  ">Interview Assigned For</label>
             </div>
             <div className='w-1/2  flex justify-start items-center '>
                   <select
@@ -244,7 +218,7 @@ function AddInterviewer() {
 
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-center justify-center'>
-              <label class=" w-full  text-right ">Skills</label>
+              <label className=" w-full  text-right ">Skills</label>
             </div>
             <div className='w-1/2  flex justify-start items-center '>
             <select
@@ -262,7 +236,7 @@ function AddInterviewer() {
           </li>
           <li className='flex items-center justify-center gap-x-4  '>
             <div className='w-[30%]  flex items-center justify-center'>
-              <label for="" class=" w-full "></label>
+              <label for="" className=" w-full "></label>
             </div>
             <div className='w-1/2 flex items-center justify-start '>
             <div className='w-[300px]  gap-x-4'>
@@ -277,7 +251,7 @@ function AddInterviewer() {
           </li>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-center justify-center'>
-              <label for="" class=" w-full "></label>
+              <label for="" className=" w-full "></label>
             </div>
             <div className='w-1/2 flex items-center justify-start '>
             <div className='w-[300px]   gap-x-4   '>
@@ -305,7 +279,7 @@ function AddInterviewer() {
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label  class=" w-full  text-right ">Strength</label>
+              <label  className=" w-full  text-right ">Strength</label>
             </div>
             <div className='w-1/2'>
             <select
@@ -343,7 +317,7 @@ function AddInterviewer() {
         <ul className='grid grid-cols-2 gap-4 p-2 '>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
-              <label  class=" w-full  text-right ">Upload CV</label>
+              <label  className=" w-full  text-right ">Upload CV</label>
             </div>
             <div className='w-1/2'>
             <button>
