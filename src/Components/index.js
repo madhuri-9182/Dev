@@ -27,6 +27,7 @@ import Message from "./Client/InterviewPlatform/VerticalNavigationLinks/Message"
 import { AgencyNavigationLayout } from "./Agency/NavigationLayout";
 import { AgencyDashboard } from "./Agency/Dashboard";
 import { AgencyCandidates } from "./Agency/Candidates";
+import { AgencyAddCandidate } from "./Agency/AddCandidate";
 
 
 //Internal Imports
@@ -57,7 +58,7 @@ export {SignIn,SignUp,ForgetPass,PasswordReset,SignUpSignInLayout,page,LoginUsin
 export {NavigationLayout,Dashboard,Settings,Jobs,Candidates,Analytics,Integration,Finance,Engagement,Message}
 
 //Agency Exports
-export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates}
+export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates,AgencyAddCandidate}
 
 
 //Internal Exports
