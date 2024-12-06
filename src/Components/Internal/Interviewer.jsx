@@ -90,23 +90,23 @@ function Interviewer() {
             </div>
           </div>
           <div className='w-[97%] h-[104px] flex justify-between items-center p-2 ' >
-            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >Total Interviewers</span>
               <span className='font-semibold text-[24px] ' >758</span>
             </div>
-            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >0-4 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
-            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >4-8 Years</span>
               <span className='font-semibold text-[24px] ' >56</span>
             </div>
-            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >8-10 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
-            <div className='w-[210px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >10+ Years</span>
               <span className='font-semibold text-[24px] ' >210</span>
             </div>
