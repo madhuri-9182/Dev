@@ -276,7 +276,7 @@ function AddInterviewer() {
 {/* main 5 */}
 
 <div className='mt-1'>
-        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
+        <ul className='grid grid-cols-2 grid-rows gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Strength</label>
