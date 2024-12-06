@@ -52,7 +52,7 @@ function AddInterviewer() {
 {/* MAIN 1 */}
 
 
-      <div className='w-full p-2  '>
+      <div className=' '>
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2'>
           <li className='flex items-center justify-center gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
