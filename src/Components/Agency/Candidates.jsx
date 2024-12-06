@@ -347,9 +347,9 @@ function Candidates() {
                     className={`text-sm text-black px-2 py-[2px] rounded-lg text-center ${person.status === "Recommended"
                       ? "bg-[#2ECC71]"
                       : person.status === "Not Recommended"
-                        ? "bg-[#B10E0E]"
+                        ? "bg-[#B10E0E] text-white"
                         : person.status === "Scheduled"
-                          ? "bg-[#DF8C0F]"
+                          ? "bg-[#DF8C0F] text-white"
                           : "bg-[#C4C4C4]"
                       }`}
                   >
