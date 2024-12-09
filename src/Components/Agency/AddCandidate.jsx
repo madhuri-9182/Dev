@@ -278,7 +278,7 @@ function AddCandidate() {
                     // Initial state with the two buttons
                     <div className="mt-9 w-full flex flex-col items-center justify-evenly border border-red-500 py-5">
                         <h1 className="text-lg text-red-500 font-bold">
-                            Temporary added till the API is ready
+                        Added temporarily until the API is ready.
                         </h1>
                         <div className="w-full flex items-center justify-around">
                             <button
