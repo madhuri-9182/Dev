@@ -89,29 +89,29 @@ function Interviewer() {
                 + Add Interviewers</Link>
             </div>
           </div>
-          <div className='w-[97%] h-[104px] flex justify-between items-center p-2 ' >
-            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+          <div className='w-full h-[104px] grid grid-cols-[1fr_1fr_1fr_1fr_1fr]  2xl:gap-x-7 gap-x-4 justify-between items-center p-2 ' >
+            <div className=' flex flex-col  justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >Total Interviewers</span>
               <span className='font-semibold text-[24px] ' >758</span>
             </div>
-            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className=' flex flex-col  justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >0-4 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
-            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className=' flex flex-col  justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >4-8 Years</span>
               <span className='font-semibold text-[24px] ' >56</span>
             </div>
-            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className=' flex flex-col  justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >8-10 Years</span>
               <span className='font-semibold text-[24px] ' >26</span>
             </div>
-            <div className='w-[200px] h-[96px] flex flex-col justify-center items-start p-4 bg-[#E5ECF6] rounded-[16px] ' >
+            <div className=' flex flex-col  justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px] ' >
               <span className='font-normal  ' >10+ Years</span>
               <span className='font-semibold text-[24px] ' >210</span>
             </div>
           </div>
-          <div className=' w-[97%] flex flex-col p-2 mt-1 mb-1 ' >
+          <div className=' w-full flex flex-col p-2 mt-1 mb-1 ' >
             <div className='flex justify-between' >
               <div className=" flex  items-center space-x-4 p-1 ">
                 
@@ -151,7 +151,7 @@ function Interviewer() {
 
               {/* Experience Filter */}
               <div className="flex items-center font-medium space-x-1">
-                <span className=" font-bold  mr-4">Experience</span>
+                <span className=" font-bold  mr-2">Experience</span>
                 {statuses.map((status) => (
                   <button
                     key={status}
@@ -183,7 +183,7 @@ function Interviewer() {
               </div>
             </div>
               </div>
-              <div className='flex gap-2 justify-center items-center ' >
+              <div className='flex gap-2 justify-center items-center font-bold ' >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M7.49996 18.3332H12.5C16.6666 18.3332 18.3333 16.6665 18.3333 12.4998V7.49984C18.3333 3.33317 16.6666 1.6665 12.5 1.6665H7.49996C3.33329 1.6665 1.66663 3.33317 1.66663 7.49984V12.4998C1.66663 16.6665 3.33329 18.3332 7.49996 18.3332Z" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   <path d="M7.5 9.59131L10 12.0913L12.5 9.59131" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -199,7 +199,7 @@ function Interviewer() {
 
 
 
-          <div className='w-[92%]' >
+          <div className='w-full' >
             <table className="w-full text-left border-collapse" >
               <thead className='text-black' >
                 <tr className='' >

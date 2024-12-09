@@ -163,7 +163,7 @@ function Agreement() {
 
 
   return (
-    <div className='text-[12px] ' >
+    <div className='text-[12px] font-[Roboto] ' >
       <div className='w-full h-full flex justify-between items-center px-5 mb-12 ' > 
           <div className='font-semibold text-[16px] ' >Years of Experience & Agreed Rates</div>
           <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80">
@@ -179,14 +179,14 @@ function Agreement() {
 
           
           <div
-            className={`overflow-hidden transition-all duration-1000 ease-in-out  ${showAll ? "max-h-[1000px]" : "h-full" // Adjust max-height accordingly
+            className={`overflow-hidden transition-all duration-1000 ease-in-out  ${showAll ? "h-full" : "h-full" // Adjust max-height accordingly
               }`}
           >
             {data.slice(0, showAll ? data.length : data.length).map((item, index) => (
               <div className='font-semibold  ' >
               <div
                 key={index}
-                className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.5fr] ml-6 mr-6 mt-2 rounded-[16px] items-center bg-[#EBEBEB80] justify-center max-h-max`}
+                className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.5fr] mx-5 mt-2 rounded-[16px] items-center bg-[#EBEBEB80] justify-center max-h-max`}
               >
                 <div className="px-5 py-1 w-auto ">
                   <input
@@ -302,17 +302,31 @@ function Agreement() {
                 </button>
               </div>
               <BootstrapDialog
-                onClose={handleAddClientUserClose}
-                aria-labelledby="add-poc-dialog-title"
-                open={addClientUser}
-                BackdropProps={{
-                  sx: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                  },
-                }}
-              >
-                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                  <h1 className='font-bold text-[#056DDC] text-lg text-center'>New Agreements</h1>
+  onClose={handleAddClientUserClose}
+  aria-labelledby="add-poc-dialog-title"
+  open={addClientUser}
+  BackdropProps={{
+    sx: {
+      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    },
+  }}
+  sx={{
+    '& .MuiDialogContent-root': {
+      padding: '16px', 
+    },
+    '& .MuiDialog-paper': {
+      width: '30%', 
+      maxWidth: '800px', 
+      margin: 'auto',
+      height: 'auto', 
+     
+    }
+  }}
+>
+
+
+                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title" >
+                  <h1 className='font-bold text-[#056DDC] text-lg text-center md '>New Agreements</h1>
                 </DialogTitle>
                 <IconButton
                   aria-label="close"
@@ -326,9 +340,9 @@ function Agreement() {
                 >
                   <CloseIcon />
                 </IconButton>
-                <DialogContent dividers>
-                  <div className=" w-full flex-col flex items-center justify-center gap-y-2">
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                <DialogContent dividers className='' >
+                  <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
                       <label className="w-full text-sm font-medium text-gray-700">Company Name</label>
                       <input
                         type="text"
@@ -336,7 +350,7 @@ function Agreement() {
                         className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
                       <label className="w-full text-sm font-medium text-gray-700">0-4 Years Rate</label>
                       <input
                         type="number"
@@ -344,7 +358,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
                       <label className="w-full text-sm font-medium text-gray-700">4-6 Years Rate</label>
                       <input
                         type="number"
@@ -352,7 +366,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2md:gap-1 w-full">
                       <label className="w-full text-sm font-medium text-gray-700">6-8 Years Rate</label>
                       <input
                         type="number"
@@ -360,7 +374,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start lcustom_lg:gap-2 md:gap-1 w-full">
                       <label className="w-full text-sm font-medium text-gray-700">8-10 Years Rate</label>
                       <input
                         type="numbers"
@@ -368,7 +382,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
                       <label className="w-full text-sm font-medium text-gray-700">10+ Years Rate</label>
                       <input
                         type="numbers"
