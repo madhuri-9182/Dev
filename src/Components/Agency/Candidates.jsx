@@ -137,7 +137,7 @@ function Candidates() {
       score: 490,
     },
   ]);
-  
+
 
   return (
     <div className='flex flex-col gap-y-4'>
@@ -252,8 +252,8 @@ function Candidates() {
                 key={role}
                 onClick={() => handleSelect("role", role)}
                 className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.role === role
-                    ? "bg-purple-100 text-purple-700 border-purple-300"
-                    : "bg-white text-gray-700 border-gray-300"
+                  ? "bg-purple-100 text-purple-700 border-purple-300"
+                  : "bg-white text-gray-700 border-gray-300"
                   }`}
               >
                 {/* Tick container */}
@@ -288,8 +288,8 @@ function Candidates() {
                 key={status}
                 onClick={() => handleSelect("status", status)}
                 className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.status === status
-                    ? "bg-purple-100 text-purple-700 border-purple-300"
-                    : "bg-white text-gray-700 border-gray-300"
+                  ? "bg-purple-100 text-purple-700 border-purple-300"
+                  : "bg-white text-gray-700 border-gray-300"
                   }`}
               >
                 {/* Tick container */}
