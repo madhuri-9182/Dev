@@ -5,7 +5,7 @@ import React,{useState} from 'react'
 function Dashboard() {
 
   const [categories,setCategories] = useState([
-    { name: 'SDE-II', activeCount: 38 },
+    { name: 'SDE-II', activeCount: 39 },
     { name: 'SDE-III', activeCount: 22 },
     { name: 'DevOps', activeCount: 15 },
     {name:'QA-I',activeCount:32}

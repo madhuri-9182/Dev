@@ -28,6 +28,7 @@ import { AgencyNavigationLayout } from "./Agency/NavigationLayout";
 import { AgencyDashboard } from "./Agency/Dashboard";
 import { AgencyCandidates } from "./Agency/Candidates";
 import { AgencyAddCandidate } from "./Agency/AddCandidate";
+import { AgencyScheduleInterview } from "./Agency/ScheduleInterview";
 
 
 //Internal Imports
@@ -58,7 +59,7 @@ export {SignIn,SignUp,ForgetPass,PasswordReset,SignUpSignInLayout,page,LoginUsin
 export {NavigationLayout,Dashboard,Settings,Jobs,Candidates,Analytics,Integration,Finance,Engagement,Message}
 
 //Agency Exports
-export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates,AgencyAddCandidate}
+export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates,AgencyAddCandidate, AgencyScheduleInterview}
 
 
 //Internal Exports

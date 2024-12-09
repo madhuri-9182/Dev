@@ -7,7 +7,7 @@ import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, Lo
 // Client Imports
 import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics, Integration, Finance, Engagement, Message } from './Components'
 //Agency Imports
-import { AgencyNavigationLayout,AgencyDashboard,AgencyCandidates,AgencyAddCandidate } from './Components'
+import { AgencyNavigationLayout,AgencyDashboard,AgencyCandidates,AgencyAddCandidate,AgencyScheduleInterview } from './Components'
 //Internal Imports
 import {InternalNavigationLayout,InternalDashboard,InternalClients,InternalInterviewer,InternalUsers,InternalAgreements,InternalFinance,InternalEngagement,InternalMessages} from "./Components"
 //Interviewer Imports
@@ -55,6 +55,7 @@ const router = createBrowserRouter(
         <Route path='dashboard' element={<AgencyDashboard/>}/>
         <Route path='candidates'>
         <Route path='' element={<AgencyCandidates/>}/>
+        <Route path='schedule-interview' element={<AgencyScheduleInterview/>}/> 
         <Route path='addcandidate' element={<AgencyAddCandidate/>}/>
 
         </Route>

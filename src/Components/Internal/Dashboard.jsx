@@ -2,7 +2,7 @@ import React from 'react'
 
 function Dashboard() {
   return (
-    <div className='flex h-full overflow-hidden p-4'>
+    <div className='flex h-full overflow-hidden px-4'>
       <div class="flex flex-col w-1/2 p-4 h-full">
         <div className=''>
           <div className='pendingTaskHeading'>
@@ -12,7 +12,7 @@ function Dashboard() {
             </h1>
           </div>
           <div className='pendingTaskBox mt-4'>
-            <div className="p-3 bg-[#E7E4E8] rounded-lg w-4/5">
+            <div className="p-3 bg-[#E7E4E8] rounded-lg w-[90%]">
               <div className="grid grid-cols-2 gap-2 text-center overflow-auto">
                 <div>
                   <p className="text-sm">Pending Acceptance</p>
@@ -35,7 +35,7 @@ function Dashboard() {
                   <p className="text-base font-semibold">10</p>
                 </div>
                 <div>
-                  <p className="text-sm">Schedule</p>
+                  <p className="text-sm">Scheduled</p>
                   <p className="text-base font-semibold">34</p>
                 </div>
               </div>
@@ -50,7 +50,7 @@ function Dashboard() {
             </h1>
           </div>
           <div className='pendingTaskBox mt-2'>
-            <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg w-4/5">
+            <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg w-[90%]">
               <div className="grid grid-cols-2 gap-2 text-center text-white overflow-auto">
                 <div>
                   <p className="text-sm">Active Clients</p>
@@ -79,7 +79,7 @@ function Dashboard() {
             </h1>
           </div>
           <div className='pendingTaskBox mt-2'>
-            <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg w-4/5">
+            <div className="p-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg w-[90%]">
               <div className="grid grid-cols-2 gap-2 text-center text-white overflow-auto">
                 <div>
                   <p className="text-sm">Total Interviews</p>
@@ -102,8 +102,14 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+
+
+
+
+
       <div class="w-1/2 p-4 h-full">
-      <div className='ml-[15%]'>
+        <div className='w-[90%]'>
           <div className='pendingTaskHeading'>
             <h1 className='text-[16px] font-medium'>
               Messages
@@ -112,14 +118,14 @@ function Dashboard() {
           </div>
           <div className='pendingTaskBox mt-4'>
             <div className="p-3 bg-[#E7E4E8] h-full rounded-lg flex flex-col items-center justify-center gap-y-2">
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
-                <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
+              <div className='w-11/12 h-14 bg-gradient-to-r from-blue-600 to-blue-400 rounded-xl'></div>
             </div>
           </div>
         </div>

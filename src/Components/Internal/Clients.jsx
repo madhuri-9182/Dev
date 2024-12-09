@@ -88,7 +88,7 @@ function Clients() {
   }
 
   return (
-    <div className="p-6">
+    <div className="px-6">
 
       <div>
 
@@ -203,13 +203,13 @@ function Clients() {
                     <th scope="col" className="px-6 py-4 whitespace-nowrap">
                       Client
                     </th>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
+                    <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
                       Active Jobs
                     </th>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
+                    <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
                       Passive Jobs
                     </th>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
+                    <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
                       Total Candidates
                     </th>
                   </tr>
@@ -217,12 +217,12 @@ function Clients() {
                 <tbody>
                   {clients.map((client, index) => (
                     <tr key={index} className="border-b">
-                      <td className="px-6 py-4 text-blue-600 font-bold">
+                      <td className="px-6 py-4 text-blue-600 font-bold ">
                         {client.name}
                       </td>
-                      <td className="px-6 py-4">{client.activeJobs}</td>
-                      <td className="px-6 py-4">{client.passiveJobs}</td>
-                      <td className="px-6 py-4">{client.totalCandidates}</td>
+                      <td className="px-6 py-4 text-center">{client.activeJobs}</td>
+                      <td className="px-6 py-4 text-center">{client.passiveJobs}</td>
+                      <td className="px-6 py-4 text-center">{client.totalCandidates}</td>
                     </tr>
                   ))}
                 </tbody>

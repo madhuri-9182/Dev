@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useNavigate } from "react-router-dom";
 
 function AddCandidate() {
-
+    
+    const navigate = useNavigate();
     const [selectedFilters, setSelectedFilters] = useState({
         role: "All",
         fun: "All",
@@ -18,6 +20,102 @@ function AddCandidate() {
             [category]: value,
         }));
     };
+
+    const [data, setData] = useState([
+        {
+            name: "John Smith",
+            experience: "7 Years 3 Months",
+            mobile: "1234567890",
+            email: "john.smith@example.com",
+            company: "Abc Corp",
+        },
+        {
+            name: "Emma Johnson",
+            experience: "5 Years 6 Months",
+            mobile: "9876543210",
+            email: "emma.johnson@example.com",
+            company: "Tech Solutions",
+        },
+        {
+            name: "Michael Brown",
+            experience: "3 Years 2 Months",
+            mobile: "9123456780",
+            email: "michael.brown@example.com",
+            company: "Innovatech",
+        },
+        {
+            name: "Sophia Garcia",
+            experience: "10 Years 8 Months",
+            mobile: "8123456789",
+            email: "sophia.garcia@example.com",
+            company: "FutureWorks",
+        },
+        {
+            name: "James Miller",
+            experience: "2 Years 4 Months",
+            mobile: "7012345678",
+            email: "james.miller@example.com",
+            company: "HealthCare Inc.",
+        },
+        {
+            name: "Olivia Martinez",
+            experience: "6 Years 5 Months",
+            mobile: "9923456789",
+            email: "olivia.martinez@example.com",
+            company: "Green Energy",
+        },
+        {
+            name: "Liam Anderson",
+            experience: "4 Years 7 Months",
+            mobile: "9876543120",
+            email: "liam.anderson@example.com",
+            company: "Bright Minds",
+        },
+        {
+            name: "Isabella Wilson",
+            experience: "8 Years 1 Month",
+            mobile: "8098765432",
+            email: "isabella.wilson@example.com",
+            company: "Smart Solutions",
+        },
+        {
+            name: "Benjamin Thomas",
+            experience: "3 Years 10 Months",
+            mobile: "9212345678",
+            email: "benjamin.thomas@example.com",
+            company: "Data Analytics Co.",
+        },
+        {
+            name: "Charlotte Moore",
+            experience: "9 Years 11 Months",
+            mobile: "8543219876",
+            email: "charlotte.moore@example.com",
+            company: "AI Innovations",
+        },
+    ]);
+
+    const [uploadMode, setUploadMode] = useState("none");
+    const [selectAll, setSelectAll] = useState(false);
+
+    const handleSelectAll = () => {
+        const newSelectAll = !selectAll;
+        setSelectAll(newSelectAll);
+        setData((prevData) =>
+            prevData.map((item) => ({ ...item, isSelected: newSelectAll }))
+        );
+    };
+
+    const handleIndividualSelect = (index) => {
+        const newData = [...data];
+        newData[index].isSelected = !newData[index].isSelected;
+        setData(newData);
+
+        // Update "Select All" checkbox state
+        const allSelected = newData.every((item) => item.isSelected);
+        setSelectAll(allSelected);
+    };
+
+
 
     return (
         <div>
@@ -174,6 +272,102 @@ function AddCandidate() {
 
 
             </div>
+
+            <div className="w-full mt-6">
+                {uploadMode === "none" ? (
+                    // Initial state with the two buttons
+                    <div className="mt-9 w-full flex flex-col items-center justify-evenly border border-red-500 py-5">
+                        <h1 className="text-lg text-red-500 font-bold">
+                        Added temporarily until the API is ready.
+                        </h1>
+                        <div className="w-full flex items-center justify-around">
+                            <button
+                                className="bg-gray-300 px-4 py-2 text-lg rounded-full"
+                                onClick={() => setUploadMode("single")} // Display only one item
+                            >
+                                CV Upload
+                            </button>
+                            <button
+                                className="bg-gray-300 px-4 py-2 text-lg rounded-full"
+                                onClick={() => setUploadMode("bulk")} // Display all items
+                            >
+                                Bulk CV Upload
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        {/* Heading Row */}
+                        <div className="flex items-center justify-between px-4 py-3 text-[#6B6F7B] font-bold">
+                            <input
+                                type="checkbox"
+                                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                checked={selectAll}
+                                onChange={handleSelectAll}
+                            />
+                            <div className="flex-1 grid grid-cols-[1fr_1fr_1fr_1.5fr_1fr] gap-2 text-sm text-gray-700 ml-4">
+                                <div>Name</div>
+                                <div>Experience</div>
+                                <div>Mobile Number</div>
+                                <div className="truncate">Email ID</div>
+                                <div>Company</div>
+                            </div>
+                        </div>
+
+                        {/* Data Rows */}
+                        <div className=''>
+                            {(uploadMode === "single" ? [data[0]] : data).map((item, index) => (
+                                <div key={index} className="group">
+                                    <hr className="w-full bg-[#F4F4F4] h-[1px]" />
+                                    <div className="flex items-center justify-between px-4 py-3">
+                                        <input
+                                            type="checkbox"
+                                            className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                            checked={item.isSelected}
+                                            onChange={() => handleIndividualSelect(index)}
+                                        />
+                                        <div className="flex-1 grid grid-cols-[1fr_1fr_1fr_1.5fr_1fr] gap-2 text-sm text-gray-700 ml-4">
+                                            <button className="flex items-center justify-between group-hover:text-[#056DDC] group-hover:font-semibold group-hover:duration-200"
+                                             onClick={() => navigate("/agency/candidates/schedule-interview", { state: { item } })}
+                                            >
+                                                {item.name}
+                                            </button>
+                                            <div className="flex items-center justify-between">
+                                                {item.experience}
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                {item.mobile}
+                                            </div>
+                                            <div className="flex items-center justify-between truncate">
+                                                {item.email}
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div>{item.company}</div>
+                                                <button className="text-gray-500 hover:text-indigo-600 rounded-lg shadow-md hover:scale-110 hover:duration-150">
+                                                    <svg
+                                                        width="28"
+                                                        height="28"
+                                                        viewBox="0 0 28 28"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z"
+                                                            fill="#65558F"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+
 
         </div>
     )
