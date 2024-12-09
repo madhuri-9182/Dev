@@ -17,21 +17,25 @@ const Finance = () => {
     select: {
       marginRight: '10px',
       padding: '5px',
+      border:"1px solid gray ",
+      borderRadius:"8px",
+      marginLeft:"20px",
     },
     ratesButton: {
-      padding: '10px 20px',
+      padding: '6px 30px',
       backgroundColor: '#007bff',
       color: 'white',
       border: 'none',
       borderRadius: '25px',
       cursor: 'pointer',
+      marginLeft:"200px"
     },
     searchBar: {
-      padding: '10px',
-      width: '30%',
+      padding: '6px 20px',
+      width: '25%',
       border: '1px solid #ccc',
       borderRadius: '25px',
-      backgroundColor:"#eaebdf"
+      backgroundColor:"#faf1e0"
     },
     section: {
       display: 'flex',
@@ -61,6 +65,18 @@ const Finance = () => {
       fontSize: '14px',
       color: '#555',
     },
+    td1: {
+      padding: '12px 8px',
+      borderBottom: '1px solid #ddd',
+      fontSize: '14px',
+      color: '#555',
+      display:"flex",
+      flexDirection:"row"
+    },
+    nameCell: {
+      color: '#007bff', // Blue color for names
+      fontWeight: 'bold',
+    },
     clickable: {
       color: '#007bff',
       fontWeight: 'bold',
@@ -72,13 +88,18 @@ const Finance = () => {
       justifyContent: 'center',
     },
     summary: {
-      width: '25%',
+      marginTop:"60px",
       display: 'flex',
       flexDirection: 'column',
       gap: '10px',
+      justifyContent:"left"
+      
     },
     card: {
-      backgroundColor: '#e9f3ff',
+      
+      width: '250px',
+      height:"80px",
+      backgroundColor: '#e5ecf6',
       padding: '20px',
       textAlign: 'center',
       borderRadius: '10px',
@@ -89,12 +110,15 @@ const Finance = () => {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <div>
+        <div  style={{display:"flex",flexDirection:"row"}}>
+          <p style={{fontWeight:"600",padding: '5px'}}>Year</p>
           <select style={styles.select}>
             <option value="2024">2024</option>
             <option value="2023">2023</option>
           </select>
+          <p style={{fontWeight:"600",padding: '5px'}}>Month</p>
           <select style={styles.select}>
+          
             <option value="Dec">Dec</option>
             <option value="Nov">Nov</option>
           </select>
@@ -105,12 +129,18 @@ const Finance = () => {
           placeholder="Search Users by Name"
           style={styles.searchBar}
         />
+        <img src="https://img.icons8.com/?size=100&id=132&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",right:"100px"}} />
+        
+        
+
+
+        
       </header>
 
       {/* Clients Section */}
       <section style={styles.section}>
         <div style={styles.tableContainer}>
-          <h3 style={{fontWeight:"600",marginBottom:"20px"}}>CLIENTS</h3>
+          <h3 style={{fontWeight:"600",marginBottom:"20px",marginLeft:"6px"}}>CLIENTS</h3>
           <table style={styles.table}>
             <thead>
               <tr>
@@ -118,38 +148,55 @@ const Finance = () => {
                 <th style={styles.th}>PAYMENT</th>
                 <th style={styles.th}>MONTH</th>
                 <th style={styles.th}>AMOUNT</th>
+                
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td style={styles.td}>PHONEPAY</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>PHONEPAY</td>
                 <td style={styles.td}>Paid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 1200</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
+                
               </tr>
               <tr>
-                <td style={styles.td}>WAYFAIR</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>WAYFAIR</td>
                 <td style={styles.td}>Unpaid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 1200</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>QUINCE</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>QUINCE</td>
                 <td style={styles.td}>Paid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 2800</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>FLIPKART</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>FLIPKART</td>
                 <td style={styles.td}>Unpaid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 2000</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>FLIPKART</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>FLIPKART</td>
                 <td style={styles.td}>Paid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 2000</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -165,7 +212,7 @@ const Finance = () => {
       {/* Interviewers Section */}
       <section style={styles.section}>
         <div style={styles.tableContainer}>
-        <h3 style={{fontWeight:"600",marginBottom:"20px"}}>INTERVIEWERS</h3>
+        <h3 style={{fontWeight:"600",marginBottom:"20px",marginLeft:"6px"}}>INTERVIEWERS</h3>
           <table style={styles.table}>
             <thead>
               <tr>
@@ -177,34 +224,49 @@ const Finance = () => {
             </thead>
             <tbody>
               <tr>
-                <td style={styles.td}>RAJESH</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>RAJESH</td>
                 <td style={styles.td}>Paid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 1200</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>STEVE</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>STEVE</td>
                 <td style={styles.td}>Unpaid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 1200</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>SCOTT</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>SCOTT</td>
                 <td style={styles.td}>Paid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 2800</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>BRIAN</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>BRIAN</td>
                 <td style={styles.td}>Unpaid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 2000</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
               <tr>
-                <td style={styles.td}>CRISTIE</td>
+                <td style={{ ...styles.td, ...styles.nameCell }}>CRISTIE</td>
                 <td style={styles.td}>Paid</td>
                 <td style={styles.td}>December</td>
-                <td style={styles.td}>INR 2000</td>
+                <td style={styles.td1} >
+                  INR 1200
+                  <img src="https://img.icons8.com/?size=100&id=x1qBi4Tv868U&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",marginLeft:"100px"}} />
+                  </td>
               </tr>
             </tbody>
           </table>
