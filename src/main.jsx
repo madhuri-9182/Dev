@@ -37,7 +37,7 @@ const router = createBrowserRouter(
 
       <Route path='/auth/forgetpass' element={<ForgetPass />} />
 
-      //Client Routes
+      //Client  Routes
       <Route path='client' element={<NavigationLayout />}>
         <Route path='message' element={<Message />} />
         <Route path='dashboard' element={<Dashboard />} />
