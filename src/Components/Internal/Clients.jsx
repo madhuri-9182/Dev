@@ -129,7 +129,7 @@ function Clients() {
               </button>
             </div>
             {/* Domain and Status Filters */}
-            <div className="space-y-2">
+            <div className="space-y-2 mt-1">
               {/* Domain Filter */}
               <div className="flex items-center space-x-1">
                 <span className="text-sm font-bold mr-2 flex">Domain</span>

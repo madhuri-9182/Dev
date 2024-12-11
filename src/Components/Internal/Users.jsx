@@ -169,8 +169,8 @@ function Users() {
                   <CloseIcon />
                 </IconButton>
                 <DialogContent dividers>
-                  <div className=" w-full flex-col flex items-center justify-center gap-y-2">
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                  <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                       <label className="w-1/4 text-sm font-medium text-gray-600">Client Name</label>
                       <input
                         type="text"
@@ -178,7 +178,7 @@ function Users() {
                         className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                       <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">User Name</label>
                       <input
                         type="text"
@@ -186,7 +186,7 @@ function Users() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                       <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                       <input
                         type="mail"
@@ -194,7 +194,7 @@ function Users() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                       <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                       <input
                         type="number"
@@ -202,7 +202,7 @@ function Users() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                       <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Domain</label>
                       <input
                         type="text"
@@ -210,7 +210,7 @@ function Users() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start gap-2 w-full">
+                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                       <label className=" text-sm font-medium text-[#6B6F7B]">Access</label>
                       <select
                         name=""
