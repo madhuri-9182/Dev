@@ -69,9 +69,9 @@ function Interviewer() {
   
 
   return (
-    <div className='p-6 pt-0  pl-0 font-[Roboto] text-[14px] ' >
+    <div className='p-6 pt-0  pl-0  text-[14px] ' >
       <div className='' >
-        <div className=' w-full h-full flex flex-col items-center font-[Roboto] ' >
+        <div className=' w-full h-full flex flex-col items-center  ' >
           <div className='w-full flex  pb-[12px] pr-3 justify-end gap-[70px]  ' >
             <div className='w-[466px] h-[40px] flex justify-around items-center border-2 border-[#F4F4F4] bg-[#F4F4F4] rounded-[28px] pr-1 pl-1 ' >
               <input
@@ -261,7 +261,7 @@ function Interviewer() {
 
           {
             addUser && (
-              <div className='h-full w-full fixed inset-0 flex items-center justify-center font-[Roboto] bg-black bg-opacity-50 z-50 ' >
+              <div className='h-full w-full fixed inset-0 flex items-center justify-center  bg-black bg-opacity-50 z-50 ' >
                 <div className=' w-[705px] h-[562px] flex flex-col justify-center text-[#6B6F7B] items-center bg-[#FFFFFF] ' >
                   <ul className='flex flex-col justify-end  gap-2 ' >
                     <li>

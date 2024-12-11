@@ -163,7 +163,7 @@ function Agreement() {
 
 
   return (
-    <div className='text-[12px] font-[Roboto] ' >
+    <div className='text-[12px]  ' >
       <div className='w-full h-full flex justify-between items-center px-5 mb-12 ' > 
           <div className='font-semibold text-[16px] ' >Years of Experience & Agreed Rates</div>
           <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80">

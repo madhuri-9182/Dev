@@ -46,7 +46,7 @@ function AddInterviewer() {
   }
 
   return (
-    <div className=' font-[Roboto] text-[14px]' >
+    <div className='  text-[14px]' >
       <div className='  ' >
 
 {/* MAIN 1 */}
