@@ -46,13 +46,13 @@ function AddInterviewer() {
   }
 
   return (
-    <div className='  text-[14px]' >
+    <div className=' text-[14px]' >
       <div className='  ' >
 
 {/* MAIN 1 */}
 
 
-      <div className='  '>
+      <div className=' '>
         <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2 pl-0 '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
@@ -157,16 +157,16 @@ function AddInterviewer() {
 {/* MAIN 3 */}
 
 <div className=''>
-        <ul className='grid grid-cols-2 gap-4 p-2'>
+        <ul className='grid grid-cols-2 gap-4 p-2  '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Total Experience</label>
             </div>
             <div className='flex-col justify-start items-center w-1/2  '>
-              <div className='flex items-center gap-4 ' >
-                <input type="number" placeholder='Years' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <div className='flex items-center 2xl:gap-4 gap-[6px] ' >
+                <input type="number" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
                 <span>Years</span>
-                <input type="number" placeholder='Months' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <input type="number" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
                 <span>Months</span>
               </div>
             </div>
@@ -177,10 +177,10 @@ function AddInterviewer() {
               <label  className=" w-full  text-right ">Interview Experience</label>
             </div>
             <div className='flex-col justify-center items-center w-1/2  '>
-              <div className='flex items-center gap-4 ' >
-                <input type="number" placeholder='Years' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <div className='flex items-center 2xl:gap-4 gap-[6px] ' >
+                <input type="number" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
                 <span>Years</span>
-                <input type="number" placeholder='Months' className=' w-[96px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <input type="number" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
                 <span>Months</span>
               </div>
             </div>
@@ -205,7 +205,7 @@ function AddInterviewer() {
                   <select
                             onChange={handleSelection}
                             value={selectedOption}
-                            className={`w-[120px] h-[32px] text-center  text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${ items.length == 0 ? "text-gray-500" : "text-black" } `}>
+                            className={`w-[134px] h-[32px] text-center  text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${ items.length == 0 ? "text-gray-500" : "text-black" } `}>
                             <option value="" disabled>Select Roles</option>
                             <option value="EM">EM</option>
                             <option value="PM">PM</option>
@@ -224,7 +224,7 @@ function AddInterviewer() {
             <select
                             onChange={handleSkillSelection}
                             value={selectedSkill}
-                            className={`w-[120px] h-[32px]  text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${itemsSkills.length == 0 ? "text-gray-500" : "text-black" } `}>
+                            className={`w-[134px] h-[32px]  text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${itemsSkills.length == 0 ? "text-gray-500" : "text-black" } `}>
                             <option value="" disabled>Select Skills </option>
                             <option value="Python">Python</option>
                             <option value="Kafka">Kafka</option>

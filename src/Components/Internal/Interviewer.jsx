@@ -72,7 +72,7 @@ function Interviewer() {
     <div className='p-6 pt-0  pl-0  text-[14px] ' >
       <div className='' >
         <div className=' w-full h-full flex flex-col items-center  ' >
-          <div className='w-full flex  pb-[12px] pr-3 justify-end gap-[70px]  ' >
+          <div className='w-full flex  pb-[12px] pr-3 justify-end space-x-4  ' >
             <div className='w-[466px] h-[40px] flex justify-around items-center border-2 border-[#F4F4F4] bg-[#F4F4F4] rounded-[28px] pr-1 pl-1 ' >
               <input
                 className='  w-[358px] h-[37px] ml-1  text-[#979DA3] bg-[#F4F4F4] border-none focus:outline-none' type="text"
@@ -205,10 +205,10 @@ function Interviewer() {
                 <tr className='' >
                   <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >USERS</th>
                   <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >EMAIL ID</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Phone No</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Strength</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Languages</th>
-                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >Experience</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >PHONE NO</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >STRENGTH</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >LANGUAGES</th>
+                  <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' >EXPERIENCE</th>
                   <th className='py-2 px-4 max-w-max border-b-4 text-[15px] ' ></th>
                 </tr>
 
