@@ -88,23 +88,35 @@ const Finance = () => {
       justifyContent: 'center',
     },
     summary: {
-      marginTop:"60px",
+      marginTop: "60px",
       display: 'flex',
       flexDirection: 'column',
-      gap: '10px',
-      justifyContent:"left"
-      
+      gap: '10px 10px',
+      alignItems: "flex-start", // Left align
     },
     card: {
-      
       width: '250px',
-      height:"80px",
+      height: "80px",
       backgroundColor: '#e5ecf6',
-      padding: '20px',
-      textAlign: 'center',
+      padding: '10px 20px', // Adjust padding for better alignment
+      textAlign: 'left', // Align text to the left
       borderRadius: '10px',
+      fontWeight: 'normal',
+      fontSize: '16px', // Match the smaller "Paid/Unpaid/Total" text
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    },
+    label: {
+      
+      fontSize: '14px',
+      color: '#606060', // Grey color for the label
+    },
+    amount: {
+      fontSize: '20px',
+      color: '#000', // Black color for the amount
       fontWeight: 'bold',
-      fontSize: '18px',
+      marginTop: '-25px',
     },
   };
   return (
@@ -201,12 +213,24 @@ const Finance = () => {
             </tbody>
           </table>
         </div>
-
-        <div style={styles.summary}>
-          <div style={styles.card}>Paid<br />INR 1234000</div>
-          <div style={styles.card}>Unpaid<br />INR 234000</div>
-          <div style={styles.card}>Total<br />INR 2234000</div>
-        </div>
+{/* ----------- */}
+<div style={styles.summary}>
+  <div style={styles.card}>
+    <span style={styles.label}>Paid</span>
+    <br />
+    <span style={styles.amount}>INR 1234000</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Unpaid</span>
+    <br />
+    <span style={styles.amount}>INR 234500</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Total</span>
+    <br />
+    <span style={styles.amount}>INR 2234400</span>
+  </div>
+</div>
       </section>
 
       {/* Interviewers Section */}
@@ -273,10 +297,22 @@ const Finance = () => {
         </div>
 
         <div style={styles.summary}>
-          <div style={styles.card}>Paid<br />INR 1234000</div>
-          <div style={styles.card}>Unpaid<br />INR 234500</div>
-          <div style={styles.card}>Total<br />INR 2234400</div>
-        </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Paid</span>
+    <br />
+    <span style={styles.amount}>INR 1234000</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Unpaid</span>
+    <br />
+    <span style={styles.amount}>INR 234500</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Total</span>
+    <br />
+    <span style={styles.amount}>INR 2234400</span>
+  </div>
+</div>
       </section>
     </div>
   );
