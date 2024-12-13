@@ -107,26 +107,7 @@ function Engagement() {
               </div>
 
               {/* Add Client Button */}
-              <button
-                className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto"
-                onClick={() => navigate(`${location.pathname}/addclient`)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-                <span> Add Client</span>
-              </button>
+              
             </div>
             {/* Domain and Status Filters */}
             <div className="space-y-2">
@@ -197,35 +178,35 @@ function Engagement() {
 
             {/* Table Section */}
             <div className="overflow-x-auto mt-6">
-              <table className="min-w-full text-sm text-left text-gray-500 border-collapse">
-                <thead className="bg-gray-100 text-gray-700 uppercase font-medium">
-                  <tr>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
-                      CLIENT
-                    </th>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
-                      ACTIVE CANDIDATES
-                    </th>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
-                      SCHEDULED
-                    </th>
-                    <th scope="col" className="px-6 py-4 whitespace-nowrap">
-                      PENDING SCHEDULED
-                    </th>
-                  </tr>
+  <table className="min-w-full text-sm text-gray-500 border-collapse">
+    <thead className="bg-gray-100 text-gray-700 uppercase font-medium">
+      <tr>
+        <th scope="col" className="px-6 py-4 whitespace-nowrap text-left">
+          CLIENT
+        </th>
+        <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
+          ACTIVE CANDIDATES
+        </th>
+        <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
+          SCHEDULED
+        </th>
+        <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
+          PENDING SCHEDULED
+        </th>
+      </tr>
                 </thead>
                 <tbody>
-                  {clients.map((client, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="px-6 py-4 text-blue-600 font-bold">
-                        {client.name}
-                      </td>
-                      <td className="px-6 py-4">{client.activeJobs}</td>
-                      <td className="px-6 py-4">{client.passiveJobs}</td>
-                      <td className="px-6 py-4">{client.totalCandidates}</td>
-                    </tr>
-                  ))}
-                </tbody>
+      {clients.map((client, index) => (
+        <tr key={index} className="border-b">
+          <td className="px-6 py-4 text-blue-600 font-bold text-left">
+            {client.name}
+          </td>
+          <td className="px-6 py-4 text-center">{client.activeJobs}</td>
+          <td className="px-6 py-4 text-center">{client.passiveJobs}</td>
+          <td className="px-6 py-4 text-center">{client.totalCandidates}</td>
+        </tr>
+      ))}
+    </tbody>
               </table>
             </div>
           </div>
