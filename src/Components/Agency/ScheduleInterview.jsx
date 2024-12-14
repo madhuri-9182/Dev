@@ -27,6 +27,8 @@ function ScheduleInterview() {
       [category]: value,
     }));
   };
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [open, setOpen] = useState(false); // To toggle the calendar visibility
 
 
   const availabeSlots = ["9am - 10am", "10:15am - 11:15am", "9:45am - 10:45am", "10:30am - 11:30am", "11am - 12pm"];
@@ -116,10 +118,52 @@ function ScheduleInterview() {
             className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
           /></div>
         </div>
-        <div>
-          <div class="p-4">
-            <label class="block text-sm font-medium text-gray-600 mb-2">Select date</label>
+        <div className='m-4'>
+          <div class="p-4 w-[328px] h-[127px] bg-[#ECE6F0] rounded-xl">
+            <div>
+              <span className='text-sm text-[#49454F]'>Select Date</span>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <BasicDatePicker />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           </div>
         </div>
 
@@ -139,40 +183,40 @@ function ScheduleInterview() {
         </div>
 
         <div className='mt-10'>
-        <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1">
             <span className="text-sm font-bold mr-4 text-[#6B6F7B] ">Available Slots</span>
             <div className='flex items-center space-x-2'>
-            {availabeSlots.map((availabeSlots) => (
-              <button
-                key={availabeSlots}
-                onClick={() => handleSelect("availabeSlots",availabeSlots)}
-                className={` flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.availabeSlots === availabeSlots
-                  ? "bg-purple-100 text-purple-700 border-purple-300"
-                  : "bg-white text-gray-700 border-gray-300"
-                  }`}
-              >
-                {/* Tick container */}
-                {selectedFilters.availabeSlots === availabeSlots && (
-                  <span className="w-4 h-4 flex justify-center items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 text-purple-700"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </span>
-                )}
-                {availabeSlots}
-              </button>
-            ))}
+              {availabeSlots.map((availabeSlots) => (
+                <button
+                  key={availabeSlots}
+                  onClick={() => handleSelect("availabeSlots", availabeSlots)}
+                  className={` flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.availabeSlots === availabeSlots
+                    ? "bg-purple-100 text-purple-700 border-purple-300"
+                    : "bg-white text-gray-700 border-gray-300"
+                    }`}
+                >
+                  {/* Tick container */}
+                  {selectedFilters.availabeSlots === availabeSlots && (
+                    <span className="w-4 h-4 flex justify-center items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3 h-3 text-purple-700"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                  {availabeSlots}
+                </button>
+              ))}
             </div>
 
           </div>
