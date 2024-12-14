@@ -88,23 +88,35 @@ const Finance = () => {
       justifyContent: 'center',
     },
     summary: {
-      marginTop:"60px",
+      marginTop: "60px",
       display: 'flex',
       flexDirection: 'column',
-      gap: '10px',
-      justifyContent:"left"
-      
+      gap: '10px 10px',
+      alignItems: "flex-start", // Left align
     },
     card: {
-      
       width: '250px',
-      height:"80px",
+      height: "80px",
       backgroundColor: '#e5ecf6',
-      padding: '20px',
-      textAlign: 'center',
+      padding: '10px 20px', // Adjust padding for better alignment
+      textAlign: 'left', // Align text to the left
       borderRadius: '10px',
+      fontWeight: 'normal',
+      fontSize: '16px', // Match the smaller "Paid/Unpaid/Total" text
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    },
+    label: {
+      
+      fontSize: '14px',
+      color: '#606060', // Grey color for the label
+    },
+    amount: {
+      fontSize: '20px',
+      color: '#000', // Black color for the amount
       fontWeight: 'bold',
-      fontSize: '18px',
+      marginTop: '-25px',
     },
   };
   return (
@@ -124,13 +136,24 @@ const Finance = () => {
           </select>
         </div>
         <button style={styles.ratesButton}>Rates</button>
-        <input
+        {/* <input
           type="text"
           placeholder="Search Users by Name"
           style={styles.searchBar}
         />
-        <img src="https://img.icons8.com/?size=100&id=132&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",right:"100px"}} />
         
+        <img src="https://img.icons8.com/?size=100&id=132&format=png&color=000000" alt="" style={{height:"20px",display:"flex",position:"absolute",right:"100px"}} /> */}
+        <div className="flex flex-col justify-end sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0 ml-auto">
+             
+              <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80">
+                <input
+                  type="text"
+                  placeholder="Search Client by name"
+                  className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
+          </div>
+          </div>
         
 
 
@@ -201,12 +224,24 @@ const Finance = () => {
             </tbody>
           </table>
         </div>
-
-        <div style={styles.summary}>
-          <div style={styles.card}>Paid<br />INR 1234000</div>
-          <div style={styles.card}>Unpaid<br />INR 234000</div>
-          <div style={styles.card}>Total<br />INR 2234000</div>
-        </div>
+{/* ----------- */}
+<div style={styles.summary}>
+  <div style={styles.card}>
+    <span style={styles.label}>Paid</span>
+    <br />
+    <span style={styles.amount}>INR 1234000</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Unpaid</span>
+    <br />
+    <span style={styles.amount}>INR 234500</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Total</span>
+    <br />
+    <span style={styles.amount}>INR 2234400</span>
+  </div>
+</div>
       </section>
 
       {/* Interviewers Section */}
@@ -273,10 +308,22 @@ const Finance = () => {
         </div>
 
         <div style={styles.summary}>
-          <div style={styles.card}>Paid<br />INR 1234000</div>
-          <div style={styles.card}>Unpaid<br />INR 234500</div>
-          <div style={styles.card}>Total<br />INR 2234400</div>
-        </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Paid</span>
+    <br />
+    <span style={styles.amount}>INR 1234000</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Unpaid</span>
+    <br />
+    <span style={styles.amount}>INR 234500</span>
+  </div>
+  <div style={styles.card}>
+    <span style={styles.label}>Total</span>
+    <br />
+    <span style={styles.amount}>INR 2234400</span>
+  </div>
+</div>
       </section>
     </div>
   );
