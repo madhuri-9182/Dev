@@ -53,7 +53,7 @@ function AddInterviewer() {
 
 
       <div className=' '>
-        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2 pl-0 '>
+        <ul className='grid grid-cols-2 grid-rows-2 gap-2  pl-0 '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Interviewer Name</label>
@@ -106,7 +106,7 @@ function AddInterviewer() {
        
 {/* MAIN 2 */}
 <div className=''>
-        <ul className='grid grid-cols-2 grid-rows-2 gap-4 p-2 '>
+        <ul className='grid grid-cols-2 grid-rows-2 gap-2 '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Current Company</label>
@@ -157,13 +157,13 @@ function AddInterviewer() {
 {/* MAIN 3 */}
 
 <div className=''>
-        <ul className='grid grid-cols-2 gap-4 p-2  '>
+        <ul className='grid grid-cols-2 gap-2   '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Total Experience</label>
             </div>
             <div className='flex-col justify-start items-center w-1/2  '>
-              <div className='flex items-center 2xl:gap-4 gap-[6px] ' >
+              <div className='flex items-center 2xl:gap-2 gap-[6px] ' >
                 <input type="number" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
                 <span>Years</span>
                 <input type="number" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
@@ -177,7 +177,7 @@ function AddInterviewer() {
               <label  className=" w-full  text-right ">Interview Experience</label>
             </div>
             <div className='flex-col justify-center items-center w-1/2  '>
-              <div className='flex items-center 2xl:gap-4 gap-[6px] ' >
+              <div className='flex items-center 2xl:gap-2 gap-[6px] ' >
                 <input type="number" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
                 <span>Years</span>
                 <input type="number" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500' />
@@ -196,7 +196,7 @@ function AddInterviewer() {
 {/* main 4 single div use */}
 
 <div className=''>
-        <ul className='grid grid-cols-2 gap-4 p-2 pb-0 '>
+        <ul className='grid grid-cols-2 gap-2  pb-0 '>
           <li className='flex items-center gap-x-4 justify-start  '>
             <div className='w-[30%]  flex items-center justify-center  '>
               <label  className=" w-full  text-right  ">Interview Assigned For</label>
@@ -240,7 +240,7 @@ function AddInterviewer() {
             </div>
             <div className='w-1/2 flex items-center justify-start '>
             <div className='w-[300px]  gap-x-4'>
-                      <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
+                      <ul className='flex flex-wrap justify-start gap-2 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
                       onClick={()=>removeItem(item)}
                       className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
@@ -255,7 +255,7 @@ function AddInterviewer() {
             </div>
             <div className='w-1/2 flex items-center justify-start '>
             <div className='w-[300px]   gap-x-4   '>
-                      <ul className='flex flex-wrap justify-start gap-4 items-center ' > {itemsSkills.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
+                      <ul className='flex flex-wrap justify-start gap-2 items-center ' > {itemsSkills.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button 
                       onClick={()=>removeSkill(item)}
                       className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
@@ -276,7 +276,7 @@ function AddInterviewer() {
 {/* main 5 */}
 
 <div className='mt-1'>
-        <ul className='grid grid-cols-2 grid-rows gap-4 p-2'>
+        <ul className='grid grid-cols-2 grid-rows gap-2 '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Strength</label>
@@ -285,7 +285,7 @@ function AddInterviewer() {
             <select
                             value={selectedStrength}
                             onChange={handleStrengthSelection}
-                            className={` h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${selectedStrength == "" ? "text-gray-500": "text-black" } `}
+                            className={`w-[134px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${selectedStrength == "" ? "text-gray-500": "text-black" } `}
                           >
                             <option value="" selected disabled >Select Strength</option>
                             <option value="Backend">Backend</option>
@@ -314,7 +314,7 @@ function AddInterviewer() {
 
 
 <div className='mt-4'>
-        <ul className='grid grid-cols-2 gap-4 p-2 '>
+        <ul className='grid grid-cols-2 gap-2 '>
           <li className='flex items-center justify-start gap-x-4 '>
             <div className='w-[30%]  flex items-end justify-end'>
               <label  className=" w-full  text-right ">Upload CV</label>
