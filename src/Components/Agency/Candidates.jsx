@@ -11,7 +11,6 @@ function Candidates() {
     role: "All",
     status: "All",
   });
-  // 
   const role = ["SDE II", "SDE III", "SDET I", "EM", "SDE I - Frontend", "SDE II - Frontend"];
   const status = ["All", "Recommended", "Not Recommended", "Scheduled", "Not Scheduled"];
 
@@ -176,17 +175,6 @@ function Candidates() {
           </button>
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -351,7 +351,7 @@ function NavigationLayout() {
                 >
                     {navItems.map((items) => (
                         <ListItem key={items.text} disablePadding sx={{ display: 'block' }}
-                            className={`${location.pathname.startsWith(items.link) ? "bg-blue-100" : ""} `}
+                            className={`${location.pathname.startsWith(items.link) ? "bg-blue-100 border-l-[5px] border-blue-600" : ""} `}
                         >
                             <ListItemButton
                                 sx={[

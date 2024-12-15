@@ -39,6 +39,13 @@ function Clients() {
     { name: "Vahan", activeJobs: 6, passiveJobs: 5, totalCandidates: 1 },
     { name: "Zepto", activeJobs: 14, passiveJobs: 12, totalCandidates: 2 },
   ];
+  const [editUser, setEditUser] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+
+
   const [rows, setRows] = useState([{ name: "", email: "", mobile: "" }]);
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,7 +65,8 @@ function Clients() {
     setAddPocOpen(false);
   };
 
-  const handleEditOpen = () => {
+  const handleEditOpen = (name, email, phone) => {
+    setEditUser({ name, email, phone })
     setEditOpen(true);
   };
 
@@ -81,9 +89,9 @@ function Clients() {
     }));
   };
 
-  const [addPocDate,setAddPocDate]=useState("")
+  const [addPocDate, setAddPocDate] = useState("")
 
-  const addPocHandleDateChange=(e)=>{
+  const addPocHandleDateChange = (e) => {
     setAddPocDate(e.target.value)
   }
 
@@ -371,18 +379,10 @@ function Clients() {
                     <DialogContent dividers>
                       <div>
                         <div className="p-1 flex flex-col items-start justify-center gap-2">
-                          <label className="w-full text-sm font-medium text-gray-600">Client Name</label>
-                          <input
-                            type="text"
-                            placeholder="Phonepe"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="p-1 flex flex-col items-start justify-center gap-2">
                           <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
                           <input
                             type="text"
-                            placeholder="Ashok Samal"
+                            placeholder="Enter POC Name"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
@@ -390,7 +390,7 @@ function Clients() {
                           <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                           <input
                             type="number"
-                            placeholder="9876543210"
+                            placeholder="Enter Phone Number"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </div>
@@ -398,17 +398,8 @@ function Clients() {
                           <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                           <input
                             type="mail"
-                            placeholder="rober@xyz.com"
+                            placeholder="Enter Mail ID"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="p-1 flex flex-col items-center justify-center gap-2">
-                          <label className="w-full text-sm font-medium text-[#6B6F7B]">Added On</label>
-                          <input
-                            type="date"
-                            placeholder="Date"
-                            onChange={addPocHandleDateChange}
-                            className={`p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${addPocDate===""?"text-gray-500":"text-black"}`}
                           />
                         </div>
                       </div>
@@ -539,7 +530,7 @@ function Clients() {
                                   <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
                                   <input
                                     type="text"
-                                    placeholder="Robert"
+                                    value="Robert"
                                     className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
@@ -547,7 +538,7 @@ function Clients() {
                                   <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                                   <input
                                     type="number"
-                                    placeholder="919876543210"
+                                    value="9876543210"
                                     className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>
@@ -555,7 +546,7 @@ function Clients() {
                                   <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                                   <input
                                     type="mail"
-                                    placeholder="rober@xyz.com"
+                                    value="rober@xyz.com"
                                     className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </div>

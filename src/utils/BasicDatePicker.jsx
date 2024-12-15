@@ -1,75 +1,62 @@
 import * as React from 'react';
+import dayjs from 'dayjs';
+import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import IconButton from '@mui/material/IconButton';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-const theme = createTheme({
-  components: {
-    MuiPickersDay: {
-      styleOverrides: {
-        root: {
-          color: '#490B3D', // Default day text color
-          '&.Mui-selected': {
-            backgroundColor: 'red', // Selected day background color
-            color: '#fff', // Selected day text color
-          },
-          '&:hover': {
-            backgroundColor: '#65558F', // Hover effect background color
-            color: '#fff', // Hover effect text color
-          },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#EAE7F5', // Set the calendar background color
-          borderRadius: '12px', // Rounded corners
-          padding: '16px', // Optional: Add padding
-          height: '310px',
-          width: 'max-content',
-        },
-      },
-    },
-    MuiTypography: {
-      styleOverrides: {
-        root: {
-          color: '#490B3D', // Customize header text color
-        },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          color: 'black', // Navigation arrows color
-          '&:hover': {
-            backgroundColor: 'rgba(189, 30, 81, 0.1)', // Hover effect for arrows
-          },
-        },
-      },
-    },
-  },
-});
-
-export default function BasicDatePicker() {
-  const [open, setOpen] = React.useState(false); // Hook used at top level
-
+export default function ResponsiveDatePickers() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-          open={open}
-          onOpen={() => setOpen(true)} // Handles opening the calendar
-          onClose={() => setOpen(false)} // Handles closing the calendar
-          renderInput={() => <div />} // Replace with a div (doesn't break rendering)
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoItem>
+        <DesktopDatePicker
+          defaultValue={dayjs('2022-04-17')}
+          format='ddd, DD/MM/YYYY'
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              border: 'none', // Remove the border
+              '& fieldset': {
+                border: 'none', // Remove the fieldset border
+              },
+              '& input': {
+                fontSize: '28px', // Adjust input text size if needed
+              },
+            },
+          }}
+          slotProps={{
+            popper: {
+              sx: {
+                '& .MuiPaper-root': {
+                  backgroundColor: '#ECE6F0', // Calendar background color
+                  height:'300px'
+                },
+              },
+            },
+            day: {
+              sx: {
+                width: '36px', // Reduce the width of each day cell
+                height: '36px', // Reduce the height of each day cell
+                '&:hover': {
+                  backgroundColor: '#8e80b3', // Hover effect background color
+                },
+                '&.Mui-selected': {
+                  backgroundColor: '#65558F', // Selected date background color
+                  color: 'white', // Text color for selected date
+                },
+              },
+            },
+            // Change font color of month and year in the calendar header
+            toolbar: {
+              sx: {
+                '& .MuiTypography-root': {
+                  color: 'green', // Set the font color to green for the month and year
+                  fontSize: '18px', // Optionally adjust the font size
+                },
+              },
+            },
+          }}
         />
-        <IconButton onClick={() => setOpen(true)}>
-        </IconButton>
-      </LocalizationProvider>
-    </ThemeProvider>
+      </DemoItem>
+    </LocalizationProvider>
   );
 }
