@@ -264,7 +264,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Client Registered Name</label>
                     <input
                       type="text"
-                      placeholder="Ashok Samal"
+                      placeholder="Enter Client Name"
                       className="block w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -272,7 +272,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Website</label>
                     <input
                       type="text"
-                      placeholder="https://abc.com"
+                      placeholder="Enter Web Address"
                       className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -280,7 +280,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Domain</label>
                     <input
                       type="text"
-                      placeholder="abc.com"
+                      placeholder="Enter Domain Name"
                       className="block  w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -288,7 +288,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">GSTIN</label>
                     <input
                       type="text"
-                      placeholder="22AAAAA0000A1Z5"
+                      placeholder="Enter GSTIN "
                       className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>
@@ -296,7 +296,7 @@ function Clients() {
                     <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">PAN</label>
                     <input
                       type="text"
-                      placeholder="SB456BHYTRFD"
+                      placeholder="Enter PAN"
                       className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </li>

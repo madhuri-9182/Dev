@@ -35,9 +35,11 @@ function Settings() {
   const [addUserOpen, setAddUserOpen] = useState(false);
   const [editUserOpen, setEditUserOpen] = useState(false);
   const [editUser, setEditUser] = useState({
-    name:"",
-    email:""
+    name: "",
+    email: ""
   });
+  const [selectedOption, setSelectedOption] = useState('');
+  const [items, setItems] = useState([]);
 
   const handleAddUserOpen = () => setAddUserOpen(true);
   const handleAddUserClose = () => setAddUserOpen(false);
@@ -48,12 +50,26 @@ function Settings() {
   };
   const handleEditUserClose = () => setEditUserOpen(false);
 
+  const handleSelection = (e) => {
+    const selectedRole = e.target.value;
+
+    if (selectedRole && !items.includes(selectedRole)) {
+      setItems([...items, selectedRole]);
+      setSelectedOption("");
+    }
+  }
+  const removeItem = (ItemToRemove) => {
+    console.log("hii remove clicked");
+
+    setItems(items.filter(item => item !== ItemToRemove))
+  }
+
   return (
     <div>
       {/* Add User Button */}
       <div className="w-full flex items-center justify-end">
         <button
-          className="border p-1 px-4 rounded-full bg-[#056DDC] font-medium text-white"
+          className="border p-1 px-4 rounded-full bg-[#056DDC] text-sm font-medium text-white"
           onClick={handleAddUserOpen}
         >
           + Add User
@@ -80,42 +96,129 @@ function Settings() {
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          <div className="w-full flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center max-w-max gap-y-1">
-              <BasicInputTextField label="Name" placeholder="Enter your name" width="360px" />
-              <BasicInputTextField label="Email ID" placeholder="Enter your Email ID" width="360px" />
-              <BasicInputTextField label="User Type" placeholder="Enter user type" width="360px" />
-              <CheckboxesTags
-                label="Job Assigned"
-                placeholder="Select Job"
-                values={[
-                  { title: 'SDE III' },
-                  { title: 'PE' },
-                  { title: 'SDE II' },
-                  { title: 'DevOps I' },
-                  { title: 'EM' },
-                  { title: 'SDET II' },
-                  { title: 'SDET I' },
-                ]}
+          <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-1/4 text-sm font-medium text-gray-600">Name</label>
+              <input
+                type="text"
+                placeholder="Enter Name"
+                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+              <input
+                type="mail"
+                placeholder="Enter Mail ID"
+                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-full text-sm font-medium text-[#6B6F7B]">User Type</label>
+              <input
+                type="text"
+                placeholder="Enter User Type"
+                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-full text-sm font-medium text-[#6B6F7B]">Job Assigned</label>
+              <select
+                onChange={handleSelection}
+                value={selectedOption}
+                className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${items.length === 0 ? "text-gray-500" : "text-black"} `}>
+                <option value="" disabled>Select Roles</option>
+                <option value="EM">EM</option>
+                <option value="PM">PM</option>
+                <option value="SDE II">SDE II</option>
+                <option value="SDE III">SDE III</option>
+                <option value="SDE IV">SDE IV</option>
+              </select>
+            </div>
+
+
+
+            
+            <div className='w-1/2 flex items-center justify-start '>
+                    <div className='w-[300px]  gap-x-4'>
+                      <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button
+                        onClick={() => removeItem(item)}
+                        className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
+                        </svg>
+                      </button> </li>))} </ul>
+                    </div>
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           </div>
         </DialogContent>
         <DialogActions>
+        <button
+            onClick={handleAddUserClose}
+            className="text-[#4A4459] border py-1 px-3 rounded-full bg-[#E8DEF8]"
+          >
+            Delete
+          </button>
           <button
             onClick={handleAddUserClose}
             className="text-white border py-1 px-3 rounded-full bg-[#056DDC]"
           >
-            SAVE
+            Save
           </button>
         </DialogActions>
       </BootstrapDialog>
 
       {/* User Table */}
-      <div className="w-full">
+      <div className="w-full mt-5">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b-2 border-black text-sm font-semibold text-[#2B313E] text-center">
+            <tr className="border-b-2 border-black text-sm font-semibold text-[#2B313E]">
               <th className="py-2 px-4">USERS</th>
               <th className="py-2 px-4">EMAIL ID</th>
               <th className="py-2 px-4">PHONE NO</th>
@@ -129,8 +232,8 @@ function Settings() {
             {data.map((user, index) => (
               <tr
                 key={index}
-                className={`${index % 2 === 0 ? 'hover:bg-[#f2f2f2]' : 'bg-[#FFF8E0] hover:bg-[#ffedb3]'
-                  } h-[80px] text-center`}
+                className={`${index % 2 === 0 ? '' : 'bg-[#FFF8E0]'
+                  } h-[80px] border-b-2`}
               >
                 <td className="py-3 px-4 font-semibold text-sm">{user.name}</td>
                 <td className="py-3 px-4">{user.email}</td>
@@ -166,8 +269,10 @@ function Settings() {
                     </button>
                   </div>
                 </td>
+                
               </tr>
             ))}
+           
           </tbody>
         </table>
       </div>
@@ -192,25 +297,108 @@ function Settings() {
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          <div className="w-full flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center max-w-max gap-y-1">
-              <BasicInputTextField label="Name" placeholder="Enter your name" value={editUser.name} width="360px" />
-              <BasicInputTextField label="Email ID" placeholder="Enter your Email ID" value={editUser.email} width="360px" />
-              <BasicInputTextField label="User Type" placeholder="Enter user type" width="360px" />
-              <CheckboxesTags
-                label="Job Assigned"
-                placeholder="Select Job"
-                values={[
-                  { title: 'SDE III' },
-                  { title: 'PE' },
-                  { title: 'SDE II' },
-                  { title: 'DevOps I' },
-                  { title: 'EM' },
-                  { title: 'SDET II' },
-                  { title: 'SDET I' },
-                ]}
+        <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-1/4 text-sm font-medium text-gray-600">Name</label>
+              <input
+                type="text"
+                placeholder="Enter Name"
+                value={editUser.name}
+                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+              <input
+                type="mail"
+                placeholder="Enter Mail ID"
+                value={editUser.email}
+                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-full text-sm font-medium text-[#6B6F7B]">User Type</label>
+              <input
+                type="text"
+                placeholder="Enter User Type"
+                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
+              <label className="w-full text-sm font-medium text-[#6B6F7B]">Job Assigned</label>
+              <select
+                onChange={handleSelection}
+                value={selectedOption}
+                className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${items.length === 0 ? "text-gray-500" : "text-black"} `}>
+                <option value="" disabled>Select Roles</option>
+                <option value="EM">EM</option>
+                <option value="PM">PM</option>
+                <option value="SDE II">SDE II</option>
+                <option value="SDE III">SDE III</option>
+                <option value="SDE IV">SDE IV</option>
+              </select>
+            </div>
+
+
+
+            
+            <div className='w-1/2 flex items-center justify-start '>
+                    <div className='w-[300px]  gap-x-4'>
+                      <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button
+                        onClick={() => removeItem(item)}
+                        className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
+                        </svg>
+                      </button> </li>))} </ul>
+                    </div>
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           </div>
         </DialogContent>
         <DialogActions>
