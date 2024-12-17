@@ -5,7 +5,7 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 //SignIn-SignUp Imports
 import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, LoginUsingEmail, LoginUsingNumber } from './Components'
 // Client Imports
-import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics, Integration, Finance, Engagement, Message } from './Components'
+import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics,AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
 //Agency Imports
 import { AgencyNavigationLayout,AgencyDashboard,AgencyCandidates,AgencyAddCandidate,AgencyScheduleInterview } from './Components'
 //Internal Imports
@@ -49,6 +49,9 @@ const router = createBrowserRouter(
         <Route path='finance' element={<Finance />} />
         <Route path='engagement' element={<Engagement />} />
       </Route>
+
+      <Route path='/client/analytics/filter' element={<AnalyticsDateFilter/>} />
+
 
       //Agency Routes
       <Route path='agency' element={<AgencyNavigationLayout/>}>

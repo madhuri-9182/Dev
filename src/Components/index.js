@@ -18,6 +18,7 @@ import Settings from "./Client/InterviewPlatform/VerticalNavigationLinks/Setting
 import Jobs from "./Client/InterviewPlatform/VerticalNavigationLinks/Jobs"
 import Candidates from "./Client/InterviewPlatform/VerticalNavigationLinks/Candidates"
 import Analytics from "./Client/InterviewPlatform/VerticalNavigationLinks/Analytics"
+import AnalyticsDateFilter from "./Client/InterviewPlatform/VerticalNavigationLinks/AnalyticsDateFilter";
 import Integration from "./Client/InterviewPlatform/VerticalNavigationLinks/Integration"
 import Finance from "./Client/InterviewPlatform/VerticalNavigationLinks/Finance"
 import Engagement from "./Client/InterviewPlatform/VerticalNavigationLinks/Engagement"
@@ -56,7 +57,7 @@ import Payments from "./Interviewer/Payments";
 export {SignIn,SignUp,ForgetPass,PasswordReset,SignUpSignInLayout,page,LoginUsingEmail,LoginUsingNumber}
 
 //Client Exports
-export {NavigationLayout,Dashboard,Settings,Jobs,Candidates,Analytics,Integration,Finance,Engagement,Message}
+export {NavigationLayout,Dashboard,Settings,Jobs,Candidates,Analytics, AnalyticsDateFilter,Integration,Finance,Engagement,Message}
 
 //Agency Exports
 export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates,AgencyAddCandidate, AgencyScheduleInterview}

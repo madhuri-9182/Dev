@@ -236,7 +236,7 @@ function NavigationLayout() {
                 >
                     {navItems.map((items) => (
                         <ListItem key={items.text} disablePadding sx={{ display: 'block' }}
-                            className={`${location.pathname.startsWith(items.link) ? "bg-blue-100 border-l-[5px] border-blue-600" : ""} `}
+                            className={`${location.pathname.startsWith(items.link) ? "bg-blue-100" : ""} `}
                         >
                             <ListItemButton
                                 sx={[
@@ -258,8 +258,11 @@ function NavigationLayout() {
                                 <ListItemText
                                     primary={items.text}
                                     className={`${location.pathname.startsWith(items.link) ? "text-[#056DDC]" : ""} ${open ? "opacity-100" : "opacity-0"}`}
-                                    style={{ fontWeight: location.pathname === items.link ? "800" : "normal" }}
-                                // sx={[open ? { opacity: 1,} : { opacity: 0 }]}
+                                    sx={{
+                                        "& .MuiTypography-root": {
+                                          fontWeight: location.pathname.startsWith(items.link) ? 600 : 'normal', // Font weight for active route
+                                        },
+                                      }}
                                 />
                             </ListItemButton>
                         </ListItem>

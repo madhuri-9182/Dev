@@ -21,6 +21,16 @@ function Candidates() {
     }));
   };
 
+  const handelCandidate=(index)=>{
+    if(people[index].status==='Scheduled' || people[index].status==='Not Scheduled' ){
+      console.log(people[index].name);
+      const item=people[index]
+      navigate("/agency/candidates/schedule-interview", { state: { item } })
+      
+    }
+    
+  }
+
   const [people, setPeople] = useState([
     {
       name: "Alice",
@@ -56,7 +66,7 @@ function Candidates() {
     },
     {
       name: "Eve",
-      status: "SDE-III",
+      status: "Not Scheduled",
       role: "EM",
       type: "Agency",
       date: "FRI, Dec 8",
@@ -187,34 +197,31 @@ function Candidates() {
 
 
 
-      <div className='w-full flex items-center justify-evenly'>
-        <div className='w-[98%] grid grid-cols-5 gap-x-5 justify-evenly'>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>Total Candidates</span>
-            <span className='text-[24px] font-semibold' >750</span>
+      <div className="w-full flex items-center justify-center p-4">
+  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+    <div className="p-4 w-full flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg">
+      <span className="text-sm text-black font-extralight">Total Candidates</span>
+      <span className="text-[24px] font-semibold">750</span>
+    </div>
+    <div className="p-4 w-full flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg">
+      <span className="text-sm text-black font-extralight">To be Scheduled</span>
+      <span className="text-[24px] font-semibold">26</span>
+    </div>
+    <div className="p-4 w-full flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg">
+      <span className="text-sm text-black font-extralight">In Progress</span>
+      <span className="text-[24px] font-semibold">56</span>
+    </div>
+    <div className="p-4 w-full flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg">
+      <span className="text-sm text-black font-extralight">Recommended</span>
+      <span className="text-[24px] font-semibold">26</span>
+    </div>
+    <div className="p-4 w-full flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg">
+      <span className="text-sm text-black font-extralight">Rejected</span>
+      <span className="text-[24px] font-semibold">200</span>
+    </div>
+  </div>
+</div>
 
-          </div>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>To be Scheduled</span>
-            <span className='text-[24px] font-semibold' >26</span>
-
-          </div>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>In Progress</span>
-            <span className='text-[24px] font-semibold'>56</span>
-
-          </div> <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>Recommended</span>
-            <span className='text-[24px] font-semibold' >26</span>
-
-          </div>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>Rejected</span>
-            <span className='text-[24px] font-semibold' >200</span>
-
-          </div>
-        </div>
-      </div>
 
 
 
@@ -328,9 +335,11 @@ function Candidates() {
               <div className="w-[98%] h-[80px] grid grid-cols-5 gap-x-5 justify-evenly">
                 {/* Name and Status */}
                 <div className="flex flex-col items-start justify-evenly">
-                  <div className="text-sm font-semibold text-[#056DDC]">
+                  <button className="text-sm font-semibold text-[#056DDC]"
+                  onClick={()=>{handelCandidate(index)}}
+                  >
                     {person.name}
-                  </div>
+                  </button>
                   <div
                     className={`text-sm text-black px-2 py-[2px] rounded-lg text-center ${person.status === "Recommended"
                       ? "bg-[#2ECC71]"

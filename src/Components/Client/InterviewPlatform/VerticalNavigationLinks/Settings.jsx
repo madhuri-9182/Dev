@@ -9,6 +9,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import BasicInputTextField from '../../../../utils/BasicInputTextField';
 import CheckboxesTags from '../../../../utils/CheckboxesTags';
 
+
+
+
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -23,13 +27,49 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 function Settings() {
   const data = [
-    { name: 'Ashok Samal', email: '123@gmail.com', phone: 1234567890, strength: 'SQL', language: 'Java', experience: 23 },
-    { name: 'Sudeep', email: '234@gmail.com', phone: 1234567890, strength: 'SQL', language: 'Java', experience: 23 },
-    { name: 'Roshan', email: '345@gmail.com', phone: 1234567890, strength: 'SQL', language: 'Java', experience: 23 },
-    { name: 'Richa', email: '123@gmail.com', phone: 1234567890, strength: 'SQL', language: 'Java', experience: 23 },
-    { name: 'Ruchi', email: '234@gmail.com', phone: 1234567890, strength: 'SQL', language: 'Java', experience: 23 },
-    { name: 'Sam Johnson', email: '345@gmail.com', phone: 1234567890, strength: 'SQL', language: 'Java', experience: 23 },
-  ];
+    { 
+      name: 'John Doe', 
+      emailid: 'john.doe@example.com', 
+      usertype: 'Admin', 
+      accessibility: 'All Jobs', 
+      date: '01/12/2024' 
+    },
+    { 
+      name: 'Emily Carter', 
+      emailid: 'emily.carter@example.com', 
+      usertype: 'User', 
+      accessibility: 'Assigned Jobs', 
+      date: '05/12/2024' 
+    },
+    { 
+      name: 'Michael Brown', 
+      emailid: 'michael.brown@example.com', 
+      usertype: 'Agency', 
+      accessibility: 'Assigned Jobs', 
+      date: '10/12/2024' 
+    },
+    { 
+      name: 'Sarah Johnson', 
+      emailid: 'sarah.johnson@example.com', 
+      usertype: 'Admin', 
+      accessibility: 'All Jobs', 
+      date: '15/12/2024' 
+    },
+    { 
+      name: 'David Wilson', 
+      emailid: 'david.wilson@example.com', 
+      usertype: 'User', 
+      accessibility: 'Assigned Jobs', 
+      date: '20/12/2024' 
+    },
+    { 
+      name: 'Laura Miller', 
+      emailid: 'laura.miller@example.com', 
+      usertype: 'Agency', 
+      accessibility: 'All Jobs', 
+      date: '25/12/2024' 
+    },
+  ];;
 
 
   const [addUserOpen, setAddUserOpen] = useState(false);
@@ -65,11 +105,11 @@ function Settings() {
   }
 
   return (
-    <div>
+    <div className='ml-10'>
       {/* Add User Button */}
       <div className="w-full flex items-center justify-end">
         <button
-          className="border p-1 px-4 rounded-full bg-[#056DDC] text-sm font-medium text-white"
+          className="border p-1 px-4 rounded-full bg-[#056DDC] text-sm font-medium text-white w-[125px] h-[40px]"
           onClick={handleAddUserOpen}
         >
           + Add User
@@ -161,41 +201,6 @@ function Settings() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           </div>
         </DialogContent>
         <DialogActions>
@@ -221,10 +226,9 @@ function Settings() {
             <tr className="border-b-2 border-black text-sm font-semibold text-[#2B313E]">
               <th className="py-2 px-4">USERS</th>
               <th className="py-2 px-4">EMAIL ID</th>
-              <th className="py-2 px-4">PHONE NO</th>
-              <th className="py-2 px-4">STRENGTH</th>
-              <th className="py-2 px-4">LANGUAGES</th>
-              <th className="py-2 px-4">EXPERIENCE</th>
+              <th className="py-2 px-4">USER TYPE</th>
+              <th className="py-2 px-4">ACCESSIBILITY</th>
+              <th className="py-2 px-4">ADD DATE</th>
               <th className="py-2 px-4"></th>
             </tr>
           </thead>
@@ -236,13 +240,12 @@ function Settings() {
                   } h-[80px] border-b-2`}
               >
                 <td className="py-3 px-4 font-semibold text-sm">{user.name}</td>
-                <td className="py-3 px-4">{user.email}</td>
-                <td className="py-3 px-4">{user.phone}</td>
-                <td className="py-3 px-4">{user.strength}</td>
-                <td className="py-3 px-4">{user.language}</td>
-                <td className="py-3 px-4">{user.experience}</td>
+                <td className="py-3 px-4">{user.emailid}</td>
+                <td className="py-3 px-4">{user.usertype}</td>
+                <td className="py-3 px-4">{user.accessibility}</td>
+                <td className="py-3 px-4">{user.date}</td>
                 <td className="py-3 px-4">
-                  <div className='w-full flex items-center justify-between'>
+                  <div className='w-full flex items-center justify-around'>
 
 
                     <button
@@ -353,50 +356,6 @@ function Settings() {
                       </button> </li>))} </ul>
                     </div>
                   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
           </div>
