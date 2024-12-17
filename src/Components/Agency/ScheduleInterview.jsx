@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from "react-router-dom";
 import BasicDatePicker from '../../utils/BasicDatePicker';
+import { useNavigate } from 'react-router-dom';
 
 function ScheduleInterview() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const { item } = location.state || {};
 
   const [timeSlots, setTimeSlots] = useState([
@@ -224,9 +227,15 @@ function ScheduleInterview() {
 
 
         <div className='mt-8 flex items-center justify-end gap-x-4'>
-          <button className='text-sm border border-[#79747E] text-[#65558F] w-[143px] h-[40px] rounded-full'>Drop Candidate</button>
-          <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-[143px] h-[40px] rounded-full'>Schedule Later</button>
-          <button className='text-sm bg-[#007AFF]  text-white w-[143px] h-[40px] rounded-full'>Confirm</button>
+          <button className='text-sm border border-[#79747E] text-[#65558F] w-[143px] h-[40px] rounded-full'
+           onClick={() => navigate('/agency/candidates')}
+          >Drop Candidate</button>
+          <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-[143px] h-[40px] rounded-full'
+           onClick={() => navigate('/agency/candidates')}
+          >Schedule Later</button>
+          <button className='text-sm bg-[#007AFF]  text-white w-[143px] h-[40px] rounded-full'
+           onClick={() => navigate('/agency/candidates')}
+          >Confirm</button>
         </div>
 
       </div>
