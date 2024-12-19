@@ -8,7 +8,7 @@ function Integration() {
         <div>  
           <div className=' mt-7 ' >
               <div className='flex justify-between gap-4 ' >
-                <div className='flex gap-4  ' >
+                <div className='flex  ' >
                   <div className=' flex items-start p-0' >
                       <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24Z" fill="white"/>
@@ -71,9 +71,34 @@ function Integration() {
         <div>  
           <div className=' mt-7 ' >
               <div className='flex justify-between gap-4 ' >
-                <div className='flex gap-4  ' >
+                <div className='flex  ' >
                   <div className=' flex items-start p-0' >
-                      g
+                  
+                      <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                      width="64" height="64" viewBox="0 0 562.000000 561.000000"
+                      preserveAspectRatio="xMidYMid meet">
+
+                      <g transform="translate(0.000000,561.000000) scale(0.100000,-0.100000)"
+                      fill="#000000" stroke="none">
+                      <path d="M3350 4941 c-52 -17 -89 -42 -128 -86 -53 -61 -69 -125 -53 -217 16
+                      -94 14 -132 -10 -162 -38 -49 -50 -51 -279 -51 -198 -1 -221 -3 -285 -24 -314
+                      -104 -515 -360 -532 -676 -17 -305 128 -549 434 -733 165 -99 200 -145 173
+                      -227 -16 -49 -56 -76 -211 -143 -252 -109 -393 -226 -517 -433 -236 -392 -170
+                      -902 157 -1230 130 -130 283 -217 466 -266 88 -23 119 -26 255 -26 135 0 168
+                      3 252 26 189 50 340 137 473 271 364 366 394 935 71 1342 -69 88 -171 179
+                      -261 233 -31 19 -113 59 -183 89 -70 29 -141 65 -159 78 -42 32 -60 88 -44
+                      137 16 47 54 80 187 158 195 115 326 267 391 454 24 72 27 94 28 220 0 128 -2
+                      148 -29 228 -17 53 -51 123 -84 175 -120 188 -122 193 -122 243 0 61 31 93
+                      127 132 132 52 193 129 193 242 0 100 -50 184 -134 227 -43 22 -136 32 -176
+                      19z m-397 -822 c155 -51 260 -166 302 -326 79 -305 -192 -610 -498 -562 -262
+                      42 -438 308 -372 564 67 256 327 405 568 324z m5 -1745 c42 -8 113 -33 157
+                      -54 142 -69 235 -164 311 -315 54 -109 74 -197 74 -331 0 -201 -68 -372 -205
+                      -510 -90 -91 -169 -140 -285 -176 -61 -19 -97 -23 -195 -22 -104 0 -131 4
+                      -200 28 -118 41 -181 80 -272 171 -67 68 -89 99 -126 176 -63 131 -81 221 -74
+                      373 6 134 24 203 83 316 139 266 434 405 732 344z"/>
+                      </g>
+                      </svg>
+
 
                   </div>
                   <div className='flex flex-col p-2 pl-0 gap-y-2' >
@@ -110,16 +135,30 @@ function Integration() {
         </div>
         <div className=' mt-7 ' >
               <div className='flex justify-between gap-4 ' >
-                <div className='flex gap-4  ' >
+                <div className='flex gap-[14PX]  ' >
                   <div className=' flex items-start p-0' >
-                      l
+                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                    width="54" height="54" viewBox="0 0 500.000000 500.000000"
+                    preserveAspectRatio="xMidYMid meet">
+
+                    <g transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)"
+                    fill="#000000" stroke="none">
+                    <path d="M0 2500 l0 -2500 2500 0 2500 0 0 2500 0 2500 -2500 0 -2500 0 0
+                    -2500z m3350 1295 c140 -47 270 -92 288 -101 43 -20 54 -44 156 -346 83 -245
+                    86 -258 76 -300 -11 -41 -88 -121 -943 -975 -806 -806 -937 -933 -972 -942
+                    -25 -7 -176 -11 -403 -11 -381 0 -410 3 -426 45 -11 31 -7 760 5 796 8 25 259
+                    282 938 962 509 511 940 935 956 943 17 7 39 13 50 14 12 0 135 -38 275 -85z
+                    m240 -2262 c153 -153 281 -288 285 -301 10 -32 -10 -75 -44 -95 -26 -15 -79
+                    -17 -563 -17 -409 0 -539 3 -558 13 -32 16 -54 61 -45 95 4 17 107 128 284
+                    305 l277 277 43 0 44 0 277 -277z"/>
+                    </g>
+                    </svg>
 
                   </div>
                   <div className='flex flex-col p-2 pl-0 gap-y-2' >
                       <h1 className='text-[20px] text-black font-bold ' >Lever</h1>
                       <ul className=' pl-6 list-disc text-gray-500 text-[14px] ' >
                         <li>The Lever-BarRaiser integration allows you to seamlessly upload the candidate to the BarRaiser system and get the BarRaiser  Global Scorecard (BGS) from BarRaiser to Lever.</li>
-                        
                       </ul>
                   </div>
                 </div>
