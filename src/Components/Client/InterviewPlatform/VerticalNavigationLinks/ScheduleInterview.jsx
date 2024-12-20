@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from "react-router-dom";
-import BasicDatePicker from '../../../../utils/BasicDatePicker';
+import BasicDatePicker from "../../../../utils/BasicDatePicker";
+import { useNavigate } from 'react-router-dom';
 
 function ScheduleInterview() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const { item } = location.state || {};
 
   const [timeSlots, setTimeSlots] = useState([
@@ -34,12 +37,12 @@ function ScheduleInterview() {
   const availabeSlots = ["9am - 10am", "10:15am - 11:15am", "9:45am - 10:45am", "10:30am - 11:30am", "11am - 12pm"];
   return (
     <div className='w-full flex gap-x-3'>
-      <div className='w-[40%] bg-[#E7E4E8] rounded-lg'>
-        <div className='pl-10 p-2 flex flex-col gap-y-4'>
+      <div className='bg-[#E7E4E8] rounded-lg w-[324px] h-[530px]'>
+        <div className=' p-8 flex flex-col gap-y-4'>
           <div className='flex items-center justify-between'>
             <div className='flex flex-col'>
               <label htmlFor="Experience" className='text-sm text-[#6B6F7B]'>EXPERIENCE</label>
-              <span className='text-[16px] text-[#6B6F7B]'>{item.experience}</span>
+              <span className='text-[16px] text-[#6B6F7B]'>{item.experience || '2 years'}</span>
             </div>
             <div className='border rounded-lg shadow-xl shadow-gray-700'>
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,10 +72,9 @@ function ScheduleInterview() {
             <button className='text-[16px]  text-[#056DDC] hover:underline'>Download</button>
           </div>
           <div className='flex flex-col'>
-            <label htmlFor="Experience" className='text-sm text-[#6B6F7B]'>CV</label>
             <textarea name="" id=""
               placeholder='Write your remark here'
-              className='rounded-lg p-2 bg-white'>
+              className='rounded-lg p-2 w-[229px] h-[120px] bg-[#F6F6F6]'>
 
             </textarea>
           </div>
@@ -118,8 +120,8 @@ function ScheduleInterview() {
             className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
           /></div>
         </div>
-        <div className='m-4'>
-          <div class="p-4 w-[328px] h-[127px] bg-[#ECE6F0] rounded-xl">
+        <div className='m-4 mt-8'>
+          <div class="px-6 p-2 w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
             <div>
               <span className='text-sm text-[#49454F]'>Select Date</span>
             </div>
@@ -167,7 +169,7 @@ function ScheduleInterview() {
           </div>
         </div>
 
-        <div className="">
+        <div className="mt-10">
           <h1 className="text-xl mb-4 text-black ">Time Slots</h1>
           <div className='grid grid-cols-10 gap-4'>
             {timeSlots.map((slot, index) => (
@@ -224,9 +226,15 @@ function ScheduleInterview() {
 
 
         <div className='mt-8 flex items-center justify-end gap-x-4'>
-          <button className='text-sm border border-[#79747E] text-[#65558F] w-[143px] h-[40px] rounded-full'>Drop Candidate</button>
-          <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-[143px] h-[40px] rounded-full'>Schedule Later</button>
-          <button className='text-sm bg-[#007AFF]  text-white w-[143px] h-[40px] rounded-full'>Confirm</button>
+          <button className='text-sm border border-[#79747E] text-[#65558F] w-[143px] h-[40px] rounded-full'
+           onClick={() => navigate('/agency/candidates')}
+          >Drop Candidate</button>
+          <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-[143px] h-[40px] rounded-full'
+           onClick={() => navigate('/agency/candidates')}
+          >Schedule Later</button>
+          <button className='text-sm bg-[#007AFF]  text-white w-[143px] h-[40px] rounded-full'
+           onClick={() => navigate('/agency/candidates')}
+          >Confirm</button>
         </div>
 
       </div>
