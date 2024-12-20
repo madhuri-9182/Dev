@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Candidates() {
-
   const location = useLocation();
   const navigate = useNavigate();
-
 
   const [selectedFilters, setSelectedFilters] = useState({
     role: "All",
     status: "All",
   });
+
   const role = ["SDE II", "SDE III", "SDET I", "EM", "SDE I - Frontend", "SDE II - Frontend"];
   const status = ["All", "Recommended", "Not Recommended", "Scheduled", "Not Scheduled"];
 
@@ -23,120 +22,118 @@ function Candidates() {
 
   const [people, setPeople] = useState([
     {
-      name: "Alice",
+      name: "Ananya Sharma",
       status: "Recommended",
       role: "SDE II",
       type: "Agency",
-      date: "MON, Dec 4",
+      date: "MON, 4 DEC",
       score: 450,
     },
     {
-      name: "Bob",
+      name: "Rohan Verma",
       status: "Not Recommended",
-      role: "SDET III",
+      role: "SDET I",
       type: "Internal",
-      date: "TUE, Dec 5",
+      date: "TUE, 5 DEC",
       score: 320,
     },
     {
-      name: "Charlie",
+      name: "Vikram Singh",
       status: "Not Scheduled",
       role: "EM",
       type: "Agency",
-      date: "WED, Dec 6",
+      date: "WED, 6 DEC",
       score: 400,
     },
     {
-      name: "David",
+      name: "Priya Desai",
       status: "Scheduled",
       role: "SDE II - Frontend",
       type: "Agency",
-      date: "THUR, Dec 7",
+      date: "THU, 7 DEC",
       score: 360,
     },
     {
-      name: "Eve",
-      status: "SDE-III",
-      role: "EM",
-      type: "Agency",
-      date: "FRI, Dec 8",
+      name: "Karthik Iyer",
+      status: "Recommended",
+      role: "SDE III",
+      type: "Internal",
+      date: "FRI, 8 DEC",
       score: 490,
     },
     {
-      name: "Priya Das",
+      name: "Aarav Kapoor",
       status: "Not Recommended",
-      role: "SDE-I",
+      role: "SDE I",
       type: "Internal",
-      date: "TUE, 16-08-24",
+      date: "TUE, 16 AUG 24",
       score: 320,
     },
     {
-      name: "Rajesh Kumar",
+      name: "Meera Nair",
       status: "Recommended",
-      role: "SDE-II",
+      role: "SDE II",
       type: "Client",
-      date: "WED, 17-08-24",
+      date: "WED, 17 AUG 24",
       score: 470,
     },
     {
-      name: "Neha Gupta",
+      name: "Shreya Banerjee",
       status: "Not Scheduled",
       role: "EM",
       type: "Internal",
-      date: "THU, 18-08-24",
+      date: "THU, 18 AUG 24",
       score: 390,
     },
     {
-      name: "Amit Roy",
+      name: "Rahul Gupta",
       status: "Scheduled",
-      role: "SDET-III",
+      role: "SDET III",
       type: "Internal",
-      date: "FRI, 19-08-24",
+      date: "FRI, 19 AUG 24",
       score: 480,
     },
-    // New Entries
     {
-      name: "Sofia Williams",
+      name: "Tanvi Reddy",
       status: "Recommended",
       role: "Data Scientist",
       type: "Client",
-      date: "MON, 20-08-24",
+      date: "MON, 20 AUG 24",
       score: 450,
     },
     {
-      name: "John Smith",
+      name: "Arjun Khanna",
       status: "Not Recommended",
-      role: "SDE-II Backend",
+      role: "SDE II - Backend",
       type: "Agency",
-      date: "TUE, 21-08-24",
+      date: "TUE, 21 AUG 24",
       score: 310,
     },
     {
-      name: "Emma Brown",
+      name: "Ishita Malhotra",
       status: "Scheduled",
       role: "UI/UX Designer",
       type: "Client",
-      date: "WED, 22-08-24",
+      date: "WED, 22 AUG 24",
       score: 370,
     },
     {
-      name: "Liam Johnson",
+      name: "Aditya Roy",
       status: "Not Scheduled",
       role: "Product Manager",
       type: "Internal",
-      date: "THUR, 23-08-24",
+      date: "THU, 23 AUG 24",
       score: 420,
     },
     {
-      name: "Olivia Davis",
+      name: "Sanya Bhatia",
       status: "Recommended",
       role: "QA Lead",
       type: "Agency",
-      date: "FRI, 24-08-24",
+      date: "FRI, 24 AUG 24",
       score: 490,
     },
   ]);
-
 
   return (
     <div className='flex flex-col gap-y-4'>
@@ -381,4 +378,6 @@ function Candidates() {
   )
 }
 
-export { Candidates as AgencyCandidates }
+
+
+export default Candidates
