@@ -161,7 +161,7 @@ function Integration() {
                         <li>The Lever-BarRaiser integration allows you to seamlessly upload the candidate to the BarRaiser system and get the BarRaiser  Global Scorecard (BGS) from BarRaiser to Lever.</li>
                       </ul>
                   </div>
-                </div>
+                </div>    
                 <div className='' >
                   <button>
                   <div className=' w-[110px] h-[32px]  flex items-center justify-center bg-[#007AFF] text-white border-2  rounded-md ' >
