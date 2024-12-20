@@ -1,35 +1,125 @@
-import React from 'react'
+import React, { useState } from 'react'
+import CustomDatePicker from '../../../../utils/CustomDatePicker'
 
 function AnalyticsDateFilter() {
+    const [selectedFilters, setSelectedFilters] = useState({
+        domain: "All",
+        status: "All",
+    });
+
+    const domains = ["All", "Domain 1", "Domain 2", "Domain 3", "Domain 4", "Domain 5"];
+    const statuses = ["All", "Active", "Inactive"];
+
+    const handleSelect = (category, value) => {
+        setSelectedFilters((prev) => ({
+            ...prev,
+            [category]: value,
+        }));
+    };
     return (
-        <div className='p-4'>
+        <div className='p-8'>
             <div className=''>
-                <div className="p-6">
+                <div className="">
                     {/* Header Section */}
                     <div className="flex justify-between items-center mb-4">
-                        <div className="flex gap-2">
-                            <label className="text-gray-600 font-medium">From</label>
-                            <input
-                                type="date"
-                                className="border p-2 rounded-md text-gray-600 focus:outline-none"
-                            />
-                            <label className="text-gray-600 font-medium">To</label>
-                            <input
-                                type="date"
-                                className="border p-2 rounded-md text-gray-600 focus:outline-none"
-                            />
-                        </div>
-                        <button className="w-[176px] h-[32px] bg-[#056DDC] text-sm rounded-full text-white flex items-center justify-center gap-x-3">
-                            <div>
-                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 12L5.25 8.25L6.3 7.1625L8.25 9.1125V3H9.75V9.1125L11.7 7.1625L12.75 8.25L9 12ZM4.5 15C4.0875 15 3.73438 14.8531 3.44063 14.5594C3.14688 14.2656 3 13.9125 3 13.5V11.25H4.5V13.5H13.5V11.25H15V13.5C15 13.9125 14.8531 14.2656 14.5594 14.5594C14.2656 14.8531 13.9125 15 13.5 15H4.5Z" fill="white" />
-                                </svg>
+
+                        <div>
+                            <div className="space-y-2 mt-1">
+                                {/* Domain Filter */}
+                                <div className="flex items-center space-x-1">
+                                    <span className="text-sm font-bold mr-2 flex">Domain</span>
+                                    {domains.map((domain) => (
+                                        <button
+                                            key={domain}
+                                            onClick={() => handleSelect("domain", domain)}
+                                            className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.domain === domain
+                                                ? "bg-purple-100 text-purple-700 border-purple-300"
+                                                : "bg-white text-gray-700 border-gray-300"
+                                                }`}
+                                        >
+                                            {/* Tick container */}
+                                            {selectedFilters.domain === domain && (
+                                                <span className="w-4 h-4 flex justify-center items-center">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="w-3 h-3 text-purple-700"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </span>
+                                            )}
+                                            {domain}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Status Filter */}
+                                <div className="flex items-center space-x-1">
+                                    <span className="text-sm font-bold mr-4">Status</span>
+                                    {statuses.map((status) => (
+                                        <button
+                                            key={status}
+                                            onClick={() => handleSelect("status", status)}
+                                            className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.status === status
+                                                ? "bg-purple-100 text-purple-700 border-purple-300"
+                                                : "bg-white text-gray-700 border-gray-300"
+                                                }`}
+                                        >
+                                            {/* Tick container */}
+
+                                            {selectedFilters.status === status && (
+                                                <span className="w-4 h-4 flex justify-center items-center">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="w-3 h-3 text-purple-700"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </span>
+                                            )}
+
+                                            {status}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            <div>Download Report</div>
-                        </button>
+
+                        </div>
+                        <div className='flex items-center justify-center'>
+                            <div>
+                                <label htmlFor="From"
+                                    className='mr-4 text-[#6B6F7B] text-sm'
+                                >From</label>
+                                <CustomDatePicker />
+                            </div>
+                            <div className='ml-4 text-sm'>
+                                <label htmlFor="From"
+                                    className='mr-4 text-[#6B6F7B]'
+                                >To</label>
+                                <CustomDatePicker />
+                            </div>
+                        </div>
+                        <div>
+
+
+                            <button className="w-[176px] h-[32px] bg-[#056DDC] text-sm rounded-full text-white flex items-center justify-center gap-x-3">
+                                <div>
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 12L5.25 8.25L6.3 7.1625L8.25 9.1125V3H9.75V9.1125L11.7 7.1625L12.75 8.25L9 12ZM4.5 15C4.0875 15 3.73438 14.8531 3.44063 14.5594C3.14688 14.2656 3 13.9125 3 13.5V11.25H4.5V13.5H13.5V11.25H15V13.5C15 13.9125 14.8531 14.2656 14.5594 14.5594C14.2656 14.8531 13.9125 15 13.5 15H4.5Z" fill="white" />
+                                    </svg>
+                                </div>
+                                <div>Download Report</div>
+                            </button>
+                        </div>
                     </div>
 
-                    <div className='p-4 flex items-center justify-center mt-10'>
+                    <div className='p-4 flex items-center justify-center mt-4'>
 
 
 

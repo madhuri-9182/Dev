@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import CustomDatePicker from '../../../../utils/CustomDatePicker';
 
 function Analytics() {
   const navigate = useNavigate();
@@ -26,9 +27,9 @@ function Analytics() {
     <div>
 
 
-      {/* 1st div */}
-      <div>
-        <div className='bg-red-400 flex items-center between'>
+      {/* 1st div  dd*/}
+      <div className=''>
+        <div className='flex items-center justify-top'>
 
 
           <div className="py-4 sticky top-[60px] w-[40%]">
@@ -70,14 +71,60 @@ function Analytics() {
               </div>
             </div>
           </div>
+          <div className='flex items-center justify-center'>
 
-          <div className='w-[40%]'>
-            <button 
-            className='bg-gray-200'
-            onClick={() => navigate('/client/analytics/filter')}
-            >
-              Go
-            </button>
+            <div className='p-2'>
+
+
+              <div className='flex items-center justify-center'>
+                <div className='flex items-center justify-center'>
+                  <div className=''>
+                    <label htmlFor="From"
+                      className='mr-4 text-[#6B6F7B] text-sm'
+                    >From</label>
+                    <CustomDatePicker />
+                  </div>
+                  <div className='ml-4 text-sm'>
+                    <label htmlFor="From"
+                      className='mr-4 text-[#6B6F7B]'
+                    >To</label>
+                    <CustomDatePicker />
+                  </div>
+
+                </div>
+                <div className='ml-5'>
+                  <button
+                    className='w-[63px] h-[32px] text-sm text-white rounded-full bg-[#007AFF]'
+                    onClick={() => navigate('/client/analytics/filter')}
+                  >
+                    Go
+                  </button>
+                </div>
+
+
+
+
+
+              </div>
+
+              <div className='mt-4 flex items-center justify-center gap-x-2'>
+                <button className='w-[76px] h-[32px] text-[#49454F] text-sm rounded-xl border border-[#CAC4D0]'>
+                  7 Days
+                </button>
+                <button className='w-[76px] h-[32px] text-[#49454F] text-sm rounded-xl border border-[#CAC4D0]'>
+                  30 Days
+                </button>
+                <button className='w-[76px] h-[32px] text-[#49454F] text-sm rounded-xl border border-[#CAC4D0]'>
+                  6 Months
+                </button>
+                <button className='w-[76px] h-[32px] text-[#49454F] text-sm rounded-xl border border-[#CAC4D0]'>
+                  1 Year
+                </button>
+
+              </div>
+            </div>
+            <div>
+            </div>
           </div>
 
 
@@ -100,7 +147,7 @@ function Analytics() {
 
 
 
-        <div className='w-full flex items-center justify-center'>
+        <div className='mt-8 w-full flex items-center justify-center'>
           <div className="grid grid-cols-2 gap-x-20 gap-y-3">
             {roles.map((role, index) => (
               <div
@@ -143,7 +190,7 @@ function Analytics() {
 
 
       {/* 2nd div */}
-    
+
 
 
 

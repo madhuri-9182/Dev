@@ -135,7 +135,7 @@ const Finance = () => {
             <option value="Nov">Nov</option>
           </select>
         </div>
-        <button style={styles.ratesButton}>Rates</button>
+        {/* <button style={styles.ratesButton}>Rates</button>   this is the rate button  */}
         {/* <input
           type="text"
           placeholder="Search Users by Name"
