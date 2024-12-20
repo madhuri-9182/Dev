@@ -10,11 +10,13 @@ export default function CustomDatePicker() {
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
-        setShowCalendar(false); // Hide calendar after selecting a date
+        setShowCalendar(false);
+        // Save the selected date to local storage
+        localStorage.setItem("selectedDate", date.toISOString());
     };
 
     const toggleCalendar = () => {
-        setShowCalendar((prev) => !prev); // Toggle calendar visibility
+        setShowCalendar((prev) => !prev);
     };
 
     return (

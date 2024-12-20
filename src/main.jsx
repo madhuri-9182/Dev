@@ -5,21 +5,21 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 //SignIn-SignUp Imports
 import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, LoginUsingEmail, LoginUsingNumber } from './Components'
 // Client Imports
-import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics,AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
+import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics, AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
 //Agency Imports
-import { AgencyNavigationLayout,AgencyDashboard,AgencyCandidates,AgencyAddCandidate,AgencyScheduleInterview } from './Components'
+import { AgencyNavigationLayout, AgencyDashboard, AgencyCandidates, AgencyAddCandidate, AgencyScheduleInterview } from './Components'
 //Internal Imports
-import {InternalNavigationLayout,InternalDashboard,InternalClients,InternalInterviewer,InternalUsers,InternalAgreements,InternalFinance,InternalEngagement,InternalMessages} from "./Components"
+import { InternalNavigationLayout, InternalDashboard, InternalClients, InternalInterviewer, InternalUsers, InternalAgreements, InternalFinance, InternalEngagement, InternalMessages } from "./Components"
 //Interviewer Imports
 import { Layout, Calendar, InterviewRecord, Payments } from './Components'
 import { Hello } from './Components'
 import { InternalAddInterviewer } from './Components/Internal/AddInterviewer'
-const router = createBrowserRouter( 
+const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path='' element={<Hello />} />
       <Route path='auth'>
-        
+
         <Route path='forgetpassword' element={<ForgetPass />} />
 
 
@@ -44,44 +44,47 @@ const router = createBrowserRouter(
         <Route path='settings' element={<Settings />} />
         <Route path='jobs' element={<Jobs />} />
         <Route path='candidates' element={<Candidates />} />
-        <Route path='analytics' element={<Analytics />} />
+        <Route path='analytics' >
+        <Route path='' element={<Analytics/>} />
+        <Route path='filter' element={<AnalyticsDateFilter/>} />
+
+        </Route>
         <Route path='integration' element={<Integration />} />
         <Route path='finance' element={<Finance />} />
         <Route path='engagement' element={<Engagement />} />
       </Route>
 
-      <Route path='/client/analytics/filter' element={<AnalyticsDateFilter/>} />
 
 
       //Agency Routes
-      <Route path='agency' element={<AgencyNavigationLayout/>}>
-        <Route path='dashboard' element={<AgencyDashboard/>}/>
+      <Route path='agency' element={<AgencyNavigationLayout />}>
+        <Route path='dashboard' element={<AgencyDashboard />} />
         <Route path='candidates'>
-        <Route path='' element={<AgencyCandidates/>}/>
-        <Route path='schedule-interview' element={<AgencyScheduleInterview/>}/> 
-        <Route path='addcandidate' element={<AgencyAddCandidate/>}/>
+          <Route path='' element={<AgencyCandidates />} />
+          <Route path='schedule-interview' element={<AgencyScheduleInterview />} />
+          <Route path='addcandidate' element={<AgencyAddCandidate />} />
 
         </Route>
 
-       
+
       </Route>
 
 
       //Internal Routes
-      <Route path='internal' element={<InternalNavigationLayout/>}>
-        <Route path='dashboard' element={<InternalDashboard/>} />
+      <Route path='internal' element={<InternalNavigationLayout />}>
+        <Route path='dashboard' element={<InternalDashboard />} />
         <Route path='clients'>
-        <Route path='' element={<InternalClients/>}/>
-        <Route path='addclient' element={<InternalClients/>} />
+          <Route path='' element={<InternalClients />} />
+          <Route path='addclient' element={<InternalClients />} />
         </Route>
-        <Route path='interviewer' element={<InternalInterviewer/>} />
-        <Route path='addinterviewer' element={<InternalAddInterviewer/>} />
-        <Route path='users' element={<InternalUsers/>} />
-        <Route path='agreements' element={<InternalAgreements/>} />
-        <Route path='finance' element={<InternalFinance/>} />
-        <Route path='engagement' element={<InternalEngagement/>}/>
-        <Route path='message' element={<InternalMessages/>}/>
-       
+        <Route path='interviewer' element={<InternalInterviewer />} />
+        <Route path='addinterviewer' element={<InternalAddInterviewer />} />
+        <Route path='users' element={<InternalUsers />} />
+        <Route path='agreements' element={<InternalAgreements />} />
+        <Route path='finance' element={<InternalFinance />} />
+        <Route path='engagement' element={<InternalEngagement />} />
+        <Route path='message' element={<InternalMessages />} />
+
       </Route>
 
 
