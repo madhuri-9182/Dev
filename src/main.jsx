@@ -5,7 +5,13 @@ import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } 
 //SignIn-SignUp Imports
 import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, LoginUsingEmail, LoginUsingNumber } from './Components'
 // Client Imports
+<<<<<<< HEAD
 import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics, AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
+=======
+import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics,AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
+import { ClientAddCandidate } from './Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate'
+import { ClientScheduleInterview } from './Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview'
+>>>>>>> 806acf0eb15c237268b5e7cf1bf3cc2b6d8d885c
 //Agency Imports
 import { AgencyNavigationLayout, AgencyDashboard, AgencyCandidates, AgencyAddCandidate, AgencyScheduleInterview } from './Components'
 //Internal Imports
@@ -52,6 +58,8 @@ const router = createBrowserRouter(
         <Route path='integration' element={<Integration />} />
         <Route path='finance' element={<Finance />} />
         <Route path='engagement' element={<Engagement />} />
+        <Route path='candidates/addcandidate' element={<ClientAddCandidate/>}/>
+        <Route path='candidates/schedule-interview' element={<ClientScheduleInterview/>}/>
       </Route>
 
 
