@@ -26,20 +26,50 @@ function Analytics() {
   };
 
   const [selectedDateFrom, setSelectedDateFrom] = React.useState(null);
-      const [showCalendarFrom, setShowCalendarFrom] = React.useState(false);
-  
-      const handleDateChangeFrom = (date) => {
-          setSelectedDateFrom(date);
-          setShowCalendarFrom(false);
-      };
-  
-      const toggleCalendar = () => {
-          setShowCalendarFrom((prev) => !prev);
-      };
-  
+  const [showCalendarFrom, setShowCalendarFrom] = React.useState(false);
 
-    
-  
+  const handleDateChangeFrom = (date) => {
+    setSelectedDateFrom(date);
+    setShowCalendarFrom(false);
+ 
+  };
+
+  const toggleCalendarFrom = () => {
+    setShowCalendarFrom((prev) => !prev);
+  };
+
+
+
+  const [selectedDateTo, setSelectedDateTo] = React.useState(null);
+  const [showCalendarTo, setShowCalendarTo] = React.useState(false);
+
+  const handleDateChangeTo = (date) => {
+    setSelectedDateTo(date);
+    setShowCalendarTo(false);
+  };
+
+  const toggleCalendarTo = () => {
+    setShowCalendarTo((prev) => !prev);
+  };
+
+  function handelDateFilter(){
+    if(!selectedDateFrom && !selectedDateTo){
+      alert("Date range is required for filtering.")
+      return
+    }
+
+    navigate('/client/analytics/filter', {
+      state: {
+        dateFrom: selectedDateFrom,
+        dateTo: selectedDateTo,
+        jobFilter:selectedFilters,
+      },
+    });
+  }
+
+
+
+
 
 
   return (
@@ -48,10 +78,10 @@ function Analytics() {
 
       {/* 1st div  dd*/}
       <div className=''>
-        <div className='flex items-center justify-top'>
+        <div className=' flex justify-around'>
 
 
-          <div className="py-4 sticky top-[60px] w-[40%]">
+          <div className="py-4  sticky top-[60px] h-[100%] w-[50%]">
             <div className="pl-3 space-y-2">
               {/* Domain Filter */}
               <div className="flex items-center space-x-1">
@@ -90,119 +120,123 @@ function Analytics() {
               </div>
             </div>
           </div>
-          <div className='flex items-center justify-center'>
+
+
+
+
+          <div className='flex  ml-[10%] w-[50%]'>
 
             <div className='p-2'>
 
 
               <div className='flex items-center justify-center'>
                 <div className='flex items-center justify-center'>
-                  <div className=''>
-                    <label htmlFor="From"
+                  <div className=' flex items-center justify-center'>
+                    <div htmlFor="From"
                       className='mr-4 text-[#6B6F7B] text-sm'
-                    >From</label>
+                    >From</div>
                     {/* From */}
-                    
+
 
 
                     <div>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-                <div className="flex">
-                    <DateField
-                        value={selectedDateFrom}
-                        onChange={handleDateChangeFrom}
-                        format="DD/MM/YYYY"
-                        sx={{
-                            '& .MuiInputBase-input': {
-                                width: '105px', // Set width
-                                height: '2px', // Set height
-                                borderRadius: '20px', // Add border-radius
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <div className="flex">
+                            <DateField
+                              value={selectedDateFrom}
+                              onChange={handleDateChangeFrom}
+                              format="DD/MM/YYYY"
+                              sx={{
+                                '& .MuiInputBase-input': {
+                                  width: '105px', // Set width
+                                  height: '2px', // Set height
+                                  borderRadius: '20px', // Add border-radius
 
-                            },
-                            '& .MuiInputBase-root': {
-                                display: 'flex', // Set display to flex
-                                justifyContent: 'center', // Align items horizontally to center
-                                alignItems: 'center', // Align items vertically to center
-                            },
+                                },
+                                '& .MuiInputBase-root': {
+                                  display: 'flex', // Set display to flex
+                                  justifyContent: 'center', // Align items horizontally to center
+                                  alignItems: 'center', // Align items vertically to center
+                                },
 
-                        }}
-                    />
+                              }}
+                            />
 
-                    <button onClick={toggleCalendar}
-                    className='ml-1'
-                    >
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6.66675 1.66699V4.16699" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M13.3333 1.66699V4.16699" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M2.91675 7.5752H17.0834" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M17.5 7.08366V14.167C17.5 16.667 16.25 18.3337 13.3333 18.3337H6.66667C3.75 18.3337 2.5 16.667 2.5 14.167V7.08366C2.5 4.58366 3.75 2.91699 6.66667 2.91699H13.3333C16.25 2.91699 17.5 4.58366 17.5 7.08366Z" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M13.0788 11.4167H13.0863" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M13.0788 13.9167H13.0863" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9.99632 11.4167H10.0038" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9.99632 13.9167H10.0038" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M6.91185 11.4167H6.91933" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M6.91185 13.9167H6.91933" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
+                            <button onClick={toggleCalendarFrom}
+                              className='ml-1'
+                            >
+                              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.66675 1.66699V4.16699" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M13.3333 1.66699V4.16699" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M2.91675 7.5752H17.0834" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M17.5 7.08366V14.167C17.5 16.667 16.25 18.3337 13.3333 18.3337H6.66667C3.75 18.3337 2.5 16.667 2.5 14.167V7.08366C2.5 4.58366 3.75 2.91699 6.66667 2.91699H13.3333C16.25 2.91699 17.5 4.58366 17.5 7.08366Z" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M13.0788 11.4167H13.0863" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M13.0788 13.9167H13.0863" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M9.99632 11.4167H10.0038" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M9.99632 13.9167H10.0038" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M6.91185 11.4167H6.91933" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M6.91185 13.9167H6.91933" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                              </svg>
 
-                    </button>
+                            </button>
 
-                    {showCalendarFrom && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: '100%',
-                                left: 0,
-                                zIndex: 1000,
-                                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                                backgroundColor: '#ECE6F0',
-                                borderRadius: '8px',
-                            }}
-                        >
-                            <DateCalendar
-                                value={selectedDateFrom}
-                                onChange={handleDateChangeFrom}
-                                sx={{
+                            {showCalendarFrom && (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: '100%',
+                                  left: 0,
+                                  zIndex: 1000,
+                                  boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                                  backgroundColor: '#ECE6F0',
+                                  borderRadius: '8px',
+                                }}
+                              >
+                                <DateCalendar
+                                  value={selectedDateFrom}
+                                  onChange={handleDateChangeFrom}
+                                  sx={{
                                     '& .MuiDayPicker-day': {
-                                        color: 'black', // Day font color
-                                        '&:hover': {
-                                            backgroundColor: 'green', // Hover date background
-                                        },
+                                      color: 'black', // Day font color
+                                      '&:hover': {
+                                        backgroundColor: 'green', // Hover date background
+                                      },
                                     },
                                     '& .MuiDayPicker-day.Mui-selected': {
-                                        backgroundColor: 'red', // Selected date background
-                                        color: 'white', // Text color for selected date
+                                      backgroundColor: 'red', // Selected date background
+                                      color: 'white', // Text color for selected date
                                     },
                                     '& .MuiDayPicker-day.MuiDayPicker-dayToday': {
-                                        border: '2px solid black', // Today's date border
+                                      border: '2px solid black', // Today's date border
                                     },
                                     '& .MuiPickersCalendarHeader-label': {
-                                        color: ' #2d2640', // Header text color
+                                      color: ' #2d2640', // Header text color
                                     },
                                     '& .MuiPickersArrowSwitcher-button svg path': {
-                                        fill: '#2d2640', // Set the SVG color to red
+                                      fill: '#2d2640', // Set the SVG color to red
                                     },
                                     // Change color of SVG inside the button with a specific class
                                     '& .MuiIconButton-root.MuiPickersCalendarHeader-switchViewButton svg path': {
-                                        fill: '#2d2640', // Change SVG inside button to blue
+                                      fill: '#2d2640', // Change SVG inside button to blue
                                     },
                                     '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected': {
-                                        backgroundColor: '#65558f', // Button background red
+                                      backgroundColor: '#65558f', // Button background red
                                     },
                                     '& .MuiDayCalendar-weekDayLabel': {
-                                        color: ' #2d2640', // Change font color of weekday labels to blue
-                                        fontWeight: '200'
+                                      color: ' #2d2640', // Change font color of weekday labels to blue
+                                      fontWeight: '200'
                                     },
                                     '& .MuiPickersYear-yearButton.Mui-selected': {
-                                        backgroundColor: '#65558f', // Change the background color to red
+                                      backgroundColor: '#65558f', // Change the background color to red
                                     },
-                                }}
-                            />
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
-                    )}
-                </div>
-            </div>
-        </LocalizationProvider>
+                      </LocalizationProvider>
 
 
 
@@ -211,18 +245,122 @@ function Analytics() {
 
                     </div>
                   </div>
-                  <div className='ml-4 text-sm'>
-                    <label htmlFor="From"
+                  <div className='ml-4 text-sm flex items-center justify-center'>
+                    <div htmlFor="From"
                       className='mr-4 text-[#6B6F7B]'
-                    >To</label>
-                    <CustomDatePicker />
+                    >To</div>
+                   <div>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <div className="flex">
+                            <DateField
+                              value={selectedDateTo}
+                              onChange={handleDateChangeTo}
+                              format="DD/MM/YYYY"
+                              sx={{
+                                '& .MuiInputBase-input': {
+                                  width: '105px', // Set width
+                                  height: '2px', // Set height
+                                  borderRadius: '20px', // Add border-radius
+
+                                },
+                                '& .MuiInputBase-root': {
+                                  display: 'flex', // Set display to flex
+                                  justifyContent: 'center', // Align items horizontally to center
+                                  alignItems: 'center', // Align items vertically to center
+                                },
+
+                              }}
+                            />
+
+                            <button onClick={toggleCalendarTo}
+                              className='ml-1'
+                            >
+                              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.66675 1.66699V4.16699" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M13.3333 1.66699V4.16699" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M2.91675 7.5752H17.0834" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M17.5 7.08366V14.167C17.5 16.667 16.25 18.3337 13.3333 18.3337H6.66667C3.75 18.3337 2.5 16.667 2.5 14.167V7.08366C2.5 4.58366 3.75 2.91699 6.66667 2.91699H13.3333C16.25 2.91699 17.5 4.58366 17.5 7.08366Z" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M13.0788 11.4167H13.0863" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M13.0788 13.9167H13.0863" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M9.99632 11.4167H10.0038" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M9.99632 13.9167H10.0038" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M6.91185 11.4167H6.91933" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M6.91185 13.9167H6.91933" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                              </svg>
+
+                            </button>
+
+                            {showCalendarTo && (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: '100%',
+                                  left: 0,
+                                  zIndex: 1000,
+                                  boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                                  backgroundColor: '#ECE6F0',
+                                  borderRadius: '8px',
+                                }}
+                              >
+                                <DateCalendar
+                                  value={selectedDateTo}
+                                  onChange={handleDateChangeTo}
+                                  sx={{
+                                    '& .MuiDayPicker-day': {
+                                      color: 'black', // Day font color
+                                      '&:hover': {
+                                        backgroundColor: 'green', // Hover date background
+                                      },
+                                    },
+                                    '& .MuiDayPicker-day.Mui-selected': {
+                                      backgroundColor: 'red', // Selected date background
+                                      color: 'white', // Text color for selected date
+                                    },
+                                    '& .MuiDayPicker-day.MuiDayPicker-dayToday': {
+                                      border: '2px solid black', // Today's date border
+                                    },
+                                    '& .MuiPickersCalendarHeader-label': {
+                                      color: ' #2d2640', // Header text color
+                                    },
+                                    '& .MuiPickersArrowSwitcher-button svg path': {
+                                      fill: '#2d2640', // Set the SVG color to red
+                                    },
+                                    // Change color of SVG inside the button with a specific class
+                                    '& .MuiIconButton-root.MuiPickersCalendarHeader-switchViewButton svg path': {
+                                      fill: '#2d2640', // Change SVG inside button to blue
+                                    },
+                                    '& .MuiButtonBase-root.MuiPickersDay-root.Mui-selected': {
+                                      backgroundColor: '#65558f', // Button background red
+                                    },
+                                    '& .MuiDayCalendar-weekDayLabel': {
+                                      color: ' #2d2640', // Change font color of weekday labels to blue
+                                      fontWeight: '200'
+                                    },
+                                    '& .MuiPickersYear-yearButton.Mui-selected': {
+                                      backgroundColor: '#65558f', // Change the background color to red
+                                    },
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </LocalizationProvider>
+
+
+
+
+
+
+                    </div>
                   </div>
 
                 </div>
                 <div className='ml-5'>
                   <button
                     className='w-[63px] h-[32px] text-sm text-white rounded-full bg-[#007AFF]'
-                    onClick={() => navigate('/client/analytics/filter')}
+                    onClick={() => handelDateFilter()}
                   >
                     Go
                   </button>
@@ -274,8 +412,8 @@ function Analytics() {
 
 
 
-        <div className='mt-8 w-full flex items-center justify-center'>
-          <div className="grid grid-cols-2 gap-x-20 gap-y-3">
+        <div className='mt-8'>
+          <div className="pr-4 grid grid-cols-2 justify-around gap-x-20 gap-y-3">
             {roles.map((role, index) => (
               <div
                 key={index}
