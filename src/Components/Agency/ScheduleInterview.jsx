@@ -37,7 +37,7 @@ function ScheduleInterview() {
   const availabeSlots = ["9am - 10am", "10:15am - 11:15am", "9:45am - 10:45am", "10:30am - 11:30am", "11am - 12pm"];
   return (
     <div className='w-full flex gap-x-3'>
-      <div className='bg-[#E7E4E8] rounded-lg w-[324px] h-[530px]'>
+      <div className='bg-[#E7E4E8] rounded-lg w-[324px]  h-[calc(100vh-100px)]'>
         <div className=' p-8 flex flex-col gap-y-4'>
           <div className='flex items-center justify-between'>
             <div className='flex flex-col'>
@@ -89,155 +89,99 @@ function ScheduleInterview() {
 
 
 
-      <div className='w-full p-6'>
-        <div className='w-[40%] grid grid-cols-[_1fr,_4fr] gap-y-4 '>
+      <div className='w-full h-[calc(100vh-100px)] p-6 flex flex-col items-start justify-between'>
+
+
+        <div className='w-full md:w-[40%] grid grid-cols-1 md:grid-cols-[1fr_4fr] gap-y-4 bg-white'>
           <div className=''>
-            <label htmlFor="Name"
-              className='text-sm text-[#6B6F7B]'
-            >Name</label>
+            <label htmlFor="Name" className='text-sm text-[#6B6F7B]'>Name</label>
           </div>
           <div className=''>
-            <input type="text"
-              disabled
-              value={item.name}
+            <input type="text" disabled value={item.name}
               className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
             />
           </div>
-          <div> <label htmlFor="Name"
-            className='text-sm text-[#6B6F7B]'
-          >Role</label></div>
-          <div><input type="text"
-            disabled
-            value={'SDE-III'}
-            className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
-          /></div>
-          <div> <label htmlFor="Name"
-            className='text-sm text-[#6B6F7B]'
-          >Function</label></div>
-          <div><input type="text"
-            disabled
-            value={'Frontend'}
-            className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
-          /></div>
-        </div>
-        <div className='m-4 mt-8'>
-          <div class="px-6 p-2 w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
-            <div>
-              <span className='text-sm text-[#49454F]'>Select Date</span>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <BasicDatePicker />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          <div>
+            <label htmlFor="Role" className='text-sm text-[#6B6F7B]'>Role</label>
+          </div>
+          <div>
+            <input type="text" disabled value={'SDE-III'}
+              className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
+            />
+          </div>
+          <div>
+            <label htmlFor="Function" className='text-sm text-[#6B6F7B]'>Function</label>
+          </div>
+          <div>
+            <input type="text" disabled value={'Frontend'}
+              className='ml-4 border-[1px] border-[#CAC4D0] bg-white px-4 py-[3px] text-center rounded-lg text-sm text-black'
+            />
           </div>
         </div>
 
-        <div className="mt-10">
-          <h1 className="text-xl mb-4 text-black ">Time Slots</h1>
-          <div className='grid grid-cols-10 gap-4'>
+        <div className='m-4 mt-8'>
+          <div className="px-6 p-2 w-full sm:w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
+            <div>
+              <span className='text-sm text-[#49454F]'>Select Date</span>
+            </div>
+            <BasicDatePicker />
+          </div>
+        </div>
+
+        <div className="w-full mt-10">
+          <h1 className="text-xl mb-4 text-black">Time Slots</h1>
+          <div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-10 gap-4'>
             {timeSlots.map((slot, index) => (
               <div
                 key={index}
-                className={` text-center p-1 px-2 rounded-lg text-sm max-w-max ${slot.available === "yes" ? "bg-[#59B568] text-white " : "bg-[#C7C7C7] text-[#6B6F7B]"
-                  }`}
+                className={`text-center p-1 px-2 rounded-lg text-sm max-w-max ${slot.available === "yes" ? "bg-[#59B568] text-white " : "bg-[#C7C7C7] text-[#6B6F7B]"}`}
               >
                 {slot.time}
               </div>
             ))}
           </div>
         </div>
+        <div className='w-full'>
 
-        <div className='mt-10'>
-          <div className="flex items-center space-x-1">
-            <span className="text-sm font-bold mr-4 text-[#6B6F7B] ">Available Slots</span>
-            <div className='flex items-center space-x-2'>
-              {availabeSlots.map((availabeSlots) => (
-                <button
-                  key={availabeSlots}
-                  onClick={() => handleSelect("availabeSlots", availabeSlots)}
-                  className={` flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.availabeSlots === availabeSlots
-                    ? "bg-purple-100 text-purple-700 border-purple-300"
-                    : "bg-white text-gray-700 border-gray-300"
-                    }`}
-                >
-                  {/* Tick container */}
-                  {selectedFilters.availabeSlots === availabeSlots && (
-                    <span className="w-4 h-4 flex justify-center items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3 h-3 text-purple-700"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                  )}
-                  {availabeSlots}
-                </button>
-              ))}
+
+          <div className='mt-10'>
+            <div className="flex items-center space-x-1">
+              <span className="text-sm font-bold mr-4 text-[#6B6F7B]">Available Slots</span>
+              <div className='flex items-center space-x-2'>
+                {availabeSlots.map((availabeSlots) => (
+                  <button
+                    key={availabeSlots}
+                    onClick={() => handleSelect("availabeSlots", availabeSlots)}
+                    className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.availabeSlots === availabeSlots
+                      ? "bg-purple-100 text-purple-700 border-purple-300"
+                      : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                  >
+                    {selectedFilters.availabeSlots === availabeSlots && (
+                      <span className="w-4 h-4 flex justify-center items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
+                    )}
+                    {availabeSlots}
+                  </button>
+                ))}
+              </div>
             </div>
+          </div>
 
+          <div className='mt-8 flex items-center justify-end gap-x-4'>
+            <button className='text-sm border border-[#79747E] text-[#65558F] w-full sm:w-[143px] h-[40px] rounded-full' onClick={() => navigate('/agency/candidates')}>Drop Candidate</button>
+            <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-full sm:w-[143px] h-[40px] rounded-full' onClick={() => navigate('/agency/candidates')}>Schedule Later</button>
+            <button className='text-sm bg-[#007AFF] text-white w-full sm:w-[143px] h-[40px] rounded-full' onClick={() => navigate('/agency/candidates')}>Confirm</button>
           </div>
         </div>
-
-
-        <div className='mt-8 flex items-center justify-end gap-x-4'>
-          <button className='text-sm border border-[#79747E] text-[#65558F] w-[143px] h-[40px] rounded-full'
-           onClick={() => navigate('/agency/candidates')}
-          >Drop Candidate</button>
-          <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-[143px] h-[40px] rounded-full'
-           onClick={() => navigate('/agency/candidates')}
-          >Schedule Later</button>
-          <button className='text-sm bg-[#007AFF]  text-white w-[143px] h-[40px] rounded-full'
-           onClick={() => navigate('/agency/candidates')}
-          >Confirm</button>
-        </div>
-
       </div>
+
+
+
+
     </div>
   )
 }
