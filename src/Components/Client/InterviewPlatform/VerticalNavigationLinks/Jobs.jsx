@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+
 const styles = {
   body: {
     fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
@@ -110,7 +111,7 @@ const styles = {
   btnGroup: {
     display: 'flex',
     gap: '10px',
-    transform: 'translateX(-30px)', // Move buttons 200px to the left
+    transform: 'translateX(-30px)',
   },
   btn: {
     padding: '6px 16px',
@@ -131,7 +132,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    marginLeft: 'auto', // Aligns this section to the right
+    marginLeft: 'auto',
   },
   badge: {
     padding: '6px 12px',
@@ -145,9 +146,10 @@ const styles = {
   },
 };
 
-const Jobs = () =>{
+const Jobs = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
   const navigate = useNavigate(); // Initialize useNavigate
-  const location = useLocation(); // Initialize useLocation {
+  const location = useLocation(); // Initialize useLocation
   const rows = [
     'SDE-II',
     'SDE-III',
@@ -161,6 +163,14 @@ const Jobs = () =>{
     'QA-II',
   ];
 
+  const handleArchiveClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div style={styles.body}>
       <div style={styles.header}>
@@ -169,8 +179,6 @@ const Jobs = () =>{
             type="text"
             placeholder="Search Client by Name"
             style={styles.searchInput}
-
-            
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -183,25 +191,11 @@ const Jobs = () =>{
           </svg>
         </div>
         <button
-            className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto"
-            onClick={() => navigate(`${location.pathname}/addjob`)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-            <span> Add Candidate</span>
-          </button>
+          style={styles.addJobButton}
+          onClick={() => navigate(`${location.pathname}/addjob`)}
+        >
+         + Add Job
+        </button>
       </div>
 
       <div style={styles.filters}>
@@ -220,7 +214,7 @@ const Jobs = () =>{
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
-        <input type="date"  style={styles.input} />
+        <input type="date" style={styles.input} />
       </div>
 
       <div style={styles.table}>
@@ -228,9 +222,12 @@ const Jobs = () =>{
           <div key={index} style={styles.row}>
             <div style={styles.nameColumn}>{row}</div>
             <div style={styles.btnGroup}>
-              <button style={styles.btn}>View</button>
+              <button style={styles.btn} onClick={() => navigate(`${location.pathname}/jobdetails`)}>View</button>
               <button style={styles.btn}>+ Add Candidate</button>
-              <button style={{ ...styles.btn, ...styles.btnArchive }}>
+              <button
+                style={{ ...styles.btn, ...styles.btnArchive }}
+                onClick={handleArchiveClick}
+              >
                 Archive
               </button>
             </div>
@@ -241,10 +238,69 @@ const Jobs = () =>{
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 130,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '20px',
+              borderRadius: '8px',
+              width: '300px',
+              textAlign: 'center',
+            }}
+          >
+            <h2 style={{fontSize:"20px",fontWeight:"600"}}>Reason for Archive</h2>
+            <button style={{ display: 'block', margin: '10px 0', border:"1px solid black", padding:"5px 70px ",borderRadius:"8px" }}>Position Filled</button>
+            <button style={{ display: 'block', margin: '10px 0', border:"1px solid black", padding:"5px 60px ",borderRadius:"8px" }}>Position On Hold</button>
+            <button style={{ display: 'block', margin: '10px 0', border:"1px solid black", padding:"5px 100px ",borderRadius:"8px" }}>Other</button>
+            <button
+              style={{
+                marginTop: '10px',
+                padding: '10px 20px',
+                backgroundColor: '#f5f2e6',
+                borderRadius: '25px',
+                border: '1px solid black',
+                marginRight:"10px"
+              }}
+              onClick={closeModal}
+            >
+              Cancel
+            </button>
+            <button
+              style={{
+                marginTop: '20px',
+                padding: '10px 20px',
+                backgroundColor: '#007AFF',
+                color: '#fff',
+                borderRadius: '25px',
+              }}
+              onClick={() => {
+                console.log('Archive Confirmed');
+                closeModal();
+              }}
+            >
+              Archive
+            </button>
+            
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Jobs;
-
-
