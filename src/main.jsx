@@ -7,6 +7,7 @@ import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, Lo
 import { ClientAddCandidate } from './Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate'
 import { ClientScheduleInterview } from './Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview'
 import AddJob from './Components/Client/InterviewPlatform/VerticalNavigationLinks/AddJob'
+import JobDetails from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/JobDetails"
 // Client Imports
 import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics,AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
 
@@ -60,6 +61,7 @@ const router = createBrowserRouter(
         <Route path='candidates/addcandidate' element={<ClientAddCandidate/>}/>
         <Route path='candidates/schedule-interview' element={<ClientScheduleInterview/>}/>
         <Route path='jobs/addjob' element={<AddJob/>}/>
+        <Route path='jobs/jobdetails' element={<JobDetails/>}/>
        
       </Route>
 
