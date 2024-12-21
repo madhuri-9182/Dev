@@ -48,7 +48,12 @@ const router = createBrowserRouter(
         <Route path='settings' element={<Settings />} />
         <Route path='jobs' element={<Jobs />} />
         <Route path='candidates' element={<Candidates />} />
-        <Route path='analytics' element={<Analytics />} />
+        {/* <Route path='analytics' element={<Analytics />} /> */}
+        <Route path='analytics'>
+        <Route path='' element={<Analytics />} />
+        <Route path='filter' element={<AnalyticsDateFilter />} />
+        </Route>
+
         <Route path='integration' element={<Integration />} />
         <Route path='finance' element={<Finance />} />
         <Route path='engagement' element={<Engagement />} />
