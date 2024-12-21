@@ -95,13 +95,10 @@ function Finance() {
    
    const filterDataByDate = () => {
     
-      if (selectedYear<selectedYear2 && selectedMonth<selectedMonth2 && selectedDay<selectedDay2) {
-        alert("Please mention date in correct order ")
-        
-        
-      }else{
+      
     
-    
+        console.log("i roshan");
+        
       const startDate =new Date (`${selectedYear}/${selectedMonth}/${selectedDay}`);
       const endDate =new Date (`${selectedYear2}/${selectedMonth2}/${selectedDay2}`);
       
@@ -111,6 +108,9 @@ function Finance() {
       setFilteredData(data);
       return;
     }
+    if (startDate > endDate ) {
+      alert("roshan")
+    }else{
     
     const filtered = data.filter(item => {
       
