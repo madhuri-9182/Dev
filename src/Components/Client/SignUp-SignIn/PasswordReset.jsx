@@ -90,8 +90,8 @@ const  PasswordReset = ()=> {
                     </div>   
                 </div>
                 <div className='strongSuggestion  ' >
-                  <p className="text-gray-700 text-[Roboto] ">Your password must contain:</p>
-                   <ul className="list-disc pl-5 text-[Roboto] ">
+                  <p className="text-gray-700  ">Your password must contain:</p>
+                   <ul className="list-disc pl-5  ">
             <li className={`flex items-center ${criteria.length ? 'text-[#989DA3] font-semibold' : 'text-[#989DA3] font-semibold'}`}>
               <input type="checkbox" checked={criteria.length} readOnly className="mr-2 accent-green-500  " />
               Between 8 and 20 characters

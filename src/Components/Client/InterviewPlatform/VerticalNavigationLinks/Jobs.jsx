@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useLocation, useNavigate } from 'react-router-dom';
 const styles = {
   body: {
     fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
@@ -145,7 +145,9 @@ const styles = {
   },
 };
 
-const Jobs = () => {
+const Jobs = () =>{
+  const navigate = useNavigate(); // Initialize useNavigate
+  const location = useLocation(); // Initialize useLocation {
   const rows = [
     'SDE-II',
     'SDE-III',
@@ -167,6 +169,8 @@ const Jobs = () => {
             type="text"
             placeholder="Search Client by Name"
             style={styles.searchInput}
+
+            
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -178,24 +182,26 @@ const Jobs = () => {
             <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
           </svg>
         </div>
-        <button style={styles.addJobButton}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="h-5 w-5"
-            style={{ marginRight: '5px' }}
+        <button
+            className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto"
+            onClick={() => navigate(`${location.pathname}/addjob`)}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          <span>Add Jobs</span>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            <span> Add Candidate</span>
+          </button>
       </div>
 
       <div style={styles.filters}>
@@ -240,3 +246,5 @@ const Jobs = () => {
 };
 
 export default Jobs;
+
+

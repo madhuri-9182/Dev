@@ -128,12 +128,12 @@ const LoginUsingEmail = () =>{
                 </button>
             </div>
             <div className='w-full h-[42px] flex items-center justify-center mt-[5%] border-0 shadow-md bg-[#FFFFFF] rounded-[21px] ' >
-                <button onClick={handleLGNNavigation} className='w-full h-[42px] font-[Roboto] font-bold text-[17px] text-[#056DDC] tracking-[6%] leading-[auto] ' >
+                <button onClick={handleLGNNavigation} className='w-full h-[42px]  font-bold text-[17px] text-[#056DDC] tracking-[6%] leading-[auto] ' >
                     Login Using Mobile Number
                 </button>
             </div>
             <div className='w-full h-[42px] flex items-center justify-center mt-[5%] border-0 shadow-md bg-[#FFFFFF] rounded-[21px] ' >
-                <button className='w-full h-[42px] font-[Roboto] font-bold text-[17px] text-[#056DDC] tracking-[6%] leading-[auto] ' >
+                <button className='w-full h-[42px]  font-bold text-[17px] text-[#056DDC] tracking-[6%] leading-[auto] ' >
                     Login Using SSO
                 </button>
             </div>

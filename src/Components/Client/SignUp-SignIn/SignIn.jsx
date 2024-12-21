@@ -21,7 +21,7 @@ function SignIn() {
                 </button>
             </div>
             <div className='w-full h-[42px] flex items-center justify-center mt-[15%] border-0 shadow-md bg-[#FFFFFF] rounded-[21px] ' >
-                <button className='font-[Roboto] font-bold text-[17px] text-[#056DDC] tracking-[6%] leading-[auto] ' >
+                <button className=' font-bold text-[17px] text-[#056DDC] tracking-[6%] leading-[auto] ' >
                     Login Using SSO
                 </button>
             </div>
