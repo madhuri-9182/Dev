@@ -4,8 +4,12 @@ import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 //SignIn-SignUp Imports
 import { SignIn, SignUp, ForgetPass, PasswordReset, SignUpSignInLayout, page, LoginUsingEmail, LoginUsingNumber } from './Components'
+import { ClientAddCandidate } from './Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate'
+import { ClientScheduleInterview } from './Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview'
+import AddJob from './Components/Client/InterviewPlatform/VerticalNavigationLinks/AddJOb'
 // Client Imports
 import { NavigationLayout, Dashboard, Settings, Jobs, Candidates, Analytics,AnalyticsDateFilter, Integration, Finance, Engagement, Message } from './Components'
+
 //Agency Imports
 import { AgencyNavigationLayout,AgencyDashboard,AgencyCandidates,AgencyAddCandidate,AgencyScheduleInterview } from './Components'
 //Internal Imports
@@ -48,6 +52,10 @@ const router = createBrowserRouter(
         <Route path='integration' element={<Integration />} />
         <Route path='finance' element={<Finance />} />
         <Route path='engagement' element={<Engagement />} />
+        <Route path='candidates/addcandidate' element={<ClientAddCandidate/>}/>
+        <Route path='candidates/schedule-interview' element={<ClientScheduleInterview/>}/>
+        <Route path='jobs/addjob' element={<AddJob/>}/>
+       
       </Route>
 
       <Route path='/client/analytics/filter' element={<AnalyticsDateFilter/>} />
