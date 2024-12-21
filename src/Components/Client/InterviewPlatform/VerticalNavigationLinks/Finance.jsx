@@ -109,7 +109,7 @@ function Finance() {
       return;
     }
     if (startDate > endDate ) {
-      alert("roshan")
+      alert("Please mention date in the correct order!!")
     }else{
     
     const filtered = data.filter(item => {
