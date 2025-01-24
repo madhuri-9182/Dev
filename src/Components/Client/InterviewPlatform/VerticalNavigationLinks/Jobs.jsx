@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const styles = {
   body: {
-    fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+    fontFamily: 'Roboto, sans-serif',
     margin: 0,
     padding: '20px',
     backgroundColor: '#fff',
@@ -51,7 +51,7 @@ const styles = {
   select: {
     fontWeight: '600',
     padding: '8px 12px',
-    border: '2px solid black',
+    border: '2px solid #979DA3',
     borderRadius: '15px',
     fontSize: '14px',
     color: '#000',
@@ -60,7 +60,7 @@ const styles = {
   },
   input: {
     padding: '8px 12px',
-    border: '2px solid black',
+    border: '2px solid #979DA3',
     borderRadius: '15px',
     fontSize: '14px',
     color: '#495057',
@@ -78,7 +78,7 @@ const styles = {
     padding: '10px',
   },
   row: {
-    backgroundColor: '#f5f2e6',
+    backgroundColor: '#EBEBEB80',
     borderRadius: '20px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     display: 'flex',
@@ -124,7 +124,7 @@ const styles = {
     transition: 'background-color 0.2s',
   },
   btnArchive: {
-    backgroundColor: '#f5f2e6',
+    backgroundColor: '#FF0000',
     color: 'black',
     border: '1px solid black',
   },
@@ -172,30 +172,25 @@ const Jobs = () => {
   };
 
   return (
-    <div style={styles.body}>
+    <div style={styles.body} className='text-[14px]' >
       <div style={styles.header}>
-        <div style={styles.searchBar}>
-          <input
-            type="text"
-            placeholder="Search Client by Name"
-            style={styles.searchInput}
-          />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#000000"
-          >
-            <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
-          </svg>
-        </div>
+      <div className="flex items-center border-2 border-white bg-gray-100 rounded-full px-4 py-2 w-[360px] hover:border-2 hover:border-blue-500  ">
+            <input
+              type="text"
+              placeholder="Search Client by name"
+              className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
+            />
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
+          </div>
+        <div className=' h-[45px] w-[120px] flex items-center ' >
         <button
+          className=' border-[3px] border-white bg-gradient-to-r bg-from-[#0575E6]-via-[#295cde]-to-[#133bca] hover:border-[3px] hover:border-blue-500 hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca]  '
           style={styles.addJobButton}
           onClick={() => navigate(`${location.pathname}/addjob`)}
         >
          + Add Job
         </button>
+        </div>
       </div>
 
       <div style={styles.filters}>
@@ -214,26 +209,32 @@ const Jobs = () => {
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
-        <input type="date" style={styles.input} />
+        <input type="date" style={styles.input} className='text-black' />
       </div>
-
-      <div style={styles.table}>
+      
+      <div style={styles.table}  >
         {rows.map((row, index) => (
-          <div key={index} style={styles.row}>
-            <div style={styles.nameColumn}>{row}</div>
-            <div style={styles.btnGroup}>
-              <button style={styles.btn} onClick={() => navigate(`${location.pathname}/jobdetails`)}>View</button>
-              <button style={styles.btn}>+ Add Candidate</button>
+          <div key={index}  className='h-12 bg-[#EBEBEB80] rounded-[20px] shadow-md flex items-center justify-between mb-[10px] px-[10px] py-[20px] gap-[10px] font-semibold transition-all ease-linear delay-150 hover:-translate-y-[3px] hover:scale-40 hover:bg-[#ebebeb82] hover:border-[1px] hover:border-gray-400  '  >
+            <div style={styles.nameColumn} className='text-[14px] font-normal' >{row}</div>
+            <div  className="flex gap-2 transform -translate-x-8"  >
+              <button className="px-4 py-1 text-sm text-yellow-500 bg-yellow-50  border-[1px] border-yellow-500 rounded-full cursor-pointer duration-200 transition ease-linear delay-150 hover:-translate-y-1 hover:scale-40  "
+              onClick={() => navigate(`${location.pathname}/jobdetails`)}>View</button>
+              <button  className="px-4 py-1 text-sm text-blue-600 border-[1px] border-blue-600 bg-blue-100  rounded-full cursor-pointer transition-all ease-linear delay-150 hover:-translate-y-1 hover:scale-40 
+               ">+ Add Candidate</button>
               <button
-                style={{ ...styles.btn, ...styles.btnArchive }}
+                
+                 className="px-4 py-1 text-sm text-red-500 bg-red-100  border-[1px] border-red-500 rounded-full cursor-pointer  duration-200 transition ease-linear delay-150 hover:-translate-y-1 hover:scale-40 "
                 onClick={handleArchiveClick}
               >
                 Archive
               </button>
+             
+
             </div>
-            <div style={styles.badgeContainer}>
-              <span style={styles.badge}>Active Candidates</span>
-              <div style={styles.circle}>29</div>
+            <div  className=' flex items-center gap-[10px] ml-auto ' >
+              <span className='px-3 py-1  font-normal text-[#000000] text-center inline-block min-w-[120px] rounded-full'>Active Candidates</span>
+              <div  className="w-6 h-6 rounded-full bg-white text-[#979DA3] border-[2px] border-[#979DA3] flex items-center justify-center text-sm font-semibold 
+               " >29</div>
             </div>
           </div>
         ))}
@@ -277,6 +278,7 @@ const Jobs = () => {
                 marginRight:"10px"
               }}
               onClick={closeModal}
+              
             >
               Cancel
             </button>

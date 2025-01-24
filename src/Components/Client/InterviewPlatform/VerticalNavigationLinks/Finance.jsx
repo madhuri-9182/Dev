@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+
+
+
 function Finance() {
   const data = [
     {
@@ -130,7 +133,7 @@ function Finance() {
 
 
   return (
-    <div className='w-full h-screen text-[14px]'>
+    <div className='w-full h-screen text-[14px]  '>
       <div className='w-full h-screen'>
         <div className='w-full flex font-semibold text-[20px] p-4'>
           <div className='w-[50%]'>{isDataRangeEntered? "Past Payments": "Current Dues"}</div>
@@ -138,7 +141,7 @@ function Finance() {
         </div>
         <div className='w-full  flex mt-6 gap-16  '>
           <div className='w-[75%]'>
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left ">
               <thead className='text-black'>
                 <tr className='border-b-[3px] border-[#4F4F4F] ' >
                   <th className='py-2 px-4 max-w-max  text-[15px] font-bold'>Candidate</th>
@@ -148,16 +151,18 @@ function Finance() {
                   <th className='py-2 px-4 max-w-max  text-[15px] font-normal'>AMOUNT</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className=''  >
+                
                 {filteredData.map((data, index) => (  
-                  <tr key={index} className={`${index % 2 === 0 ? "" : (isDataRangeEntered ? "bg-[#FFC7001F] ": "bg-[#E5ECF6]" ) } h-[91px] border-b border-gray-300 `}>
-                    <td className='py-3 px-4 max-w-max font-bold text-[15px]'>{data.Candidate}</td>
+                  <tr key={index} className={`${index % 2 === 0 ? "bg-[#EBEBEB80]" : (isDataRangeEntered ? "bg-[#EBEBEB80] ": "bg-[#EBEBEB80]" ) } h-[91px]  border-b border-gray-300  `}>
+                    <td className='py-3 px-4 max-w-max font-bold text-[15px] mb-2 '>{data.Candidate}</td>
                     <td className='py-3 px-4 max-w-max'>{data.Role}</td>
                     <td className='py-3 px-4 max-w-max'>{data.Experience}</td>
                     <td className='py-3 px-4 max-w-max'>{data.Date}</td>
                     <td className='py-3 px-4 max-w-max'>{data.Amount}</td>
                   </tr>
                 ))}
+                
               </tbody>
             </table>
           </div>
@@ -169,73 +174,44 @@ function Finance() {
           <div className='w-[25%] bg-[#E7E4E8CC] border rounded-[16px]'>
             <div className='flex items-center justify-center p-2 text-[#1C1C1C] text-[20px] font-semibold'>{isDataRangeEntered ? 'Duration': "Past Payments"}</div>
             <div className='space-y-4 mt-10'>
-              <div className=' w-full flex justify-end items-center' >
-                <span className='w-[20%]  flex justify-end ' >From:</span>  
-                <div className=" w-[80%]  lg:flex lg:flex-wrap md:grid md:grid-cols-2 flex-wrap items-center justify-center  gap-2 "> 
-                  
-                  <select
-                    className={` h-[35px] border border-gray-300 rounded-md p-2  `}                       value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))} >
-                      {months.map((month, index) => ( 
-                        <option key={month} value={index + 1}> {month} </option> 
-                        ))} 
-                  </select> 
-                  <select 
-                    className=" h-[35px]  border border-gray-300 rounded-md " 
-                    onChange={(e)=> setSelectedDay(parseInt(e.target.value))}
-                    value={selectedDay}
-                    >     
-                    {days.map((day) => (
-                      <option key={day} value={day}> {day} </option>
-                      ))} 
-                  </select> 
-                  <select 
-                    className=" h-[35px] border border-gray-300 rounded-md " value={selectedYear} onChange={(e) => setSelectedYear(parseInt(e.target.value))} >
-                      {years.map((year)=>(
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                  </select>
-                  
-                  
-                </div>
-              </div>  
-              <div className=' w-full flex justify-center items-center ' >
-                <span className='w-[20%] flex justify-end ' >To:</span>  
-                <div className=" w-[80%] lg:flex lg:flex-wrap md:grid md:grid-cols-2 flex-wrap items-center justify-center  gap-2 "> 
-                  
-                  <select
-                    className=" h-[35px] border border-gray-300 rounded-md p-2" value={selectedMonth2} onChange={(e) => setSelectedMonth2(parseInt(e.target.value))} >
-                      {months.map((month, index) => ( 
-                        <option key={month} value={index + 1}> {month} </option> 
-                        ))} 
-                  </select> 
-                  <select 
-                    className=" h-[35px]  border border-gray-300 rounded-md "
-                    value={selectedDay2}
-                    onChange={(e)=>setSelectedDay2(parseInt(e.target.value))} >     
-                    {days2.map((day) => (
-                      <option key={day} value={day}> {day} </option>
-                      ))} 
-                  </select> 
-                  <select 
-                    className=" h-[35px] border border-gray-300 rounded-md " value={selectedYear2} onChange={(e) => setSelectedYear2(parseInt(e.target.value))} >
-                      {years.map((year)=>(
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                  </select>
-                  
-                  
-                </div>
-              </div>  
-              
-              
+              <div className=' w-full flex justify-center items-center  ' >
+                
+                <div className=" w-[70%] flex flex-col items-center justify-center  gap-2 "> 
+                  <div className='grid grid-cols-[1fr_2fr]  items-center gap-x-2 ' >
+                    <span className='flex justify-end items-center font-bold ' >Year </span>
+                    <select
 
-              <div className='w-full flex items-center justify-center'>
-                <div className='w-[79px] h-[32px] flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-normal'>
-                  <button className='w-full h-full  flex justify-center items-center ' onClick={filterDataByDate}>
-                    Go
+                      className="w-[100px] h-[35px] text-center border border-gray-300 rounded-md hover:border-2 hover:border-[#007AFF] focus:outline-none"
+                      value={selectedYear} onChange={(e) => setSelectedYear(parseInt(e.target.value))} >
+                      {years.map((year) => (
+                        <option key={year} value={year}  > {year} </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className='grid grid-cols-[1fr_2fr]  items-center gap-x-2 ' >
+                    <span className='flex justify-end items-center font-bold' >Month</span>
+                  <select
+                    className={`w-[100px] h-[35px] text-center border border-gray-300 rounded-md p-2 hover:border-2 hover:border-[#007AFF] focus:outline-none`}                       value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))} >
+                      {months.map((month, index) => ( 
+                        <option key={month} value={index + 1}> {month} </option> 
+                        ))} 
+                  </select> 
+                  </div>
+
+                        
+
+                  <div className='w-[130px] h-[32px] mt-4 mb-1 flex justify-center items-center bg-[#007AFF] border-2 transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... rounded-[100px] text-[#FFFFFF] font-normal'>
+                  <button className='w-full h-full  flex justify-center items-center ' onClick="#">
+                    <span className='mr-1' >
+                    <svg width="20px" height="17px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g fill="#ffffff"> <path d="M8.75 1.75a.75.75 0 00-1.5 0v6.59L5.3 6.24a.75.75 0 10-1.1 1.02L7.45 10.76a.78.78 0 00.038.038.748.748 0 001.063-.037l3.25-3.5a.75.75 0 10-1.1-1.02l-1.95 2.1V1.75z"></path> <path d="M1.75 9a.75.75 0 01.75.75v3c0 .414.336.75.75.75h9.5a.75.75 0 00.75-.75v-3a.75.75 0 011.5 0v3A2.25 2.25 0 0112.75 15h-9.5A2.25 2.25 0 011 12.75v-3A.75.75 0 011.75 9z"></path> </g> </g></svg> 
+                    </span>
+                    <span>Past Receipt</span>
+
                   </button>
                 </div>
-              </div>
+                </div>
+              </div>  
+              
             </div>
           </div>
 
@@ -244,7 +220,7 @@ function Finance() {
         </div>
         <div className=' w-full  flex p-4 gap-16  ' >
         <div className='w-[75%]  flex items-center justify-end '>
-          <div className='w-[111px] h-[32px] p-2 flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-normal'>
+          <div className='w-[111px] h-[32px] p-2 flex justify-center items-center transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-normal'>
             <button>Download</button>
           </div>
         </div>

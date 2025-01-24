@@ -27,7 +27,7 @@ const AddJob = () => {
     formRow: {
       display: 'flex',
       flexDirection: 'row',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: '10px',
     },
@@ -35,8 +35,11 @@ const AddJob = () => {
       fontSize: '14px',
       fontWeight: 600,
       width: '35%',
+      height:'100%',
       marginRight: '20px',
       textAlign: 'right',
+      alignItems:'center',
+      justifyContent:'center',
     },
     input: {
       fontSize: '14px',
@@ -44,6 +47,7 @@ const AddJob = () => {
       borderRadius: '6px',
       border: '1px solid #ccc',
       width: '60%',
+      
     },
     select: {
       fontSize: '14px',
@@ -61,7 +65,7 @@ const AddJob = () => {
       padding: '10px',
       marginBottom: '10px',
       cursor: 'pointer',
-      background:"#f5f2e6"
+      
     },
     uploadIcon: {
       marginRight: '5px',
@@ -126,15 +130,16 @@ const AddJob = () => {
   const hiringManagers = ['Michael Scott', 'Dwight Schrute', 'Jim Halpert'];
 
   return (
-    <div style={styles.container}>
-      <div style={styles.formRow}>
-        <label style={styles.label}>Job Role</label>
-        <input type="text" value="SDE III" readOnly style={styles.input} />
+    <div className='flex gap-x-14' >
+    <div style={styles.container}   >
+      <div style={styles.formRow} className='' >
+        <label style={styles.label} className='' >Job Role</label>
+        <input className='' type="text" value="SDE III" readOnly style={styles.input}  />
       </div>
 
       <div style={styles.formRow}>
         <label style={styles.label}>Job ID</label>
-        <input type="text" placeholder="Optional" style={styles.input} />
+        <input type="text" placeholder="Optional" style={styles.input} className='text-black' />
       </div>
 
       <div style={styles.formRow}>
@@ -174,10 +179,10 @@ const AddJob = () => {
         </select>
       </div>
 
-      <div style={styles.formRow}>
+      <div style={styles.formRow}  >
   <label style={styles.label}>Job Description</label>
   <div style={{ width: '60%' }}>
-    <div style={styles.uploadBox}>
+    <div style={styles.uploadBox} className='hover:bg-gray-100' >
       <img
         src="https://img.icons8.com/?size=100&id=6b7l1lBTegrx&format=png&color=000000"
         alt="Upload Icon"
@@ -221,6 +226,29 @@ const AddJob = () => {
       </div>
 
       <button style={styles.saveButton}>Save</button>
+    </div>
+    <div style={styles.container}   >
+
+        <div style={styles.formRow}>
+          <label style={styles.label}  >Add Questions:</label>
+          <div style={{ width: '60%' }}>
+            <div style={styles.uploadBox} className='hover:bg-gray-100 '>
+              <img
+                src="https://img.icons8.com/?size=100&id=6b7l1lBTegrx&format=png&color=000000"
+                alt="Upload Icon"
+                style={styles.uploadIconImage}
+              />
+              Upload Questions
+            </div>
+            <textarea
+              placeholder="Add Questions"
+              rows="4"
+              style={styles.textarea}
+            ></textarea>
+          </div>
+        </div>
+
+    </div>
     </div>
   );
 };

@@ -21,7 +21,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
   '& .MuiDialog-paper': {
-    width: '515px', // Customize width as needed
+    width: '350px', // Customize width as needed
   },
 }));
 
@@ -109,7 +109,8 @@ function Settings() {
       {/* Add User Button */}
       <div className="w-full flex items-center justify-end">
         <button
-          className="border p-1 px-4 rounded-full bg-[#056DDC] text-sm font-medium text-white w-[125px] h-[40px]"
+          className=" p-1 px-4 rounded-full bg-[#056DDC] text-sm font-medium  text-white w-[125px] h-[40px]
+           border-[3px] border-white bg-gradient-to-r bg-from-[#0575E6]-via-[#295cde]-to-[#133bca] hover:border-[3px] hover:border-blue-500 hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca]"
           onClick={handleAddUserOpen}
         >
           + Add User
@@ -130,7 +131,7 @@ function Settings() {
           <IconButton
             aria-label="close"
             onClick={handleAddUserClose}
-            sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+            sx={{ position: 'absolute', right: 8, top: 8, color: '#E32636'}}
           >
             <CloseIcon />
           </IconButton>
@@ -206,13 +207,13 @@ function Settings() {
         <DialogActions>
         <button
             onClick={handleAddUserClose}
-            className="text-[#4A4459] border py-1 px-3 rounded-full bg-[#E8DEF8]"
+            className="text-white border-[3px] py-1 px-3 rounded-full bg-[#E32636]  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#E32636] via-[#D2122E] to-[#EF0107] duration-300 ...  "
           >
             Delete
           </button>
           <button
             onClick={handleAddUserClose}
-            className="text-white border py-1 px-3 rounded-full bg-[#056DDC]"
+            className="text-white border-[3px] py-1 px-3 rounded-full  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF]"
           >
             Save
           </button>
@@ -236,16 +237,16 @@ function Settings() {
             {data.map((user, index) => (
               <tr
                 key={index}
-                className={`${index % 2 === 0 ? '' : 'bg-[#FFF8E0]'
+                className={`${index % 2 === 0 ? 'bg-[#EBEBEB80]' : 'bg-[#EBEBEB80]'
                   } h-[80px] border-b-2`}
               >
-                <td className="py-3 px-4 font-semibold text-sm">{user.name}</td>
+                <td className="py-3 px-4 font-semibold text-sm ">{user.name}</td>
                 <td className="py-3 px-4">{user.emailid}</td>
                 <td className="py-3 px-4">{user.usertype}</td>
                 <td className="py-3 px-4">{user.accessibility}</td>
                 <td className="py-3 px-4">{user.date}</td>
                 <td className="py-3 px-4">
-                  <div className='w-full flex items-center justify-around'>
+                  <div className='w-full flex items-center justify-around '>
 
 
                     <button
@@ -253,20 +254,20 @@ function Settings() {
                       onClick={() => { handleEditUserOpen(user.name, user.email) }}
                     >
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#4B4B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#4B4B4B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#4B4B4B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
                       </svg>
 
                     </button>
-
+                   
                     <button className='hover:scale-110 hover:duration-150'>
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M8.6084 13.75H11.3834" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M7.9165 10.4165H12.0832" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /> 
+                        <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M8.6084 13.75H11.3834" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M7.9165 10.4165H12.0832" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                       </svg>
 
                     </button>
@@ -294,7 +295,7 @@ function Settings() {
           <IconButton
             aria-label="close"
             onClick={handleEditUserClose}
-            sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+            sx={{ position: 'absolute', right: 8, top: 8, color: '#E32636' }}
           >
             <CloseIcon />
           </IconButton>
@@ -363,8 +364,7 @@ function Settings() {
         <DialogActions>
           <button
             onClick={handleEditUserClose}
-            className="text-white border py-1 px-3 rounded-full bg-[#056DDC]"
-          >
+            className="text-white border-[3px] py-1 px-3 rounded-full  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF] ">
             SAVE
           </button>
         </DialogActions>
