@@ -17,6 +17,11 @@ const JobDetails = () => {
   };
 
   const styles = {
+    
+      shadow1: {
+        boxShadow: '0 0px 6px #f0dcfc, 0 -0px 6px #f0dcfc, 0px 0 0px #f0dcfc, -0px 0 6px #f0dcfc'
+      },
+    
     container: {
       fontFamily: "Arial, sans-serif",
       width: "100%",
@@ -144,7 +149,7 @@ const JobDetails = () => {
 
       <div style={styles.formRow}>
         <label style={styles.label}>Job Description</label>
-        <div style={styles.uploadBox}>Click to View</div>
+        <div style={{...styles.shadow1}} className='flex items-center justify-center border-[3px] border-solid border-gray-300 rounded-[20px] p-2 mb-2 cursor-pointer bg-[#f0dcfc] w-[40%] transition ease-linear delay-150 hover:-translate-y-1 hover:scale-100 hover:border-[3px] hover:bg-gradient-to-r from-[#dda1ff] via-[#dfb5f8ef] to-[#f0dcfcda] duration-300 ... ' >Click to View</div>
       </div>
 
       <div style={styles.formRow}>
@@ -158,7 +163,7 @@ const JobDetails = () => {
               </option>
             ))}
           </select>
-          <button style={styles.saveButton}>Make Active</button>
+          <button  className="block mt-4 p-2 bg-[#f0dcfc] text-black border-none rounded-[20px] text-[16px] cursor-pointer text-center mb-5 transition ease-linear delay-150 hover:-translate-y-1 hover:scale-100 hover:border-[3px] hover:bg-gradient-to-r from-[#dda1ff] via-[#dfb5f8ef] to-[#f0dcfcda] duration-300 hover:border-[#dfb5f8ef] ... " >Make Active</button>
         </div>
       </div>
 
@@ -170,7 +175,7 @@ const JobDetails = () => {
           <div></div>
         </div>
         {rows.map((row, index) => (
-          <div key={index} style={styles.tableRow}>
+          <div key={index} style={styles.tableRow} className='transition-all ease-linear delay-150 hover:-translate-y-[3px] hover:scale-40 hover:bg-[#ebebeb82] hover:border-[1px] hover:border-[#fcd740] ' >
             <div>{row.detail}</div>
             <div>{row.time}</div>
             <div>
@@ -181,11 +186,11 @@ const JobDetails = () => {
               </ul>
             </div>
             <div style={{ textAlign: "center" }}>
-              <button style={styles.editButton}>
+              <button style={styles.editButton} className='shadow-lg transition ease-linear delay-150 hover:-translate-y-1 hover:scale-100 hover:border-[3px] duration-300 hover:border-[#ec5555ef] ... ' >
                 <img
                   src="https://img.icons8.com/?size=100&id=49&format=png&color=000000"
                   alt="Edit"
-                  style={styles.editIcon}
+                  style={styles.editIcon} className=' '
                 />
               </button>
             </div>

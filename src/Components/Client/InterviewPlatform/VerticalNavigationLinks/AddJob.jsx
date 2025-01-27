@@ -225,7 +225,7 @@ const AddJob = () => {
         </div>
       </div>
 
-      <button style={styles.saveButton}>Save</button>
+      <button  className="block w-[15%] ml-[500px] p-2  text-white border-none rounded-[20px] text-[16px] cursor-pointer text-center  border-[3px] py-1 px-3   transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF] "  >Save</button>
     </div>
     <div style={styles.container}   >
 

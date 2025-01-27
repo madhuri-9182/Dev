@@ -194,18 +194,21 @@ const Jobs = () => {
       </div>
 
       <div style={styles.filters}>
-        <select style={styles.select}>
+        <select style={styles.select}  className='text-center  ' >
+          <option value="ALL">All</option>
           <option value="SDE-II">SDE-II</option>
           <option value="SDE-III">SDE-III</option>
         </select>
-        <select style={styles.select}>
+        <select style={styles.select}  className='text-center' >
+          <option value="ALL">All</option>
           <option value="User">User</option>
           <option value="Admin">Admin</option>
         </select>
-        <select style={styles.select}>
+        <select style={styles.select}  className='text-center' >
           <option value="Hiring Manager">Hiring Manager</option>
         </select>
-        <select style={styles.select}>
+        <select style={styles.select} className='text-center' >
+          <option value="ALL">All</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>

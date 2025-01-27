@@ -22,6 +22,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
   '& .MuiDialog-paper': {
     width: '350px', // Customize width as needed
+    borderRadius: '20px',
   },
 }));
 
@@ -131,7 +132,9 @@ function Settings() {
           <IconButton
             aria-label="close"
             onClick={handleAddUserClose}
-            sx={{ position: 'absolute', right: 8, top: 8, color: '#E32636'}}
+            sx={{ position: 'absolute', right: 8, top: 8, color: 'grey','&:hover': {
+        backgroundColor: '#F22129', color: 'white' 
+      }}}
           >
             <CloseIcon />
           </IconButton>
@@ -207,9 +210,9 @@ function Settings() {
         <DialogActions>
         <button
             onClick={handleAddUserClose}
-            className="text-white border-[3px] py-1 px-3 rounded-full bg-[#E32636]  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#E32636] via-[#D2122E] to-[#EF0107] duration-300 ...  "
+            className="text-white border-[3px] py-1 px-3 rounded-full bg-[#F22129]  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#E32636] via-[#D2122E] to-[#EF0107] duration-300 ...  "
           >
-            Delete
+            Cancel
           </button>
           <button
             onClick={handleAddUserClose}
@@ -295,7 +298,9 @@ function Settings() {
           <IconButton
             aria-label="close"
             onClick={handleEditUserClose}
-            sx={{ position: 'absolute', right: 8, top: 8, color: '#E32636' }}
+            sx={{ position: 'absolute', right: 8, top: 8, color: 'grey','&:hover': {
+              backgroundColor: '#F22129', color: 'white' 
+            }}}
           >
             <CloseIcon />
           </IconButton>
@@ -365,7 +370,7 @@ function Settings() {
           <button
             onClick={handleEditUserClose}
             className="text-white border-[3px] py-1 px-3 rounded-full  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF] ">
-            SAVE
+            Save
           </button>
         </DialogActions>
       </BootstrapDialog>
