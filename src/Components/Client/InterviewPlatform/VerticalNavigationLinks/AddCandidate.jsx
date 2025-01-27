@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
 function AddCandidate() {
-    
+
     const navigate = useNavigate();
     const [selectedFilters, setSelectedFilters] = useState({
         role: "All",
@@ -278,7 +278,7 @@ function AddCandidate() {
                     // Initial state with the two buttons
                     <div className="mt-9 w-full flex flex-col items-center justify-evenly border border-red-500 py-5">
                         <h1 className="text-lg text-red-500 font-bold">
-                        Added temporarily until the API is ready.
+                            Added temporarily until the API is ready.
                         </h1>
                         <div className="w-full flex items-center justify-around">
                             <button
@@ -305,12 +305,13 @@ function AddCandidate() {
                                 checked={selectAll}
                                 onChange={handleSelectAll}
                             />
-                            <div className="flex-1 grid grid-cols-[1fr_1fr_1fr_1.5fr_1fr] gap-2 text-sm text-gray-700 ml-4">
+                            <div className="flex-1 grid grid-cols-[1fr_1fr_1fr_1.5fr_1.2fr_1fr] gap-2 text-sm text-gray-700 ml-4">
                                 <div>Name</div>
                                 <div>Experience</div>
                                 <div>Mobile Number</div>
                                 <div className="truncate">Email ID</div>
                                 <div>Company</div>
+                                <div></div>
                             </div>
                         </div>
 
@@ -326,9 +327,9 @@ function AddCandidate() {
                                             checked={item.isSelected}
                                             onChange={() => handleIndividualSelect(index)}
                                         />
-                                        <div className="flex-1 grid grid-cols-[1fr_1fr_1fr_1.5fr_1fr] gap-2 text-sm text-gray-700 ml-4">
+                                        <div className="flex-1 grid grid-cols-[1fr_1fr_1fr_1.5fr_1.2fr_1fr] gap-2 text-sm text-gray-700 ml-4">
                                             <button className="flex items-center justify-between group-hover:text-[#056DDC] group-hover:font-semibold group-hover:duration-200"
-                                             onClick={() => navigate("/client/candidates/schedule-interview", { state: { item } })}
+
                                             >
                                                 {item.name}
                                             </button>
@@ -343,19 +344,46 @@ function AddCandidate() {
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <div>{item.company}</div>
-                                                <button className="text-gray-500 hover:text-indigo-600 rounded-lg shadow-md hover:scale-110 hover:duration-150">
+                                            </div>
+                                            <div className='flex items-center justify-around'>
+                                                <button className="text-gray-500 hover:text-indigo-600 rounded-lg hover:scale-110 hover:duration-150">
                                                     <svg
                                                         width="28"
                                                         height="28"
                                                         viewBox="0 0 28 28"
                                                         fill="none"
                                                         xmlns="http://www.w3.org/2000/svg"
+                                                        style={{ filter: "drop-shadow(4px 6px 8px rgba(0, 0, 0, 0.2))" }}
                                                     >
                                                         <path
                                                             d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z"
                                                             fill="#65558F"
                                                         />
                                                     </svg>
+                                                </button>
+
+                                                <button
+                                                    className="text-gray-500 hover:text-indigo-600 rounded-lg hover:scale-110 hover:duration-150"
+                                                    onClick={() => {
+                                                        const url = `/client/candidates/schedule-interview`;
+                                                        const stateData = encodeURIComponent(JSON.stringify({ item }));
+                                                        window.open(`${url}?state=${stateData}`, '_blank');
+                                                    }}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#75FB4C">
+                                                        <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                                                    </svg>
+                                                </button>
+
+                                                <button className="text-gray-500 hover:text-indigo-600 rounded-lg hover:scale-110 hover:duration-150">
+                                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="red" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="red" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="red" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M8.6084 13.75H11.3834" stroke="red" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                        <path d="M7.9165 10.4165H12.0832" stroke="red" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+
                                                 </button>
                                             </div>
                                         </div>

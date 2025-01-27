@@ -12,7 +12,7 @@ function Candidates() {
 
   const role = ["SDE II", "SDE III", "SDET I", "EM", "SDE I - Frontend", "SDE II - Frontend"];
   const status = ["All", "Recommended", "Not Recommended", "Scheduled", "Not Scheduled"];
-// All
+  // All
   const handleSelect = (category, value) => {
     setSelectedFilters((prev) => ({
       ...prev,
@@ -135,25 +135,44 @@ function Candidates() {
     },
   ]);
 
+
+  const itemsPerPage = 6; // Number of items per page
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Calculate the indices for slicing the data
+  const totalPages = Math.ceil(people.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = people.slice(startIndex, endIndex);
+
   return (
     <div className='flex flex-col gap-y-4'>
       <div>
         <div className="flex flex-col w-full justify-end sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0 ml-auto">
           {/* Search Input */}
-          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-[446px]">
+          <div className="flex items-center rounded-full px-4 py-2 w-[446px] border-gray-300 border focus-within:border-blue-700">
             <input
               type="text"
               placeholder="Search job by Name, Email & Mobile Number"
               className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
             />
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#000000"
+            >
+              <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+            </svg>
           </div>
+
+
 
           {/* Add Client Button */}
           <button
-            className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto"
-            onClick={() => navigate(`${location.pathname}/addcandidate`)}
-          >
+            className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto shadow-[2px_4px_15px_rgba(5,109,220,0.5)]"
+            onClick={() => navigate(`${location.pathname}/addcandidate`)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -184,34 +203,32 @@ function Candidates() {
 
 
 
-      <div className='w-full flex items-center justify-evenly'>
-        <div className='w-[98%] grid grid-cols-5 gap-x-5 justify-evenly'>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>Total Candidates</span>
-            <span className='text-[24px] font-semibold' >750</span>
-
+      <div className="w-full flex items-center justify-evenly">
+        <div className="w-[98%] grid grid-cols-5 gap-x-5 justify-evenly">
+          <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
+            <span className="text-sm text-black font-extralight">Total Candidates</span>
+            <span className="text-[24px] font-semibold">750</span>
           </div>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>To be Scheduled</span>
-            <span className='text-[24px] font-semibold' >26</span>
-
+          <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
+            <span className="text-sm text-black font-extralight">To be Scheduled</span>
+            <span className="text-[24px] font-semibold">26</span>
           </div>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>In Progress</span>
-            <span className='text-[24px] font-semibold'>56</span>
-
-          </div> <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>Recommended</span>
-            <span className='text-[24px] font-semibold' >26</span>
-
+          <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
+            <span className="text-sm text-black font-extralight">In Progress</span>
+            <span className="text-[24px] font-semibold">56</span>
           </div>
-          <div className='p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] rounded-lg'>
-            <span className='text-sm text-black font-extralight'>Rejected</span>
-            <span className='text-[24px] font-semibold' >200</span>
-
+          <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
+            <span className="text-sm text-black font-extralight">Recommended</span>
+            <span className="text-[24px] font-semibold">26</span>
+          </div>
+          <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
+            <span className="text-sm text-black font-extralight">Rejected</span>
+            <span className="text-[24px] font-semibold">200</span>
           </div>
         </div>
       </div>
+
+
 
 
 
@@ -318,11 +335,14 @@ function Candidates() {
 
 
       <div>
-        {people.map((person, index) => (
+        {currentData.map((person, index) => (
           <div key={index}>
             <hr className="bg-[F4F4F4] w-[98%] h-[1px] rounded-full" />
             <div className="w-full flex items-center justify-evenly">
-              <div className="w-[98%] h-[80px] grid grid-cols-5 gap-x-5 justify-evenly">
+              <div
+                className="w-[98%] h-[80px] grid gap-x-5"
+                style={{ gridTemplateColumns: "1.2fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1.2fr" }}
+              >
                 {/* Name and Status */}
                 <div className="flex flex-col items-start justify-evenly">
                   <div className="text-sm font-semibold text-[#056DDC]">
@@ -330,12 +350,12 @@ function Candidates() {
                   </div>
                   <div
                     className={`text-sm text-black px-2 py-[2px] rounded-lg text-center ${person.status === "Recommended"
-                      ? "bg-[#2ECC71]"
-                      : person.status === "Not Recommended"
-                        ? "bg-[#B10E0E] text-white"
-                        : person.status === "Scheduled"
-                          ? "bg-[#DF8C0F] text-white"
-                          : "bg-[#C4C4C4]"
+                        ? "bg-[#2ECC71]"
+                        : person.status === "Not Recommended"
+                          ? "bg-[#B10E0E] text-white"
+                          : person.status === "Scheduled"
+                            ? "bg-[#DF8C0F] text-white"
+                            : "bg-[#C4C4C4]"
                       }`}
                   >
                     {person.status}
@@ -343,21 +363,15 @@ function Candidates() {
                 </div>
                 {/* Role */}
                 <div className="flex items-center justify-center">
-                  <div className="text-sm text-black text-center">
-                    {person.role}
-                  </div>
+                  <div className="text-sm text-black text-center">{person.role}</div>
                 </div>
                 {/* Type */}
                 <div className="flex items-center justify-center">
-                  <div className="text-sm text-black text-center">
-                    {person.type}
-                  </div>
+                  <div className="text-sm text-black text-center">{person.type}</div>
                 </div>
                 {/* Date */}
                 <div className="flex items-center justify-center">
-                  <div className="text-sm text-black text-center">
-                    {person.date}
-                  </div>
+                  <div className="text-sm text-black text-center">{person.date}</div>
                 </div>
                 {/* Score */}
                 <div className="flex items-center justify-center">
@@ -366,12 +380,80 @@ function Candidates() {
                       Score: {person.score}/500
                     </div>
                   )}
+                  {person.status === "Scheduled" && (
+                    <button className="ml-3 px-3 py-1 text-sm rounded-xl bg-[#E8DEF8]">
+                      Reschedule
+                    </button>
+                  )}
+                </div>
+                {/* New Column 1 */}
+                <div className="flex items-center justify-center">
+                  <div className="text-sm text-black text-center">
+                    {person.status === "Recommended" && (
+                      <button className="ml-3 px-3 py-1 text-sm border border-gray-400 rounded-lg flex">
+                        Archived
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M9.99992 12.4997L5.83325 8.33301H14.1666L9.99992 12.4997Z" fill="#1D1B20" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {/* New Column 2 */}
+                <div className="flex items-center justify-center">
+                  <div className="text-sm text-black text-center">
+                    {person.status === "Recommended" && (
+                      <button className="ml-3 px-3 py-1 text-sm rounded-[10px] bg-[#E8DEF8]">
+                        Push to Engagement
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         ))}
+
+        {/* Pagination Controls */}
+        {people.length > itemsPerPage && (
+          <div className="flex justify-center items-center mt-4 space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 text-sm rounded-md ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#056DDC] text-white"
+                }`}
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 text-sm rounded-md ${currentPage === i + 1 ? "bg-[#056DDC] text-white" : "bg-gray-100"
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 text-sm rounded-md ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#056DDC] text-white"
+                }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
+
+
 
 
     </div>

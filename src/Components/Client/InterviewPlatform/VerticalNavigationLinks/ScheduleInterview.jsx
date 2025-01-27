@@ -7,7 +7,13 @@ function ScheduleInterview() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { item } = location.state || {};
+
+  // Extract the 'state' query parameter from the URL
+  const queryParams = new URLSearchParams(location.search);
+  const stateData = queryParams.get('state');
+
+  // Parse the state data if it's available
+  const item = stateData ? JSON.parse(decodeURIComponent(stateData)) : null;
 
   const [timeSlots, setTimeSlots] = useState([
     { time: "10 AM", available: "yes" },
@@ -227,13 +233,13 @@ function ScheduleInterview() {
 
         <div className='mt-8 flex items-center justify-end gap-x-4'>
           <button className='text-sm border border-[#79747E] text-[#65558F] w-[143px] h-[40px] rounded-full'
-           onClick={() => navigate('/agency/candidates')}
+            onClick={() => navigate('/agency/candidates')}
           >Drop Candidate</button>
           <button className='text-sm bg-[#E8DEF8] text-[#4A4459] w-[143px] h-[40px] rounded-full'
-           onClick={() => navigate('/agency/candidates')}
+            onClick={() => navigate('/agency/candidates')}
           >Schedule Later</button>
           <button className='text-sm bg-[#007AFF]  text-white w-[143px] h-[40px] rounded-full'
-           onClick={() => navigate('/agency/candidates')}
+            onClick={() => navigate('/agency/candidates')}
           >Confirm</button>
         </div>
 
