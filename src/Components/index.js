@@ -51,6 +51,7 @@ import Layout from "./Interviewer/Layout";
 import Calendar from "./Interviewer/Calendar";
 import InterviewRecord from "./Interviewer/InterviewRecord";
 import Payments from "./Interviewer/Payments";
+import  {Feedback}  from "./Interviewer/Feedback";
 
 
 //SignIn-SignUp Exports
@@ -68,7 +69,7 @@ export { AgencyNavigationLayout,AgencyDashboard, AgencyCandidates,AgencyAddCandi
 export {InternalNavigationLayout,InternalDashboard,InternalClients,InternalInterviewer,InternalUsers,InternalAgreements,InternalFinance,InternalEngagement,InternalMessages}
 
 //Interviewer Exports
-export {Layout,Calendar,InterviewRecord,Payments}
+export {Layout,Calendar,InterviewRecord,Payments,Feedback}
 
 
 

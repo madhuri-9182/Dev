@@ -19,6 +19,8 @@ import {InternalNavigationLayout,InternalDashboard,InternalClients,InternalInter
 import { Layout, Calendar, InterviewRecord, Payments } from './Components'
 import { Hello } from './Components'
 import { InternalAddInterviewer } from './Components/Internal/AddInterviewer'
+import { Feedback } from './Components/Interviewer/Feedback'
+
 const router = createBrowserRouter( 
   createRoutesFromElements(
     <Route>
@@ -105,6 +107,7 @@ const router = createBrowserRouter(
         <Route path='dashboard' element={<InterviewRecord />} />
         <Route path='calendar' element={<Calendar />} />
         <Route path='payments' element={<Payments />} />
+        <Route path='feedback' element={<Feedback/>} />
       </Route>
 
 
