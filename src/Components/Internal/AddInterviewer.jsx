@@ -282,19 +282,19 @@ function AddInterviewer() {
               <label  className=" w-full  text-right ">Strength</label>
             </div>
             <div className='w-1/2'>
-            <select
-                            value={selectedStrength}
-                            onChange={handleStrengthSelection}
-                            className={`w-[134px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${selectedStrength == "" ? "text-gray-500": "text-black" } `}
-                          >
-                            <option value="" selected disabled >Select Strength</option>
-                            <option value="Backend">Backend</option>
-                            <option value="Frontend">Frontend</option>
-                            <option value="Testing">Testing</option>
-                            <option value="DevOps">DevOps</option>
-                            <option value="AI/ML">AI/ML</option>
-                            <option value="Data Engineering">Data Engineering</option>
-                          </select>
+                <select
+                    value={selectedStrength}
+                    onChange={handleStrengthSelection}
+                    className={`w-[134px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${selectedStrength == "" ? "text-gray-500": "text-black" } `}
+                    >
+                        <option value="" selected disabled >Select Strength</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Frontend">Frontend</option>
+                        <option value="Testing">Testing</option>
+                        <option value="DevOps">DevOps</option>
+                        <option value="AI/ML">AI/ML</option>
+                        <option value="Data Engineering">Data Engineering</option>
+                </select>
             </div>
           </li>
 

@@ -1,10 +1,14 @@
 import React from 'react'
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {motion} from 'framer-motion';
+import {motion, useAnimation} from 'framer-motion';
 
 //variants
 import { fadeIn } from './variants';
+import { useInView } from 'react-intersection-observer';
+
+//Load Animation Imports
+import Loader from './Loader';
 
 
 
@@ -19,6 +23,8 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
+import './InterviewerCss.css';
+
 
 
 
@@ -27,7 +33,9 @@ const styles= {
     backgroundClip: 'text',
     color: 'transparent',
     backgroundImage: 'linear-gradient(to right, #000000, #B44B4B, #B44B4B)',
+    
   },
+  
 }
 
 
@@ -47,7 +55,7 @@ function Feedback() {
 
   // 2nd section 
   const [skillName, setSkillName] = useState('');
-  const [skillLevel, setSkillLevel] = useState(60); // Initial skill level
+  const [skillLevel, setSkillLevel] = useState(90); // Initial skill level
   const [questions, setQuestions] = useState([
     { question: '', answer: '' },
     { question: '', answer: '' },
@@ -127,6 +135,78 @@ function Feedback() {
   },[improvementPoints]);
 
 
+  // overall rank
+  const [selectedRemark, setSelectedRemark] = useState("")
+  
+  const handleStrengthSelection=(e) => {   
+    setSelectedRemark(e.target.value);
+  }
+
+  //Animations
+
+  const controls1 = useAnimation();
+  const controls2 = useAnimation();
+  const controls3 = useAnimation();
+  const controls4 = useAnimation();
+  const controls5 = useAnimation();
+  const controls6 = useAnimation();
+  const controls7 = useAnimation();
+
+  const [ref1, inView1] = useInView({
+    triggerOnce: true, 
+  });
+  const [ref2, inView2] = useInView({
+    triggerOnce: true, 
+  });
+  const [ref3, inView3] = useInView({
+    triggerOnce: true, 
+  });
+  const [ref4, inView4] = useInView({
+    triggerOnce: true, 
+  });
+  const [ref5, inView5] = useInView({
+    triggerOnce: true, 
+  });
+  const [ref6, inView6] = useInView({
+    triggerOnce: true, 
+  });
+  const [ref7,inView7] = useInView({
+    triggerOnce: true, 
+  });
+
+  useEffect(() => {
+    if (inView1) {
+      controls1.start("show"); 
+    }
+    if (inView2) {
+      controls2.start("show"); 
+    }
+    if (inView3) {
+      controls3.start("show"); 
+    }
+    if (inView4) {
+      controls4.start("show"); 
+    }
+    if (inView5) {
+      controls5.start("show"); 
+    }
+    if (inView6) {
+      controls6.start("show"); 
+    }
+    if (inView7) {
+      controls7.start("show"); 
+    }
+  }, [controls1, inView1, controls2, inView2, controls3, inView3, controls4, inView4, controls5, inView5, controls6, inView6, controls7, inView7]);
+
+  //Loading Animation(Loader)
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 
+    500);
+  },[]);
 
 
   //navigations
@@ -140,13 +220,12 @@ function Feedback() {
 
   return (
     <div className='h-full' >
+      {loading?<Loader/>: <> 
       <div className=' overflow-y-auto' >
-      <div className='p-2 flex justify-between items-center border-b-[1px] border-[#000000] shadow-lg' >
+      <div className='p-2 flex justify-center items-center  border-[#000000] ' >
         <div className='flex gap-4 font-semibold text-[36px] ' >
-          <div className='flex justify-center items-center text-[24px]' >
-            logo
-          </div>
-          <div>INTERVIEW FEEDBACK FORM</div>
+        
+          <div style={styles.gradientText} > FEEDBACK FORM</div>
         </div>  
       </div>
       <div className='flex p-5' >
@@ -154,10 +233,10 @@ function Feedback() {
       <div className=' w-[100%] pl-8' >
       <form onSubmit="#">
         <motion.div
-           variants={fadeIn('right',0.1)}
+           ref={ref1} 
+           variants={fadeIn('right', 0.1)} 
            initial="hidden"
-           whileInView={"show"}
-           viewport={{once:false, amount:"some"}}
+           animate={controls1} 
         className='flex ' >
             <div className='flex flex-col w-[30%] ' >
               <span className='text-[24px] font-bold ' style={styles.gradientText} >Candidate Details</span>
@@ -250,10 +329,11 @@ function Feedback() {
             </div>
         </motion.div>  
         <motion.div
+             ref={ref2}
              variants={fadeIn('left',0.1)}
              initial="hidden"
-             whileInView={"show"}
-             viewport={{once:false, amount:"some"}}
+             animate={controls2}
+             
             className='flex mt-16 ' >   
             <div className='flex flex-col w-[30%] ' >
             <span className='text-[24px] font-bold ' style={styles.gradientText} >Interviewer Details</span>
@@ -304,12 +384,13 @@ function Feedback() {
                 </div>
               </div>
             </div>
-        </motion.div>    
+        </motion.div>  
+         
         <motion.div 
-              variants={fadeIn('left',0.1)}
+              ref={ref3}
+              variants={fadeIn('right',0.1)}
               initial="hidden"
-              whileInView={"show"}
-              viewport={{once:false, amount:0.1}}
+              animate={controls3}
 
         className='flex mt-16 ' >   
             <div className='flex flex-col w-[30%] ' >
@@ -331,7 +412,7 @@ function Feedback() {
                           <div className='flex justify-center items-center' >
                           <div className="w-48 bg-[#AC878787] rounded-full">
                             <div
-                              className="rounded-full h-4 bg-gradient-to-r from-[#000000] to-[#B44B4B] "
+                              className="rounded-full h-4 bg-gradient-to-r from-green-300 to-green-600 "
                               style={{ width: `${skillLevel}%` }}
                             ></div>
                           </div>
@@ -409,10 +490,10 @@ function Feedback() {
             </div>
         </motion.div>    
         <motion.div 
+             ref={ref4}
              variants={fadeIn('left',0.1)}
              initial="hidden"
-             whileInView={"show"}
-             viewport={{once:false, amount:"some"}}
+             animate={controls4}
             className='flex mt-16 ' >   
             <div className='flex flex-col w-[30%] ' >
             <span className='text-[24px] font-bold ' style={styles.gradientText} >Skill Evaluation</span>
@@ -427,7 +508,7 @@ function Feedback() {
                       <div className='flex justify-between' >
                         <button type='button'
                           className={`w-[180px] h-[35px] rounded-md ${communicationRating === 'Poor'
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-[#F22129] text-white'
                             : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('communication', 'Poor')}
@@ -436,7 +517,7 @@ function Feedback() {
                         </button>
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${communicationRating === 'Average'
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-[#FFD700] text-black'
                             : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('communication', 'Average')}
@@ -445,7 +526,7 @@ function Feedback() {
                         </button>
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${communicationRating === 'Good'
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-[#32CD32] text-white'
                             : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('communication', 'Good')}
@@ -454,7 +535,7 @@ function Feedback() {
                         </button>
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${communicationRating === 'Excellent'
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-[#008000] text-white'
                             : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('communication', 'Excellent')}
@@ -469,7 +550,7 @@ function Feedback() {
                       <div className='flex justify-between' >
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${attitudeRating === 'Poor'
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-[#F22129] text-white'
                               : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('attitude', 'Poor')}
@@ -478,7 +559,7 @@ function Feedback() {
                         </button>
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${attitudeRating === 'Average'
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-[#FFD700] text-black'
                               : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('attitude', 'Average')}
@@ -487,7 +568,7 @@ function Feedback() {
                         </button>
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${attitudeRating === 'Good'
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-[#32CD32] text-white'
                               : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('attitude', 'Good')}
@@ -496,7 +577,7 @@ function Feedback() {
                         </button>
                         <button type='button'
                           className={`w-[180px] h-[35px]  rounded-md ${attitudeRating === 'Excellent'
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-[#008000] text-white'
                               : 'bg-gray-200 text-gray-700'
                             }`}
                           onClick={() => handleRatingChange('attitude', 'Excellent')}
@@ -509,10 +590,10 @@ function Feedback() {
             </div>
         </motion.div>    
         <motion.div 
+             ref={ref5}
              variants={fadeIn('right',0.1)}
              initial="hidden"
-             whileInView={"show"}
-             viewport={{once:false, amount:"some"}}
+             animate={controls5}
             className='flex mt-16 ' >   
             <div className='flex flex-col w-[30%] ' >
             <span className='text-[24px] font-bold flex flex-wrap ' style={styles.gradientText} >Strength and Improvement</span>
@@ -523,7 +604,7 @@ function Feedback() {
             <div className="flex gap-3 w-[70%]  ">
                   <div className='flex flex-col gap-y-5 w-[90%]   ' >
                    
-                    <div className='w-[100%]  p-3 ' >
+                    <div className='w-[100%] ' >
                       <div>
                         <label htmlFor="strength" className="block text-[17px] font-medium text-[#000000]">
                           Candidate's Strength:
@@ -561,10 +642,10 @@ function Feedback() {
             </div>
         </motion.div> 
         <motion.div 
+             ref={ref6}
              variants={fadeIn('left',0.1)}
              initial="hidden"
-             whileInView={"show"}
-             viewport={{once:false, amount:"some"}}
+             animate={controls6}
             className='flex mt-16 ' >   
             <div className='flex flex-col w-[30%] ' >
             <span className='text-[24px] font-bold flex flex-wrap ' style={styles.gradientText} >Overall Remark</span>
@@ -577,7 +658,21 @@ function Feedback() {
                         <label htmlFor="strength" className="block text-[17px] font-medium text-[#000000]">
                         Overall Remark
                         </label>
-                        <div className='w-[90%] h-[60px] border-[1px] border-[#000000] rounded-lg ' ></div>
+                        <div className={`w-[90%] h-[60px] border-[1px] border-white rounded-lg ${selectedRemark == "Strongly Recommended" ? "bg-[#008000] " : "Null" }  ${selectedRemark == "Recommended" ? "bg-[#32CD32] " : "Null" }  ${selectedRemark == "Not Recommended" ? "bg-[#E23D28] " : "Null" }  ${selectedRemark == "Strongly Not Recommended" ? "bg-[#F22129] " : "Null" }`} >
+                        <select
+                            value={selectedRemark}
+                            onChange={handleStrengthSelection}
+                            
+                            className={`  w-[100%] h-[59px] text-center text-black border rounded-md focus:outline-none bg-transparent  border-[#CAC4D0] ${selectedRemark == "bg-transparent" ? "text-gray-500": "text-black" }} `}
+                          >
+                            <option  value="" selected disabled >Remark</option>
+                            <option value="Strongly Recommended">Strongly Recommended</option>
+                            <option value="Recommended">Recommended</option>
+                            <option value="Not Recommended">Not Recommended</option>
+                            <option value="Strongly Not Recommended">Strongly Not Recommended</option>
+                            
+                          </select>
+                        </div>
                       </div>
                       <div className='w-[50%]' >
                         <label
@@ -598,26 +693,35 @@ function Feedback() {
 
         
             <motion.div
+             ref={ref7}
              variants={fadeIn('down',0.1)}
              initial="hidden"
-             whileInView={"show"}
-             viewport={{once:false, amount:"some"}}
+             animate={controls7}
             className='w-[95%] flex justify-end gap-x-8 mt-6 ' >
-              <button 
-              onClick={handleCancel}
-              className='w-[225px] h-[50px] border bg-[#000000] hover:bg-gradient-to-r from-[#000000] via-[#272626] to-[#616060] rounded-md text-white ' >
+              
+                <button
+                  onClick={handleCancel}
+                  className="w-[15%] h-[50px] text-white border-[3px] py-1 px-3 rounded-full bg-[#F22129]  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#E32636] via-[#D2122E] to-[#EF0107] duration-300 ...  "
+                >
                   Cancel
-              </button>
-              <button className='w-[225px] h-[50px] border bg-[#000000] hover:bg-gradient-to-r from-[#000000] via-[#272626] to-[#616060]  rounded-lg text-white '>
-                Submit Feedback
-              </button>
+                </button>
+                <button
+                  className="w-[15%] h-[50px] text-white border-[3px] py-1 px-3 rounded-full  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF]"
+                >
+                  Submit Feedback
+                </button>
             </motion.div>
+        
       </form>
       </div>
       </div>
       </div>
-     
+      
+      </>
+  }
     </div>
+   
+    
   )
 }
 
