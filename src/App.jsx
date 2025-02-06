@@ -1,15 +1,290 @@
-import { useState } from 'react'
-import { NavigationLayout } from './Components'
+import {
+  RouterProvider,
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
+import { ROLES } from "./Components/Constants/constants";
+import AuthWrapper from "./Components/Authentication/AuthWrapper";
+import UserActivation from "./Components/Client/InterviewPlatform/UserActivation";
+// Interviewer Imports
+import {
+  Layout,
+  Calendar,
+  InterviewRecord,
+  Payments,
+} from "./Components";
+import { Hello } from "./Components";
+import { InternalAddInterviewer } from "./Components/Internal/AddInterviewer";
+import { Feedback } from "./Components/Interviewer/Feedback";
+// Internal Imports
+import {
+  InternalNavigationLayout,
+  InternalDashboard,
+  InternalClients,
+  InternalInterviewer,
+  InternalUsers,
+  InternalAgreements,
+  InternalFinance,
+  InternalEngagement,
+  InternalMessages,
+} from "./Components";
+// Agency Imports
+import {
+  AgencyNavigationLayout,
+  AgencyDashboard,
+  AgencyCandidates,
+  AgencyAddCandidate,
+  AgencyScheduleInterview,
+} from "./Components";
+// Client Imports
+import {
+  NavigationLayout,
+  Dashboard,
+  Settings,
+  Jobs,
+  Candidates,
+  Analytics,
+  AnalyticsDateFilter,
+  Integration,
+  Finance,
+  Engagement,
+  Message,
+} from "./Components";
+// Authentication Imports
+import {
+  // SignIn,
+  SignUp,
+  ForgetPass,
+  PasswordReset,
+  SignUpSignInLayout,
+  // page,
+  LoginUsingEmail,
+  LoginUsingNumber,
+  PersistLogin,
+  RequireAuth,
+} from "./Components";
+import { ClientAddCandidate } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate";
+import { ClientScheduleInterview } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview";
+import AddJob from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/AddJob";
+import JobDetails from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/JobDetails";
 
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route>
+      <Route element={<PersistLogin />}>
+        {/* Authentication Routes */}
+        <Route element={<AuthWrapper />}>
+          <Route
+            path="auth"
+            element={<SignUpSignInLayout />}
+          >
+            <Route
+              path="forgetpass"
+              element={<ForgetPass />}
+            />
+            <Route path="signup" element={<SignUp />} />
+            <Route
+              path="signin/loginmail"
+              element={<LoginUsingEmail />}
+            />
+            <Route
+              path="signin/loginnumber"
+              element={<LoginUsingNumber />}
+            />
+            <Route
+              path="password-reset/:id"
+              element={<PasswordReset />}
+            />
+          </Route>
+        </Route>
+        {/* User Routes */}
+        <Route
+          element={
+            <RequireAuth allowedRoles={ROLES.USER} />
+          }
+        >
+          <Route path="" element={<Hello />} />
+        </Route>
+        {/* Client Activation Route */}
+        <Route element={<SignUpSignInLayout />}>
+          <Route
+            path="/client/client-user-activate/:id"
+            element={<UserActivation />}
+          />
+        </Route>
+        {/* //Client Routes */}
+        <Route
+          element={
+            <RequireAuth allowedRoles={ROLES.CLIENT} />
+          }
+        >
+          <Route
+            path="client"
+            element={<NavigationLayout />}
+          >
+            <Route path="message" element={<Message />} />
+            <Route
+              path="dashboard"
+              element={<Dashboard />}
+            />
+            <Route path="settings" element={<Settings />} />
+            <Route path="jobs" element={<Jobs />} />
+            <Route
+              path="candidates"
+              element={<Candidates />}
+            />
+            {/* <Route path='analytics' element={<Analytics />} /> */}
+            <Route path="analytics">
+              <Route path="" element={<Analytics />} />
+              <Route
+                path="filter"
+                element={<AnalyticsDateFilter />}
+              />
+            </Route>
 
-function App() {
- 
-
-  return (
-   <div>
-    <NavigationLayout/>
-   </div>
+            <Route
+              path="integration"
+              element={<Integration />}
+            />
+            <Route path="finance" element={<Finance />} />
+            <Route
+              path="engagement"
+              element={<Engagement />}
+            />
+            <Route
+              path="candidates/addcandidate"
+              element={<ClientAddCandidate />}
+            />
+            <Route
+              path="candidates/schedule-interview"
+              element={<ClientScheduleInterview />}
+            />
+            <Route
+              path="jobs/addjob"
+              element={<AddJob />}
+            />
+            <Route
+              path="jobs/jobdetails"
+              element={<JobDetails />}
+            />
+          </Route>
+          <Route
+            path="/client/analytics/filter"
+            element={<AnalyticsDateFilter />}
+          />
+        </Route>
+        {/* //Agency Routes */}
+        <Route
+          element={
+            <RequireAuth allowedRoles={ROLES.AGENCY} />
+          }
+        >
+          <Route
+            path="agency"
+            element={<AgencyNavigationLayout />}
+          >
+            <Route
+              path="dashboard"
+              element={<AgencyDashboard />}
+            />
+            <Route path="candidates">
+              <Route
+                path=""
+                element={<AgencyCandidates />}
+              />
+              <Route
+                path="schedule-interview"
+                element={<AgencyScheduleInterview />}
+              />
+              <Route
+                path="addcandidate"
+                element={<AgencyAddCandidate />}
+              />
+            </Route>
+          </Route>
+        </Route>
+        {/* //Internal Routes */}
+        <Route
+          element={
+            <RequireAuth allowedRoles={ROLES.INTERNAL} />
+          }
+        >
+          <Route
+            path="internal"
+            element={<InternalNavigationLayout />}
+          >
+            <Route
+              path="dashboard"
+              element={<InternalDashboard />}
+            />
+            <Route path="clients">
+              <Route
+                path=""
+                element={<InternalClients />}
+              />
+              <Route
+                path="addclient"
+                element={<InternalClients />}
+              />
+            </Route>
+            <Route
+              path="interviewer"
+              element={<InternalInterviewer />}
+            />
+            <Route
+              path="addinterviewer"
+              element={<InternalAddInterviewer />}
+            />
+            <Route
+              path="users"
+              element={<InternalUsers />}
+            />
+            <Route
+              path="agreements"
+              element={<InternalAgreements />}
+            />
+            <Route
+              path="finance"
+              element={<InternalFinance />}
+            />
+            <Route
+              path="engagement"
+              element={<InternalEngagement />}
+            />
+            <Route
+              path="message"
+              element={<InternalMessages />}
+            />
+          </Route>
+        </Route>
+        {/* //Interviewer Routes */}
+        <Route
+          element={
+            <RequireAuth allowedRoles={ROLES.INTERVIEWER} />
+          }
+        >
+          <Route path="interviewer" element={<Layout />}>
+            <Route
+              path="dashboard"
+              element={<InterviewRecord />}
+            />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="feedback" element={<Feedback />} />
+          </Route>
+        </Route>
+      </Route>
+    </Route>
   )
-}
+);
 
-export default App
+const App = () => {
+  return (
+    <main>
+      <RouterProvider router={router} />
+    </main>
+  );
+};
+
+export default App;
