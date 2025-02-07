@@ -13,8 +13,6 @@ import PersistLogin from "./Authentication/PersistentLogin";
 import RequireAuth from "./Authentication/RequireAuth";
 
 //Client Imports
-
-import NavigationLayout from "./Client/InterviewPlatform/NavigationLayout";
 import Dashboard from "./Client/InterviewPlatform/VerticalNavigationLinks/Dashboard";
 import Settings from "./Client/InterviewPlatform/VerticalNavigationLinks/Settings";
 import Jobs from "./Client/InterviewPlatform/VerticalNavigationLinks/Jobs";
@@ -27,14 +25,12 @@ import Engagement from "./Client/InterviewPlatform/VerticalNavigationLinks/Engag
 import Message from "./Client/InterviewPlatform/VerticalNavigationLinks/Message";
 
 //Agency Imports
-import { AgencyNavigationLayout } from "./Agency/NavigationLayout";
 import { AgencyDashboard } from "./Agency/Dashboard";
 import { AgencyCandidates } from "./Agency/Candidates";
 import { AgencyAddCandidate } from "./Agency/AddCandidate";
 import { AgencyScheduleInterview } from "./Agency/ScheduleInterview";
 
 //Internal Imports
-import { InternalNavigationLayout } from "./Internal/NavigationLayout";
 import { InternalDashboard } from "./Internal/Dashboard";
 import { InternalClients } from "./Internal/Clients";
 import { InternalInterviewer } from "./Internal/Interviewer";
@@ -67,7 +63,6 @@ export {
 
 //Client Exports
 export {
-  NavigationLayout,
   Dashboard,
   Settings,
   Jobs,
@@ -82,7 +77,6 @@ export {
 
 //Agency Exports
 export {
-  AgencyNavigationLayout,
   AgencyDashboard,
   AgencyCandidates,
   AgencyAddCandidate,
@@ -92,7 +86,6 @@ export {
 //Internal Exports
 
 export {
-  InternalNavigationLayout,
   InternalDashboard,
   InternalClients,
   InternalInterviewer,
