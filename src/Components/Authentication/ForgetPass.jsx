@@ -7,7 +7,7 @@ import {
   SubmitButton,
   Label,
   Input,
-} from "../../utils/form-components";
+} from "../shared/form-components";
 
 function ForgetPass() {
   const [email, setEmail] = useState("");

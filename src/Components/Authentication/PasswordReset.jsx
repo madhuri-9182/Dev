@@ -6,7 +6,7 @@ import {
   MatchedPassword,
   SubmitButton,
   ViewHideEyeButton,
-} from "../../utils/form-components";
+} from "../shared/form-components";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import toast from "react-hot-toast";
