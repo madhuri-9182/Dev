@@ -19,7 +19,6 @@ import { InternalAddInterviewer } from "./Components/Internal/AddInterviewer";
 import { Feedback } from "./Components/Interviewer/Feedback";
 // Internal Imports
 import {
-  InternalNavigationLayout,
   InternalDashboard,
   InternalClients,
   InternalInterviewer,
@@ -31,7 +30,6 @@ import {
 } from "./Components";
 // Agency Imports
 import {
-  AgencyNavigationLayout,
   AgencyDashboard,
   AgencyCandidates,
   AgencyAddCandidate,
@@ -39,7 +37,6 @@ import {
 } from "./Components";
 // Client Imports
 import {
-  NavigationLayout,
   Dashboard,
   Settings,
   Jobs,
@@ -51,6 +48,7 @@ import {
   Engagement,
   Message,
 } from "./Components";
+import NavigationLayout from "./Components/shared/NavigationLayout";
 // Authentication Imports
 import {
   // SignIn,
@@ -182,7 +180,7 @@ const router = createBrowserRouter(
         >
           <Route
             path="agency"
-            element={<AgencyNavigationLayout />}
+            element={<NavigationLayout />}
           >
             <Route
               path="dashboard"
@@ -212,7 +210,7 @@ const router = createBrowserRouter(
         >
           <Route
             path="internal"
-            element={<InternalNavigationLayout />}
+            element={<NavigationLayout />}
           >
             <Route
               path="dashboard"
