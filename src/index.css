@@ -16,3 +16,14 @@
   background-color: #056ddc;
   border-radius: 0 10px 10px 0;
 }
+
+.custom-select {
+  appearance: none; /* Hide default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%236B6F7B' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path d='M5.5 7l4.5 5 4.5-5h-9z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.3rem center; /* Move arrow slightly left */
+  background-size: 18px;
+  padding-right: 0.5rem; /* Ensure text doesn’t overlap with arrow */
+}

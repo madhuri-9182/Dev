@@ -1,381 +1,255 @@
-import React, { useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import BasicInputTextField from '../../../../utils/BasicInputTextField';
-import CheckboxesTags from '../../../../utils/CheckboxesTags';
+import { useState } from "react";
+import { Edit, Trash } from "iconsax-react";
+import axios from "../../../../api/axios";
+import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@mui/material";
+import {
+  ACCESSIBILITY,
+  USER_TYPE,
+} from "../../../Constants/constants";
+import PropTypes from "prop-types";
+import useAuth from "../../../../hooks/useAuth";
+import AddUserModal from "./AddUserModal";
+import DeleteUserModal from "./DeleteUserModal";
 
-
-
-
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
-  },
-  '& .MuiDialog-paper': {
-    width: '350px', // Customize width as needed
-    borderRadius: '20px',
-  },
-}));
+const fetchUsers = async (page) => {
+  const limit = 10;
+  const offset = (page - 1) * limit;
+  const response = await axios.get(
+    `/api/client/client-user/`,
+    {
+      params: { limit, offset },
+    }
+  );
+  return response.data.data;
+};
 
 function Settings() {
-  const data = [
-    { 
-      name: 'John Doe', 
-      emailid: 'john.doe@example.com', 
-      usertype: 'Admin', 
-      accessibility: 'All Jobs', 
-      date: '01/12/2024' 
-    },
-    { 
-      name: 'Emily Carter', 
-      emailid: 'emily.carter@example.com', 
-      usertype: 'User', 
-      accessibility: 'Assigned Jobs', 
-      date: '05/12/2024' 
-    },
-    { 
-      name: 'Michael Brown', 
-      emailid: 'michael.brown@example.com', 
-      usertype: 'Agency', 
-      accessibility: 'Assigned Jobs', 
-      date: '10/12/2024' 
-    },
-    { 
-      name: 'Sarah Johnson', 
-      emailid: 'sarah.johnson@example.com', 
-      usertype: 'Admin', 
-      accessibility: 'All Jobs', 
-      date: '15/12/2024' 
-    },
-    { 
-      name: 'David Wilson', 
-      emailid: 'david.wilson@example.com', 
-      usertype: 'User', 
-      accessibility: 'Assigned Jobs', 
-      date: '20/12/2024' 
-    },
-    { 
-      name: 'Laura Miller', 
-      emailid: 'laura.miller@example.com', 
-      usertype: 'Agency', 
-      accessibility: 'All Jobs', 
-      date: '25/12/2024' 
-    },
-  ];;
-
-
-  const [addUserOpen, setAddUserOpen] = useState(false);
-  const [editUserOpen, setEditUserOpen] = useState(false);
-  const [editUser, setEditUser] = useState({
-    name: "",
-    email: ""
+  const { auth } = useAuth();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] =
+    useState(false);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["users", currentPage, auth.role],
+    queryFn: () => fetchUsers(currentPage),
+    keepPreviousData: true,
   });
-  const [selectedOption, setSelectedOption] = useState('');
-  const [items, setItems] = useState([]);
 
-  const handleAddUserOpen = () => setAddUserOpen(true);
-  const handleAddUserClose = () => setAddUserOpen(false);
-
-  const handleEditUserOpen = (name, email) => {
-    setEditUserOpen(true)
-    setEditUser({ name, email })
+  const handleDialogOpen = (title) => {
+    setDialogOpen(true);
+    setDialogTitle(title);
   };
-  const handleEditUserClose = () => setEditUserOpen(false);
 
-  const handleSelection = (e) => {
-    const selectedRole = e.target.value;
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
 
-    if (selectedRole && !items.includes(selectedRole)) {
-      setItems([...items, selectedRole]);
-      setSelectedOption("");
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error...</div>;
+
+  const canShowTrashIcon = (userRole) => {
+    if (auth.role === "client_owner") {
+      return [
+        "client_admin",
+        "agency",
+        "client_user",
+      ].includes(userRole);
+    } else if (auth.role === "client_admin") {
+      return ["agency", "client_user"].includes(userRole);
     }
-  }
-  const removeItem = (ItemToRemove) => {
-    console.log("hii remove clicked");
+    return false; // No trash icon for users
+  };
 
-    setItems(items.filter(item => item !== ItemToRemove))
-  }
+  const handleDeleteUser = (id) => {
+    setDeleteId(id);
+    setDeleteModalOpen(true);
+  };
 
   return (
-    <div className='ml-10'>
+    <div className="ml-10">
       {/* Add User Button */}
-      <div className="w-full flex items-center justify-end">
-        <button
-          className=" p-1 px-4 rounded-full bg-[#056DDC] text-sm font-medium  text-white w-[125px] h-[40px]
-           border-[3px] border-white bg-gradient-to-r bg-from-[#0575E6]-via-[#295cde]-to-[#133bca] hover:border-[3px] hover:border-blue-500 hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca]"
-          onClick={handleAddUserOpen}
-        >
-          + Add User
-        </button>
+      <div className="w-full flex items-center justify-end h-[40px]">
+        {["client_owner", "client_admin"].includes(
+          auth.role
+        ) && (
+          <button
+            className="p-1 px-4 rounded-full text-sm font-semibold text-white w-[125px] h-[40px] 
+             bg-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
+            onClick={() => handleDialogOpen("Add")}
+          >
+            + Invite User
+          </button>
+        )}
       </div>
 
-      {/* Add User Dialog */}
-      <BootstrapDialog
-        onClose={handleAddUserClose}
-        aria-labelledby="add-user-dialog-title"
-        open={addUserOpen}
-        BackdropProps={{
-          sx: { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
-        }}
-      >
-        <DialogTitle id="add-user-dialog-title" sx={{ m: 0, p: 2 }}>
-          <h1 className="font-bold text-[#056DDC] text-lg text-center">ADD USER</h1>
-          <IconButton
-            aria-label="close"
-            onClick={handleAddUserClose}
-            sx={{ position: 'absolute', right: 8, top: 8, color: 'grey','&:hover': {
-        backgroundColor: '#F22129', color: 'white' 
-      }}}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-1/4 text-sm font-medium text-gray-600">Name</label>
-              <input
-                type="text"
-                placeholder="Enter Name"
-                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-              <input
-                type="mail"
-                placeholder="Enter Mail ID"
-                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-full text-sm font-medium text-[#6B6F7B]">User Type</label>
-              <input
-                type="text"
-                placeholder="Enter User Type"
-                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-full text-sm font-medium text-[#6B6F7B]">Job Assigned</label>
-              <select
-                onChange={handleSelection}
-                value={selectedOption}
-                className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${items.length === 0 ? "text-gray-500" : "text-black"} `}>
-                <option value="" disabled>Select Roles</option>
-                <option value="EM">EM</option>
-                <option value="PM">PM</option>
-                <option value="SDE II">SDE II</option>
-                <option value="SDE III">SDE III</option>
-                <option value="SDE IV">SDE IV</option>
-              </select>
-            </div>
-
-
-
-            
-            <div className='w-1/2 flex items-center justify-start '>
-                    <div className='w-[300px]  gap-x-4'>
-                      <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button
-                        onClick={() => removeItem(item)}
-                        className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
-                        </svg>
-                      </button> </li>))} </ul>
-                    </div>
-                  </div>
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-        </DialogContent>
-        <DialogActions>
-        <button
-            onClick={handleAddUserClose}
-            className="text-white border-[3px] py-1 px-3 rounded-full bg-[#F22129]  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#E32636] via-[#D2122E] to-[#EF0107] duration-300 ...  "
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAddUserClose}
-            className="text-white border-[3px] py-1 px-3 rounded-full  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF]"
-          >
-            Save
-          </button>
-        </DialogActions>
-      </BootstrapDialog>
-
       {/* User Table */}
-      <div className="w-full mt-5">
+      <div className="w-full mt-4 mb-4">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b-2 border-black text-sm font-semibold text-[#2B313E]">
-              <th className="py-2 px-4">USERS</th>
-              <th className="py-2 px-4">EMAIL ID</th>
-              <th className="py-2 px-4">USER TYPE</th>
-              <th className="py-2 px-4">ACCESSIBILITY</th>
-              <th className="py-2 px-4">ADD DATE</th>
+            <tr className="text-[#2B313E] text-sm font-bold border-b-2 border-black">
+              {[
+                "USERS",
+                "EMAIL ID",
+                "USER TYPE",
+                "ACCESSIBILITY",
+                "ADD DATE",
+              ].map((header) => (
+                <th key={header} className="py-2 px-4">
+                  {header}
+                </th>
+              ))}
               <th className="py-2 px-4"></th>
             </tr>
           </thead>
           <tbody>
-            {data.map((user, index) => (
-              <tr
-                key={index}
-                className={`${index % 2 === 0 ? 'bg-[#EBEBEB80]' : 'bg-[#EBEBEB80]'
-                  } h-[80px] border-b-2`}
-              >
-                <td className="py-3 px-4 font-semibold text-sm ">{user.name}</td>
-                <td className="py-3 px-4">{user.emailid}</td>
-                <td className="py-3 px-4">{user.usertype}</td>
-                <td className="py-3 px-4">{user.accessibility}</td>
-                <td className="py-3 px-4">{user.date}</td>
-                <td className="py-3 px-4">
-                  <div className='w-full flex items-center justify-around '>
-
-
-                    <button
-                      className="hover:scale-110 hover:duration-150"
-                      onClick={() => { handleEditUserOpen(user.name, user.email) }}
+            {["client_owner", "client_admin"].includes(
+              auth.role
+            )
+              ? data?.results &&
+                data.results.map((user, index) => (
+                  <tr
+                    key={index}
+                    className={`${
+                      index % 2 === 0
+                        ? "bg-[#EBEBEB80]"
+                        : "bg-[#EBEBEB80]"
+                    } h-[70px] border-b-2`}
+                  >
+                    <td
+                      className={
+                        "font-bold text-[#2B313E] py-2 px-4 text-sm"
+                      }
                     >
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#4B4B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#4B4B4B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#4B4B4B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-
-                    </button>
-                   
-                    <button className='hover:scale-110 hover:duration-150'>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /> 
-                        <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M8.6084 13.75H11.3834" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M7.9165 10.4165H12.0832" stroke="#E32636" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-
-                    </button>
-                  </div>
-                </td>
-                
-              </tr>
-            ))}
-           
+                      {" "}
+                      {user.name}
+                    </td>
+                    <TableCell>{user.user.email}</TableCell>
+                    <TableCell>
+                      {USER_TYPE[user.user.role]}
+                    </TableCell>
+                    <TableCell>
+                      {user.accessibility
+                        ? ACCESSIBILITY[user.accessibility]
+                        : "All Jobs"}
+                    </TableCell>
+                    <TableCell>{user.created_at}</TableCell>
+                    <td className="py-2 px-4 ">
+                      <div className="flex gap-2">
+                        <Edit
+                          size={20}
+                          color="#171717"
+                          className="hover:scale-110 hover:duration-150 cursor-pointer"
+                          onClick={() => {
+                            handleDialogOpen("Edit");
+                            setSelectedUser(user);
+                          }}
+                        />
+                        {canShowTrashIcon(
+                          user.user.role
+                        ) && (
+                          <Trash
+                            size={20}
+                            color="#F00"
+                            className="hover:scale-110 hover:duration-150 cursor-pointer"
+                            onClick={() => {
+                              handleDeleteUser(user.id);
+                            }}
+                          />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : data && (
+                  <tr
+                    className={`${"bg-[#EBEBEB80]"} h-[70px] border-b-2`}
+                  >
+                    <td
+                      className={
+                        "font-bold text-[#2B313E] py-2 px-4 text-sm"
+                      }
+                    >
+                      {" "}
+                      {data.name}
+                    </td>
+                    <TableCell>{data.user.email}</TableCell>
+                    <TableCell>
+                      {USER_TYPE[data.user.role]}
+                    </TableCell>
+                    <TableCell>
+                      {data.accessibility
+                        ? ACCESSIBILITY[data.accessibility]
+                        : "All Jobs"}
+                    </TableCell>
+                    <TableCell>{data.created_at}</TableCell>
+                    <td className="py-2 px-4 ">
+                      <div className="flex gap-2">
+                        <Edit
+                          size={20}
+                          color="#171717"
+                          className="hover:scale-110 hover:duration-150 cursor-pointer"
+                          onClick={() => {
+                            handleDialogOpen("Edit");
+                            setSelectedUser(data);
+                          }}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                )}
           </tbody>
         </table>
+        {["client_owner", "client_admin"].includes(
+          auth.role
+        ) && (
+          <Pagination
+            count={Math.ceil(data?.count / 10)}
+            className="mt-4 flex justify-end"
+            onChange={(e, page) => setCurrentPage(page)}
+            variant="outlined"
+            shape="rounded"
+          />
+        )}
       </div>
 
-      {/* Edit User Dialog */}
-      <BootstrapDialog
-        onClose={handleEditUserClose}
-        aria-labelledby="edit-user-dialog-title"
-        open={editUserOpen}
-        BackdropProps={{
-          sx: { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
-        }}
-      >
-        <DialogTitle id="edit-user-dialog-title" sx={{ m: 0, p: 2 }}>
-          <h1 className="font-bold text-[#056DDC] text-lg text-center">EDIT USER</h1>
-          <IconButton
-            aria-label="close"
-            onClick={handleEditUserClose}
-            sx={{ position: 'absolute', right: 8, top: 8, color: 'grey','&:hover': {
-              backgroundColor: '#F22129', color: 'white' 
-            }}}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-        <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-1/4 text-sm font-medium text-gray-600">Name</label>
-              <input
-                type="text"
-                placeholder="Enter Name"
-                value={editUser.name}
-                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-              <input
-                type="mail"
-                placeholder="Enter Mail ID"
-                value={editUser.email}
-                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-full text-sm font-medium text-[#6B6F7B]">User Type</label>
-              <input
-                type="text"
-                placeholder="Enter User Type"
-                className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+      {/* Add User Modal */}
+      <AddUserModal
+        isOpen={dialogOpen}
+        onClose={handleDialogClose}
+        title={`${dialogTitle} User`}
+        selectedUser={selectedUser}
+      />
 
-            <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-              <label className="w-full text-sm font-medium text-[#6B6F7B]">Job Assigned</label>
-              <select
-                onChange={handleSelection}
-                value={selectedOption}
-                className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${items.length === 0 ? "text-gray-500" : "text-black"} `}>
-                <option value="" disabled>Select Roles</option>
-                <option value="EM">EM</option>
-                <option value="PM">PM</option>
-                <option value="SDE II">SDE II</option>
-                <option value="SDE III">SDE III</option>
-                <option value="SDE IV">SDE IV</option>
-              </select>
-            </div>
-
-
-
-            
-            <div className='w-1/2 flex items-center justify-start '>
-                    <div className='w-[300px]  gap-x-4'>
-                      <ul className='flex flex-wrap justify-start gap-4 items-center ' > {items.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button
-                        onClick={() => removeItem(item)}
-                        className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
-                        </svg>
-                      </button> </li>))} </ul>
-                    </div>
-                  </div>
-
-
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <button
-            onClick={handleEditUserClose}
-            className="text-white border-[3px] py-1 px-3 rounded-full  transition ease-linear delay-150 hover:-translate-y-1 hover:scale-110 hover:border-[3px] hover:bg-gradient-to-r from-[#0575E6] via-[#295cde] to-[#133bca] duration-300 ... bg-[#007AFF] ">
-            Save
-          </button>
-        </DialogActions>
-      </BootstrapDialog>
+      {/* Delete User Modal */}
+      {deleteModalOpen && (
+        <DeleteUserModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          id={deleteId}
+        />
+      )}
     </div>
   );
 }
 
 export default Settings;
+
+const TableCell = ({ children, className }) => {
+  return (
+    <td
+      className={`py-2 px-4 text-sm text-[#4F4F4F] ${className}`}
+    >
+      {children}
+    </td>
+  );
+};
+
+TableCell.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
