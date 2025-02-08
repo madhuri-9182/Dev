@@ -71,7 +71,7 @@ const AddUserModal = ({
           : [],
         accessibility: selectedUser.accessibility
           ? selectedUser.accessibility
-          : "",
+          : "AJ",
         phone: selectedUser.phone ? selectedUser.phone : "",
       });
     }
