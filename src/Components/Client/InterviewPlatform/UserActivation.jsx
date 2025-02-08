@@ -11,18 +11,15 @@ const UserActivation = () => {
   const [success, setSuccess] = useState(false);
   const accountId = window.location.pathname.split("/")[3];
   useEffect(() => {
-    console.log(accountId);
     const activateAccount = async () => {
       try {
         const response = await axios.patch(
           `/api/client/client-user-activation/${accountId}/`
         );
-        console.log(response);
         if (response.status === 200) {
           setSuccess(true);
         }
       } catch (error) {
-        console.log(error.status);
         if (error.status === 404) {
           setSuccess(false);
         } else {

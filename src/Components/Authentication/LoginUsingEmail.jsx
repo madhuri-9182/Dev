@@ -127,7 +127,6 @@ const LoginUsingEmail = () => {
         // eslint-disable-next-line no-unused-vars
         ([_, roles]) => roles.includes(role)
       )?.[0];
-      console.log(userMainRole, "user main role");
 
       const isAccessiblePath =
         userMainRole &&
@@ -135,13 +134,10 @@ const LoginUsingEmail = () => {
         location.state.from.pathname.includes(
           userMainRole.toLowerCase()
         );
-      console.log(isAccessiblePath, "isAccessiblePath");
 
       const from = isAccessiblePath
         ? location.state.from.pathname
         : ROLES_REDIRECTS[userMainRole];
-
-      console.log(from);
       navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
