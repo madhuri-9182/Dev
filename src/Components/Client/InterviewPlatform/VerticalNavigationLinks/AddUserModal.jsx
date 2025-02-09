@@ -72,7 +72,9 @@ const AddUserModal = ({
         accessibility: selectedUser.accessibility
           ? selectedUser.accessibility
           : "AJ",
-        phone: selectedUser.phone ? selectedUser.phone : "",
+        phone: selectedUser.user.phone
+          ? selectedUser.user.phone.split("+91")[1]
+          : "",
       });
     }
   }, [selectedUser]);
