@@ -95,16 +95,8 @@ const AddUserModal = ({
           position: "top-right",
         }
       );
-      setFormData({
-        name: "",
-        email: "",
-        role: "",
-        jobs_assigned: [],
-        accessibility: "",
-        phone: "",
-      });
+      handleModalClose();
       queryClient.invalidateQueries(["users"]);
-      onClose();
     },
     onError: (error) => {
       console.log(error);
@@ -201,12 +193,24 @@ const AddUserModal = ({
       : mutation.mutate(updatedFormData);
   };
 
+  const handleModalClose = () => {
+    onClose();
+    setFormData({
+      name: "",
+      email: "",
+      role: "",
+      jobs_assigned: [],
+      accessibility: "",
+      phone: "",
+    });
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <Modal
           isOpen={isOpen}
-          onClose={onClose}
+          onClose={handleModalClose}
           title={title}
         >
           <form onSubmit={onSubmit}>
@@ -372,7 +376,7 @@ const AddUserModal = ({
                 type="button"
                 className="px-6 py-[10px] rounded-[100px] text-[#4A4459] bg-[#E8DEF8] transition-all duration-300 ease-in-out 
   hover:bg-gradient-to-r hover:from-[#E8DEF8] hover:to-[#D9CFF2] text-sm font-semibold cursor-pointer"
-                onClick={onClose}
+                onClick={handleModalClose}
               >
                 Delete
               </button>
