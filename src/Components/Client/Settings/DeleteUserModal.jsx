@@ -3,9 +3,9 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import Modal from "../../../shared/Modal";
+import Modal from "../../shared/Modal";
 import toast from "react-hot-toast";
-import axios from "../../../../api/axios";
+import axios from "../../../api/axios";
 import { AnimatePresence } from "framer-motion";
 
 const DeleteUserModal = ({ isOpen, onClose, id }) => {

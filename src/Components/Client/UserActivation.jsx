@@ -4,7 +4,7 @@ import {
   FaCircleXmark,
 } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import axios from "../../../api/axios";
+import axios from "../../api/axios";
 import toast from "react-hot-toast";
 
 const UserActivation = () => {

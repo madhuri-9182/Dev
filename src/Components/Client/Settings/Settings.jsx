@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Edit, Trash } from "iconsax-react";
-import axios from "../../../../api/axios";
+import axios from "../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "@mui/material";
 import {
   ACCESSIBILITY,
   USER_TYPE,
-} from "../../../Constants/constants";
+} from "../../Constants/constants";
 import PropTypes from "prop-types";
-import useAuth from "../../../../hooks/useAuth";
+import useAuth from "../../../hooks/useAuth";
 import AddUserModal from "./AddUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 

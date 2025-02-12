@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import { ROLES } from "./Components/Constants/constants";
 import AuthWrapper from "./Components/Authentication/AuthWrapper";
-import UserActivation from "./Components/Client/InterviewPlatform/UserActivation";
+import UserActivation from "./Components/Client/UserActivation";
 // Interviewer Imports
 import {
   Layout,
@@ -64,8 +64,8 @@ import {
 } from "./Components";
 import { ClientAddCandidate } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate";
 import { ClientScheduleInterview } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview";
-import AddJob from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/AddJob";
-import JobDetails from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/JobDetails";
+import AddJob from "./Components/Client/Jobs/AddJob";
+import JobDetails from "./Components/Client/Jobs/JobDetails";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

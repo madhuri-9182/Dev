@@ -1,17 +1,17 @@
 import PropTypes from "prop-types";
 import { AnimatePresence } from "framer-motion";
-import Modal from "../../../shared/Modal";
+import Modal from "../../shared/Modal";
 import { useEffect, useState } from "react";
 import {
   useQuery,
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import axios from "../../../../api/axios";
+import axios from "../../../api/axios";
 import {
   EMAIL_REGEX,
   MOBILE_REGEX,
-} from "../../../Constants/constants";
+} from "../../Constants/constants";
 import toast from "react-hot-toast";
 
 const fetchJobs = async () => {

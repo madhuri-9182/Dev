@@ -14,8 +14,8 @@ import RequireAuth from "./Authentication/RequireAuth";
 
 //Client Imports
 import Dashboard from "./Client/InterviewPlatform/VerticalNavigationLinks/Dashboard";
-import Settings from "./Client/InterviewPlatform/VerticalNavigationLinks/Settings";
-import Jobs from "./Client/InterviewPlatform/VerticalNavigationLinks/Jobs";
+import Settings from "./Client/Settings/Settings";
+import Jobs from "./Client/Jobs/Jobs";
 import Candidates from "./Client/InterviewPlatform/VerticalNavigationLinks/Candidates";
 import Analytics from "./Client/InterviewPlatform/VerticalNavigationLinks/Analytics";
 import AnalyticsDateFilter from "./Client/InterviewPlatform/VerticalNavigationLinks/AnalyticsDateFilter";
