@@ -64,8 +64,6 @@ import {
 } from "./Components";
 import { ClientAddCandidate } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate";
 import { ClientScheduleInterview } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview";
-import AddJob from "./Components/Client/Jobs/AddJob";
-import JobDetails from "./Components/Client/Jobs/JobDetails";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -157,14 +155,6 @@ const router = createBrowserRouter(
             <Route
               path="candidates/schedule-interview"
               element={<ClientScheduleInterview />}
-            />
-            <Route
-              path="jobs/addjob"
-              element={<AddJob />}
-            />
-            <Route
-              path="jobs/jobdetails"
-              element={<JobDetails />}
             />
           </Route>
           <Route
