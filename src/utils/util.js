@@ -27,7 +27,6 @@ export const handleTxtAndDocxFile = (
 };
 
 export const handlePdfFile = (file, setJobDescription) => {
-  console.log(file);
   pdfToText(file)
     .then((text) => {
       setJobDescription(text);

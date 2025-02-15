@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import {
   JOB_NAMES,
@@ -75,10 +75,6 @@ const JobDetails = ({
       );
     },
   });
-
-  useEffect(() => {
-    console.log(formdata, "formdata");
-  }, [formdata]);
 
   const handleSubmit = () => {
     const formdataToSubmit = new FormData();
