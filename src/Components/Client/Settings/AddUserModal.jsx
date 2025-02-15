@@ -3,40 +3,17 @@ import { AnimatePresence } from "framer-motion";
 import Modal from "../../shared/Modal";
 import { useEffect, useState } from "react";
 import {
-  useQuery,
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import axios from "../../../api/axios";
 import {
   EMAIL_REGEX,
   MOBILE_REGEX,
 } from "../../Constants/constants";
 import toast from "react-hot-toast";
-
-const fetchJobs = async () => {
-  const response = await axios.get("/api/client/jobs/");
-  return response.data.results.map(({ id, name }) => ({
-    id,
-    name,
-  }));
-};
-
-const inviteUser = async (userData) => {
-  const response = await axios.post(
-    "/api/client/client-user/",
-    userData
-  );
-  return response.data;
-};
-
-const updateUser = async ({ userData, id }) => {
-  const response = await axios.patch(
-    `/api/client/client-user/${id}/`,
-    userData
-  );
-  return response.data;
-};
+import { updateUser, createUser } from "./api";
+import useAllJobs from "../../../hooks/useFetchAllJobs";
+import { getJobLabel } from "../../../utils/util";
 
 const AddUserModal = ({
   isOpen,
@@ -79,13 +56,10 @@ const AddUserModal = ({
     }
   }, [selectedUser]);
 
-  const { data: jobs } = useQuery({
-    queryKey: ["jobs"],
-    queryFn: fetchJobs,
-  });
+  const { data: jobs } = useAllJobs();
 
   const mutation = useMutation({
-    mutationFn: isEdit ? updateUser : inviteUser,
+    mutationFn: isEdit ? updateUser : createUser,
     onSuccess: () => {
       toast.success(
         isEdit
@@ -337,7 +311,10 @@ const AddUserModal = ({
                       ],
                     });
                   }}
-                  options={jobs}
+                  options={jobs.map((job) => ({
+                    id: job.id,
+                    name: getJobLabel(job.name),
+                  }))}
                   required={false}
                 />
               </div>
@@ -354,7 +331,7 @@ const AddUserModal = ({
                         key={jobId}
                         className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-sm border border-[#CAC4D0] text-[#49454F] font-medium "
                       >
-                        {job ? job.name : "Unknown"}{" "}
+                        {getJobLabel(job.name)}{" "}
                         {/* Show job name or fallback */}
                         <button
                           onClick={() =>

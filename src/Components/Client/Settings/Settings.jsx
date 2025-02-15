@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Edit, Trash } from "iconsax-react";
-import axios from "../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "@mui/material";
 import {
@@ -12,18 +11,7 @@ import useAuth from "../../../hooks/useAuth";
 import AddUserModal from "./AddUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import AddButton from "../../shared/AddButton";
-
-const fetchUsers = async (page) => {
-  const limit = 10;
-  const offset = (page - 1) * limit;
-  const response = await axios.get(
-    `/api/client/client-user/`,
-    {
-      params: { limit, offset },
-    }
-  );
-  return response.data.data;
-};
+import { fetchUsers } from "./api";
 
 function Settings() {
   const { auth } = useAuth();
