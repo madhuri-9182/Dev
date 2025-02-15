@@ -2,32 +2,12 @@ import React, { useEffect, useState } from "react";
 import AddButton from "../../shared/AddButton";
 import { Pagination } from "@mui/material";
 import PropTypes from "prop-types";
-import { JOB_NAMES } from "../../Constants/constants";
-import axios from "../../../api/axios";
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString("en-GB");
-};
-
-const revertDateFormat = (dateString) => {
-  const [day, month, year] = dateString.split("/");
-  return `${year}-${month}-${day}`;
-};
-
-const fetchAllUsers = async () => {
-  let allUsers = [];
-  let nextUrl = `/api/client/client-user/?limit=10&offset=0`;
-
-  while (nextUrl) {
-    const response = await axios.get(nextUrl);
-
-    const users = response.data.data.results;
-    allUsers = [...allUsers, ...users];
-
-    nextUrl = response.data.data.next || null;
-  }
-  return allUsers;
-};
+import useAllUsers from "../../../hooks/useFetchAllUsers";
+import {
+  formatDate,
+  revertDateFormat,
+  getJobLabel,
+} from "../../../utils/util";
 
 const JobListing = ({
   handleAddJobClick,
@@ -40,20 +20,17 @@ const JobListing = ({
   allJobs,
 }) => {
   const { count, results } = data;
+  const { data: users } = useAllUsers();
+
   const [hiringManagers, setHiringManagers] = useState([]);
   const [recruiters, setRecruiters] = useState([]);
 
   useEffect(() => {
-    fetchAllUsers().then((users) => {
+    if (users) {
       setHiringManagers(users);
       setRecruiters(users);
-    });
-  }, []);
-
-  const getJobLabel = (key) => {
-    const job = JOB_NAMES.find((job) => job.key === key);
-    return job ? job.label : key;
-  };
+    }
+  }, [users]);
 
   return (
     <React.Fragment>
@@ -67,7 +44,7 @@ const JobListing = ({
       {/* Filters */}
       <div className="flex items-center gap-4 mb-12">
         <select
-          className={`min-w-24 ${selectClassName}`}
+          className={`min-w-24 ${filterSelectClassName}`}
           onChange={(e) => {
             setFilters({
               ...filters,
@@ -83,7 +60,7 @@ const JobListing = ({
           ))}
         </select>
         <select
-          className={`${selectClassName} min-w-20`}
+          className={`${filterSelectClassName} min-w-20`}
           onChange={(e) => {
             setFilters({
               ...filters,
@@ -99,7 +76,7 @@ const JobListing = ({
           ))}
         </select>
         <select
-          className={`${selectClassName} min-w-32`}
+          className={`${filterSelectClassName} min-w-32`}
           onChange={(e) => {
             setFilters({
               ...filters,
@@ -115,14 +92,16 @@ const JobListing = ({
           ))}
         </select>
         {/* There is no filter for active and archive for now */}
-        <select className={`${selectClassName} min-w-20`}>
+        <select
+          className={`${filterSelectClassName} min-w-20`}
+        >
           <option value="Active">Active</option>
           <option value="Archived">Archived</option>
         </select>
         <input
           type="date"
           max={new Date().toISOString().split("T")[0]}
-          className={`${inputClassName} min-w-24`}
+          className={`${filterInputClassName} min-w-24`}
           onChange={(e) => {
             setFilters({
               ...filters,
@@ -232,8 +211,8 @@ JobListing.propTypes = {
   allJobs: PropTypes.array,
 };
 
-const selectClassName =
+const filterSelectClassName =
   "border border-[#979DA3] text-xs py-1 px-3 custom-select rounded-lg";
 
-const inputClassName =
+const filterInputClassName =
   "border border-[#979DA3] text-xs py-1 px-3 rounded-lg";

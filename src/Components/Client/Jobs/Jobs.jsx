@@ -4,51 +4,16 @@ import { AnimatePresence } from "framer-motion";
 import JobListing from "./JobListing";
 import AddJob from "./AddJob";
 import JobDetails from "./JobDetails";
-import axios from "../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
-
-const fetchJobs = async ({ queryKey }) => {
-  const [
-    // eslint-disable-next-line no-unused-vars
-    _key,
-    {
-      page,
-      job_ids,
-      hiring_manager_ids,
-      recruiter_ids,
-      post_job_date,
-    },
-  ] = queryKey;
-
-  const params = {
-    limit: 10,
-    offset: (page - 1) * 10,
-    ...(job_ids.length
-      ? { job_ids: job_ids.join(",") }
-      : {}),
-    ...(hiring_manager_ids.length
-      ? { hiring_manager_ids: hiring_manager_ids.join(",") }
-      : {}),
-    ...(recruiter_ids.length
-      ? { recruiter_ids: recruiter_ids.join(",") }
-      : {}),
-    ...(post_job_date
-      ? { post_job_date: post_job_date }
-      : {}),
-  };
-
-  const response = await axios.get("/api/client/jobs/", {
-    params,
-  });
-  return response.data;
-};
+import { fetchJobs } from "./api";
+import { getFileFromPath } from "../../../utils/util";
 
 const Jobs = () => {
   const [isArchiveModalOpen, setIsArchiveModalOpen] =
     useState(false);
   const [activePage, setActivePage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
   const [archiveId, setArchiveId] = useState(null);
   const [allJobs, setAllJobs] = useState([]);
   const [filters, setFilters] = useState({
@@ -56,6 +21,18 @@ const Jobs = () => {
     job_ids: [],
     hiring_manager_ids: [],
     recruiter_ids: [],
+  });
+  const [formdata, setFormdata] = useState({
+    name: "",
+    job_id: "",
+    recruiter_ids: [],
+    hiring_manager_id: "",
+    total_positions: "",
+    mandatory_skills: [],
+    interview_time: "01:00:00",
+    job_description_file: undefined,
+    other_details: [],
+    reason_for_archived: "",
   });
   const { data, isLoading, isError } = useQuery({
     queryKey: [
@@ -94,17 +71,69 @@ const Jobs = () => {
 
   const handleShowJobDetails = (data) => {
     if (data) {
-      setSelectedUser(data);
+      setSelectedData(data);
     }
     setActivePage(2);
   };
 
   const handleAddJobClick = (data) => {
     if (data) {
-      setSelectedUser(data);
+      setSelectedData(data);
     }
     setActivePage(1);
   };
+
+  const isEdit =
+    selectedData &&
+    typeof selectedData === "object" &&
+    !selectedData.nativeEvent;
+
+  useEffect(() => {
+    if (isEdit) {
+      async function handleFileConversion(selectedData) {
+        if (
+          !selectedData ||
+          !selectedData.job_description_file
+        ) {
+          console.error(
+            "Job description file path is missing"
+          );
+          return;
+        }
+        console.log(
+          selectedData.job_description_file,
+          "file"
+        );
+        const file = await getFileFromPath(
+          selectedData.job_description_file
+        );
+
+        if (file) {
+          return file;
+        }
+      }
+      const fetchFile = async () => {
+        const file = await handleFileConversion(
+          selectedData
+        );
+
+        setFormdata({
+          ...selectedData,
+          hiring_manager_id:
+            selectedData.hiring_manager?.id,
+          recruiter_ids: selectedData.clients.map(
+            (client) => client.id
+          ),
+          total_positions: String(
+            selectedData.total_positions
+          ),
+          job_description_file: file, // Now it's a resolved File object
+        });
+      };
+      fetchFile();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedData]);
 
   if (activePage === 0 && isLoading)
     return <div>Loading...</div>;
@@ -127,15 +156,33 @@ const Jobs = () => {
         />
       ) : activePage === 1 ? (
         <AddJob
-          selectedUser={selectedUser}
+          isEdit={isEdit}
           onBack={() => {
-            setSelectedUser(null);
+            setFormdata({});
+            setSelectedData(null);
             setActivePage(0);
           }}
+          onSubmit={() => {
+            setActivePage(2);
+          }}
+          formdata={formdata}
+          setFormdata={setFormdata}
         />
       ) : (
         activePage === 2 && (
-          <JobDetails selectedUser={selectedUser} />
+          <JobDetails
+            onBack={() => {
+              setActivePage(1);
+            }}
+            onSubmit={() => {
+              setSelectedData(null);
+              setActivePage(0);
+              setFormdata({});
+            }}
+            isEdit={isEdit}
+            formdata={formdata}
+            setFormdata={setFormdata}
+          />
         )
       )}
 
@@ -146,6 +193,7 @@ const Jobs = () => {
             isOpen={isArchiveModalOpen}
             onClose={handleArchiveModalClose}
             archiveId={archiveId}
+            fromJobDetails={false}
           />
         </AnimatePresence>
       )}

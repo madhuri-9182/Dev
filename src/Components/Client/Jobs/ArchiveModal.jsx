@@ -6,20 +6,17 @@ import {
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import axios from "../../../api/axios";
 import toast from "react-hot-toast";
+import { archiveJob } from "./api";
 
-const archiveJob = async ({ archiveId, reason }) => {
-  const response = await axios.patch(
-    `/api/client/job/${archiveId}/`,
-    {
-      reason_for_archived: reason,
-    }
-  );
-  return response.data;
-};
-
-const ArchiveModal = ({ isOpen, onClose, archiveId }) => {
+const ArchiveModal = ({
+  isOpen,
+  onClose,
+  archiveId,
+  fromJobDetails,
+  setFormdata,
+  formdata,
+}) => {
   const [selectedReason, setSelectedReason] = useState("");
 
   const queryClient = useQueryClient();
@@ -106,10 +103,18 @@ const ArchiveModal = ({ isOpen, onClose, archiveId }) => {
               className="px-6 py-2 rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
              hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-sm font-semibold cursor-pointer w-[140px]"
               onClick={() => {
-                mutation.mutate({
-                  archiveId,
-                  reason: selectedReason,
-                });
+                if (fromJobDetails) {
+                  setFormdata({
+                    ...formdata,
+                    reason_for_archived: selectedReason,
+                  });
+                  onClose();
+                } else {
+                  mutation.mutate({
+                    archiveId,
+                    reason: selectedReason,
+                  });
+                }
               }}
             >
               Save
@@ -126,5 +131,8 @@ export default ArchiveModal;
 ArchiveModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  archiveId: PropTypes.string.isRequired,
+  archiveId: PropTypes.string,
+  fromJobDetails: PropTypes.bool,
+  setFormdata: PropTypes.func,
+  formdata: PropTypes.object,
 };

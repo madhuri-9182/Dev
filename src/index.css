@@ -27,3 +27,7 @@
   background-size: 18px;
   padding-right: 0.5rem; /* Ensure text doesn’t overlap with arrow */
 }
+
+.custom-shadow {
+  box-shadow: 0px 1px 6px 0.3px #0000004d;
+}
