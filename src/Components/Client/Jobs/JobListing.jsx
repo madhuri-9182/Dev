@@ -25,6 +25,14 @@ const JobListing = ({
   const [hiringManagers, setHiringManagers] = useState([]);
   const [recruiters, setRecruiters] = useState([]);
 
+  const groupedJobs = allJobs.reduce((acc, job) => {
+    if (!acc[job.name]) {
+      acc[job.name] = [];
+    }
+    acc[job.name].push(job.id);
+    return acc;
+  }, {});
+
   useEffect(() => {
     if (users) {
       setHiringManagers(users);
@@ -46,18 +54,23 @@ const JobListing = ({
         <select
           className={`min-w-24 ${filterSelectClassName}`}
           onChange={(e) => {
+            const selectedName = e.target.value;
             setFilters({
               ...filters,
-              job_ids: [e.target.value],
+              job_ids: selectedName
+                ? groupedJobs[selectedName]
+                : [],
             });
           }}
         >
           <option value="">All Jobs</option>
-          {allJobs.map((row, idx) => (
-            <option key={idx} value={row.id}>
-              {row.name}
-            </option>
-          ))}
+          {Object.entries(groupedJobs).map(
+            ([name, ids]) => (
+              <option key={ids} value={name}>
+                {name}
+              </option>
+            )
+          )}
         </select>
         <select
           className={`${filterSelectClassName} min-w-20`}
