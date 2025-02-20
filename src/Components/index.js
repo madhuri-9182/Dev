@@ -13,16 +13,16 @@ import PersistLogin from "./Authentication/PersistentLogin";
 import RequireAuth from "./Authentication/RequireAuth";
 
 //Client Imports
-import Dashboard from "./Client/InterviewPlatform/VerticalNavigationLinks/Dashboard";
+import Dashboard from "./Client/Dashboard";
 import Settings from "./Client/Settings/Settings";
 import Jobs from "./Client/Jobs/Jobs";
-import Candidates from "./Client/InterviewPlatform/VerticalNavigationLinks/Candidates";
-import Analytics from "./Client/InterviewPlatform/VerticalNavigationLinks/Analytics";
-import AnalyticsDateFilter from "./Client/InterviewPlatform/VerticalNavigationLinks/AnalyticsDateFilter";
-import Integration from "./Client/InterviewPlatform/VerticalNavigationLinks/Integration";
-import Finance from "./Client/InterviewPlatform/VerticalNavigationLinks/Finance";
-import Engagement from "./Client/InterviewPlatform/VerticalNavigationLinks/Engagement";
-import Message from "./Client/InterviewPlatform/VerticalNavigationLinks/Message";
+import Candidates from "./Client/Candidates/Candidates";
+import Analytics from "./Client/Analytics/Analytics";
+import AnalyticsDateFilter from "./Client/Analytics/AnalyticsDateFilter";
+import Integration from "./Client/Integration";
+import Finance from "./Client/Finance";
+import Engagement from "./Client/Engagement";
+import Message from "./Client/Message";
 
 //Agency Imports
 import { AgencyDashboard } from "./Agency/Dashboard";

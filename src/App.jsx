@@ -62,8 +62,8 @@ import {
   PersistLogin,
   RequireAuth,
 } from "./Components";
-import { ClientAddCandidate } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/AddCandidate";
-import { ClientScheduleInterview } from "./Components/Client/InterviewPlatform/VerticalNavigationLinks/ScheduleInterview";
+import ClientAddCandidate from "./Components/Client/Candidates/AddCandidate";
+import ClientScheduleInterview from "./Components/Client/Candidates/ScheduleInterview";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

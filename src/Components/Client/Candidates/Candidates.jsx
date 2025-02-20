@@ -1,5 +1,120 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const people = [
+  {
+    name: "Ananya Sharma",
+    status: "Recommended",
+    role: "SDE II",
+    type: "Agency",
+    date: "MON, 4 DEC",
+    score: 450,
+  },
+  {
+    name: "Rohan Verma",
+    status: "Not Recommended",
+    role: "SDET I",
+    type: "Internal",
+    date: "TUE, 5 DEC",
+    score: 320,
+  },
+  {
+    name: "Vikram Singh",
+    status: "Not Scheduled",
+    role: "EM",
+    type: "Agency",
+    date: "WED, 6 DEC",
+    score: 400,
+  },
+  {
+    name: "Priya Desai",
+    status: "Scheduled",
+    role: "SDE II - Frontend",
+    type: "Agency",
+    date: "THU, 7 DEC",
+    score: 360,
+  },
+  {
+    name: "Karthik Iyer",
+    status: "Recommended",
+    role: "SDE III",
+    type: "Internal",
+    date: "FRI, 8 DEC",
+    score: 490,
+  },
+  {
+    name: "Aarav Kapoor",
+    status: "Not Recommended",
+    role: "SDE I",
+    type: "Internal",
+    date: "TUE, 16 AUG 24",
+    score: 320,
+  },
+  {
+    name: "Meera Nair",
+    status: "Recommended",
+    role: "SDE II",
+    type: "Client",
+    date: "WED, 17 AUG 24",
+    score: 470,
+  },
+  {
+    name: "Shreya Banerjee",
+    status: "Not Scheduled",
+    role: "EM",
+    type: "Internal",
+    date: "THU, 18 AUG 24",
+    score: 390,
+  },
+  {
+    name: "Rahul Gupta",
+    status: "Scheduled",
+    role: "SDET III",
+    type: "Internal",
+    date: "FRI, 19 AUG 24",
+    score: 480,
+  },
+  {
+    name: "Tanvi Reddy",
+    status: "Recommended",
+    role: "Data Scientist",
+    type: "Client",
+    date: "MON, 20 AUG 24",
+    score: 450,
+  },
+  {
+    name: "Arjun Khanna",
+    status: "Not Recommended",
+    role: "SDE II - Backend",
+    type: "Agency",
+    date: "TUE, 21 AUG 24",
+    score: 310,
+  },
+  {
+    name: "Ishita Malhotra",
+    status: "Scheduled",
+    role: "UI/UX Designer",
+    type: "Client",
+    date: "WED, 22 AUG 24",
+    score: 370,
+  },
+  {
+    name: "Aditya Roy",
+    status: "Not Scheduled",
+    role: "Product Manager",
+    type: "Internal",
+    date: "THU, 23 AUG 24",
+    score: 420,
+  },
+  {
+    name: "Sanya Bhatia",
+    status: "Recommended",
+    role: "QA Lead",
+    type: "Agency",
+    date: "FRI, 24 AUG 24",
+    score: 490,
+  },
+];
 
 function Candidates() {
   const location = useLocation();
@@ -10,8 +125,21 @@ function Candidates() {
     status: "All",
   });
 
-  const role = ["SDE II", "SDE III", "SDET I", "EM", "SDE I - Frontend", "SDE II - Frontend"];
-  const status = ["All", "Recommended", "Not Recommended", "Scheduled", "Not Scheduled"];
+  const role = [
+    "SDE II",
+    "SDE III",
+    "SDET I",
+    "EM",
+    "SDE I - Frontend",
+    "SDE II - Frontend",
+  ];
+  const status = [
+    "All",
+    "Recommended",
+    "Not Recommended",
+    "Scheduled",
+    "Not Scheduled",
+  ];
   // All
   const handleSelect = (category, value) => {
     setSelectedFilters((prev) => ({
@@ -20,133 +148,19 @@ function Candidates() {
     }));
   };
 
-  const [people, setPeople] = useState([
-    {
-      name: "Ananya Sharma",
-      status: "Recommended",
-      role: "SDE II",
-      type: "Agency",
-      date: "MON, 4 DEC",
-      score: 450,
-    },
-    {
-      name: "Rohan Verma",
-      status: "Not Recommended",
-      role: "SDET I",
-      type: "Internal",
-      date: "TUE, 5 DEC",
-      score: 320,
-    },
-    {
-      name: "Vikram Singh",
-      status: "Not Scheduled",
-      role: "EM",
-      type: "Agency",
-      date: "WED, 6 DEC",
-      score: 400,
-    },
-    {
-      name: "Priya Desai",
-      status: "Scheduled",
-      role: "SDE II - Frontend",
-      type: "Agency",
-      date: "THU, 7 DEC",
-      score: 360,
-    },
-    {
-      name: "Karthik Iyer",
-      status: "Recommended",
-      role: "SDE III",
-      type: "Internal",
-      date: "FRI, 8 DEC",
-      score: 490,
-    },
-    {
-      name: "Aarav Kapoor",
-      status: "Not Recommended",
-      role: "SDE I",
-      type: "Internal",
-      date: "TUE, 16 AUG 24",
-      score: 320,
-    },
-    {
-      name: "Meera Nair",
-      status: "Recommended",
-      role: "SDE II",
-      type: "Client",
-      date: "WED, 17 AUG 24",
-      score: 470,
-    },
-    {
-      name: "Shreya Banerjee",
-      status: "Not Scheduled",
-      role: "EM",
-      type: "Internal",
-      date: "THU, 18 AUG 24",
-      score: 390,
-    },
-    {
-      name: "Rahul Gupta",
-      status: "Scheduled",
-      role: "SDET III",
-      type: "Internal",
-      date: "FRI, 19 AUG 24",
-      score: 480,
-    },
-    {
-      name: "Tanvi Reddy",
-      status: "Recommended",
-      role: "Data Scientist",
-      type: "Client",
-      date: "MON, 20 AUG 24",
-      score: 450,
-    },
-    {
-      name: "Arjun Khanna",
-      status: "Not Recommended",
-      role: "SDE II - Backend",
-      type: "Agency",
-      date: "TUE, 21 AUG 24",
-      score: 310,
-    },
-    {
-      name: "Ishita Malhotra",
-      status: "Scheduled",
-      role: "UI/UX Designer",
-      type: "Client",
-      date: "WED, 22 AUG 24",
-      score: 370,
-    },
-    {
-      name: "Aditya Roy",
-      status: "Not Scheduled",
-      role: "Product Manager",
-      type: "Internal",
-      date: "THU, 23 AUG 24",
-      score: 420,
-    },
-    {
-      name: "Sanya Bhatia",
-      status: "Recommended",
-      role: "QA Lead",
-      type: "Agency",
-      date: "FRI, 24 AUG 24",
-      score: 490,
-    },
-  ]);
-
-
   const itemsPerPage = 6; // Number of items per page
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate the indices for slicing the data
-  const totalPages = Math.ceil(people.length / itemsPerPage);
+  const totalPages = Math.ceil(
+    people.length / itemsPerPage
+  );
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = people.slice(startIndex, endIndex);
 
   return (
-    <div className='flex flex-col gap-y-4'>
+    <div className="flex flex-col gap-y-4">
       <div>
         <div className="flex flex-col w-full justify-end sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0 ml-auto">
           {/* Search Input */}
@@ -167,12 +181,13 @@ function Candidates() {
             </svg>
           </div>
 
-
-
           {/* Add Client Button */}
           <button
             className="flex items-center justify-center space-x-2 bg-[#007AFF] text-white px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto shadow-[2px_4px_15px_rgba(5,109,220,0.5)]"
-            onClick={() => navigate(`${location.pathname}/addcandidate`)}>
+            onClick={() =>
+              navigate(`${location.pathname}/addcandidate`)
+            }
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -192,71 +207,67 @@ function Candidates() {
         </div>
       </div>
 
-
-
-
-
-
-
-
-
-
-
-
       <div className="w-full flex items-center justify-evenly">
         <div className="w-[98%] grid grid-cols-5 gap-x-5 justify-evenly">
           <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
-            <span className="text-sm text-black font-extralight">Total Candidates</span>
-            <span className="text-[24px] font-semibold">750</span>
+            <span className="text-sm text-black font-extralight">
+              Total Candidates
+            </span>
+            <span className="text-[24px] font-semibold">
+              750
+            </span>
           </div>
           <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
-            <span className="text-sm text-black font-extralight">To be Scheduled</span>
-            <span className="text-[24px] font-semibold">26</span>
+            <span className="text-sm text-black font-extralight">
+              To be Scheduled
+            </span>
+            <span className="text-[24px] font-semibold">
+              26
+            </span>
           </div>
           <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
-            <span className="text-sm text-black font-extralight">In Progress</span>
-            <span className="text-[24px] font-semibold">56</span>
+            <span className="text-sm text-black font-extralight">
+              In Progress
+            </span>
+            <span className="text-[24px] font-semibold">
+              56
+            </span>
           </div>
           <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
-            <span className="text-sm text-black font-extralight">Recommended</span>
-            <span className="text-[24px] font-semibold">26</span>
+            <span className="text-sm text-black font-extralight">
+              Recommended
+            </span>
+            <span className="text-[24px] font-semibold">
+              26
+            </span>
           </div>
           <div className="p-4 w-[200px] h-[96px] flex flex-col items-start justify-center bg-[#E5ECF6] shadow-md rounded-lg">
-            <span className="text-sm text-black font-extralight">Rejected</span>
-            <span className="text-[24px] font-semibold">200</span>
+            <span className="text-sm text-black font-extralight">
+              Rejected
+            </span>
+            <span className="text-[24px] font-semibold">
+              200
+            </span>
           </div>
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       <div className="py-4 sticky top-[60px] bg-white">
         <div className="pl-3 space-y-2">
           {/* Domain Filter */}
           <div className="flex items-center space-x-1">
-            <span className="text-sm font-bold mr-7 flex">Role</span>
+            <span className="text-sm font-bold mr-7 flex">
+              Role
+            </span>
             {role.map((role) => (
               <button
                 key={role}
                 onClick={() => handleSelect("role", role)}
-                className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.role === role
-                  ? "bg-purple-100 text-purple-700 border-purple-300"
-                  : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${
+                  selectedFilters.role === role
+                    ? "bg-purple-100 text-purple-700 border-purple-300"
+                    : "bg-white text-gray-700 border-gray-300"
+                }`}
               >
                 {/* Tick container */}
                 {selectedFilters.role === role && (
@@ -284,15 +295,20 @@ function Candidates() {
 
           {/* Status Filter */}
           <div className="flex items-center space-x-1">
-            <span className="text-sm font-bold mr-4">Status</span>
+            <span className="text-sm font-bold mr-4">
+              Status
+            </span>
             {status.map((status) => (
               <button
                 key={status}
-                onClick={() => handleSelect("status", status)}
-                className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${selectedFilters.status === status
-                  ? "bg-purple-100 text-purple-700 border-purple-300"
-                  : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                onClick={() =>
+                  handleSelect("status", status)
+                }
+                className={`flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${
+                  selectedFilters.status === status
+                    ? "bg-purple-100 text-purple-700 border-purple-300"
+                    : "bg-white text-gray-700 border-gray-300"
+                }`}
               >
                 {/* Tick container */}
                 {selectedFilters.status === status && (
@@ -320,20 +336,6 @@ function Candidates() {
         </div>
       </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       <div>
         {currentData.map((person, index) => (
           <div key={index}>
@@ -341,7 +343,10 @@ function Candidates() {
             <div className="w-full flex items-center justify-evenly">
               <div
                 className="w-[98%] h-[80px] grid gap-x-5"
-                style={{ gridTemplateColumns: "1.2fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1.2fr" }}
+                style={{
+                  gridTemplateColumns:
+                    "1.2fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1.2fr",
+                }}
               >
                 {/* Name and Status */}
                 <div className="flex flex-col items-start justify-evenly">
@@ -349,33 +354,44 @@ function Candidates() {
                     {person.name}
                   </div>
                   <div
-                    className={`text-sm text-black px-2 py-[2px] rounded-lg text-center ${person.status === "Recommended"
+                    className={`text-sm text-black px-2 py-[2px] rounded-lg text-center ${
+                      person.status === "Recommended"
                         ? "bg-[#2ECC71]"
-                        : person.status === "Not Recommended"
-                          ? "bg-[#B10E0E] text-white"
-                          : person.status === "Scheduled"
-                            ? "bg-[#DF8C0F] text-white"
-                            : "bg-[#C4C4C4]"
-                      }`}
+                        : person.status ===
+                          "Not Recommended"
+                        ? "bg-[#B10E0E] text-white"
+                        : person.status === "Scheduled"
+                        ? "bg-[#DF8C0F] text-white"
+                        : "bg-[#C4C4C4]"
+                    }`}
                   >
                     {person.status}
                   </div>
                 </div>
                 {/* Role */}
                 <div className="flex items-center justify-center">
-                  <div className="text-sm text-black text-center">{person.role}</div>
+                  <div className="text-sm text-black text-center">
+                    {person.role}
+                  </div>
                 </div>
                 {/* Type */}
                 <div className="flex items-center justify-center">
-                  <div className="text-sm text-black text-center">{person.type}</div>
+                  <div className="text-sm text-black text-center">
+                    {person.type}
+                  </div>
                 </div>
                 {/* Date */}
                 <div className="flex items-center justify-center">
-                  <div className="text-sm text-black text-center">{person.date}</div>
+                  <div className="text-sm text-black text-center">
+                    {person.date}
+                  </div>
                 </div>
                 {/* Score */}
                 <div className="flex items-center justify-center">
-                  {!(person.status === "Scheduled" || person.status === "Not Scheduled") && (
+                  {!(
+                    person.status === "Scheduled" ||
+                    person.status === "Not Scheduled"
+                  ) && (
                     <div className="text-sm text-black text-center">
                       Score: {person.score}/500
                     </div>
@@ -399,7 +415,10 @@ function Candidates() {
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
-                          <path d="M9.99992 12.4997L5.83325 8.33301H14.1666L9.99992 12.4997Z" fill="#1D1B20" />
+                          <path
+                            d="M9.99992 12.4997L5.83325 8.33301H14.1666L9.99992 12.4997Z"
+                            fill="#1D1B20"
+                          />
                         </svg>
                       </button>
                     )}
@@ -424,42 +443,55 @@ function Candidates() {
         {people.length > itemsPerPage && (
           <div className="flex justify-center items-center mt-4 space-x-2">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.max(prev - 1, 1)
+                )
+              }
               disabled={currentPage === 1}
-              className={`px-3 py-1 text-sm rounded-md ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#056DDC] text-white"
-                }`}
+              className={`px-3 py-1 text-sm rounded-md ${
+                currentPage === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#056DDC] text-white"
+              }`}
             >
               Previous
             </button>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 text-sm rounded-md ${currentPage === i + 1 ? "bg-[#056DDC] text-white" : "bg-gray-100"
+            {Array.from({ length: totalPages }).map(
+              (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    currentPage === i + 1
+                      ? "bg-[#056DDC] text-white"
+                      : "bg-gray-100"
                   }`}
-              >
-                {i + 1}
-              </button>
-            ))}
+                >
+                  {i + 1}
+                </button>
+              )
+            )}
             <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, totalPages)
+                )
+              }
               disabled={currentPage === totalPages}
-              className={`px-3 py-1 text-sm rounded-md ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#056DDC] text-white"
-                }`}
+              className={`px-3 py-1 text-sm rounded-md ${
+                currentPage === totalPages
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#056DDC] text-white"
+              }`}
             >
               Next
             </button>
           </div>
         )}
       </div>
-
-
-
-
     </div>
-  )
+  );
 }
 
-
-
-export default Candidates
+export default Candidates;
