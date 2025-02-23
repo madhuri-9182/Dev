@@ -149,7 +149,7 @@ const router = createBrowserRouter(
               element={<Engagement />}
             />
             <Route
-              path="candidates/addcandidate"
+              path="candidates/add-candidate"
               element={<ClientAddCandidate />}
             />
             <Route

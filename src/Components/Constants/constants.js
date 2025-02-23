@@ -171,3 +171,45 @@ export const JOB_TYPES = {
   ARCHIVED: ["PF", "POH", "OTH"],
   ACTIVE: ["", null, undefined],
 };
+
+export const CANDIDATE_SOURCE = [
+  { id: "CLT", name: "Client" },
+  { id: "AGN", name: "Agency" },
+  { id: "INT", name: "Internal" },
+];
+
+export const SPECIALIZATIONS = [
+  { id: "frontend", name: "Frontend" },
+  { id: "backend", name: "Backend" },
+  { id: "fullstack", name: "Fullstack" },
+  { id: "aiml", name: "AI/ML" },
+  { id: "devops", name: "DevOps" },
+  { id: "data_engineer", name: "Data Engineering" },
+  { id: "testing", name: "Testing/QA" },
+  { id: "android", name: "Android" },
+  { id: "ios", name: "iOS" },
+  { id: "mobile", name: "Mobile (Android + iOS)" },
+];
+
+export const CANDIDATE_STATUS = [
+  {
+    id: "All",
+    name: "All",
+  },
+  {
+    id: "REC",
+    name: "Recommended",
+  },
+  {
+    id: "NREC",
+    name: "Not Recommended",
+  },
+  {
+    id: "SCH",
+    name: "Scheduled",
+  },
+  {
+    id: "NSCH",
+    name: "Not Scheduled",
+  },
+];

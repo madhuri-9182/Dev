@@ -1,5 +1,6 @@
 import pdfToText from "react-pdftotext";
 import { JOB_NAMES } from "../Components/Constants/constants";
+import axios from "../api/axios";
 
 export const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("en-GB");
@@ -36,37 +37,45 @@ export const handlePdfFile = (file, setJobDescription) => {
     });
 };
 
-export async function getFileFromPath(filePath) {
-  try {
-    if (!filePath) throw new Error("File path is required");
+export const formatExperience = (experience) => {
+  const { year, month } = experience;
+  const years = year === 0 ? "" : `${year} Years`;
+  return `${years} ${month} Months`.trim();
+};
 
-    const response = await fetch(filePath);
-    if (!response.ok)
-      throw new Error("Failed to fetch file");
+export const fileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};
 
-    const blob = await response.blob();
-    const fileName = filePath.split("/").pop();
-    const fileExtension = filePath
-      .split(".")
-      .pop()
-      .toLowerCase();
+export const createFileFromUrl = async (url) => {
+  const response = await axios.get(url, {
+    responseType: "blob",
+  });
 
-    let fileType;
-    switch (fileExtension) {
-      case "pdf":
-        fileType = "application/pdf";
-        break;
-      case "docx":
-        fileType =
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        break;
-      default:
-        fileType = "text/plain";
-    }
+  const fileName = url.split("/").pop();
+  const fileExtension = url.split(".").pop().toLowerCase();
 
-    return new File([blob], fileName, { type: fileType });
-  } catch (error) {
-    console.error("Error converting path to file:", error);
-    return null;
+  let fileType;
+  switch (fileExtension) {
+    case "pdf":
+      fileType = "application/pdf";
+      break;
+    case "docx":
+      fileType =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      break;
+    default:
+      fileType = "text/plain";
   }
-}
+
+  const file = new File([response.data], fileName, {
+    type: fileType,
+  });
+
+  return file;
+};
