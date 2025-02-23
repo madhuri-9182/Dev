@@ -108,6 +108,8 @@ const JobDetails = ({
     formdataToSubmit.append(
       "reason_for_archived",
       formdata.reason_for_archived
+        ? formdata.reason_for_archived
+        : ""
     );
     details.map((detail) => {
       detail.time = detail.time.replace(" Minutes", "min");
@@ -138,6 +140,10 @@ const JobDetails = ({
                 JOB_NAMES.find(
                   (job) => job.id === formdata.name
                 )?.name
+                  ? JOB_NAMES.find(
+                      (job) => job.id === formdata.name
+                    )?.name
+                  : formdata.name
               }
               readOnly
               className={inputClassName}
@@ -163,8 +169,9 @@ const JobDetails = ({
             <div
               className={`${btnClassName} w-1/2`}
               onClick={() => {
-                if (formdata.job_description) {
-                  const file = formdata.job_description;
+                if (formdata.job_description_file) {
+                  const file =
+                    formdata.job_description_file;
                   const blobUrl = URL.createObjectURL(file);
                   window.open(blobUrl, "_blank");
 

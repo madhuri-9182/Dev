@@ -6,7 +6,7 @@ import AddJob from "./AddJob";
 import JobDetails from "./JobDetails";
 import { useQuery } from "@tanstack/react-query";
 import { fetchJobs } from "./api";
-import { getFileFromPath } from "../../../utils/util";
+import { createFileFromUrl } from "../../../utils/util";
 
 const Jobs = () => {
   const [isArchiveModalOpen, setIsArchiveModalOpen] =
@@ -100,11 +100,7 @@ const Jobs = () => {
           );
           return;
         }
-        console.log(
-          selectedData.job_description_file,
-          "file"
-        );
-        const file = await getFileFromPath(
+        const file = await createFileFromUrl(
           selectedData.job_description_file
         );
 
