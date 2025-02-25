@@ -5,7 +5,7 @@ import SignUpSignInLayout from "./Authentication/SignUpSignInLayout";
 import ForgetPass from "./Authentication/ForgetPass";
 import LoginUsingEmail from "./Authentication/LoginUsingEmail";
 import LoginUsingNumber from "./Authentication/LoginUsingNumber";
-import page from "./Authentication/page";
+// import page from "./Authentication/page";
 import PasswordReset from "./Authentication/PasswordReset";
 import SignIn from "./Authentication/SignIn";
 import SignUp from "./Authentication/SignUp";
@@ -54,7 +54,6 @@ export {
   ForgetPass,
   PasswordReset,
   SignUpSignInLayout,
-  page,
   LoginUsingEmail,
   LoginUsingNumber,
   PersistLogin,
@@ -97,12 +96,6 @@ export {
 };
 
 //Interviewer Exports
-export {
-  Layout,
-  Calendar,
-  InterviewRecord,
-  Payments,
-  Feedback,
-};
+export { Layout, Calendar, InterviewRecord, Payments, Feedback };
 
 export { Hello };

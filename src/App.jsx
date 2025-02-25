@@ -8,12 +8,7 @@ import { ROLES } from "./Components/Constants/constants";
 import AuthWrapper from "./Components/Authentication/AuthWrapper";
 import UserActivation from "./Components/Client/UserActivation";
 // Interviewer Imports
-import {
-  Layout,
-  Calendar,
-  InterviewRecord,
-  Payments,
-} from "./Components";
+import { Layout, Calendar, InterviewRecord, Payments } from "./Components";
 import { Hello } from "./Components";
 import { InternalAddInterviewer } from "./Components/Internal/AddInterviewer";
 import { Feedback } from "./Components/Interviewer/Feedback";
@@ -45,7 +40,6 @@ import {
   AnalyticsDateFilter,
   Integration,
   Finance,
-  Engagement,
   Message,
 } from "./Components";
 import NavigationLayout from "./Components/shared/NavigationLayout";
@@ -64,6 +58,7 @@ import {
 } from "./Components";
 import ClientAddCandidate from "./Components/Client/Candidates/AddCandidate";
 import ClientScheduleInterview from "./Components/Client/Candidates/ScheduleInterview";
+import Engagement from "./Components/Client/Engagement/Engagement";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -71,35 +66,16 @@ const router = createBrowserRouter(
       <Route element={<PersistLogin />}>
         {/* Authentication Routes */}
         <Route element={<AuthWrapper />}>
-          <Route
-            path="auth"
-            element={<SignUpSignInLayout />}
-          >
-            <Route
-              path="forgetpass"
-              element={<ForgetPass />}
-            />
+          <Route path="auth" element={<SignUpSignInLayout />}>
+            <Route path="forgetpass" element={<ForgetPass />} />
             <Route path="signup" element={<SignUp />} />
-            <Route
-              path="signin/loginmail"
-              element={<LoginUsingEmail />}
-            />
-            <Route
-              path="signin/loginnumber"
-              element={<LoginUsingNumber />}
-            />
-            <Route
-              path="password-reset/:id"
-              element={<PasswordReset />}
-            />
+            <Route path="signin/loginmail" element={<LoginUsingEmail />} />
+            <Route path="signin/loginnumber" element={<LoginUsingNumber />} />
+            <Route path="password-reset/:id" element={<PasswordReset />} />
           </Route>
         </Route>
         {/* User Routes */}
-        <Route
-          element={
-            <RequireAuth allowedRoles={ROLES.USER} />
-          }
-        >
+        <Route element={<RequireAuth allowedRoles={ROLES.USER} />}>
           <Route path="" element={<Hello />} />
         </Route>
         {/* Client Activation Route */}
@@ -110,44 +86,22 @@ const router = createBrowserRouter(
           />
         </Route>
         {/* //Client Routes */}
-        <Route
-          element={
-            <RequireAuth allowedRoles={ROLES.CLIENT} />
-          }
-        >
-          <Route
-            path="client"
-            element={<NavigationLayout />}
-          >
+        <Route element={<RequireAuth allowedRoles={ROLES.CLIENT} />}>
+          <Route path="client" element={<NavigationLayout />}>
             <Route path="message" element={<Message />} />
-            <Route
-              path="dashboard"
-              element={<Dashboard />}
-            />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="settings" element={<Settings />} />
             <Route path="jobs" element={<Jobs />} />
-            <Route
-              path="candidates"
-              element={<Candidates />}
-            />
+            <Route path="candidates" element={<Candidates />} />
             {/* <Route path='analytics' element={<Analytics />} /> */}
             <Route path="analytics">
               <Route path="" element={<Analytics />} />
-              <Route
-                path="filter"
-                element={<AnalyticsDateFilter />}
-              />
+              <Route path="filter" element={<AnalyticsDateFilter />} />
             </Route>
 
-            <Route
-              path="integration"
-              element={<Integration />}
-            />
+            <Route path="integration" element={<Integration />} />
             <Route path="finance" element={<Finance />} />
-            <Route
-              path="engagement"
-              element={<Engagement />}
-            />
+            <Route path="engagement/*" element={<Engagement />} />
             <Route
               path="candidates/add-candidate"
               element={<ClientAddCandidate />}
@@ -163,100 +117,40 @@ const router = createBrowserRouter(
           />
         </Route>
         {/* //Agency Routes */}
-        <Route
-          element={
-            <RequireAuth allowedRoles={ROLES.AGENCY} />
-          }
-        >
-          <Route
-            path="agency"
-            element={<NavigationLayout />}
-          >
-            <Route
-              path="dashboard"
-              element={<AgencyDashboard />}
-            />
+        <Route element={<RequireAuth allowedRoles={ROLES.AGENCY} />}>
+          <Route path="agency" element={<NavigationLayout />}>
+            <Route path="dashboard" element={<AgencyDashboard />} />
             <Route path="candidates">
-              <Route
-                path=""
-                element={<AgencyCandidates />}
-              />
+              <Route path="" element={<AgencyCandidates />} />
               <Route
                 path="schedule-interview"
                 element={<AgencyScheduleInterview />}
               />
-              <Route
-                path="addcandidate"
-                element={<AgencyAddCandidate />}
-              />
+              <Route path="addcandidate" element={<AgencyAddCandidate />} />
             </Route>
           </Route>
         </Route>
         {/* //Internal Routes */}
-        <Route
-          element={
-            <RequireAuth allowedRoles={ROLES.INTERNAL} />
-          }
-        >
-          <Route
-            path="internal"
-            element={<NavigationLayout />}
-          >
-            <Route
-              path="dashboard"
-              element={<InternalDashboard />}
-            />
+        <Route element={<RequireAuth allowedRoles={ROLES.INTERNAL} />}>
+          <Route path="internal" element={<NavigationLayout />}>
+            <Route path="dashboard" element={<InternalDashboard />} />
             <Route path="clients">
-              <Route
-                path=""
-                element={<InternalClients />}
-              />
-              <Route
-                path="addclient"
-                element={<InternalClients />}
-              />
+              <Route path="" element={<InternalClients />} />
+              <Route path="addclient" element={<InternalClients />} />
             </Route>
-            <Route
-              path="interviewer"
-              element={<InternalInterviewer />}
-            />
-            <Route
-              path="addinterviewer"
-              element={<InternalAddInterviewer />}
-            />
-            <Route
-              path="users"
-              element={<InternalUsers />}
-            />
-            <Route
-              path="agreements"
-              element={<InternalAgreements />}
-            />
-            <Route
-              path="finance"
-              element={<InternalFinance />}
-            />
-            <Route
-              path="engagement"
-              element={<InternalEngagement />}
-            />
-            <Route
-              path="message"
-              element={<InternalMessages />}
-            />
+            <Route path="interviewer" element={<InternalInterviewer />} />
+            <Route path="addinterviewer" element={<InternalAddInterviewer />} />
+            <Route path="users" element={<InternalUsers />} />
+            <Route path="agreements" element={<InternalAgreements />} />
+            <Route path="finance" element={<InternalFinance />} />
+            <Route path="engagement" element={<InternalEngagement />} />
+            <Route path="message" element={<InternalMessages />} />
           </Route>
         </Route>
         {/* //Interviewer Routes */}
-        <Route
-          element={
-            <RequireAuth allowedRoles={ROLES.INTERVIEWER} />
-          }
-        >
+        <Route element={<RequireAuth allowedRoles={ROLES.INTERVIEWER} />}>
           <Route path="interviewer" element={<Layout />}>
-            <Route
-              path="dashboard"
-              element={<InterviewRecord />}
-            />
+            <Route path="dashboard" element={<InterviewRecord />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="payments" element={<Payments />} />
             <Route path="feedback" element={<Feedback />} />

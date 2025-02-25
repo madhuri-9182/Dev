@@ -14,6 +14,7 @@ export default {
         custom_lg: "1400px", // added a custom_lg for responsivness (implemented in agreement page add new popup)
       },
       fontFamily: {
+        inter: ["Inter", "sans-serif"],
         roboto: ["Roboto", "sans-serif"],
         outfit: ["Outfit", "sans-serif"],
       },

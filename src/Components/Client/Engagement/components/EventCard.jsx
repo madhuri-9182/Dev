@@ -1,0 +1,133 @@
+import { Card, CardActionArea, IconButton, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { ItemTypes } from "../EventSchedular";
+import { useDrag } from "react-dnd";
+import { Edit, EditOutlined } from "@mui/icons-material";
+import { useState } from "react";
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: "16px",
+  boxShadow: "none",
+  padding: "0",
+  width: "max-content",
+  position: "relative",
+}));
+
+const StyledCardActionArea = styled(CardActionArea)(({ theme }) => ({
+  width: "192px",
+  height: "64px",
+  padding: "12px",
+  overflow: "hidden",
+}));
+
+const EventCard = ({
+  title,
+  selected,
+  isDragging,
+  dimension,
+  onClick = () => {},
+  onChange = () => {},
+  isEditable = true,
+  autoFocus = false,
+  onBlur = () => {},
+}) => {
+  const [edit, setEdit] = useState(!!autoFocus);
+
+  return (
+    <StyledCard
+      sx={{
+        mb: dimension ? 0 : 2,
+        ...(selected
+          ? {
+              color: "white",
+              backgroundColor: "#007AFF",
+            }
+          : {
+              color: "#65558F",
+              backgroundColor: "white",
+              border: "1px solid #79747E",
+            }),
+      }}
+    >
+      {!edit && isEditable ? (
+        <IconButton
+          style={{
+            position: "absolute",
+            right: "2px",
+            top: "2px",
+            color: "white",
+            fontSize: "14px",
+            zIndex: 5,
+          }}
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEdit(true);
+          }}
+        >
+          <EditOutlined fontSize="inherit" />
+        </IconButton>
+      ) : null}
+
+      <StyledCardActionArea
+        disableRipple={isDragging}
+        style={{ cursor: isDragging ? "move" : "pointer", ...dimension }}
+        onClick={!selected && onClick}
+      >
+        {edit ? (
+          <textarea
+            type="text"
+            value={title}
+            className="border-none h-full w-full color-white bg-transparent text-[12px] outline-none"
+            autoFocus
+            onBlur={() => {
+              setEdit(false);
+              onBlur();
+            }}
+            rows={2}
+            // defaultValue={title}
+            onChange={(e) => {
+              onChange(e.target.value);
+            }}
+          />
+        ) : (
+          <Typography
+            fontSize={13}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {title}
+          </Typography>
+        )}
+      </StyledCardActionArea>
+    </StyledCard>
+  );
+};
+
+export const DraggableEventCard = ({ title, selected, index }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemTypes.EVENT_CARD,
+    item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  return (
+    <div
+      ref={drag}
+      role="handle"
+      style={{ opacity: isDragging ? 0.5 : 1, height: "max-content" }}
+      className="cursor-move"
+    >
+      <EventCard title={title} isDragging={true} selected={selected} />
+    </div>
+  );
+};
+
+export default EventCard;
