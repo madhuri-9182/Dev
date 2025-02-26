@@ -59,9 +59,9 @@ const LoginUsingEmail = () => {
     }
   }, [errorMessage]);
 
-  const handleLGNNavigation = () => {
-    navigate("/auth/signin/loginnumber");
-  };
+  // const handleLGNNavigation = () => {
+  //   navigate("/auth/signin/loginnumber");
+  // };
   const handleFPNavigation = () => {
     navigate("/auth/forgetpass");
   };
@@ -240,11 +240,11 @@ const LoginUsingEmail = () => {
               disabled={loading}
               label={"Submit"}
             />
-            <SecondaryButton
+            {/* <SecondaryButton
               disabled={true}
               label={"Login Using Mobile Number"}
               onClick={handleLGNNavigation}
-            />
+            /> */}
             <SecondaryButton
               disabled={true}
               label={"Login Using SSO"}
