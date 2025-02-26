@@ -39,8 +39,15 @@ export const handlePdfFile = (file, setJobDescription) => {
 
 export const formatExperience = (experience) => {
   const { year, month } = experience;
-  const years = year === 0 ? "" : `${year} Years`;
-  return `${years} ${month} Months`.trim();
+
+  if (year === 0 && month === 0) {
+    return "-";
+  }
+
+  const years = year ? `${year} Years` : "";
+  const months = month ? `${month} Months` : "";
+
+  return `${years} ${months}`.trim();
 };
 
 export const fileToBase64 = (file) => {

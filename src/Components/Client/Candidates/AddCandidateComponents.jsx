@@ -129,6 +129,14 @@ const ResumeTableRow = ({
       newErrors.gender =
         "Gender is required. Please fill manually to submit";
 
+    if (
+      editedData.years_of_experience.year === 0 &&
+      editedData.years_of_experience.month === 0
+    ) {
+      newErrors.years_of_experience =
+        "Experience not parsed. Please fill manually to submit";
+    }
+
     setErrors(newErrors);
 
     // Return true if there are no errors
