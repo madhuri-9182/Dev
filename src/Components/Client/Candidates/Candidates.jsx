@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IoSearchSharp } from "react-icons/io5";
 import { FilterGroup } from "./components/FilterGroup";
 import useAllJobs from "../../../hooks/useFetchAllJobs";
 import {
@@ -15,6 +14,7 @@ import {
   fileToBase64,
   createFileFromUrl,
 } from "../../../utils/util";
+import SearchInput from "../../shared/SearchInput";
 
 function Candidates() {
   const location = useLocation();
@@ -24,6 +24,19 @@ function Candidates() {
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedStatus, setSelectedStatus] =
     useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] =
+    useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500); // Adjust delay as needed
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [
@@ -32,6 +45,7 @@ function Candidates() {
         page: currentPage,
         job_id: selectedRole,
         status: selectedStatus,
+        q: debouncedSearchQuery,
       },
     ],
     queryFn: getCandidates,
@@ -142,14 +156,10 @@ function Candidates() {
       {/* Search and Add Button */}
       <div className="flex w-full justify-end items-center gap-10 ml-auto">
         {/* Search Input */}
-        <div className="flex items-center rounded-full px-4 py-3 w-[446px] border border-[#F4F4F4] focus-within:border-blue-700 bg-[#F4F4F4]">
-          <input
-            type="text"
-            placeholder="Search job by Name, Email & Mobile Number"
-            className="flex-1 text-[#49454F] outline-none text-xs bg-transparent"
-          />
-          <IoSearchSharp className="text-[#49454F]" />
-        </div>
+        <SearchInput
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
 
         {/* Add Client Button */}
         <button
