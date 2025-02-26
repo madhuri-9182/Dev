@@ -5,7 +5,7 @@ import { extractErrors } from "./utils";
 
 const BASE_URL = "/api/client";
 
-const errorToaster = (error) => {
+export const errorToaster = (error) => {
   const errors = error.response.data.errors;
   const extractedErrors = extractErrors(errors);
   extractedErrors.forEach((error) => {
@@ -217,15 +217,47 @@ export const useUpdateEngagementStatus = (filters) => {
           `${BASE_URL}/engagements/${engagementId}/`,
           payload
         );
-        return { status: payload.status };
+        return { status: payload.status, id: engagementId };
+      } catch (error) {
+        errorToaster(error);
+
+        throw error;
+      }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["engagements", filters], (oldData) => {
+        if (oldData === undefined) return;
+
+        oldData.results = oldData.results.map((engagement) => {
+          if (engagement.id === data.id) {
+            return { ...engagement, status: data.status };
+          }
+          return engagement;
+        });
+        return oldData;
+      });
+
+      successToaster(`Engagement status updated`);
+    },
+  });
+};
+
+export const useUpdateEngagementSchedule = () => {
+  return useMutation({
+    mutationFn: async ({ engagementId, payload }) => {
+      try {
+        const { data } = await axios.put(
+          `${BASE_URL}/engagement-operation/${engagementId}/`,
+          payload
+        );
+        return data;
       } catch (error) {
         errorToaster(error);
         throw error;
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["engagements", filters] });
-      successToaster(`Engagement status updated`);
+      successToaster(`Engagement operations updated`);
     },
   });
 };

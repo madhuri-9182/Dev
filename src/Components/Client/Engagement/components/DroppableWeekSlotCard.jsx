@@ -93,7 +93,12 @@ const DateTimeControl = ({ event, isCompleted, onChangeDate }) => (
           }}
           slots={{
             openPickerIcon: () => (
-              <Calendar size={16} color={event?.date ? "#171717" : "#C4C4C4"} />
+              <Calendar
+                size={16}
+                color={
+                  event?.date ? "#171717" : event?.template ? "red" : "#C4C4C4"
+                }
+              />
             ),
           }}
         />

@@ -26,12 +26,22 @@ function Engagement() {
           <EngagementDashboard setSelectedEngagement={setSelectedEngagement} />
         }
       />
+      <Route
+        path="/email-templates"
+        element={<EmailTemplates engagement={selectedEngagement} />}
+      />
+
+      <Route
+        path="/form"
+        element={
+          <EngagementForm
+            setSelectedEngagement={setSelectedEngagement}
+            engagement={selectedEngagement}
+          />
+        }
+      />
       {selectedEngagement ? (
         <>
-          <Route
-            path="/email-templates"
-            element={<EmailTemplates engagement={selectedEngagement} />}
-          />
           <Route
             path="/event-schedular"
             element={
@@ -43,15 +53,6 @@ function Engagement() {
           />
         </>
       ) : null}
-      <Route
-        path="/form"
-        element={
-          <EngagementForm
-            setSelectedEngagement={setSelectedEngagement}
-            engagement={selectedEngagement}
-          />
-        }
-      />
 
       <Route path="*" element={<RedirectToDashboard />} />
     </Routes>

@@ -53,8 +53,9 @@ function EmailTemplates() {
                 : template.template_name
             }
             selected={selectedTemplate?.id === template.id}
-            onClick={() => selectTemplate(template)}
+            onClick={selectTemplate}
             onChange={handleTemplateNameChange}
+            template={template}
           />
         ))}
 
@@ -80,11 +81,11 @@ function EmailTemplates() {
           {hasChanges && (
             <Box className="flex gap-2 mt-2 ml-auto justify-end">
               <Button
-                style={{
+                sx={{
                   backgroundColor: "white",
                   color: "#79747E",
                   borderColor: "#79747E",
-                  paddingBlock: 4,
+                  paddingBlock: 0.5,
                 }}
                 variant="outlined"
                 onClick={() =>
@@ -95,8 +96,8 @@ function EmailTemplates() {
               </Button>
 
               <Button
-                style={{
-                  paddingBlock: 4,
+                sx={{
+                  paddingBlock: 0.5,
                   backgroundColor: "#007AFF",
                   color: "white",
                 }}

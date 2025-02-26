@@ -6,7 +6,7 @@ import GreenStepper from "./GreenStepper";
 import CustomMenu from "./CustomMenu";
 import { ENAGAGEMENT_STATUS, NOTICE_PERIOD } from "../constants";
 
-import { findAllSteps, findEngagementActiveStep } from "../utils";
+import { findAllSteps } from "../utils";
 
 const TimelineContainer = styled(Box)({
   display: "flex",
@@ -57,14 +57,10 @@ const CandidateTimeline = ({
   onEngagementClick = () => {},
 }) => {
   const steps = useMemo(
-    () => findAllSteps(engagement?.notice_period),
-    [engagement?.notice_period]
-  );
-
-  const activeStep = useMemo(
-    () => findEngagementActiveStep(engagement?.engagementoperations),
+    () => findAllSteps(engagement?.engagementoperations),
     [engagement?.engagementoperations]
   );
+
   const engagementStatus = useMemo(
     () =>
       ENAGAGEMENT_STATUS.find((s) => s.value === engagement?.status) ||
@@ -90,7 +86,7 @@ const CandidateTimeline = ({
       </CandidateInfo>
 
       <Box sx={{ display: "flex", alignItems: "center", flex: 1, minWidth: 0 }}>
-        <GreenStepper activeStep={activeStep} steps={steps} />
+        <GreenStepper steps={steps} />
       </Box>
 
       <CustomMenu

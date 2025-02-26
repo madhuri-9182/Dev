@@ -75,7 +75,7 @@ function CustomMenu({
         id="status-button"
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
-        style={
+        sx={
           ["DCL", "DBT"].includes(selectedOption.value)
             ? {
                 color: "red",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   useAddEngagementTemplate,
   useEngagementTemplates,
@@ -47,13 +47,18 @@ export const useEmailTemplates = (editorRef) => {
     useAddEngagementTemplate();
 
   useEffect(() => {
-    if (_templates.length > 0) {
+    if (!isLoading) {
       selectTemplate({ ..._templates[0] });
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (_templates.length > 0) {
       setTemplates([..._templates]);
     }
-  }, [!!_templates.length]);
+  }, [_templates.length]);
 
-  const selectTemplate = (template) => {
+  const selectTemplate = useCallback((template) => {
     setHasChanges(false);
     setSelectedTemplate(template);
     if (template) {
@@ -61,12 +66,12 @@ export const useEmailTemplates = (editorRef) => {
     } else {
       setIsAddingNew(false);
     }
-  };
+  }, []);
 
-  const handleTemplateNameChange = (value) => {
+  const handleTemplateNameChange = useCallback((value) => {
     setHasChanges(true);
     setEditorState((prev) => ({ ...prev, template_name: value }));
-  };
+  }, []);
 
   const updateTemplate = async () => {
     setHasChanges(false);
@@ -77,6 +82,14 @@ export const useEmailTemplates = (editorRef) => {
       subject,
       template_html_content,
     };
+    setTemplates((prev) => {
+      const updatedTemplateIndex = prev.findIndex(
+        (template) => template.id === selectedTemplate.id
+      );
+      prev[updatedTemplateIndex] = { ...selectedTemplate, ...updatedData };
+
+      return [...prev];
+    });
     updateMutation(updatedData);
   };
 

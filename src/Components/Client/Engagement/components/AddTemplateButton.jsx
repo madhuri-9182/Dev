@@ -43,7 +43,7 @@ export const AddTemplateButton = ({
 
   return (
     <Button
-      style={{
+      sx={{
         backgroundColor: "#007AFF",
         color: "white",
       }}

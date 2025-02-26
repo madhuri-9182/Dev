@@ -1,22 +1,7 @@
 import { NOTICE_PERIOD } from "./constants";
 
-export const findEngagementActiveStep = (operations) => {
-  const activeStep = Math.max(
-    ...operations
-      .filter((operation) => {
-        if (operation.delivery_status === "SUC") return operation;
-      })
-      .map((operation) => operation.week),
-    0
-  );
-
-  return activeStep || 0;
-};
-
-export const findAllSteps = (noticePeriod) => {
-  return new Array(NOTICE_PERIOD.find((p) => p.value === noticePeriod)?.weeks)
-    .fill(1)
-    .map((_, i) => `Weeks ${i + 1}`);
+export const findAllSteps = (operations) => {
+  return operations;
 };
 
 export const extractSubjectAndContent = (content) => {
@@ -75,4 +60,23 @@ export const getScheduledEventsPerWeekInitialValue = (engagement) => {
     week: idx + 1,
     slots: [null, null],
   }));
+};
+
+export const prepareOperationsPayload = (scheduledEventsPerWeek) => {
+  const operations = [];
+  scheduledEventsPerWeek.forEach((item) => {
+    item.slots.forEach((slot) => {
+      if (slot?.template) {
+        operations.push({
+          date: slot.date,
+          week: slot.week,
+          template_id: slot.template.id,
+
+          ...(slot.id != -1 ? { operation_id: slot.id } : {}),
+        });
+      }
+    });
+  });
+
+  return operations;
 };

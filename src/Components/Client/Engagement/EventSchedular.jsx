@@ -26,6 +26,7 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
     hasChanges,
     isLoadingtemplates,
     resetChanges,
+    updateEngagementSchedule,
   } = useEventScheduler({
     engagement,
     setSelectedEngagement,
@@ -76,6 +77,7 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
               color: "white",
             }}
             loading={isUpdating}
+            onClick={updateEngagementSchedule}
           >
             Save
           </Button>

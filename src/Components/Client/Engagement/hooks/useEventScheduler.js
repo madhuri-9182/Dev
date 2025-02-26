@@ -1,12 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
-import { useEngagementTemplates, useUpdateEngagementStatus } from "../api";
+import {
+  useEngagementTemplates,
+  useUpdateEngagementSchedule,
+  useUpdateEngagementStatus,
+} from "../api";
 import moment from "moment/moment";
 import { NOTICE_PERIOD } from "../constants";
-import { getScheduledEventsPerWeekInitialValue } from "../utils";
+import {
+  getScheduledEventsPerWeekInitialValue,
+  prepareOperationsPayload,
+} from "../utils";
+import { useNavigate } from "react-router-dom";
 
 export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
   const { mutateAsync: mutateEngagementStatus, isPending: isUpdating } =
     useUpdateEngagementStatus();
+
+  const { mutateAsync: mutateEngagementSchedule } =
+    useUpdateEngagementSchedule();
+
+  const navigate = useNavigate();
 
   const [templates, setTemplates] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
@@ -21,44 +34,66 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
     getScheduledEventsPerWeekInitialValue(engagement)
   );
 
-  useEffect(() => {
-    if (!isLoadingtemplates) {
-      debugger;
-      const templates = JSON.parse(JSON.stringify(_templates));
-      const engagementOperations = JSON.parse(
-        JSON.stringify(engagement.engagementoperations)
+  const loadInitialState = useCallback((_templates) => {
+    const templates = JSON.parse(JSON.stringify(_templates));
+    const engagementOperations = JSON.parse(
+      JSON.stringify(engagement.engagementoperations)
+    );
+    const scheduledEventsPerWeekCopy =
+      getScheduledEventsPerWeekInitialValue(engagement);
+    engagementOperations.forEach((operation) => {
+      const weekData = scheduledEventsPerWeekCopy.find(
+        (week) => week.week === operation.week
       );
-      const scheduledEventsPerWeekCopy =
-        getScheduledEventsPerWeekInitialValue(engagement);
-      engagementOperations.forEach((operation) => {
-        const weekData = scheduledEventsPerWeekCopy.find(
-          (week) => week.week === operation.week
-        );
-        const emptySlotIndex = weekData.slots.findIndex(
-          (slot) => slot === null
+      const emptySlotIndex = weekData.slots.findIndex((slot) => slot === null);
+
+      if (emptySlotIndex !== -1) {
+        const templateIndex = _templates.findIndex(
+          (t) => t?.id === operation.template.id
         );
 
-        if (emptySlotIndex !== -1) {
-          const templateIndex = _templates.findIndex(
-            (t) => t?.id === operation.template.id
-          );
+        templates[templateIndex] = null;
+        weekData.slots[emptySlotIndex] = {
+          ...operation,
+          template: { ...operation.template, index: templateIndex },
+        };
+      }
+    });
 
-          templates[templateIndex] = null;
-          weekData.slots[emptySlotIndex] = {
-            ...operation,
-            template: { ...operation.template, index: templateIndex },
-          };
-        }
-      });
+    setScheduledEventsPerWeek([...scheduledEventsPerWeekCopy]);
 
-      setScheduledEventsPerWeek([...scheduledEventsPerWeekCopy]);
+    setTemplates([...templates]);
+  }, []);
 
-      setTemplates([...templates]);
+  useEffect(() => {
+    if (!hasChanges && _templates.length > 0) {
+      loadInitialState(_templates);
+    }
+  }, [hasChanges]);
+
+  useEffect(() => {
+    if (!isLoadingtemplates && _templates.length > 0) {
+      loadInitialState(_templates);
     }
   }, [isLoadingtemplates]);
 
+  useEffect(() => {
+    if (!isLoadingtemplates)
+      setSelectedEngagement((engagement) => {
+        const operations = [];
+        scheduledEventsPerWeek.forEach((week) => {
+          week.slots.forEach((slot) => {
+            if (slot?.template) {
+              operations.push(slot);
+            }
+          });
+        });
+        engagement.engagementoperations = operations;
+        return { ...engagement };
+      });
+  }, [scheduledEventsPerWeek]);
+
   const resetChanges = async () => {
-    await refetch();
     setHasChanges(false);
   };
 
@@ -126,6 +161,7 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
         engagementId: engagement.id,
         payload: { status: update.status },
       });
+      debugger;
       setSelectedEngagement({ ...engagement, status: update.status });
     }
   };
@@ -136,6 +172,16 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
       prevScheduledEventsPerWeek[weekIndex].slots[slotIndex].date = newDate;
       return [...prevScheduledEventsPerWeek];
     });
+  };
+
+  const updateEngagementSchedule = async () => {
+    await mutateEngagementSchedule({
+      engagementId: engagement.id,
+      payload: {
+        template_data: prepareOperationsPayload(scheduledEventsPerWeek),
+      },
+    });
+    navigate("/client/engagement/dashboard");
   };
 
   return {
@@ -149,5 +195,6 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
     hasChanges,
     resetChanges,
     isLoadingtemplates,
+    updateEngagementSchedule,
   };
 };

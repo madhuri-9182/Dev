@@ -21,7 +21,7 @@ export const TemplateList = ({ templates }) => {
         ) : null
       )}
       <Button
-        style={{
+        sx={{
           backgroundColor: "#007AFF",
           color: "white",
           marginTop: "16px",

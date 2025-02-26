@@ -118,7 +118,7 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
         <Button
           startIcon={<AttachFile />}
           onClick={handleAttachmentClick}
-          style={{
+          sx={{
             backgroundColor: "white",
             color: "#79747E",
             borderColor: "#79747E",

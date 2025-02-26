@@ -109,9 +109,9 @@ function EngagementDashboard({ setSelectedEngagement }) {
         />
         <Button
           startIcon={<Add />}
-          style={{
+          sx={{
             minWidth: "180px",
-            paddingBlock: 4,
+            paddingBlock: 1,
             backgroundColor: "#007AFF",
             color: "white",
           }}
