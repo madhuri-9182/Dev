@@ -190,7 +190,12 @@ const AddUserModal = ({
           <form onSubmit={onSubmit}>
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label name={"name"} label={"Name"} />
+                <Label
+                  name={"name"}
+                  label={
+                    "Full Name (First Name + Last Name)"
+                  }
+                />
                 <Input
                   type="text"
                   value={formData.name}
@@ -200,7 +205,7 @@ const AddUserModal = ({
                       name: e.target.value,
                     })
                   }
-                  placeholder="Enter Name"
+                  placeholder="Enter Full Name"
                   required
                 />
               </div>
