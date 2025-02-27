@@ -32,7 +32,7 @@ import {
 import { NavItemIcon } from "./NavItemIcon";
 import { SmsTracking } from "iconsax-react";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -169,7 +169,7 @@ function NavigationLayout() {
           >
             <div className="p-2 h-[60px] bg-[#056DDC] flex items-center justify-between">
               <div className=" logo-brandName ">
-                <h1 className="text-white text-[24px]">
+                <h1 className="text-white text-lg">
                   {" "}
                   <span className="font-bold">HD</span>{" "}
                   INTERVIEW PLATFORM
@@ -203,14 +203,17 @@ function NavigationLayout() {
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <div className="flex items-center justify-around h-full w-full">
+          <div className="flex items-center justify-around w-full">
             <div>
-              <h1 className="text-2xl text-[#056DDC]">
+              <h1 className="text-lg text-[#056DDC]">
                 Hi{auth?.name && `, ${auth?.name}`}
               </h1>
             </div>
             <div>
-              <IconButton onClick={handleDrawerClose}>
+              <IconButton
+                onClick={handleDrawerClose}
+                size="small"
+              >
                 {theme.direction === "rtl" ? (
                   <ChevronRightIcon />
                 ) : (
@@ -235,7 +238,7 @@ function NavigationLayout() {
             >
               <ListItemButton
                 sx={[
-                  { minHeight: 48, pl: 3, pr: 1 },
+                  { minHeight: 44, pl: 3, pr: 1 },
                   open
                     ? { justifyContent: "initial" }
                     : { justifyContent: "center" },
@@ -251,7 +254,7 @@ function NavigationLayout() {
                 />
                 <ListItemText
                   primary={items.text}
-                  className={`ml-3 ${
+                  className={`ml-3 text-sm ${
                     location.pathname.startsWith(items.link)
                       ? "text-[#056DDC] font-semibold "
                       : ""
@@ -263,7 +266,8 @@ function NavigationLayout() {
                           items.link
                         )
                           ? 600
-                          : "normal", // Font weight for active route
+                          : "normal",
+                      fontSize: "14px",
                     },
                   }}
                 />
