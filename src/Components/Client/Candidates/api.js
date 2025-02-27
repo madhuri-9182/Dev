@@ -16,6 +16,14 @@ export const addCandidate = async (data) => {
   return response.data;
 };
 
+export const updateCandidate = async ({ id, data }) => {
+  const response = await axios.patch(
+    `/api/client/candidate/${id}/`,
+    data
+  );
+  return response.data;
+};
+
 export const getCandidates = async ({ queryKey }) => {
   const [, params] = queryKey;
   const response = await axios.get(

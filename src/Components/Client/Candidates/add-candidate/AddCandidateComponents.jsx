@@ -9,8 +9,8 @@ import { FaCheck } from "react-icons/fa6";
 import {
   fileToBase64,
   formatExperience,
-} from "../../../utils/util";
-import { EMAIL_REGEX } from "../../Constants/constants";
+} from "../../../../utils/util";
+import { EMAIL_REGEX } from "../../../Constants/constants";
 
 export const ResumeTable = ({
   data,
@@ -22,7 +22,7 @@ export const ResumeTable = ({
   selectedSpecialization,
 }) => (
   <div className="w-full mt-20 overflow-x-auto">
-    <table className="w-full text-xs text-[#313A4E] border-collapse">
+    <table className="w-full text-2xs text-[#313A4E] border-collapse">
       <thead className="text-[#6B6F7B] font-bold mt-3">
         <tr className="flex items-center gap-2 text-left">
           <th className="px-3 w-[14.33%]">Name</th>
@@ -304,7 +304,7 @@ const ResumeTableRow = ({
               <select
                 value={editedData.gender}
                 onChange={(e) => handleChange(e, "gender")}
-                className="custom-select w-full px-2 py-1 border text-xs font-medium bg-white text-[#6B6F7B] rounded"
+                className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
               >
                 <option value="">Select</option>
                 <option value="male">Male</option>
@@ -314,7 +314,7 @@ const ResumeTableRow = ({
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
               <CloseCircle
-                size="24"
+                size="20"
                 color="#555555"
                 variant="Outline"
                 className="cursor-pointer"
@@ -333,7 +333,7 @@ const ResumeTableRow = ({
               />
               <button
                 onClick={saveEdit}
-                className="px-3 rounded-full text-sm font-medium text-white h-[32px] 
+                className="px-3 py-1 rounded-full text-xs font-medium text-white 
                   bg-[#007AFF] transition-all duration-300 ease-in-out
                   hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer flex items-center w-[90px] justify-center"
               >
@@ -366,14 +366,14 @@ const ResumeTableRow = ({
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
               <Edit
-                size={24}
+                size={20}
                 color="#595BD4"
                 variant="Outline"
                 className="cursor-pointer min-w-4 min-h-4"
                 onClick={() => setEditingRowId(item.id)}
               />
               <button
-                className="px-3 rounded-full text-sm font-medium text-white h-[32px] 
+                className="px-3 py-1 rounded-full text-xs font-medium text-white  
                        bg-[#007AFF] transition-all duration-300 ease-in-out
                        hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer flex items-center"
                 onClick={handleSubmit}
@@ -389,7 +389,7 @@ const ResumeTableRow = ({
           {Object.keys(errors).map((key, idx) => (
             <p
               key={idx}
-              className="text-[#F00000] text-[11px] px-2"
+              className="text-[#F00000] text-[10px] px-2 mt-[2px]"
             >
               {errors[key]}
             </p>
@@ -464,7 +464,7 @@ export const UploadButton = ({
         color="#171717"
         size={24}
       />
-      <span className="text-base font-medium text-[#6B6F7B]">
+      <span className="text-sm font-medium text-[#6B6F7B]">
         {label}
       </span>
     </p>

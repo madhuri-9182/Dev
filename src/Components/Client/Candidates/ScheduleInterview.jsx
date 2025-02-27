@@ -10,7 +10,7 @@ import {
   SPECIALIZATIONS,
 } from "../../Constants/constants";
 import { useMutation } from "@tanstack/react-query";
-import { addCandidate } from "./api";
+import { addCandidate, updateCandidate } from "./api";
 import toast from "react-hot-toast";
 import DropCandidateModal from "./components/DropCandidateModal";
 
@@ -181,7 +181,7 @@ function ClientScheduleInterview() {
   };
 
   const mutation = useMutation({
-    mutationFn: addCandidate,
+    mutationFn: item.id ? updateCandidate : addCandidate,
     onSuccess: () => {
       toast.success("Candidate added successfully", {
         position: "top-right",
@@ -198,25 +198,39 @@ function ClientScheduleInterview() {
 
   const handleAddCandidate = () => {
     const formdata = new FormData();
-    formdata.append("name", item.name);
-    formdata.append("email", item.email);
-    formdata.append("phone", item.phone_number);
-    formdata.append("job_id", item.role);
-    formdata.append("year", item.years_of_experience.year);
-    formdata.append(
-      "month",
-      item.years_of_experience.month
-    );
-    formdata.append("specialization", item.specialization);
-    formdata.append("company", item.current_company);
-    formdata.append("source", item.source);
-    formdata.append("cv", file);
-    formdata.append("gender", "M");
-    if (remark) {
-      formdata.append("remark", remark);
+    if (item?.id) {
+      if (remark) {
+        formdata.append("remark", remark);
+      }
+    } else {
+      formdata.append("name", item.name);
+      formdata.append("email", item.email);
+      formdata.append("phone", item.phone_number);
+      formdata.append("job_id", item.role);
+      formdata.append(
+        "year",
+        item.years_of_experience.year
+      );
+      formdata.append(
+        "month",
+        item.years_of_experience.month
+      );
+      formdata.append(
+        "specialization",
+        item.specialization
+      );
+      formdata.append("company", item.current_company);
+      formdata.append("source", item.source);
+      formdata.append("cv", file);
+      formdata.append("gender", "M");
+      if (remark) {
+        formdata.append("remark", remark);
+      }
     }
 
-    mutation.mutate(formdata);
+    item.id
+      ? mutation.mutate({ id: item.id, data: formdata })
+      : mutation.mutate(formdata);
   };
 
   const handleDeleteCandidate = () => {
@@ -232,35 +246,35 @@ function ClientScheduleInterview() {
 
   return (
     <>
-      <div className="w-full flex gap-x-24">
+      <div className="w-full flex gap-x-12">
         <div className=" p-10 flex flex-col gap-y-4 bg-[#E7E4E8CC] rounded-2xl w-[340px]">
           {/* SIDEBAR */}
-          <div className="flex flex-col gap-y-8">
+          <div className="flex flex-col gap-y-6">
             {SIDEBAR_CONTENT.map((content, index) => (
               <div
                 key={index}
-                className="flex flex-col gap-y-2 text-[#6B6F7B]"
+                className="flex flex-col gap-y-1 text-[#6B6F7B]"
               >
                 <label
-                  className="text-xs uppercase"
+                  className="text-2xs uppercase"
                   htmlFor={content.label}
                 >
                   {content.label}
                 </label>
-                <span className="font-bold text-sm">
+                <span className="font-bold text-xs">
                   {content.value}
                 </span>
               </div>
             ))}
-            <div className="flex flex-col gap-y-2 ">
+            <div className="flex flex-col gap-y-1 ">
               <label
                 htmlFor="cv"
-                className="text-xs uppercase text-[#6B6F7B] "
+                className="text-2xs uppercase text-[#6B6F7B] "
               >
                 CV
               </label>
               <span
-                className="text-sm font-bold text-[#6B6F7B] hover:text-[#007AFF] cursor-pointer"
+                className="text-xs font-bold text-[#6B6F7B] hover:text-[#007AFF] cursor-pointer"
                 onClick={handleDownload}
               >
                 Download
@@ -273,35 +287,35 @@ function ClientScheduleInterview() {
                 onChange={(e) => setRemark(e.target.value)}
                 maxLength={255}
                 placeholder="Write your remarks here"
-                className="rounded-2xl italic text-xs text-[#6B6F7B] p-4 w-full h-[120px] bg-[#F6F6F6]"
+                className="rounded-2xl italic text-2xs text-[#6B6F7B] p-4 w-full h-[120px] bg-[#F6F6F6]"
               />
             </div>
           </div>
         </div>
         {/* FORM */}
         <div className="w-3/4 p-6">
-          <div className="w-[40%] flex flex-col gap-y-4 ">
+          <div className="w-[40%] flex flex-col gap-y-3">
             {FORM_ITEMS.map((item, idx) => (
               <div
                 className="flex items-center gap-x-3"
                 key={idx}
               >
-                <label className="text-xs font-bold text-[#6B6F7B] text-right w-1/3">
+                <label className="text-2xs font-bold text-[#6B6F7B] text-right w-1/3">
                   {item.label}
                 </label>
                 <input
                   value={item.value || ""}
                   readOnly
                   type="text"
-                  className="rounded-lg w-2/3 text-xs py-[7px] px-3 border border-[#CAC4D0] text-[#49454F] text-center"
+                  className="rounded-lg w-2/3 text-2xs py-[6px] px-3 border border-[#CAC4D0] text-[#49454F] text-center"
                 />
               </div>
             ))}
           </div>
-          <div className="m-4 mt-32">
-            <div className="px-6 p-2 w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
+          <div className="m-4 mt-24">
+            <div className="px-4 py-2 w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
               <div>
-                <span className="text-sm text-[#49454F]">
+                <span className="text-xs text-[#49454F]">
                   Select Date
                 </span>
               </div>
@@ -310,15 +324,15 @@ function ClientScheduleInterview() {
             </div>
           </div>
 
-          <div className="mt-10">
-            <h1 className="text-xl mb-4 text-black ">
+          <div className="mt-8">
+            <h1 className="text-base mb-3 text-black ">
               Time Slots
             </h1>
-            <div className="grid grid-cols-10 gap-4">
+            <div className="grid grid-cols-10 gap-2">
               {timeSlots.map((slot, index) => (
                 <div
                   key={index}
-                  className={` text-center p-1 px-2 rounded-lg text-sm max-w-max ${
+                  className={` text-center py-1 px-3 rounded-lg text-xs max-w-max ${
                     slot.available === "yes"
                       ? "bg-[#59B568] text-white "
                       : "bg-[#C7C7C7] text-[#6B6F7B]"
@@ -330,9 +344,9 @@ function ClientScheduleInterview() {
             </div>
           </div>
 
-          <div className="mt-10">
+          <div className="mt-8">
             <div className="flex items-center space-x-1">
-              <span className="text-sm font-bold mr-4 text-[#6B6F7B] ">
+              <span className="text-xs font-bold mr-4 text-[#6B6F7B] ">
                 Available Slots
               </span>
               <div className="flex items-center space-x-2">
@@ -345,7 +359,7 @@ function ClientScheduleInterview() {
                         availabeSlots
                       )
                     }
-                    className={` flex items-center justify-center px-2 py-1 border rounded-md text-xs w-auto ${
+                    className={` flex items-center justify-center px-2 py-1 border rounded-md text-2xs w-auto ${
                       selectedFilters.availabeSlots ===
                       availabeSlots
                         ? "bg-purple-100 text-purple-700 border-purple-300"
@@ -379,11 +393,11 @@ function ClientScheduleInterview() {
             </div>
           </div>
 
-          <div className="mt-8 flex items-center justify-end gap-x-4">
+          <div className="mt-8 flex items-center justify-end gap-x-3">
             <button
-              className=" py-[10px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
+              className=" py-[6px] rounded-[100px]  text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
                 transition-all duration-300 ease-in-out 
-                hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 h-10 flex items-center justify-center"
+                hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 h-8 flex items-center justify-center"
               onClick={handleDeleteCandidate}
             >
               Drop Candidate
@@ -391,7 +405,7 @@ function ClientScheduleInterview() {
             {item?.id ? (
               item.status === "NSCH" ? (
                 <button
-                  className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36 h-10"
+                  className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36 h-8"
                   onClick={handleAddCandidate}
                 >
                   Schedule Later
@@ -399,7 +413,7 @@ function ClientScheduleInterview() {
               ) : null
             ) : (
               <button
-                className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36 h-10"
+                className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36 h-8"
                 onClick={handleAddCandidate}
               >
                 Schedule Later
@@ -407,7 +421,7 @@ function ClientScheduleInterview() {
             )}
             <button
               className="px-6 py-[10px] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] font-medium cursor-pointer w-28 h-10 flex items-center justify-center uppercase text-xs"
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] font-medium cursor-pointer w-28 h-8 flex items-center justify-center uppercase text-xs"
               onClick={() => navigate("/agency/candidates")}
             >
               Confirm
