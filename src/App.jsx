@@ -61,7 +61,7 @@ import {
   PersistLogin,
   RequireAuth,
 } from "./Components";
-import ClientAddCandidate from "./Components/Client/Candidates/AddCandidate";
+import ClientAddCandidate from "./Components/Client/Candidates/add-candidate/AddCandidate";
 import ClientScheduleInterview from "./Components/Client/Candidates/ScheduleInterview";
 import Engagement from "./Components/Client/Engagement/Engagement";
 import {
