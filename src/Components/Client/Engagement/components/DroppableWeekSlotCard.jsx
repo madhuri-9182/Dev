@@ -47,9 +47,12 @@ const datePickerStyles = {
   "& .MuiInputBase-root": { padding: 0, height: "16px" },
 };
 
-const formatEventDate = (date) => {
+const formatEventDate = (date, delivery_status) => {
   if (!date) return "Not scheduled";
-  if (moment.duration(moment(date, "DD/MM/YYYY HH:mm:ss").diff(moment())) < 0)
+  if (
+    delivery_status !== "SUC" &&
+    moment.duration(moment(date, "DD/MM/YYYY HH:mm:ss").diff(moment())) < 0
+  )
     return (
       "Time Expired: " +
       moment(date, "DD/MM/YYYY HH:mm:ss").format("dddd, DD MMM YYYY, hh:mm A")
@@ -89,14 +92,14 @@ const EmptySlotCard = ({ isOver, dropRef }) => (
 const DateTimeControl = ({ event, isCompleted, onChangeDate }) => {
   let dateIconColor = "#C4C4C4";
 
-  if (!isCompleted) {
-    if (event?.template) {
-      if (!event?.date) {
+  if (!isCompleted && event) {
+    if (event.template) {
+      if (!event.date) {
         dateIconColor = "red";
-      } else if (event?.date) {
+      } else if (event.date) {
         if (
           moment.duration(
-            moment(event?.date, "DD/MM/YYYY HH:mm:ss").diff(moment())
+            moment(event.date, "DD/MM/YYYY HH:mm:ss").diff(moment())
           ) < 0
         ) {
           dateIconColor = "darkorange";
@@ -109,7 +112,10 @@ const DateTimeControl = ({ event, isCompleted, onChangeDate }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Tooltip arrow title={formatEventDate(event?.date)}>
+      <Tooltip
+        arrow
+        title={formatEventDate(event?.date, event?.delivery_status)}
+      >
         <span style={{ height: "16px" }}>
           <StyledDateTimePicker
             disabled={isCompleted || !event?.template}
