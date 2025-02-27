@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  Link,
   useLocation,
   useNavigate,
   Outlet,
@@ -31,6 +30,7 @@ import {
 } from "../Constants/constants";
 import { NavItemIcon } from "./NavItemIcon";
 import { SmsTracking } from "iconsax-react";
+import UserAvatar from "./UserAvatar";
 
 const drawerWidth = 200;
 
@@ -120,7 +120,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 function NavigationLayout() {
-  const { auth, logout } = useAuth();
+  const { auth } = useAuth();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
@@ -176,8 +176,8 @@ function NavigationLayout() {
                 </h1>
               </div>
               <div className="horizontal-navigation px-5 gap-x-2 flex items-center justify-center">
-                <Link
-                  to="/client/message"
+                <a
+                  href="mailto:contact@hiringdog.com"
                   className="message p-2 bg-[#F5F7FA] rounded-full"
                 >
                   <SmsTracking
@@ -185,17 +185,8 @@ function NavigationLayout() {
                     color="#F00000"
                     variant="Bold"
                   />
-                </Link>
-                <Link to="#" className="loggedInUser">
-                  <img
-                    onClick={() => {
-                      logout();
-                    }}
-                    className="p-2 h-14 rounded-full overflow-hidden"
-                    src="https://t4.ftcdn.net/jpg/05/86/94/95/360_F_586949566_ZRFuSSy8GSY6npXqnrJWhEdjqmlGURf2.jpg"
-                    alt="LoggedIn User"
-                  />
-                </Link>
+                </a>
+                <UserAvatar />
               </div>
             </div>
           </Typography>
@@ -206,7 +197,8 @@ function NavigationLayout() {
           <div className="flex items-center justify-around w-full">
             <div>
               <h1 className="text-lg text-[#056DDC]">
-                Hi{auth?.name && `, ${auth?.name}`}
+                Hi
+                {auth?.name ? `, ${auth?.name}` : ", User"}
               </h1>
             </div>
             <div>
