@@ -223,7 +223,10 @@ function ClientScheduleInterview() {
     if (item?.id) {
       setOpenDeleteModal(true);
     } else {
-      window.close();
+      if (window.opener) {
+        window.opener.removeCandidateFromData(key);
+        window.close();
+      }
     }
   };
 

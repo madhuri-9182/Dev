@@ -105,18 +105,25 @@ const ResumeTableRow = ({
 
   const validateFields = () => {
     const newErrors = {};
-    if (!editedData.name)
+    if (!editedData.name || editedData.name === "Not Found")
       newErrors.name =
         "Name not parsed. Please fill manually to submit";
-    if (!editedData.email)
+    if (
+      !editedData.email ||
+      editedData.email === "NotFound"
+    )
       newErrors.email =
         "Email not parsed. Please fill manually to submit";
     if (
       editedData.email &&
+      editedData.email !== "NotFound" &&
       !EMAIL_REGEX.test(editedData.email)
     )
       newErrors.email = "Invalid email address.";
-    if (!editedData.phone_number)
+    if (
+      !editedData.phone_number ||
+      editedData.phone_number === "Not Found"
+    )
       newErrors.phone_number =
         "Mobile number not parsed. Please fill manually to submit";
     if (
@@ -176,21 +183,39 @@ const ResumeTableRow = ({
     delete encodedData.id;
     delete encodedData.file;
 
-    const uniqueKey = `candidateData-${Date.now()}`;
+    const uniqueKey = `candidateData-${selectedIData.id}`;
 
     // Store the encoded data in localStorage (or sessionStorage)
     localStorage.setItem(
       uniqueKey,
       JSON.stringify(encodedData)
     );
-
-    // const encodedParams = encodeURIComponent(
-    //   JSON.stringify(encodedData)
-    // );
     const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
 
     // Open in a new tab
     window.open(url, "_blank");
+  };
+
+  const inputValue = (key) => {
+    return editedData[key] === "Not Found" ||
+      editedData[key] === "NotFound"
+      ? ""
+      : editedData[key];
+  };
+
+  const tableDataValues = (key) => {
+    return item[key] === "Not Found" ||
+      item[key] === "NotFound"
+      ? "-"
+      : item[key];
+  };
+
+  window.removeCandidateFromData = (key) => {
+    const updatedKey = key.split("candidateData-")[1];
+    const updatedData = data.filter((row) => {
+      return row.id !== updatedKey;
+    });
+    setData(updatedData);
   };
 
   return (
@@ -206,7 +231,7 @@ const ResumeTableRow = ({
             <td className="px-3 w-[14.33%]">
               <Input
                 type="text"
-                value={editedData.name}
+                value={inputValue("name")}
                 onChange={(e) => handleChange(e, "name")}
                 placeholder="Name"
                 className="w-[95%]"
@@ -249,9 +274,9 @@ const ResumeTableRow = ({
             <td className="px-3 w-[13%]">
               <Input
                 type="number"
-                value={editedData.phone_number} // remove +91 from phone number
-                onChange={
-                  (e) => handleChange(e, "phone_number") // add +91 to phone number
+                value={editedData.phone_number}
+                onChange={(e) =>
+                  handleChange(e, "phone_number")
                 }
                 placeholder="Mobile Number"
                 className="w-[95%]"
@@ -260,7 +285,7 @@ const ResumeTableRow = ({
             <td className="px-3 w-1/6">
               <Input
                 type="email"
-                value={editedData.email}
+                value={inputValue("email")}
                 onChange={(e) => handleChange(e, "email")}
                 placeholder="Email ID"
               />
@@ -268,7 +293,7 @@ const ResumeTableRow = ({
             <td className="px-3 w-1/5">
               <Input
                 type="text"
-                value={editedData.current_company}
+                value={inputValue("current_company")}
                 onChange={(e) =>
                   handleChange(e, "current_company")
                 }
@@ -318,16 +343,20 @@ const ResumeTableRow = ({
           </>
         ) : (
           <>
-            <td className="px-3 w-[14.33%]">{item.name}</td>
+            <td className="px-3 w-[14.33%]">
+              {tableDataValues("name")}
+            </td>
             <td className="px-3 w-[12%]">
               {formatExperience(item.years_of_experience)}
             </td>
             <td className="px-3 w-[13%]">
-              {item.phone_number}
+              {tableDataValues("phone_number")}
             </td>
-            <td className="px-3 w-1/6">{item.email}</td>
+            <td className="px-3 w-1/6">
+              {tableDataValues("email")}
+            </td>
             <td className="px-3 w-1/5">
-              {item.current_company}
+              {tableDataValues("current_company")}
             </td>
             <td className="px-3 w-[11%]">
               {item.gender
