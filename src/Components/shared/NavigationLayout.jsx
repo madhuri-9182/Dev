@@ -177,7 +177,9 @@ function NavigationLayout() {
               </div>
               <div className="horizontal-navigation px-5 gap-x-2 flex items-center justify-center">
                 <a
-                  href="mailto:contact@hiringdog.com"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@hiringdog.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="message p-2 bg-[#F5F7FA] rounded-full"
                 >
                   <SmsTracking
