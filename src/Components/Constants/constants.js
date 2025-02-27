@@ -14,8 +14,7 @@ import {
   Personalcard,
 } from "iconsax-react";
 
-export const EMAIL_REGEX =
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const MOBILE_REGEX = /^\d{10}$/;
 
@@ -33,6 +32,7 @@ export const ROLES_REDIRECTS = {
   INTERVIEWER: "/interviewer/dashboard",
   USER: "/",
   INTERNAL: "/internal/dashboard",
+  UNKNOWN: "/unauthorized",
 };
 
 export const CLIENT_NAVLINKS = [

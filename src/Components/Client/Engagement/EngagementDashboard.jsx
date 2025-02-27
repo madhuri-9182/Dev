@@ -5,7 +5,7 @@ import React, {
   useCallback,
 } from "react";
 import StatsCard from "./components/StatsCard";
-import StatusChips from "./components/StatusChips";
+import Filters from "./components/Filters";
 import CandidateTimeline from "./components/CandidateTimeline";
 import { Add, Height, Search } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -102,7 +102,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
     <div>
       <Box sx={{ display: "flex", gap: 3, mb: 4, justifyContent: "right" }}>
         <StyledSearch
-          placeholder="Search job by Name, Email & Mobile Number"
+          placeholder="Search candidate by Name, Email & Mobile Number"
           InputProps={{ endAdornment: <Search color="#49454F" /> }}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           value={filters.search}
@@ -133,11 +133,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
         ))}
       </Box>
 
-      <StatusChips
-        jobs={jobs}
-        filters={filters}
-        onChipClick={handleChipClick}
-      />
+      <Filters jobs={jobs} filters={filters} onChipClick={handleChipClick} />
 
       {!isLoading &&
         engagements.map((engagement) => (
