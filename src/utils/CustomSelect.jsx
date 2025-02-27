@@ -52,7 +52,7 @@ const CustomSelect = ({
     <div className="relative w-2/3" ref={optionRef}>
       {/* Select Box with tags */}
       <div
-        className={`rounded-lg text-xs py-2 px-3 border  cursor-pointer custom-select ${
+        className={`rounded-lg text-2xs py-2 px-3 border  cursor-pointer custom-select ${
           errors[type]
             ? "border-[#B10E0EE5]"
             : "border-[#CAC4D0]"
@@ -85,7 +85,7 @@ const CustomSelect = ({
           {dropdownOptions.map((option, idx) => (
             <div
               key={idx}
-              className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-xs"
+              className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-2xs"
               onClick={() => handleSelect(option.id)}
             >
               {option.name}

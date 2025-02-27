@@ -195,7 +195,7 @@ const AddJob = ({
 
   return (
     <div className="flex gap-x-14">
-      <div className="w-full max-w-[600px] my-5">
+      <div className="w-full max-w-[500px] my-5">
         <form onSubmit={handleSubmit}>
           <div className={formRowClassName}>
             <label className={labelClassName}>
@@ -322,17 +322,17 @@ const AddJob = ({
                 errors.jobDescriptionFile
                   ? "border-[#B10E0EE5]"
                   : "border-[#6B6F7B]"
-              } rounded-xl w-2/3 py-[5px] px-3 text-[#6B6F7B] text-xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
+              } rounded-xl w-2/3 py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
             >
               <LogoutCurve
                 className="rotate-90"
                 color="#171717"
-                size={24}
+                size={20}
               />{" "}
               Upload Here
             </button>
           </div>
-          <div className="flex justify-end w-full gap-4 mb-3">
+          <div className="flex justify-end w-full gap-3 mb-3">
             <div className="w-1/3"></div>
             <textarea
               className={inputClassName}
@@ -359,13 +359,13 @@ const AddJob = ({
               handleAddTag={handleAddTag}
             />
           </div>
-          <div className="flex justify-end w-full gap-4">
+          <div className="flex justify-end w-full gap-3">
             <div className="w-1/3"></div>
-            <div className="mt-3 flex flex-wrap gap-4 w-2/3">
+            <div className="flex flex-wrap gap-3 w-2/3">
               {selectedEssentialSkills.map((tag) => (
                 <div
                   key={tag}
-                  className="flex items-center justify-between bg-white text-xs font-semibold p-2 rounded-lg border border-[#CAC4D0] text-[#49454F]"
+                  className="flex items-center justify-between bg-white text-xs font-semibold px-2 py-1 rounded-lg border border-[#CAC4D0] text-[#49454F]"
                 >
                   {tag}
                   <button
@@ -380,15 +380,15 @@ const AddJob = ({
           </div>
           <div className="flex items-center gap-4">
             <div className="w-1/3"></div>
-            <p className="text-xs text-[#B10E0EE5] mt-4 w-2/3">
+            <p className="text-xs text-[#B10E0EE5] w-2/3 mt-4">
               {Object.keys(errors).length > 0 &&
                 "Please fill all the required fields"}
             </p>
           </div>
-          <div className="flex justify-end items-center gap-4 mt-8">
+          <div className="flex justify-end items-center gap-2 mt-4">
             <button
               type="button"
-              className="px-6 py-[10px] rounded-[100px] text-[#65558F] border border-[#79747E] text-sm font-semibold cursor-pointer 
+              className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
                 transition-all duration-300 ease-in-out 
                 hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
               onClick={onBack}
@@ -396,8 +396,8 @@ const AddJob = ({
               Back
             </button>
             <button
-              className="px-6 py-[10px] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-sm font-semibold cursor-pointer"
+              className="px-6 py-[5px] border border-[#007AFF] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
               type="submit"
             >
               Continue
@@ -419,10 +419,10 @@ AddJob.propTypes = {
 };
 
 const labelClassName =
-  "text-xs font-bold text-[#6B6F7B] text-right w-1/3";
+  "text-2xs font-bold text-[#6B6F7B] text-right w-1/3";
 
 const formRowClassName =
-  "flex items-center justify-between mb-3 gap-4";
+  "flex items-center justify-between mb-3 gap-3";
 
 const inputClassName =
-  "rounded-lg text-xs py-2 px-3 w-2/3 border border-[#CAC4D0] text-[#49454F]";
+  "rounded-lg text-2xs py-2 px-3 w-2/3 border border-[#CAC4D0] text-[#49454F]";

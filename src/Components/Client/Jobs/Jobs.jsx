@@ -137,7 +137,7 @@ const Jobs = () => {
     return <div>Error...</div>;
 
   return (
-    <div className="m-0 p-5">
+    <div className="m-0 px-3">
       {/* Top Section */}
       {activePage === 0 ? (
         <JobListing

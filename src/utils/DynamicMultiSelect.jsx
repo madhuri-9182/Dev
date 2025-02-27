@@ -55,7 +55,7 @@ export default function DynamicMultiSelect({
       {/* Input Field */}
       <input
         type="text"
-        className="rounded-lg text-xs py-2 px-3 border border-[#CAC4D0] text-[#49454F] w-full custom-select"
+        className="rounded-lg text-2xs py-2 px-3 border border-[#CAC4D0] text-[#49454F] w-full custom-select"
         placeholder="Select Essential Skills"
         value={inputValue}
         onChange={(e) => {
@@ -81,7 +81,7 @@ export default function DynamicMultiSelect({
             .map((option) => (
               <li
                 key={option}
-                className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-xs"
+                className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-2xs"
                 onClick={() => handleAddTag(option)}
               >
                 {option}

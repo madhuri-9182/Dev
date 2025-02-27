@@ -42,7 +42,7 @@ const JobListing = ({
 
   return (
     <React.Fragment>
-      <div className="flex items-center justify-end gap-2 mb-8">
+      <div className="flex items-center justify-end gap-2 mb-4">
         <AddButton
           onClick={handleAddJobClick}
           label="+ Add Job"
@@ -50,7 +50,7 @@ const JobListing = ({
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-12">
+      <div className="flex items-center gap-4 mb-6">
         <select
           className={`min-w-24 ${filterSelectClassName}`}
           onChange={(e) => {
@@ -151,26 +151,26 @@ const JobListing = ({
               >
                 <div className="flex items-center justify-between gap-3 w-2/3">
                   <p
-                    className="text-xs uppercase cursor-pointer w-[30%]"
+                    className="text-2xs uppercase cursor-pointer w-[30%]"
                     onClick={() => handleAddJobClick(row)}
                   >
                     {getJobLabel(row.name)}
                   </p>
                   <div className="flex gap-4 w-[70%]">
                     <button
-                      className="text-xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-20 py-1 flex items-center justify-center rounded-[100px]"
+                      className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-20 py-1 flex items-center justify-center rounded-[100px]"
                       onClick={() =>
                         handleShowJobDetails(row)
                       }
                     >
                       View
                     </button>
-                    <button className="text-xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-36 py-1 flex items-center justify-center rounded-[100px]">
+                    <button className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-36 py-1 flex items-center justify-center rounded-[100px]">
                       + Add Candidate
                     </button>
 
                     <button
-                      className={`text-xs font-semibold border border-[#79747E] w-24 py-1 flex items-center justify-center rounded-[100px] bg-transparent text-[#65558F] ${
+                      className={`text-2xs font-semibold border border-[#79747E] w-24 py-1 flex items-center justify-center rounded-[100px] bg-transparent text-[#65558F] ${
                         row.reason_for_archived &&
                         "invisible"
                       }`}
@@ -183,7 +183,7 @@ const JobListing = ({
                   </div>
                 </div>
                 <div className="flex justify-end items-center gap-2">
-                  <p className="text-xs font-medium">
+                  <p className="text-2xs font-medium">
                     Active Candidates
                   </p>
                   <div className="w-6 h-6 bg-[#979DA3] text-white text-[10px] font-medium rounded-full flex items-center justify-center">
@@ -195,7 +195,7 @@ const JobListing = ({
           </div>
           <Pagination
             count={Math.ceil(count / 10)}
-            className="mt-6 flex justify-end"
+            className="mt-4 flex justify-end"
             onChange={(e, page) => handleChangePage(page)}
             variant="outlined"
             size="small"
@@ -203,7 +203,7 @@ const JobListing = ({
           />
         </>
       ) : (
-        <p className="text-sm font-semibold uppercase text-center text-[#6B6F7B]">
+        <p className="text-default font-semibold uppercase text-center text-[#6B6F7B]">
           No Jobs Found
         </p>
       )}
@@ -225,7 +225,7 @@ JobListing.propTypes = {
 };
 
 const filterSelectClassName =
-  "border border-[#979DA3] text-xs py-1 px-3 custom-select rounded-lg";
+  "border border-[#979DA3] text-2xs py-1 px-3 custom-select rounded-lg";
 
 const filterInputClassName =
-  "border border-[#979DA3] text-xs py-1 px-3 rounded-lg";
+  "border border-[#979DA3] text-2xs py-1 px-3 rounded-lg";
