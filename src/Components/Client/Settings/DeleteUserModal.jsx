@@ -41,20 +41,20 @@ const DeleteUserModal = ({ isOpen, onClose, id }) => {
         title="Delete User"
       >
         <div className="text-center">
-          <p className="text-lg font-semibold mb-4">
+          <p className="text-sm font-semibold mb-4">
             Are you sure you want to delete this user?
           </p>
-          <div className="flex justify-center gap-2 mb-4">
+          <div className="flex justify-center gap-2 mb-2">
             <button
               onClick={handleDelete}
-              className="px-6 py-[10px] rounded-[100px] text-white bg-[#E84D4D] transition-all duration-300 ease-in-out 
-  hover:bg-gradient-to-r hover:from-[#E84D4D] hover:to-[#C0392B]  text-sm font-semibold  cursor-pointer"
+              className="px-6 py-[5px] rounded-[100px] text-white bg-[#E84D4D] transition-all duration-300 ease-in-out 
+  hover:bg-gradient-to-r hover:from-[#E84D4D] hover:to-[#C0392B]  text-xs font-semibold  cursor-pointer"
             >
               Delete
             </button>
             <button
               onClick={onClose}
-              className="px-6 py-[10px] rounded-[100px] text-[#65558F] border border-[#79747E] text-sm font-semibold cursor-pointer 
+              className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
               transition-all duration-300 ease-in-out 
               hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
             >

@@ -297,7 +297,12 @@ function NavigationLayout() {
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
+        <DrawerHeader
+          sx={{
+            height: "50px",
+            minHeight: "50px !important",
+          }}
+        />
         <Outlet />
       </Box>
     </Box>
