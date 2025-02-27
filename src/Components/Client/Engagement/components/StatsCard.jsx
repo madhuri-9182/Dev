@@ -9,7 +9,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const StyledCardActionArea = styled(CardActionArea)(({ theme }) => ({
   padding: "24px",
-  width: "192px",
+  width: "220px",
   height: "96px",
 }));
 

@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import Editor from "./components/Editor";
-import Button from "./components/Button";
+import Button, {
+  primaryButtonStyles,
+  secondaryButtonStyles,
+} from "./components/Button";
 import { Box } from "@mui/material";
 import EventCard from "./components/EventCard";
 import { useEmailTemplates } from "./hooks/useEmailTemplates";
@@ -82,9 +85,7 @@ function EmailTemplates() {
             <Box className="flex gap-2 mt-2 ml-auto justify-end">
               <Button
                 sx={{
-                  backgroundColor: "white",
-                  color: "#79747E",
-                  borderColor: "#79747E",
+                  ...secondaryButtonStyles,
                   paddingBlock: 0.5,
                 }}
                 variant="outlined"
@@ -98,8 +99,7 @@ function EmailTemplates() {
               <Button
                 sx={{
                   paddingBlock: 0.5,
-                  backgroundColor: "#007AFF",
-                  color: "white",
+                  ...primaryButtonStyles,
                 }}
                 onClick={isAddingNew ? addTemplate : updateTemplate}
                 loading={isUpdating || isAdding}

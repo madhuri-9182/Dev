@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Button from "./Button";
+import Button, { primaryButtonStyles } from "./Button";
 import EventCard from "./EventCard";
 
 export const AddTemplateButton = ({
@@ -44,8 +44,7 @@ export const AddTemplateButton = ({
   return (
     <Button
       sx={{
-        backgroundColor: "#007AFF",
-        color: "white",
+        ...primaryButtonStyles,
       }}
       fullWidth
       variant="contained"

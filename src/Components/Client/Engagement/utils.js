@@ -71,6 +71,7 @@ export const prepareOperationsPayload = (scheduledEventsPerWeek) => {
           date: slot.date,
           week: slot.week,
           template_id: slot.template.id,
+          operation_complete_status: slot.operation_complete_status,
 
           ...(slot.id != -1 ? { operation_id: slot.id } : {}),
         });

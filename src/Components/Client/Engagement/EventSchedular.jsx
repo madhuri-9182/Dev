@@ -1,11 +1,14 @@
 import React from "react";
-import Button from "./components/Button";
+import Button, {
+  primaryButtonStyles,
+  secondaryButtonStyles,
+} from "./components/Button";
 import { DraggableEventCard } from "./components/EventCard";
 import CandidateTimeline from "./components/CandidateTimeline";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableWeekSlotCard from "./components/DroppableWeekSlotCard";
-import { Box, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useEventScheduler } from "./hooks/useEventScheduler";
 import { TemplateList } from "./components/TemplateList";
 import { WeeklySchedule } from "./components/WeeklySchedule";
@@ -27,13 +30,16 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
     isLoadingtemplates,
     resetChanges,
     updateEngagementSchedule,
+    isUpdatingSchedule,
+    isFetchingtemplates,
+    markDoneUnDone,
   } = useEventScheduler({
     engagement,
     setSelectedEngagement,
   });
 
   return (
-    <div className="pr-6 flex flex-col ">
+    <div className=" flex flex-col ">
       <div>
         <CandidateTimeline
           onStatusChange={(value) => updateEngagement({ status: value })}
@@ -51,6 +57,7 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
             handleDrop={handleDrop}
             handleUnSchedule={handleUnSchedule}
             onChangeDate={handleDateChange}
+            markDoneUnDone={markDoneUnDone}
           />
         </DndProvider>
       </div>
@@ -58,25 +65,25 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
         <Box className="flex gap-2 mt-2 ml-auto justify-end">
           <Button
             sx={{
-              backgroundColor: "white",
-              borderColor: "#79747E",
+              ...secondaryButtonStyles,
               paddingBlock: 0.5,
-              color: "#79747E",
             }}
             variant="outlined"
             onClick={resetChanges}
-            loading={isLoadingtemplates}
+            disabled={isUpdatingSchedule}
           >
             Cancel
           </Button>
 
           <Button
+            disabled={scheduledEventsPerWeek.some((event) =>
+              event.slots.some((slot) => slot?.template && !slot?.date)
+            )}
             sx={{
+              ...primaryButtonStyles,
               paddingBlock: 0.5,
-              backgroundColor: "#007AFF",
-              color: "white",
             }}
-            loading={isUpdating}
+            loading={isUpdatingSchedule}
             onClick={updateEngagementSchedule}
           >
             Save

@@ -6,6 +6,10 @@ import { extractErrors } from "./utils";
 const BASE_URL = "/api/client";
 
 export const errorToaster = (error) => {
+  if (typeof error === "string") {
+    toast.error(error, { position: "top-right" });
+    return;
+  }
   const errors = error.response.data.errors;
   const extractedErrors = extractErrors(errors);
   extractedErrors.forEach((error) => {
@@ -74,6 +78,7 @@ export const useEngagementTemplates = () => {
         throw error;
       }
     },
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -310,8 +315,11 @@ export const useResumeParser = () => {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
-        successToaster("Resume parsed successfully");
-        return data.data;
+
+        if (data.data.length) {
+          successToaster("Resume parsed successfully");
+          return data.data;
+        } else throw "Resume parsing failed";
       } catch (error) {
         errorToaster(error);
         throw error;
