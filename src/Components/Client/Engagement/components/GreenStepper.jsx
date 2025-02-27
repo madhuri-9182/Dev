@@ -24,18 +24,12 @@ const StyledStepper = styled(Stepper)({
 });
 
 const GreenStepper = ({ steps }) => {
-  const maxStepsToRender = 4;
-
   return (
     <StyledStepper alternativeLabel>
       {steps.map((step, i) => {
         return (
-          <Step completed={step.delivery_status === "SUC"} index={i}>
-            <StepLabel
-              {...(step.delivery_status === "FLD"
-                ? { icon: <HighlightOffIcon color="error" /> }
-                : {})}
-            ></StepLabel>
+          <Step completed={step.operation_complete_status === "SUC"} index={i}>
+            <StepLabel></StepLabel>
           </Step>
         );
       })}
