@@ -62,7 +62,7 @@ const UserAvatar = () => {
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
         <div
-          className={`flex items-center justify-center h-10 w-10 rounded-full overflow-hidden text-white font-bold text-xl shadow-md ${getBackgroundColor()}`}
+          className={`flex items-center justify-center h-8 w-8 rounded-full overflow-hidden text-white font-bold text-lg shadow-md ${getBackgroundColor()}`}
         >
           {getInitial()}
         </div>
@@ -71,13 +71,16 @@ const UserAvatar = () => {
       {isDropdownOpen && (
         <div className="absolute right-14 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
           <div className="p-2 border-b border-gray-200">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <div
-                className={`flex items-center justify-center h-10 w-10 rounded-full overflow-hidden text-white font-bold ${getBackgroundColor()} mr-3`}
+                className={`flex items-center justify-center h-[25px] w-[25px] rounded-full overflow-hidden text-white text-base font-bold ${getBackgroundColor()} `}
               >
                 {getInitial()}
               </div>
-              <div className="text-sm font-medium truncate text-black">
+              <div
+                className="text-default font-medium truncate text-black"
+                title={auth?.name ? auth.name : "User"}
+              >
                 {auth?.name ? auth.name : "User"}
               </div>
             </div>
@@ -86,7 +89,7 @@ const UserAvatar = () => {
           <div>
             <button
               onClick={logout}
-              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:text-[#F00000] hover:bg-gray-100"
+              className="block w-full text-left px-3 py-2 text-default text-red-600 hover:text-[#F00000] hover:bg-gray-100"
             >
               Logout
             </button>

@@ -32,7 +32,7 @@ import { NavItemIcon } from "./NavItemIcon";
 import { SmsTracking } from "iconsax-react";
 import UserAvatar from "./UserAvatar";
 
-const drawerWidth = 200;
+const drawerWidth = 180;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -81,6 +81,7 @@ const AppBar = styled(MuiAppBar, {
       style: {
         marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
+        height: "50px",
         transition: theme.transitions.create(
           ["width", "margin"],
           {
@@ -125,6 +126,7 @@ function NavigationLayout() {
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
 
+  const fullName = auth?.name ? auth?.name : "User";
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -146,7 +148,16 @@ function NavigationLayout() {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar className=" bg-[#056DDC]">
+        <Toolbar
+          className=" bg-[#056DDC]"
+          sx={{
+            height: "50px",
+            minHeight: "50px !important",
+            "@media (min-width: 600px)": {
+              minHeight: "50px !important",
+            },
+          }}
+        >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -162,14 +173,13 @@ function NavigationLayout() {
             <MenuIcon />
           </IconButton>
           <Typography
-            variant="h6"
             noWrap
             component="div"
             className="w-full"
           >
-            <div className="p-2 h-[60px] bg-[#056DDC] flex items-center justify-between">
+            <div className="p-2 h-[50px] bg-[#056DDC] flex items-center justify-between">
               <div className=" logo-brandName ">
-                <h1 className="text-white text-lg">
+                <h1 className="text-white text-md">
                   {" "}
                   <span className="font-bold">HD</span>{" "}
                   INTERVIEW PLATFORM
@@ -180,10 +190,10 @@ function NavigationLayout() {
                   href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@hiringdog.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="message p-2 bg-[#F5F7FA] rounded-full"
+                  className="p-[6px] bg-[#F5F7FA] rounded-full"
                 >
                   <SmsTracking
-                    size={24}
+                    size={20}
                     color="#F00000"
                     variant="Bold"
                   />
@@ -195,16 +205,28 @@ function NavigationLayout() {
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <div className="flex items-center justify-around w-full">
-            <div>
-              <h1 className="text-lg text-[#056DDC]">
-                Hi
-                {auth?.name ? `, ${auth?.name}` : ", User"}
-              </h1>
+        <DrawerHeader
+          sx={{
+            height: "50px",
+            minHeight: "50px !important",
+            "@media (min-width: 600px)": {
+              minHeight: "50px !important",
+            },
+          }}
+        >
+          <div className="flex items-center justify-between gap-2 w-full">
+            <div
+              className="text-sm text-[#056DDC] font-medium ml-2 truncate"
+              title={fullName}
+            >
+              Hi, {fullName}
             </div>
+
             <div>
               <IconButton
+                sx={{
+                  padding: "0",
+                }}
                 onClick={handleDrawerClose}
                 size="small"
               >
@@ -218,7 +240,7 @@ function NavigationLayout() {
           </div>
         </DrawerHeader>
         <Divider />
-        <List sx={{ border: "none" }}>
+        <List sx={{ border: "none", padding: 0 }}>
           {navItems.map((items) => (
             <ListItem
               key={items.text}
@@ -232,7 +254,11 @@ function NavigationLayout() {
             >
               <ListItemButton
                 sx={[
-                  { minHeight: 44, pl: 3, pr: 1 },
+                  {
+                    minHeight: 40,
+                    height: 40,
+                    pl: 2,
+                  },
                   open
                     ? { justifyContent: "initial" }
                     : { justifyContent: "center" },
@@ -248,7 +274,7 @@ function NavigationLayout() {
                 />
                 <ListItemText
                   primary={items.text}
-                  className={`ml-3 text-sm ${
+                  className={`ml-2 ${
                     location.pathname.startsWith(items.link)
                       ? "text-[#056DDC] font-semibold "
                       : ""
@@ -261,7 +287,7 @@ function NavigationLayout() {
                         )
                           ? 600
                           : "normal",
-                      fontSize: "14px",
+                      fontSize: "13px",
                     },
                   }}
                 />

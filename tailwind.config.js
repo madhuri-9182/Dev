@@ -6,6 +6,7 @@ export default {
       fontSize: {
         sm: ["14px", "20px"], // 14px font size with a 20px line height
         default: ["13px", "15.5px"],
+        md: ["15px", "18.5px"],
       },
       screens: {
         sm: "640px",
