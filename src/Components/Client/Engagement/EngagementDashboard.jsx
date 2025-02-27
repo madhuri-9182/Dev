@@ -99,7 +99,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
   }
 
   return (
-    <div className="p-6 pl-0">
+    <div>
       <Box sx={{ display: "flex", gap: 3, mb: 4, justifyContent: "right" }}>
         <StyledSearch
           placeholder="Search job by Name, Email & Mobile Number"
@@ -122,7 +122,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
         </Button>
       </Box>
 
-      <Box sx={{ display: "flex", gap: 3, mb: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
         {stats.map((stat) => (
           <StatsCard
             isLoading={isLoading}

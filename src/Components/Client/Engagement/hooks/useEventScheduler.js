@@ -16,8 +16,10 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
   const { mutateAsync: mutateEngagementStatus, isPending: isUpdating } =
     useUpdateEngagementStatus();
 
-  const { mutateAsync: mutateEngagementSchedule } =
-    useUpdateEngagementSchedule();
+  const {
+    mutateAsync: mutateEngagementSchedule,
+    isPending: isUpdatingSchedule,
+  } = useUpdateEngagementSchedule();
 
   const navigate = useNavigate();
 
@@ -25,8 +27,8 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
   const [hasChanges, setHasChanges] = useState(false);
   const {
     data,
-    isFetching: isLoadingtemplates,
-    refetch,
+    isFetching: isFetchingtemplates,
+    isLoading: isLoadingtemplates,
   } = useEngagementTemplates();
   const _templates = data?.results || [];
 
@@ -72,13 +74,13 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
   }, [hasChanges]);
 
   useEffect(() => {
-    if (!isLoadingtemplates && _templates.length > 0) {
+    if (!isFetchingtemplates && _templates.length > 0) {
       loadInitialState(_templates);
     }
-  }, [isLoadingtemplates]);
+  }, [isFetchingtemplates]);
 
   useEffect(() => {
-    if (!isLoadingtemplates)
+    if (!isFetchingtemplates)
       setSelectedEngagement((engagement) => {
         const operations = [];
         scheduledEventsPerWeek.forEach((week) => {
@@ -161,7 +163,6 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
         engagementId: engagement.id,
         payload: { status: update.status },
       });
-      debugger;
       setSelectedEngagement({ ...engagement, status: update.status });
     }
   };
@@ -170,6 +171,16 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
     const newDate = moment(date.$d).format("DD/MM/YYYY HH:mm:ss");
     setScheduledEventsPerWeek((prevScheduledEventsPerWeek) => {
       prevScheduledEventsPerWeek[weekIndex].slots[slotIndex].date = newDate;
+      return [...prevScheduledEventsPerWeek];
+    });
+  };
+
+  const markDoneUnDone = (weekIndex, slotIndex, done) => {
+    setHasChanges(true);
+    setScheduledEventsPerWeek((prevScheduledEventsPerWeek) => {
+      prevScheduledEventsPerWeek[weekIndex].slots[
+        slotIndex
+      ].operation_complete_status = done ? "SUC" : "PEN";
       return [...prevScheduledEventsPerWeek];
     });
   };
@@ -196,5 +207,8 @@ export const useEventScheduler = ({ engagement, setSelectedEngagement }) => {
     resetChanges,
     isLoadingtemplates,
     updateEngagementSchedule,
+    isUpdatingSchedule,
+    markDoneUnDone,
+    isFetchingtemplates,
   };
 };

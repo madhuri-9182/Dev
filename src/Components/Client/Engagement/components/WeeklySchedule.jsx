@@ -7,6 +7,7 @@ export const WeeklySchedule = ({
   handleDrop,
   handleUnSchedule,
   onChangeDate,
+  markDoneUnDone,
 }) => {
   return (
     <div
@@ -30,12 +31,18 @@ export const WeeklySchedule = ({
               onDrop={(item) => handleDrop(item, weekIndex, 0)}
               onUnSchedule={(event) => handleUnSchedule(event)}
               onChangeDate={(value) => onChangeDate(value, weekIndex, 0)}
+              markDoneUnDone={(success) =>
+                markDoneUnDone(weekIndex, 0, success)
+              }
             />
             <DroppableWeekSlotCard
               event={weekData.slots[1]}
               onDrop={(item) => handleDrop(item, weekIndex, 1)}
               onUnSchedule={(event) => handleUnSchedule(event)}
               onChangeDate={(value) => onChangeDate(value, weekIndex, 1)}
+              markDoneUnDone={(success) =>
+                markDoneUnDone(weekIndex, 1, success)
+              }
             />
           </div>
         </div>

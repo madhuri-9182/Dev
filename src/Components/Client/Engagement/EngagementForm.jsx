@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DocumentUpload, Calendar, SmsTracking, Trash } from "iconsax-react";
-import Button from "./components/Button";
+import Button, { primaryButtonStyles } from "./components/Button";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
   useAddEngagement,
@@ -85,7 +85,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-
+    fileInputRef.current.value = "";
     const [data] = await mutateAsync(file);
 
     setFormData((prev) => {
@@ -100,8 +100,6 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       validateForm(update);
       return update;
     });
-
-    fileInputRef.current.value = "";
 
     //     current_company
     // :
@@ -136,6 +134,10 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       newErrors.candidate_phone = "Phone number is required";
     if (!formData.candidate_email?.trim())
       newErrors.candidate_email = "Email is required";
+    if (!formData.client_user_name?.trim())
+      newErrors.client_user_name = "GTP Name is required";
+    if (!formData.client_user_email?.trim())
+      newErrors.client_user_email = "GTP Email is required";
     if (!formData.candidate_company?.trim())
       newErrors.candidate_company = "Company is required";
     if (!formData.notice_period?.trim())
@@ -153,6 +155,13 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       !emailRegex.test(formData.candidate_email.trim())
     ) {
       newErrors.candidate_email = "Please enter a valid email address";
+    }
+
+    if (
+      formData.client_user_email?.trim() &&
+      !emailRegex.test(formData.client_user_email.trim())
+    ) {
+      newErrors.client_user_email = "Please enter a valid email address";
     }
 
     // Phone validation - must start with +91 followed by 10 digits
@@ -191,7 +200,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
   };
 
   const { data: jobsData } = useJobs();
-  const { data: clientUserData } = useClientUser();
+  // const { data: clientUserData } = useClientUser();
 
   const jobs = jobsData?.results || [];
 
@@ -214,16 +223,16 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
     client_user_name: "",
   });
 
-  useEffect(() => {
-    if (clientUserData) {
-      setFormData((prev) => ({
-        ...prev,
-        client_user_id: clientUserData.data.id,
-        client_user_email: clientUserData.data.user.email,
-        client_user_name: clientUserData.data.name,
-      }));
-    }
-  }, [clientUserData]);
+  // useEffect(() => {
+  //   if (clientUserData) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       client_user_id: clientUserData.data.id,
+  //       client_user_email: clientUserData.data.user.email,
+  //       client_user_name: clientUserData.data.name,
+  //     }));
+  //   }
+  // }, [clientUserData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -237,7 +246,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
   };
 
   return (
-    <div className="p-6 pl-0 ">
+    <div>
       <FieldWrapper
         style={{ justifyContent: "flex-start" }}
         label={"Upload CV"}
@@ -541,10 +550,13 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       >
         <FieldWrapper label="GTP Name">
           <StyledTextField
-            name="client_user_id"
+            name="client_user_name"
             value={formData.client_user_name}
             placeholder="GTP Name"
-            onChange={() => {}}
+            onChange={handleChange}
+            required
+            error={Boolean(errors.client_user_name)}
+            helperText={errors.client_user_name}
           ></StyledTextField>
         </FieldWrapper>
 
@@ -554,7 +566,9 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
             value={formData.client_user_email}
             placeholder="abc@xyz.com"
             required
-            onChange={() => {}}
+            onChange={handleChange}
+            error={Boolean(errors.client_user_email)}
+            helperText={errors.client_user_email}
           />
         </FieldWrapper>
       </Box>
@@ -625,11 +639,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#007AFF",
-            color: "white",
-            "&:hover": {
-              backgroundColor: "#0056b3",
-            },
+            ...primaryButtonStyles,
           }}
           onClick={handleSubmit}
           loading={isAddingEngagement}

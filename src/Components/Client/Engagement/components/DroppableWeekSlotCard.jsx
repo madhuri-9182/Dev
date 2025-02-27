@@ -18,6 +18,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import moment from "moment";
+import { Close, Delete } from "@mui/icons-material";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: "16px",
@@ -31,7 +32,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const StyledCardActionArea = styled(CardActionArea)(({ theme }) => ({
-  width: "220px",
+  width: "250px",
   height: "64px",
   padding: "12px",
   display: "flex",
@@ -48,6 +49,12 @@ const datePickerStyles = {
 
 const formatEventDate = (date) => {
   if (!date) return "Not scheduled";
+  if (moment.duration(moment(date, "DD/MM/YYYY HH:mm:ss").diff(moment())) < 0)
+    return (
+      "Time Expired: " +
+      moment(date, "DD/MM/YYYY HH:mm:ss").format("dddd, DD MMM YYYY, hh:mm A")
+    );
+
   return moment(date, "DD/MM/YYYY HH:mm:ss").format(
     "dddd, DD MMM YYYY, hh:mm A"
   );
@@ -79,52 +86,91 @@ const EmptySlotCard = ({ isOver, dropRef }) => (
   </StyledCard>
 );
 
-const DateTimeControl = ({ event, isCompleted, onChangeDate }) => (
-  <LocalizationProvider dateAdapter={AdapterDayjs}>
-    <Tooltip arrow title={formatEventDate(event?.date)}>
-      <span style={{ height: "16px" }}>
-        <StyledDateTimePicker
-          disabled={isCompleted || !event}
-          value={parseEventDate(event?.date)}
-          minDate={dayjs(new Date())}
-          sx={datePickerStyles}
-          onChange={(value) => {
-            onChangeDate(value);
-          }}
-          slots={{
-            openPickerIcon: () => (
-              <Calendar
-                size={16}
-                color={
-                  event?.date ? "#171717" : event?.template ? "red" : "#C4C4C4"
-                }
-              />
-            ),
-          }}
-        />
-      </span>
-    </Tooltip>
-  </LocalizationProvider>
-);
+const DateTimeControl = ({ event, isCompleted, onChangeDate }) => {
+  let dateIconColor = "#C4C4C4";
 
-const ControlButtons = ({ event, isCompleted, onUnSchedule, onChangeDate }) => (
+  if (!isCompleted) {
+    if (event?.template) {
+      if (!event?.date) {
+        dateIconColor = "red";
+      } else if (event?.date) {
+        if (
+          moment.duration(
+            moment(event?.date, "DD/MM/YYYY HH:mm:ss").diff(moment())
+          ) < 0
+        ) {
+          dateIconColor = "darkorange";
+        } else {
+          dateIconColor = "#171717";
+        }
+      }
+    }
+  }
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Tooltip arrow title={formatEventDate(event?.date)}>
+        <span style={{ height: "16px" }}>
+          <StyledDateTimePicker
+            disabled={isCompleted || !event?.template}
+            value={parseEventDate(event?.date)}
+            minDate={dayjs(new Date())}
+            sx={datePickerStyles}
+            onChange={(value) => {
+              onChangeDate(value);
+            }}
+            slots={{
+              openPickerIcon: () => (
+                <Calendar size={16} color={dateIconColor} />
+              ),
+            }}
+          />
+        </span>
+      </Tooltip>
+    </LocalizationProvider>
+  );
+};
+
+const ControlButtons = ({
+  event,
+  isCompleted,
+  markDoneUnDone,
+  onChangeDate,
+}) => (
   <Box className={"flex flex-col justify-between h-[40px] ml-1"}>
     <DateTimeControl
       onChangeDate={onChangeDate}
       event={event}
       isCompleted={isCompleted}
     />
+
     <IconButton
-      onClick={() => event?.template && !isCompleted && onUnSchedule(event)}
+      onClick={() => markDoneUnDone(event?.operation_complete_status !== "SUC")}
       size="small"
       style={{ padding: 0 }}
+      disabled={!isCompleted}
+      sx={{
+        color: "#171717",
+      }}
     >
-      <TickSquare size="16" color={event?.template ? "#171717" : "#C4C4C4"} />
+      <TickSquare
+        size="16"
+        style={{
+          fill:
+            event?.operation_complete_status === "SUC" ? "lightgreen" : "none",
+        }}
+      />
     </IconButton>
   </Box>
 );
 
-function DroppableWeekSlotCard({ onDrop, event, onUnSchedule, onChangeDate }) {
+function DroppableWeekSlotCard({
+  onDrop,
+  event,
+  onUnSchedule,
+  markDoneUnDone,
+  onChangeDate,
+}) {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.EVENT_CARD,
     drop: (item) => onDrop(item),
@@ -135,15 +181,42 @@ function DroppableWeekSlotCard({ onDrop, event, onUnSchedule, onChangeDate }) {
 
   return (
     <Box
-      className={`flex items-center height-max-content ${
+      className={`flex items-center height-max-content relative ${
         isCompleted ? "opacity-70" : ""
       }`}
+      sx={{
+        "&:hover [data-id=close-button]": {
+          display: "block",
+        },
+      }}
     >
+      {event?.template && !isCompleted ? (
+        <IconButton
+          onClick={() => event?.template && !isCompleted && onUnSchedule(event)}
+          sx={{
+            color: "white",
+            position: "absolute",
+            right: 26,
+            top: -2,
+            zIndex: 5,
+            display: "none",
+            cursor: "pointer",
+            padding: 0,
+          }}
+          data-id="close-button"
+          size="small"
+        >
+          <Delete sx={{ fontSize: "14px" }} />
+        </IconButton>
+      ) : (
+        ""
+      )}
+
       {event?.template ? (
         <EventCard
           title={event.template.template_name}
           selected={true}
-          dimension={{ height: "64px", width: "220px" }}
+          dimension={{ height: "64px", width: "250px" }}
           isEditable={false}
         />
       ) : (
@@ -152,7 +225,7 @@ function DroppableWeekSlotCard({ onDrop, event, onUnSchedule, onChangeDate }) {
       <ControlButtons
         event={event}
         isCompleted={isCompleted}
-        onUnSchedule={onUnSchedule}
+        markDoneUnDone={markDoneUnDone}
         onChangeDate={onChangeDate}
       />
     </Box>
