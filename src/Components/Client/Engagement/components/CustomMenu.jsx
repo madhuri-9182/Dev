@@ -15,7 +15,7 @@ const StyledButton = styled(Button)({
   minWidth: "150px",
   "&:hover": {
     backgroundColor: "#F9FAFB",
-    borderColor: "#979DA3",
+    borderColor: "initial",
   },
 });
 
@@ -75,14 +75,10 @@ function CustomMenu({
         id="status-button"
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
-        sx={
-          ["DCL", "DBT"].includes(selectedOption.value)
-            ? {
-                color: "red",
-                borderColor: "red",
-              }
-            : {}
-        }
+        sx={{
+          color: selectedOption.color,
+          borderColor: selectedOption.color,
+        }}
       >
         {selectedOption.label}
       </StyledButton>
@@ -98,7 +94,7 @@ function CustomMenu({
             key={option}
             onClick={() => handleStatusSelect(option)}
             selected={option === selectedOption}
-            style={{ textTransform: "capitalize" }}
+            style={{ textTransform: "capitalize", color: option.color }}
           >
             {option.label}
           </MenuItem>

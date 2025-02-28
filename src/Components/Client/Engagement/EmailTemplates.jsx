@@ -3,14 +3,17 @@ import Editor from "./components/Editor";
 import Button, {
   primaryButtonStyles,
   secondaryButtonStyles,
+  tertiaryButtonStyles,
 } from "./components/Button";
 import { Box } from "@mui/material";
 import EventCard from "./components/EventCard";
 import { useEmailTemplates } from "./hooks/useEmailTemplates";
 import { AddTemplateButton } from "./components/AddTemplateButton";
+import { useNavigate } from "react-router-dom";
 
 function EmailTemplates() {
   const editorRef = useRef();
+  const navigate = useNavigate();
   const {
     templates,
     editorState,
@@ -81,33 +84,44 @@ function EmailTemplates() {
             innerRef={editorRef}
           />
 
-          {hasChanges && (
-            <Box className="flex gap-2 mt-2 ml-auto justify-end">
-              <Button
-                sx={{
-                  ...secondaryButtonStyles,
-                  paddingBlock: 0.5,
-                }}
-                variant="outlined"
-                onClick={() =>
-                  selectTemplate(isAddingNew ? null : selectedTemplate)
-                }
-              >
-                Cancel
-              </Button>
+          <Box className="flex gap-2 mt-2 ml-auto justify-end">
+            {hasChanges ? (
+              <>
+                <Button
+                  sx={{
+                    ...secondaryButtonStyles,
+                    paddingBlock: 0.5,
+                  }}
+                  onClick={() =>
+                    selectTemplate(isAddingNew ? null : selectedTemplate)
+                  }
+                >
+                  Cancel
+                </Button>
 
+                <Button
+                  sx={{
+                    paddingBlock: 0.5,
+                    ...primaryButtonStyles,
+                  }}
+                  onClick={isAddingNew ? addTemplate : updateTemplate}
+                  loading={isUpdating || isAdding}
+                >
+                  Save
+                </Button>
+              </>
+            ) : (
               <Button
                 sx={{
+                  ...tertiaryButtonStyles,
                   paddingBlock: 0.5,
-                  ...primaryButtonStyles,
                 }}
-                onClick={isAddingNew ? addTemplate : updateTemplate}
-                loading={isUpdating || isAdding}
+                onClick={() => navigate(-1)}
               >
-                Save
+                Back
               </Button>
-            </Box>
-          )}
+            )}
+          </Box>
         </div>
       )}
     </div>

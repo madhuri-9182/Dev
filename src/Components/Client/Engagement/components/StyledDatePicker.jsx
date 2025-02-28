@@ -7,6 +7,12 @@ export const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
     borderRadius: "8px",
     height: "30px",
     fontSize: "12px",
+    "& .MuiInputBase-input": {
+      "&::placeholder": {
+        color: "#6B7280",
+        opacity: 1,
+      },
+    },
   },
 }));
 
@@ -15,5 +21,9 @@ export const StyledDateTimePicker = styled(DateTimePicker)(({ theme }) => ({
     borderRadius: "8px",
     height: "30px",
     fontSize: "12px",
+    "&::placeholder": {
+      color: "#6B7280",
+      opacity: 1,
+    },
   },
 }));
