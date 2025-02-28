@@ -27,7 +27,6 @@ export const TemplateList = ({ templates }) => {
           marginTop: "16px",
         }}
         fullWidth
-        variant="contained"
         onClick={() => navigate("/client/engagement/email-templates")}
       >
         Create More

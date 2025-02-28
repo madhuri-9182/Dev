@@ -2,6 +2,7 @@ import React from "react";
 import Button, {
   primaryButtonStyles,
   secondaryButtonStyles,
+  tertiaryButtonStyles,
 } from "./components/Button";
 import { DraggableEventCard } from "./components/EventCard";
 import CandidateTimeline from "./components/CandidateTimeline";
@@ -12,12 +13,14 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { useEventScheduler } from "./hooks/useEventScheduler";
 import { TemplateList } from "./components/TemplateList";
 import { WeeklySchedule } from "./components/WeeklySchedule";
+import { useNavigate } from "react-router-dom";
 
 export const ItemTypes = {
   EVENT_CARD: "eventCard",
 };
 
 function EventScheduler({ engagement, setSelectedEngagement }) {
+  const navigate = useNavigate();
   const {
     templates,
     scheduledEventsPerWeek,
@@ -61,35 +64,48 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
           />
         </DndProvider>
       </div>
-      {hasChanges && (
-        <Box className="flex gap-2 mt-2 ml-auto justify-end">
+
+      <Box className="flex gap-2 mt-2 ml-auto justify-end">
+        {hasChanges ? (
+          <>
+            <Button
+              sx={{
+                ...secondaryButtonStyles,
+                paddingBlock: 0.5,
+              }}
+              onClick={resetChanges}
+              disabled={isUpdatingSchedule}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              disabled={scheduledEventsPerWeek.some((event) =>
+                event.slots.some((slot) => slot?.template && !slot?.date)
+              )}
+              sx={{
+                ...primaryButtonStyles,
+                paddingBlock: 0.5,
+              }}
+              loading={isUpdatingSchedule}
+              onClick={updateEngagementSchedule}
+            >
+              Save
+            </Button>
+          </>
+        ) : (
           <Button
             sx={{
-              ...secondaryButtonStyles,
+              ...tertiaryButtonStyles,
               paddingBlock: 0.5,
             }}
-            variant="outlined"
-            onClick={resetChanges}
+            onClick={() => navigate(-1)}
             disabled={isUpdatingSchedule}
           >
-            Cancel
+            Back
           </Button>
-
-          <Button
-            disabled={scheduledEventsPerWeek.some((event) =>
-              event.slots.some((slot) => slot?.template && !slot?.date)
-            )}
-            sx={{
-              ...primaryButtonStyles,
-              paddingBlock: 0.5,
-            }}
-            loading={isUpdatingSchedule}
-            onClick={updateEngagementSchedule}
-          >
-            Save
-          </Button>
-        </Box>
-      )}
+        )}
+      </Box>
     </div>
   );
 }

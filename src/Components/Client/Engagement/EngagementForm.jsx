@@ -15,7 +15,10 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DocumentUpload, Calendar, SmsTracking, Trash } from "iconsax-react";
-import Button, { primaryButtonStyles } from "./components/Button";
+import Button, {
+  primaryButtonStyles,
+  secondaryButtonStyles,
+} from "./components/Button";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
   useAddEngagement,
@@ -75,7 +78,12 @@ const FieldWrapper = ({ children, label, style }) => {
 };
 
 const EngagementForm = ({ setSelectedEngagement, engagement }) => {
-  const { data, isPending, error, mutateAsync } = useResumeParser();
+  const {
+    data,
+    isPending,
+    error,
+    mutateAsync: getResumeData,
+  } = useResumeParser();
   const { mutateAsync: addEngagement, isPending: isAddingEngagement } =
     useAddEngagement();
 
@@ -86,7 +94,14 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     fileInputRef.current.value = "";
-    const [data] = await mutateAsync(file);
+    const [data] = await getResumeData(file);
+
+    let processedPhoneNumber = data.phone_number;
+    if (processedPhoneNumber?.startsWith("+91")) {
+      processedPhoneNumber = processedPhoneNumber.substring(3);
+    } else if (processedPhoneNumber?.startsWith("+")) {
+      processedPhoneNumber = processedPhoneNumber.substring(2);
+    }
 
     setFormData((prev) => {
       const update = {
@@ -94,7 +109,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
         candidate_cv: file,
         candidate_name: data.name,
         candidate_email: data.email,
-        candidate_phone: data.phone_number,
+        candidate_phone: processedPhoneNumber,
         candidate_company: data.current_company,
       };
       validateForm(update);
@@ -165,12 +180,12 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
     }
 
     // Phone validation - must start with +91 followed by 10 digits
-    const phoneRegex = /^\+91\d{10}$/;
+    const phoneRegex = /^\d{10}$/;
     if (
       formData.candidate_phone?.trim() &&
       !phoneRegex.test(formData.candidate_phone.trim())
     ) {
-      newErrors.candidate_phone = "Phone number must start with +91";
+      newErrors.candidate_phone = "Please enter a valid phone number";
     }
 
     setErrors(newErrors);
@@ -181,10 +196,12 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
     if (validateForm(formData)) {
       const payload = {
         ...formData,
+        candidate_phone: "+91" + formData.candidate_phone,
       };
       delete payload.client_user_email;
       delete payload.client_user_name;
       delete payload.candidate_company;
+
       const res = await addEngagement(payload);
 
       setSelectedEngagement({ ...res.data });
@@ -193,6 +210,10 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
         navigate("/client/engagement/event-schedular");
       }, 500);
     }
+  };
+
+  const handleCancel = () => {
+    navigate(-1);
   };
 
   const handleRemoveFile = () => {
@@ -233,6 +254,32 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
   //     }));
   //   }
   // }, [clientUserData]);
+
+  useEffect(() => {
+    if (!formData.candidate_cv) {
+      resetAllErrors({});
+      setFormData({
+        candidate_cv: null,
+        candidate_name: "",
+        candidate_phone: "",
+        candidate_email: "",
+        candidate_company: "",
+        notice_period: "",
+        offer_accepted: false,
+        offered: false,
+        offer_date: null,
+        client_user_id: "",
+        client_user_email: "",
+        other_offer: false,
+        job_id: "",
+        client_user_name: "",
+      });
+    }
+  }, [formData.candidate_cv]);
+
+  const resetAllErrors = () => {
+    setErrors({});
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -298,7 +345,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
           accept=".pdf,.doc,.docx"
         />
       </FieldWrapper>
-      <Table
+      {/* <Table
         sx={{
           border: "none",
           mt: 4,
@@ -334,16 +381,16 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
             <TableCell>Mobile Number</TableCell>
             <TableCell>Email ID</TableCell>
             <TableCell>Company</TableCell>
-            {/* <TableCell></TableCell> */}
+           
           </TableRow>
         </TableHead>
         <TableBody>
           <TableRow>
             <TableCell>{formData.candidate_name}</TableCell>
-            <TableCell>{formData.candidate_email}</TableCell>
             <TableCell>{formData.candidate_phone}</TableCell>
-            <TableCell>{formData.candidate_company}</TableCell>
-            {/* <TableCell>
+            <TableCell>{formData.candidate_email}</TableCell>
+            <TableCell>{formData.candidate_company}</TableCell> */}
+      {/* <TableCell>
               <IconButton
                 sx={{
                   borderRadius: "8px",
@@ -358,9 +405,9 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
                 <EditOutlinedIcon />
               </IconButton>
             </TableCell> */}
-          </TableRow>
+      {/* </TableRow>
         </TableBody>
-      </Table>
+      </Table> */}
 
       <Box
         sx={{
@@ -382,6 +429,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       >
         <FieldWrapper label="Name">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="candidate_name"
             value={formData.candidate_name}
             onChange={handleChange}
@@ -395,19 +443,26 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
         <FieldWrapper label="Phone Number">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="candidate_phone"
             value={formData.candidate_phone}
             onChange={handleChange}
-            placeholder="+91XXXXXXXXXX"
+            placeholder="XXXXXXXXXX"
             required
             error={Boolean(errors.candidate_phone)}
             helperText={errors.candidate_phone}
             type="tel"
+            slotProps={{
+              input: {
+                startAdornment: <Typography fontSize={12}>+91</Typography>,
+              },
+            }}
           />
         </FieldWrapper>
 
         <FieldWrapper label="Email ID">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="candidate_email"
             value={formData.candidate_email}
             onChange={handleChange}
@@ -420,6 +475,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
         <FieldWrapper label="Company">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="candidate_company"
             value={formData.candidate_company}
             onChange={handleChange}
@@ -432,6 +488,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
         <FieldWrapper label="Offered">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="offered"
             value={formData.offered ? 1 : 0}
             onChange={(e) => {
@@ -455,6 +512,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
         <FieldWrapper label="Offer Date">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <StyledDatePicker
+              disabled={!formData.candidate_cv}
               value={
                 formData.offer_date
                   ? dayjs(formData.offer_date, "DD/MM/YYYY")
@@ -484,6 +542,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
         <FieldWrapper label="Offer Accepeted">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="offer_accepted"
             value={formData.offer_accepted ? 1 : 0}
             onChange={(e) =>
@@ -507,6 +566,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
         <FieldWrapper label="Notice Period">
           <Box sx={{ position: "relative" }}>
             <StyledTextField
+              disabled={!formData.candidate_cv}
               name="notice_period"
               value={formData.notice_period}
               onChange={handleChange}
@@ -518,6 +578,11 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
               required
               error={Boolean(errors.notice_period)}
               helperText={errors.notice_period}
+              sx={
+                !formData.notice_period
+                  ? { "& select": { color: "#6B7280" } }
+                  : {}
+              }
             >
               <option value="">Select Days</option>
               {NOTICE_PERIOD.map((option) => (
@@ -550,6 +615,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       >
         <FieldWrapper label="GTP Name">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="client_user_name"
             value={formData.client_user_name}
             placeholder="GTP Name"
@@ -562,6 +628,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
         <FieldWrapper label="GTP Email ID">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="client_user_email"
             value={formData.client_user_email}
             placeholder="abc@xyz.com"
@@ -593,6 +660,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       >
         <FieldWrapper label="Other Offer">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="other_offer"
             value={formData.other_offer ? 1 : 0}
             onChange={(e) => {
@@ -615,6 +683,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
 
         <FieldWrapper label="Role Offer">
           <StyledTextField
+            disabled={!formData.candidate_cv}
             name="job_id"
             value={formData.job_id}
             onChange={handleChange}
@@ -625,6 +694,7 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
             SelectProps={{
               native: true,
             }}
+            sx={!formData.job_id ? { "& select": { color: "#6B7280" } } : {}}
           >
             <option value="">Select Role</option>
             {jobs.map((job) => (
@@ -637,7 +707,16 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
       </Box>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
         <Button
-          variant="contained"
+          sx={{
+            ...secondaryButtonStyles,
+            marginRight: 2,
+          }}
+          onClick={handleCancel}
+        >
+          Cancel
+        </Button>
+        <Button
+          disabled={!formData.candidate_cv}
           sx={{
             ...primaryButtonStyles,
           }}
