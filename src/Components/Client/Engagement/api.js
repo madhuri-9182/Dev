@@ -232,17 +232,7 @@ export const useUpdateEngagementStatus = (filters) => {
       }
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["engagements", filters], (oldData) => {
-        if (oldData === undefined) return;
-
-        oldData.results = oldData.results.map((engagement) => {
-          if (engagement.id === data.id) {
-            return { ...engagement, status: data.status };
-          }
-          return engagement;
-        });
-        return oldData;
-      });
+      queryClient.invalidateQueries(["engagements", filters]);
 
       successToaster(`Engagement status updated`);
     },

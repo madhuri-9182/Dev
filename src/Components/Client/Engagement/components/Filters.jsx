@@ -10,7 +10,7 @@ const StyledTextField = styled(TextField)({
     borderRadius: "8px",
     fontSize: "12px",
     paddingBlock: "4px",
-    minWidth: 120,
+    minWidth: 200,
 
     "& input": {
       padding: "0 !important",
@@ -36,103 +36,123 @@ const Filters = ({ filters, onChipClick, jobs }) => {
       sx={{
         display: "flex",
         flexWrap: "wrap",
-        gap: 1,
-        mb: 3,
+
         alignItems: "center",
+        "& > div": {
+          marginRight: "20px",
+          mb: 3,
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        },
+        "& .MuiTypography-root": {
+          margin: 0,
+        },
       }}
     >
-      <Typography fontWeight={600} fontSize={12}>
-        Role
-      </Typography>
-
-      <Autocomplete
-        slotProps={{
-          paper: {
-            sx: {
-              fontSize: 12,
+      <Box>
+        <Typography fontWeight={600} fontSize={12}>
+          Role
+        </Typography>
+        <Autocomplete
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 12,
+              },
             },
-          },
-        }}
-        multiple
-        options={jobs.map((job) => ({
-          value: job.id,
-          name: job.name,
-        }))}
-        getOptionLabel={(option) => {
-          return option.name.split("_").join(" ");
-        }}
-        filterSelectedOptions
-        renderInput={(params) => (
-          <StyledTextField
-            {...params}
-            placeholder={filters.role.length === 0 ? "All" : ""}
-          />
-        )}
-        loading={jobs.length === 0}
-        value={filters.role}
-        onChange={(event, newValue) => {
-          handleChipClick("role", newValue);
-        }}
-      />
+          }}
+          multiple
+          filterSelectedOptions
+          options={jobs.map((job) => ({
+            value: job.id,
+            label: job.name,
+          }))}
+          getOptionLabel={(option) => {
+            return option.label;
+          }}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={filters.role.length === 0 ? "All" : ""}
+            />
+          )}
+          loading={jobs.length === 0}
+          value={filters.role}
+          onChange={(event, newValue) => {
+            handleChipClick("role", newValue);
+          }}
+        />
+      </Box>
 
-      <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
-        Function
-      </Typography>
-      <Autocomplete
-        slotProps={{
-          paper: {
-            sx: {
-              fontSize: 12,
+      <Box>
+        <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
+          Function
+        </Typography>
+        <Autocomplete
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 12,
+              },
             },
-          },
-        }}
-        multiple
-        options={SPECIALIZATION_CHOICES}
-        getOptionLabel={(option) => {
-          return option.label;
-        }}
-        filterSelectedOptions
-        renderInput={(params) => (
-          <StyledTextField
-            {...params}
-            placeholder={filters.function.length === 0 ? "All" : ""}
-          />
-        )}
-        value={filters.function}
-        onChange={(event, newValue) => {
-          handleChipClick("function", newValue);
-        }}
-      />
+          }}
+          multiple
+          options={SPECIALIZATION_CHOICES}
+          getOptionLabel={(option) => {
+            return option.label;
+          }}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={filters.function.length === 0 ? "All" : ""}
+            />
+          )}
+          value={filters.function}
+          onChange={(event, newValue) => {
+            handleChipClick("function", newValue);
+          }}
+        />
+      </Box>
 
-      <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
-        Notice Period
-      </Typography>
+      <Box>
+        <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
+          Notice Period
+        </Typography>
 
-      <Autocomplete
-        slotProps={{
-          paper: {
-            sx: {
-              fontSize: 12,
+        <Autocomplete
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 12,
+              },
             },
-          },
-        }}
-        multiple
-        options={NOTICE_PERIOD}
-        getOptionLabel={(option) => {
-          return option.label;
-        }}
-        filterSelectedOptions
-        renderInput={(params) => (
-          <StyledTextField
-            {...params}
-            placeholder={filters.notice.length === 0 ? "All" : ""}
-          />
-        )}
-        value={filters.notice}
-        onChange={(event, newValue) => {
-          handleChipClick("notice", newValue);
-        }}
-      />
+          }}
+          multiple
+          options={NOTICE_PERIOD}
+          getOptionLabel={(option) => {
+            return option.label;
+          }}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={filters.notice.length === 0 ? "All" : ""}
+            />
+          )}
+          value={filters.notice}
+          onChange={(event, newValue) => {
+            handleChipClick("notice", newValue);
+          }}
+        />
+      </Box>
     </Box>
   );
 };

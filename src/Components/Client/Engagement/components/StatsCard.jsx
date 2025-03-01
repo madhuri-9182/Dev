@@ -13,7 +13,7 @@ const StyledCardActionArea = styled(CardActionArea)(({ theme }) => ({
   height: "96px",
 }));
 
-const StatsCard = ({ title, value, isLoading }) => {
+const StatsCard = ({ title, value }) => {
   return (
     <StyledCard>
       <StyledCardActionArea>
@@ -21,7 +21,7 @@ const StatsCard = ({ title, value, isLoading }) => {
           {title}
         </Typography>
         <Typography sx={{ fontWeight: "600", color: "#111827" }}>
-          {isLoading ? <Skeleton width={50} /> : value}
+          {typeof value === "number" ? value : <Skeleton width={40} />}
         </Typography>
       </StyledCardActionArea>
     </StyledCard>
