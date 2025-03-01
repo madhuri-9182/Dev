@@ -1,9 +1,5 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-import {
-  JOB_NAMES,
-  JOB_TYPES,
-} from "../../Constants/constants";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
 import toast from "react-hot-toast";
 import ArchiveModal from "./ArchiveModal";
@@ -13,14 +9,17 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import { createJob, updateJob } from "./api";
+import { useJobContext } from "../../../context/JobContext";
+import {
+  JOB_NAMES,
+  JOB_TYPES,
+} from "../../Constants/constants";
 
-const JobDetails = ({
-  formdata,
-  setFormdata,
-  onBack,
-  onSubmit,
-  isEdit,
-}) => {
+const JobDetails = () => {
+  const navigate = useNavigate();
+  const { formdata, setFormdata, isEdit, selectedData } =
+    useJobContext();
+
   const queryClient = useQueryClient();
   const [archiveModalOpen, setArchiveModalOpen] =
     useState(false);
@@ -50,6 +49,14 @@ const JobDetails = ({
     setDetailsModalOpen(true);
   };
 
+  const onBack = () => {
+    navigate("/client/jobs/add-job");
+  };
+
+  const onSubmit = () => {
+    navigate("/client/jobs");
+  };
+
   const mutation = useMutation({
     mutationFn: isEdit ? updateJob : createJob,
     onSuccess: () => {
@@ -75,6 +82,21 @@ const JobDetails = ({
       );
     },
   });
+
+  useEffect(() => {
+    const isFirstLoad =
+      localStorage.getItem("hasLoaded") !== "true";
+
+    if (!isFirstLoad) {
+      navigate("/client/jobs");
+    } else {
+      localStorage.setItem("hasLoaded", "true");
+    }
+
+    return () => {
+      localStorage.removeItem("hasLoaded");
+    };
+  }, [navigate]);
 
   const handleSubmit = () => {
     const formdataToSubmit = new FormData();
@@ -121,7 +143,7 @@ const JobDetails = ({
     isEdit
       ? mutation.mutate({
           jobData: formdataToSubmit,
-          id: formdata.id,
+          id: selectedData.id,
         })
       : mutation.mutate(formdataToSubmit);
   };
@@ -137,7 +159,7 @@ const JobDetails = ({
             <input
               type="text"
               value={
-                JOB_NAMES.find(
+                JOB_NAMES?.find(
                   (job) => job.id === formdata.name
                 )?.name
                   ? JOB_NAMES.find(
@@ -197,7 +219,7 @@ const JobDetails = ({
             <select
               className={`${inputClassName} custom-select`}
               value={
-                JOB_TYPES.ACTIVE.includes(
+                JOB_TYPES?.ACTIVE.includes(
                   formdata.reason_for_archived
                 )
                   ? "Active"
@@ -213,7 +235,7 @@ const JobDetails = ({
               className={`${btnClassName} w-[24%]`}
               onClick={() => {
                 if (
-                  JOB_TYPES.ACTIVE.includes(
+                  JOB_TYPES?.ACTIVE.includes(
                     formdata.reason_for_archived
                   )
                 ) {
@@ -329,14 +351,6 @@ const JobDetails = ({
 };
 
 export default JobDetails;
-
-JobDetails.propTypes = {
-  formdata: PropTypes.object,
-  setFormdata: PropTypes.func,
-  isEdit: PropTypes.bool,
-  onBack: PropTypes.func,
-  onSubmit: PropTypes.func,
-};
 
 const labelClassName =
   "text-2xs font-bold text-[#6B6F7B] text-right w-1/5";

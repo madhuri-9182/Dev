@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DynamicMultiSelect from "../../../utils/DynamicMultiSelect";
 import { LogoutCurve } from "iconsax-react";
 import MultiSelect from "../../../utils/MultiSelect";
@@ -11,31 +11,26 @@ import {
   handleTxtAndDocxFile,
 } from "../../../utils/util";
 import toast from "react-hot-toast";
+import { useJobContext } from "../../../context/JobContext";
 
-const AddJob = ({
-  onBack,
-  formdata,
-  setFormdata,
-  onSubmit,
-}) => {
+const AddJob = () => {
+  const navigate = useNavigate();
+  const { formdata, setFormdata, isEdit } = useJobContext();
+
   const fileInputRef = useRef(null);
-
   const { data: users } = useAllUsers();
 
   const [selectedJobRole, setSelectedJobRole] =
     useState(null);
   const [isJobRoleDropdownOpen, setIsJobRoleDropdownOpen] =
     useState(false);
-
   const [jobId, setJobId] = useState("");
-
   const [selectedRecruiters, setSelectedRecruiters] =
     useState([]);
   const [
     isRecruitersDropdownOpen,
     setIsRecruitersDropdownOpen,
   ] = useState(false);
-
   const [
     selectedHiringManagers,
     setSelectedHiringManagers,
@@ -44,12 +39,9 @@ const AddJob = ({
     isHiringManagersDropdownOpen,
     setIsHiringManagersDropdownOpen,
   ] = useState(false);
-
   const [totalPositions, setTotalPositions] = useState("");
-
   const [uploadedFile, setUploadedFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
-
   const [
     selectedEssentialSkills,
     setSelectedEssentialSkills,
@@ -59,7 +51,6 @@ const AddJob = ({
     isEssentialSkillsDropdownOpen,
     setIsEssentialSkillsDropdownOpen,
   ] = useState(false);
-
   const [errors, setErrors] = useState({});
 
   const handleAddTag = (value) => {
@@ -90,7 +81,7 @@ const AddJob = ({
     if (!file) return;
 
     const extension = file.name
-      .split(".")
+      ?.split(".")
       .pop()
       .toLowerCase();
     setUploadedFile(file);
@@ -164,9 +155,28 @@ const AddJob = ({
         mandatory_skills: selectedEssentialSkills,
         job_description_file: uploadedFile,
       });
-      onSubmit();
+      navigate("/client/jobs/job-details");
     }
   };
+
+  const onBack = () => {
+    navigate("/client/jobs");
+  };
+
+  useEffect(() => {
+    const isFirstLoad =
+      localStorage.getItem("hasLoaded") !== "true";
+
+    if (!isFirstLoad) {
+      navigate("/client/jobs");
+    } else {
+      localStorage.setItem("hasLoaded", "true");
+    }
+
+    return () => {
+      localStorage.removeItem("hasLoaded");
+    };
+  }, [navigate]);
 
   useEffect(() => {
     if (formdata.name) {
@@ -187,7 +197,10 @@ const AddJob = ({
     if (formdata.mandatory_skills) {
       setSelectedEssentialSkills(formdata.mandatory_skills);
     }
-    if (formdata.job_description_file) {
+    if (
+      formdata.job_description_file &&
+      Object.keys(formdata.job_description_file).length > 0
+    ) {
       setUploadedFile(formdata.job_description_file);
       handleFileUpload(formdata.job_description_file);
     }
@@ -400,7 +413,7 @@ const AddJob = ({
              hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
               type="submit"
             >
-              Continue
+              {isEdit ? "Update" : "Continue"}
             </button>
           </div>
         </form>
@@ -410,13 +423,6 @@ const AddJob = ({
 };
 
 export default AddJob;
-
-AddJob.propTypes = {
-  onBack: PropTypes.func,
-  formdata: PropTypes.object,
-  setFormdata: PropTypes.func,
-  onSubmit: PropTypes.func,
-};
 
 const labelClassName =
   "text-2xs font-bold text-[#6B6F7B] text-right w-1/3";

@@ -69,6 +69,9 @@ import {
   NotFound,
   UnauthorizedLayout,
 } from "./Components/shared/unauthorized";
+import { JobProvider } from "./context/JobContext";
+import AddJob from "./Components/Client/Jobs/AddJob";
+import JobDetails from "./Components/Client/Jobs/JobDetails";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -130,7 +133,19 @@ const router = createBrowserRouter(
               element={<Dashboard />}
             />
             <Route path="settings" element={<Settings />} />
-            <Route path="jobs" element={<Jobs />} />
+            <Route path="" element={<JobProvider />}>
+              <Route path="jobs">
+                <Route index element={<Jobs />} />
+                <Route
+                  path="add-job"
+                  element={<AddJob />}
+                />
+                <Route
+                  path="job-details"
+                  element={<JobDetails />}
+                />
+              </Route>
+            </Route>
 
             <Route path="candidates">
               <Route index element={<Candidates />} />

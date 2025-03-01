@@ -68,10 +68,10 @@ const CustomSelect = ({
               : "text-gray-400"
           }
         >
-          {dropdownOptions.find(
+          {dropdownOptions?.find(
             (option) => option.id === selectedValue
           )?.name
-            ? dropdownOptions.find(
+            ? dropdownOptions?.find(
                 (option) => option.id === selectedValue
               )?.name
             : type === "jobRole"

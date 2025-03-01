@@ -59,7 +59,7 @@ const MultiSelect = ({
     );
   };
 
-  const dropdownOptions = options.filter(
+  const dropdownOptions = options?.filter(
     (option) => !selectedRecruiters.includes(option.name)
   );
 

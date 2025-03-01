@@ -8,18 +8,25 @@ import {
   revertDateFormat,
   getJobLabel,
 } from "../../../utils/util";
+import { useJobContext } from "../../../context/JobContext";
+import ArchiveModal from "./ArchiveModal";
+import { AnimatePresence } from "framer-motion";
 
-const JobListing = ({
-  handleAddJobClick,
-  handleShowJobDetails,
-  handleArchiveModalOpen,
-  handleChangePage,
-  data,
-  setFilters,
-  filters,
-  allJobs,
-}) => {
+const JobListing = ({ data }) => {
   const { count, results } = data;
+  const {
+    handleAddJobClick,
+    handleShowJobDetails,
+    handleArchiveModalOpen,
+    handleChangePage,
+    setFilters,
+    filters,
+    allJobs,
+    isArchiveModalOpen,
+    setIsArchiveModalOpen,
+    archiveId,
+  } = useJobContext();
+
   const { data: users } = useAllUsers();
 
   const [hiringManagers, setHiringManagers] = useState([]);
@@ -39,6 +46,10 @@ const JobListing = ({
       setRecruiters(users);
     }
   }, [users]);
+
+  const handleArchiveModalClose = () => {
+    setIsArchiveModalOpen(false);
+  };
 
   return (
     <React.Fragment>
@@ -207,6 +218,17 @@ const JobListing = ({
           No Jobs Found
         </p>
       )}
+      {/* Archive Modal */}
+      {isArchiveModalOpen && (
+        <AnimatePresence>
+          <ArchiveModal
+            isOpen={isArchiveModalOpen}
+            onClose={handleArchiveModalClose}
+            archiveId={archiveId}
+            fromJobDetails={false}
+          />
+        </AnimatePresence>
+      )}
     </React.Fragment>
   );
 };
@@ -214,14 +236,7 @@ const JobListing = ({
 export default JobListing;
 
 JobListing.propTypes = {
-  handleAddJobClick: PropTypes.func,
-  handleShowJobDetails: PropTypes.func,
-  handleArchiveModalOpen: PropTypes.func,
-  handleChangePage: PropTypes.func,
   data: PropTypes.object,
-  setFilters: PropTypes.func,
-  filters: PropTypes.object,
-  allJobs: PropTypes.array,
 };
 
 const filterSelectClassName =
