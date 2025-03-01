@@ -1,7 +1,30 @@
-import { Box, Typography } from "@mui/material";
+import { Autocomplete, Box, TextField, Typography } from "@mui/material";
 import React from "react";
 import { NOTICE_PERIOD, SPECIALIZATION_CHOICES } from "../constants";
 import { StyledMenuItem, StyledSelect } from "./StyledSelect";
+import { styled } from "@mui/material/styles";
+
+const StyledTextField = styled(TextField)({
+  "& .MuiInputBase-root": {
+    height: "40px",
+    borderRadius: "8px",
+    fontSize: "12px",
+    paddingBlock: "4px",
+    minWidth: 120,
+
+    "& input": {
+      padding: "0 !important",
+    },
+  },
+  "& .MuiChip-root": {
+    height: "24px",
+
+    fontSize: "12px",
+    "& .MuiChip-deleteIcon": {
+      fontSize: "14px",
+    },
+  },
+});
 
 const Filters = ({ filters, onChipClick, jobs }) => {
   const handleChipClick = (type, value) => {
@@ -21,47 +44,95 @@ const Filters = ({ filters, onChipClick, jobs }) => {
       <Typography fontWeight={600} fontSize={12}>
         Role
       </Typography>
-      <StyledSelect
+
+      <Autocomplete
+        slotProps={{
+          paper: {
+            sx: {
+              fontSize: 12,
+            },
+          },
+        }}
+        multiple
+        options={jobs.map((job) => ({
+          value: job.id,
+          name: job.name,
+        }))}
+        getOptionLabel={(option) => {
+          return option.name.split("_").join(" ");
+        }}
+        filterSelectedOptions
+        renderInput={(params) => (
+          <StyledTextField
+            {...params}
+            placeholder={filters.role.length === 0 ? "All" : ""}
+          />
+        )}
+        loading={jobs.length === 0}
         value={filters.role}
-        onChange={(e) => handleChipClick("role", e.target.value)}
-      >
-        <StyledMenuItem value="all">All</StyledMenuItem>
-        {jobs.map((item) => (
-          <StyledMenuItem key={item.id} value={item.id}>
-            {item.name.split("_").join(" ")}
-          </StyledMenuItem>
-        ))}
-      </StyledSelect>
+        onChange={(event, newValue) => {
+          handleChipClick("role", newValue);
+        }}
+      />
 
       <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
         Function
       </Typography>
-      <StyledSelect
+      <Autocomplete
+        slotProps={{
+          paper: {
+            sx: {
+              fontSize: 12,
+            },
+          },
+        }}
+        multiple
+        options={SPECIALIZATION_CHOICES}
+        getOptionLabel={(option) => {
+          return option.label;
+        }}
+        filterSelectedOptions
+        renderInput={(params) => (
+          <StyledTextField
+            {...params}
+            placeholder={filters.function.length === 0 ? "All" : ""}
+          />
+        )}
         value={filters.function}
-        onChange={(e) => handleChipClick("function", e.target.value)}
-      >
-        <StyledMenuItem value="all">All</StyledMenuItem>
-        {SPECIALIZATION_CHOICES.map((item, i) => (
-          <StyledMenuItem key={i} value={item.value}>
-            {item.label}
-          </StyledMenuItem>
-        ))}
-      </StyledSelect>
+        onChange={(event, newValue) => {
+          handleChipClick("function", newValue);
+        }}
+      />
 
       <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
         Notice Period
       </Typography>
-      <StyledSelect
+
+      <Autocomplete
+        slotProps={{
+          paper: {
+            sx: {
+              fontSize: 12,
+            },
+          },
+        }}
+        multiple
+        options={NOTICE_PERIOD}
+        getOptionLabel={(option) => {
+          return option.label;
+        }}
+        filterSelectedOptions
+        renderInput={(params) => (
+          <StyledTextField
+            {...params}
+            placeholder={filters.notice.length === 0 ? "All" : ""}
+          />
+        )}
         value={filters.notice}
-        onChange={(e) => handleChipClick("notice", e.target.value)}
-      >
-        <StyledMenuItem value="all">All</StyledMenuItem>
-        {NOTICE_PERIOD.map((item, i) => (
-          <StyledMenuItem key={i} value={item.value}>
-            {item.label}
-          </StyledMenuItem>
-        ))}
-      </StyledSelect>
+        onChange={(event, newValue) => {
+          handleChipClick("notice", newValue);
+        }}
+      />
     </Box>
   );
 };

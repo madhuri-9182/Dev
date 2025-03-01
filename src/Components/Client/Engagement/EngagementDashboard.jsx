@@ -31,16 +31,16 @@ const StyledSearch = styled(TextField)(({ theme }) => ({
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
-    role: "all",
-    function: "all",
-    notice: "all",
+    role: [],
+    function: [],
+    notice: [],
     search: "",
   });
 
   const [debouncedFilters, setDebouncedFilters] = useState({
-    role: "all",
-    function: "all",
-    notice: "all",
+    role: [],
+    function: [],
+    notice: [],
     search: "",
   });
 
