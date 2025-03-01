@@ -31,12 +31,14 @@ export const useEngagements = (filters) => {
         const params = {};
 
         if (filters?.search) params.q = filters.search;
-        if (filters?.role && filters.role !== "all")
-          params.role_id = filters.role;
-        if (filters?.function && filters.function !== "all")
-          params.specialization = filters.function;
-        if (filters?.notice && filters.notice !== "all")
-          params.np = filters.notice;
+        if (filters?.role && filters.role.length > 0)
+          params.role_id = filters.role.map((role) => role.value).join(",");
+        if (filters?.function && filters.function.length > 0)
+          params.specialization = filters.function
+            .map((func) => func.value)
+            .join(",");
+        if (filters?.notice && filters.notice.length > 0)
+          params.np = filters.notice.map((notice) => notice.value).join(",");
 
         const { data } = await axios.get(`${BASE_URL}/engagements`, { params });
         return data;
