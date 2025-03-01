@@ -70,7 +70,7 @@ const Filters = ({ filters, onChipClick, jobs }) => {
             label: job.name,
           }))}
           getOptionLabel={(option) => {
-            return option.label;
+            return option.label.split("_").join(" ");
           }}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           renderInput={(params) => (
