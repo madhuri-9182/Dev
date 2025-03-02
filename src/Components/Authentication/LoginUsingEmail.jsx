@@ -17,7 +17,7 @@ import {
   Label,
   Input,
   ViewHideEyeButton,
-} from "../shared/form-components";
+} from "../shared/auth-form-components";
 
 const LoginUsingEmail = () => {
   // eslint-disable-next-line no-unused-vars
