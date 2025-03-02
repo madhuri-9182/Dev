@@ -87,7 +87,7 @@ const MultiSelect = ({
               className="flex items-center justify-between bg-[#F8F8F8] text-2xs font-semibold px-2 py-1 rounded-lg border border-[#CAC4D0] text-[#49454F]"
             >
               {
-                dropdownOptions.find(
+                dropdownOptions?.find(
                   (dropdownOption) =>
                     dropdownOption.id === option
                 )?.name
