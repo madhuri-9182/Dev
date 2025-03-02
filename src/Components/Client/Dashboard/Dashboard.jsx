@@ -51,8 +51,8 @@ const Dashboard = () => {
   // Determine if we need taller light background cards
   const needsTallerCards = pendingTasksItems.length > 4;
   const lightBgCardHeight = needsTallerCards
-    ? "h-52"
-    : "h-36";
+    ? "h-44"
+    : "h-28";
 
   const filteredAllTaskItems = !needsTallerCards
     ? allTasksItems.slice(0, 4)
@@ -60,7 +60,7 @@ const Dashboard = () => {
 
   return (
     <div className="px-20 py-10">
-      <div className="grid grid-cols-2 gap-x-24 xl:gap-x-36 gap-y-12 xl:gap-y-16">
+      <div className="grid grid-cols-2 gap-x-24 xl:gap-x-36 gap-y-12 xl:gap-y-16 h-">
         {/* Pending Tasks */}
         <div className="w-full flex flex-col gap-y-6">
           <CardHeader
@@ -95,7 +95,7 @@ const Dashboard = () => {
             items={myJobsItems}
             bgColor={blueGradient}
             textColor="text-white"
-            customClass="h-36"
+            customClass="h-28"
           />
         </div>
 
@@ -106,7 +106,7 @@ const Dashboard = () => {
             items={analyticsItems}
             bgColor={blueGradient}
             textColor="text-white"
-            customClass="h-36"
+            customClass="h-28"
           />
         </div>
       </div>
@@ -138,23 +138,31 @@ const CardItems = ({
   title = "",
 }) => (
   <div
-    className={`shadow ${bgColor} p-6 xl:p-8 rounded-2xl grid grid-cols-2 gap-x-16 xl:gap-x-20 gap-y-7 ${customClass} ${
-      title === "Pending Tasks" && items.length > 4
-        ? "overflow-auto hover-scrollbar"
-        : ""
-    }`}
+    className={`shadow ${bgColor} p-6 xl:p-8 rounded-2xl`}
   >
-    {items.map((item, idx) => (
-      <div
-        key={idx}
-        className={`flex flex-col gap-1 ${textColor}`}
-      >
-        <p className="text-2xs font-medium">{item.label}</p>
-        {item.value !== undefined && (
-          <p className="text-xs font-bold">{item.value}</p>
-        )}
-      </div>
-    ))}
+    <div
+      className={` grid grid-cols-2 gap-x-16 xl:gap-x-20 gap-y-7 ${customClass} ${
+        title === "Pending Tasks" && items.length > 4
+          ? "overflow-auto hover-scrollbar"
+          : ""
+      }`}
+    >
+      {items.map((item, idx) => (
+        <div
+          key={idx}
+          className={`flex flex-col gap-1 ${textColor}`}
+        >
+          <p className="text-2xs font-medium">
+            {item.label}
+          </p>
+          {item.value !== undefined && (
+            <p className="text-xs font-bold">
+              {item.value}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
   </div>
 );
 
