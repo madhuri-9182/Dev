@@ -12,6 +12,10 @@ import AddUserModal from "./AddUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import AddButton from "../../shared/AddButton";
 import { fetchUsers } from "./api";
+import {
+  ErrorState,
+  LoadingState,
+} from "../../shared/loading-error-state";
 
 function Settings() {
   const { auth } = useAuth();
@@ -37,8 +41,8 @@ function Settings() {
     setDialogOpen(false);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error...</div>;
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState />;
 
   const canShowTrashIcon = (userRole) => {
     if (auth.role === "client_owner") {

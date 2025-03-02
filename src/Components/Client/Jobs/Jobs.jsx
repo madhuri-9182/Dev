@@ -3,6 +3,10 @@ import JobListing from "./JobListing";
 import { useQuery } from "@tanstack/react-query";
 import { fetchJobs } from "./api";
 import { useJobContext } from "../../../context/JobContext";
+import {
+  ErrorState,
+  LoadingState,
+} from "../../shared/loading-error-state";
 
 const Jobs = () => {
   const { currentPage, filters, setAllJobs } =
@@ -29,8 +33,8 @@ const Jobs = () => {
     }
   }, [data, setAllJobs]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error...</div>;
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState />;
 
   return (
     <div className="m-0 px-3">

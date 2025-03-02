@@ -11,7 +11,7 @@ import CandidateStats from "./CandidateStats";
 import {
   LoadingState,
   ErrorState,
-} from "./LoadingAndErrorState";
+} from "../../../shared/loading-error-state";
 
 // Hooks and utilities
 import useAllJobs from "../../../../hooks/useFetchAllJobs";
