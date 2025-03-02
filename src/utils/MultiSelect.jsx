@@ -53,9 +53,7 @@ const MultiSelect = ({
 
   const removeTag = (option) => {
     setSelectedRecruiters(
-      selectedRecruiters.filter(
-        (item) => item.id !== option
-      )
+      selectedRecruiters.filter((item) => item !== option)
     );
   };
 
@@ -93,6 +91,7 @@ const MultiSelect = ({
                 )?.name
               }
               <button
+                type="button"
                 className="ml-1 text-[#49454F] focus:outline-none"
                 onClick={(e) => {
                   e.stopPropagation();
