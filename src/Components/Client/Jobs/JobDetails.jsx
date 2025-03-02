@@ -50,7 +50,7 @@ const JobDetails = () => {
   };
 
   const onBack = () => {
-    navigate("/client/jobs/add-job");
+    window.history.back();
   };
 
   const onSubmit = () => {

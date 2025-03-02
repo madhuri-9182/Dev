@@ -160,7 +160,7 @@ const AddJob = () => {
   };
 
   const onBack = () => {
-    navigate("/client/jobs");
+    window.history.back();
   };
 
   useEffect(() => {
