@@ -9,7 +9,7 @@ export const NavItemIcon = ({ icon: Icon, isActive }) => {
   const variant = getVariant(isActive);
   const color = getIconColor(isActive);
 
-  return <Icon variant={variant} color={color} size={24} />;
+  return <Icon variant={variant} color={color} size={18} />;
 };
 
 NavItemIcon.propTypes = {

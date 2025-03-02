@@ -16,7 +16,7 @@ import RequireAuth from "./Authentication/RequireAuth";
 import Dashboard from "./Client/Dashboard";
 import Settings from "./Client/Settings/Settings";
 import Jobs from "./Client/Jobs/Jobs";
-import Candidates from "./Client/Candidates/Candidates";
+import Candidates from "./Client/Candidates/view-candidate/Candidates";
 import Analytics from "./Client/Analytics/Analytics";
 import AnalyticsDateFilter from "./Client/Analytics/AnalyticsDateFilter";
 import Integration from "./Client/Integration";
@@ -96,6 +96,12 @@ export {
 };
 
 //Interviewer Exports
-export { Layout, Calendar, InterviewRecord, Payments, Feedback };
+export {
+  Layout,
+  Calendar,
+  InterviewRecord,
+  Payments,
+  Feedback,
+};
 
 export { Hello };

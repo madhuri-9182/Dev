@@ -9,8 +9,8 @@ import { FaCheck } from "react-icons/fa6";
 import {
   fileToBase64,
   formatExperience,
-} from "../../../utils/util";
-import { EMAIL_REGEX } from "../../Constants/constants";
+} from "../../../../utils/util";
+import { EMAIL_REGEX } from "../../../Constants/constants";
 
 export const ResumeTable = ({
   data,
@@ -22,7 +22,7 @@ export const ResumeTable = ({
   selectedSpecialization,
 }) => (
   <div className="w-full mt-20 overflow-x-auto">
-    <table className="w-full text-xs text-[#313A4E] border-collapse">
+    <table className="w-full text-2xs text-[#313A4E] border-collapse">
       <thead className="text-[#6B6F7B] font-bold mt-3">
         <tr className="flex items-center gap-2 text-left">
           <th className="px-3 w-[14.33%]">Name</th>
@@ -105,18 +105,25 @@ const ResumeTableRow = ({
 
   const validateFields = () => {
     const newErrors = {};
-    if (!editedData.name)
+    if (!editedData.name || editedData.name === "Not Found")
       newErrors.name =
         "Name not parsed. Please fill manually to submit";
-    if (!editedData.email)
+    if (
+      !editedData.email ||
+      editedData.email === "NotFound"
+    )
       newErrors.email =
         "Email not parsed. Please fill manually to submit";
     if (
       editedData.email &&
+      editedData.email !== "NotFound" &&
       !EMAIL_REGEX.test(editedData.email)
     )
       newErrors.email = "Invalid email address.";
-    if (!editedData.phone_number)
+    if (
+      !editedData.phone_number ||
+      editedData.phone_number === "Not Found"
+    )
       newErrors.phone_number =
         "Mobile number not parsed. Please fill manually to submit";
     if (
@@ -128,6 +135,14 @@ const ResumeTableRow = ({
     if (!editedData.gender)
       newErrors.gender =
         "Gender is required. Please fill manually to submit";
+
+    if (
+      editedData.years_of_experience.year === 0 &&
+      editedData.years_of_experience.month === 0
+    ) {
+      newErrors.years_of_experience =
+        "Experience not parsed. Please fill manually to submit";
+    }
 
     setErrors(newErrors);
 
@@ -168,21 +183,39 @@ const ResumeTableRow = ({
     delete encodedData.id;
     delete encodedData.file;
 
-    const uniqueKey = `candidateData-${Date.now()}`;
+    const uniqueKey = `candidateData-${selectedIData.id}`;
 
     // Store the encoded data in localStorage (or sessionStorage)
     localStorage.setItem(
       uniqueKey,
       JSON.stringify(encodedData)
     );
-
-    // const encodedParams = encodeURIComponent(
-    //   JSON.stringify(encodedData)
-    // );
     const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
 
     // Open in a new tab
     window.open(url, "_blank");
+  };
+
+  const inputValue = (key) => {
+    return editedData[key] === "Not Found" ||
+      editedData[key] === "NotFound"
+      ? ""
+      : editedData[key];
+  };
+
+  const tableDataValues = (key) => {
+    return item[key] === "Not Found" ||
+      item[key] === "NotFound"
+      ? "-"
+      : item[key];
+  };
+
+  window.removeCandidateFromData = (key) => {
+    const updatedKey = key.split("candidateData-")[1];
+    const updatedData = data.filter((row) => {
+      return row.id !== updatedKey;
+    });
+    setData(updatedData);
   };
 
   return (
@@ -198,7 +231,7 @@ const ResumeTableRow = ({
             <td className="px-3 w-[14.33%]">
               <Input
                 type="text"
-                value={editedData.name}
+                value={inputValue("name")}
                 onChange={(e) => handleChange(e, "name")}
                 placeholder="Name"
                 className="w-[95%]"
@@ -241,9 +274,9 @@ const ResumeTableRow = ({
             <td className="px-3 w-[13%]">
               <Input
                 type="number"
-                value={editedData.phone_number} // remove +91 from phone number
-                onChange={
-                  (e) => handleChange(e, "phone_number") // add +91 to phone number
+                value={editedData.phone_number}
+                onChange={(e) =>
+                  handleChange(e, "phone_number")
                 }
                 placeholder="Mobile Number"
                 className="w-[95%]"
@@ -252,7 +285,7 @@ const ResumeTableRow = ({
             <td className="px-3 w-1/6">
               <Input
                 type="email"
-                value={editedData.email}
+                value={inputValue("email")}
                 onChange={(e) => handleChange(e, "email")}
                 placeholder="Email ID"
               />
@@ -260,7 +293,7 @@ const ResumeTableRow = ({
             <td className="px-3 w-1/5">
               <Input
                 type="text"
-                value={editedData.current_company}
+                value={inputValue("current_company")}
                 onChange={(e) =>
                   handleChange(e, "current_company")
                 }
@@ -271,7 +304,7 @@ const ResumeTableRow = ({
               <select
                 value={editedData.gender}
                 onChange={(e) => handleChange(e, "gender")}
-                className="custom-select w-full px-2 py-1 border text-xs font-medium bg-white text-[#6B6F7B] rounded"
+                className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
               >
                 <option value="">Select</option>
                 <option value="male">Male</option>
@@ -281,7 +314,7 @@ const ResumeTableRow = ({
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
               <CloseCircle
-                size="24"
+                size="20"
                 color="#555555"
                 variant="Outline"
                 className="cursor-pointer"
@@ -300,7 +333,7 @@ const ResumeTableRow = ({
               />
               <button
                 onClick={saveEdit}
-                className="px-3 rounded-full text-sm font-medium text-white h-[32px] 
+                className="px-3 py-1 rounded-full text-xs font-medium text-white 
                   bg-[#007AFF] transition-all duration-300 ease-in-out
                   hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer flex items-center w-[90px] justify-center"
               >
@@ -310,16 +343,20 @@ const ResumeTableRow = ({
           </>
         ) : (
           <>
-            <td className="px-3 w-[14.33%]">{item.name}</td>
+            <td className="px-3 w-[14.33%]">
+              {tableDataValues("name")}
+            </td>
             <td className="px-3 w-[12%]">
               {formatExperience(item.years_of_experience)}
             </td>
             <td className="px-3 w-[13%]">
-              {item.phone_number}
+              {tableDataValues("phone_number")}
             </td>
-            <td className="px-3 w-1/6">{item.email}</td>
+            <td className="px-3 w-1/6">
+              {tableDataValues("email")}
+            </td>
             <td className="px-3 w-1/5">
-              {item.current_company}
+              {tableDataValues("current_company")}
             </td>
             <td className="px-3 w-[11%]">
               {item.gender
@@ -329,14 +366,14 @@ const ResumeTableRow = ({
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
               <Edit
-                size={24}
+                size={20}
                 color="#595BD4"
                 variant="Outline"
                 className="cursor-pointer min-w-4 min-h-4"
                 onClick={() => setEditingRowId(item.id)}
               />
               <button
-                className="px-3 rounded-full text-sm font-medium text-white h-[32px] 
+                className="px-3 py-1 rounded-full text-xs font-medium text-white  
                        bg-[#007AFF] transition-all duration-300 ease-in-out
                        hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer flex items-center"
                 onClick={handleSubmit}
@@ -352,7 +389,7 @@ const ResumeTableRow = ({
           {Object.keys(errors).map((key, idx) => (
             <p
               key={idx}
-              className="text-[#F00000] text-[11px] px-2"
+              className="text-[#F00000] text-[10px] px-2 mt-[2px]"
             >
               {errors[key]}
             </p>
@@ -427,7 +464,7 @@ export const UploadButton = ({
         color="#171717"
         size={24}
       />
-      <span className="text-base font-medium text-[#6B6F7B]">
+      <span className="text-sm font-medium text-[#6B6F7B]">
         {label}
       </span>
     </p>

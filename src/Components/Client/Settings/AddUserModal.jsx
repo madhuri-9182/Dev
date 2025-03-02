@@ -190,7 +190,12 @@ const AddUserModal = ({
           <form onSubmit={onSubmit}>
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label name={"name"} label={"Name"} />
+                <Label
+                  name={"name"}
+                  label={
+                    "Full Name (First Name + Last Name)"
+                  }
+                />
                 <Input
                   type="text"
                   value={formData.name}
@@ -200,7 +205,7 @@ const AddUserModal = ({
                       name: e.target.value,
                     })
                   }
-                  placeholder="Enter Name"
+                  placeholder="Enter Full Name"
                   required
                 />
               </div>
@@ -216,7 +221,7 @@ const AddUserModal = ({
                 />
 
                 <p
-                  className={`text-[#B10E0EE5] text-xs ${
+                  className={`text-[#B10E0EE5] text-[10px] ${
                     inputError?.email
                       ? "visible mt-2"
                       : "invisible"
@@ -238,7 +243,7 @@ const AddUserModal = ({
                   required
                 />
                 <p
-                  className={`text-[#B10E0EE5] text-xs ${
+                  className={`text-[#B10E0EE5] text-[10px] ${
                     inputError?.phone
                       ? "visible mt-2"
                       : "invisible"
@@ -320,7 +325,7 @@ const AddUserModal = ({
               </div>
             </div>
             {formData.jobs_assigned.length > 0 && (
-              <div className="mt-8">
+              <div className="mt-4">
                 <div className="flex flex-wrap gap-2">
                   {formData.jobs_assigned.map((jobId) => {
                     const job = jobs?.find(
@@ -329,7 +334,7 @@ const AddUserModal = ({
                     return (
                       <span
                         key={jobId}
-                        className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-sm border border-[#CAC4D0] text-[#49454F] font-medium "
+                        className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-2xs border border-[#CAC4D0] text-[#49454F] font-medium "
                       >
                         {getJobLabel(job.name)}{" "}
                         {/* Show job name or fallback */}
@@ -348,10 +353,10 @@ const AddUserModal = ({
               </div>
             )}
 
-            <div className="flex justify-end items-center gap-3 mt-8">
+            <div className="flex justify-end items-center gap-2 mt-4">
               <button
                 type="button"
-                className="px-6 py-[10px] rounded-[100px] text-[#65558F] border border-[#79747E] text-sm font-semibold cursor-pointer 
+                className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
                 transition-all duration-300 ease-in-out 
                 hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
                 onClick={handleModalClose}
@@ -359,8 +364,8 @@ const AddUserModal = ({
                 Delete
               </button>
               <button
-                className="px-6 py-[10px] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-sm font-semibold cursor-pointer"
+                className="px-6 py-[5px] rounded-[100px] text-white border border-[#007AFF] bg-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
                 type="submit"
               >
                 Save
@@ -386,7 +391,7 @@ const Label = ({ name, label }) => {
   return (
     <label
       htmlFor={name}
-      className="block text-[#6B6F7B] text-xs font-bold"
+      className="block text-[#6B6F7B] text-2xs font-bold"
     >
       {label}
     </label>
@@ -413,7 +418,7 @@ const Input = ({
       onChange={onChange}
       required={required}
       placeholder={placeholder}
-      className="w-full px-3 py-2 border rounded-lg text-[13px] text-[#6B6F7B] font-medium"
+      className="w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium"
     />
   );
 };
@@ -437,7 +442,7 @@ const CustomSelect = ({
     <select
       value={value || ""}
       onChange={onChange}
-      className="custom-select w-full px-3 py-2 border rounded-lg text-[13px] font-medium bg-white text-[#6B6F7B]"
+      className="custom-select w-full px-3 py-2 border rounded-lg text-2xs font-medium bg-white text-[#6B6F7B]"
       required={required}
     >
       <option value="" disabled hidden>

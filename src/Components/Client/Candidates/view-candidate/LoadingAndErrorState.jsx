@@ -1,0 +1,31 @@
+export const LoadingState = () => {
+  return (
+    <div className="flex items-center justify-center min-h-[300px]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+};
+export const ErrorState = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[300px] text-red-500">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-12 w-12"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
+      </svg>
+      <p className="mt-2">
+        An error occurred while loading the data. Please try
+        again later.
+      </p>
+    </div>
+  );
+};

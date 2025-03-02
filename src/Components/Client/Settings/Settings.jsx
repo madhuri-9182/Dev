@@ -59,9 +59,9 @@ function Settings() {
   };
 
   return (
-    <div className="ml-10">
+    <div className="px-3">
       {/* Add User Button */}
-      <div className="w-full flex items-center justify-end h-[40px]">
+      <div className="w-full flex items-center justify-end h-[32px]">
         {["client_owner", "client_admin"].includes(
           auth.role
         ) && (
@@ -73,10 +73,10 @@ function Settings() {
       </div>
 
       {/* User Table */}
-      <div className="w-full mt-4 mb-4">
+      <div className="w-full my-3">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="text-[#2B313E] text-sm font-bold border-b-2 border-black">
+            <tr className="text-[#2B313E] text-xs font-bold border-b-2 border-black">
               {[
                 "USERS",
                 "EMAIL ID",
@@ -103,11 +103,11 @@ function Settings() {
                       index % 2 === 0
                         ? "bg-[#EBEBEB80]"
                         : "bg-[#EBEBEB80]"
-                    } h-[70px] border-b-2`}
+                    } h-[50px] border-b-2`}
                   >
                     <td
                       className={
-                        "font-bold text-[#2B313E] py-2 px-4 text-sm"
+                        "font-bold text-[#2B313E] py-2 px-4 text-xs"
                       }
                     >
                       {" "}
@@ -126,7 +126,7 @@ function Settings() {
                     <td className="py-2 px-4 ">
                       <div className="flex gap-2">
                         <Edit
-                          size={20}
+                          size={16}
                           color="#171717"
                           className="hover:scale-110 hover:duration-150 cursor-pointer"
                           onClick={() => {
@@ -138,7 +138,7 @@ function Settings() {
                           user.user.role
                         ) && (
                           <Trash
-                            size={20}
+                            size={16}
                             color="#F00"
                             className="hover:scale-110 hover:duration-150 cursor-pointer"
                             onClick={() => {
@@ -152,7 +152,7 @@ function Settings() {
                 ))
               : data && (
                   <tr
-                    className={`${"bg-[#EBEBEB80]"} h-[70px] border-b-2`}
+                    className={`${"bg-[#EBEBEB80]"} h-[50px] border-b-2`}
                   >
                     <td
                       className={
@@ -175,7 +175,7 @@ function Settings() {
                     <td className="py-2 px-4 ">
                       <div className="flex gap-2">
                         <Edit
-                          size={20}
+                          size={16}
                           color="#171717"
                           className="hover:scale-110 hover:duration-150 cursor-pointer"
                           onClick={() => {
@@ -197,6 +197,7 @@ function Settings() {
             className="mt-4 flex justify-end"
             onChange={(e, page) => setCurrentPage(page)}
             variant="outlined"
+            size="small"
             shape="rounded"
           />
         )}
@@ -227,7 +228,7 @@ export default Settings;
 const TableCell = ({ children, className }) => {
   return (
     <td
-      className={`py-2 px-4 text-sm text-[#4F4F4F] ${className}`}
+      className={`py-2 px-4 text-xs text-[#4F4F4F] ${className}`}
     >
       {children}
     </td>

@@ -1,0 +1,218 @@
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@mui/material";
+
+// Components
+import { FilterGroup } from "../components/FilterGroup";
+import SearchInput from "../../../shared/SearchInput";
+import CandidateList from "./CandidateList";
+import CandidateStats from "./CandidateStats";
+import {
+  LoadingState,
+  ErrorState,
+} from "./LoadingAndErrorState";
+
+// Hooks and utilities
+import useAllJobs from "../../../../hooks/useFetchAllJobs";
+import {
+  fileToBase64,
+  createFileFromUrl,
+} from "../../../../utils/util";
+import { useDebounce } from "../../../../hooks/useDebounce";
+
+// API and constants
+import { getCandidates } from "../api";
+import {
+  CANDIDATE_SOURCE,
+  CANDIDATE_STATUS,
+  JOB_NAMES,
+} from "../../../Constants/constants";
+
+function Candidates() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data: roles } = useAllJobs();
+
+  // State management
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedStatus, setSelectedStatus] =
+    useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Debounce search query to prevent excessive API calls
+  const debouncedSearchQuery = useDebounce(
+    searchQuery,
+    500
+  );
+
+  // Fetch candidates data
+  const { data, isLoading, isError } = useQuery({
+    queryKey: [
+      "candidates",
+      {
+        page: currentPage,
+        job_id: selectedRole,
+        status: selectedStatus,
+        q: debouncedSearchQuery,
+      },
+    ],
+    queryFn: getCandidates,
+    keepPreviousData: true,
+  });
+
+  // Handle candidate selection for detailed view
+  const handleViewCandidate = async (person) => {
+    try {
+      // Build candidate data structure
+      const candidateData = {
+        current_company: person.company,
+        specialization: person.specialization,
+        role: person.designation.id,
+        years_of_experience: {
+          year: person.year,
+          month: person.month,
+        },
+        name: person.name,
+        source: person.source,
+        phone_number: person.phone,
+        email: person.email,
+        id: person.id,
+        status: person.status,
+        remark: person.remark,
+      };
+
+      // Process CV file
+      const file = await createFileFromUrl(person.cv);
+      if (file) {
+        const fileBase64 = await fileToBase64(file);
+        candidateData.fileBase64 = fileBase64;
+        candidateData.file_name = file.name;
+      }
+
+      // Store data in localStorage with unique key
+      const uniqueKey = `candidateData-${Date.now()}`;
+      localStorage.setItem(
+        uniqueKey,
+        JSON.stringify(candidateData)
+      );
+
+      // Open in new tab
+      const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error(
+        "Error processing candidate data:",
+        error
+      );
+    }
+  };
+
+  // Prepare stats for display
+  const candidateStats = [
+    {
+      label: "Total Candidates",
+      value: data?.total_candidates,
+    },
+    { label: "To be Scheduled", value: data?.scheduled },
+    { label: "In Process", value: data?.inprocess },
+    { label: "Recommended", value: data?.recommended },
+    { label: "Rejected", value: data?.rejected },
+  ];
+
+  // Utility functions for display
+  const utilities = {
+    getRoleName: (id) => {
+      const job = JOB_NAMES.find((job) => job.id === id);
+      return job?.name || id;
+    },
+    getSourceName: (id) => {
+      const source = CANDIDATE_SOURCE.find(
+        (source) => source.id === id
+      );
+      return source?.name || id;
+    },
+    formatDate: (dateStr) => {
+      const [day, month, year] = dateStr.split("/");
+      const dateObj = new Date(`${year}-${month}-${day}`);
+      return dateObj
+        .toLocaleDateString("en-GB", {
+          weekday: "short",
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        })
+        .replace("/", "-")
+        .replace("/", "-");
+    },
+  };
+
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState />;
+
+  return (
+    <div className="flex flex-col gap-y-5 px-3">
+      {/* Header: Search and Add Button */}
+      <div className="flex w-full justify-end items-center gap-4 ml-auto">
+        <SearchInput
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <button
+          className="p-1 px-4 rounded-full text-xs font-semibold text-white w-[130px] h-[32px] 
+             bg-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
+          onClick={() =>
+            navigate(`${location.pathname}/add-candidate`)
+          }
+        >
+          + Add Candidate
+        </button>
+      </div>
+
+      {/* Candidate Statistics */}
+      <CandidateStats stats={candidateStats} />
+
+      {/* Filters */}
+      <div className="flex flex-col gap-2">
+        <FilterGroup
+          label="Role"
+          options={roles}
+          selectedOption={selectedRole}
+          onSelect={setSelectedRole}
+        />
+        <FilterGroup
+          label="Status"
+          options={CANDIDATE_STATUS}
+          selectedOption={selectedStatus}
+          onSelect={setSelectedStatus}
+        />
+      </div>
+
+      {/* Candidate List */}
+      <CandidateList
+        candidates={data?.results || []}
+        utilities={utilities}
+        candidateStatus={CANDIDATE_STATUS}
+        onViewCandidate={handleViewCandidate}
+      />
+
+      {/* Pagination */}
+      {data?.results?.length > 0 && (
+        <>
+          <Pagination
+            count={Math.ceil(data?.count / 10)}
+            className="mt-3 flex justify-end"
+            onChange={(e, page) => setCurrentPage(page)}
+            variant="outlined"
+            size="small"
+            shape="rounded"
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+export default Candidates;
