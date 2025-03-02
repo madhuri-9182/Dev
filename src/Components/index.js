@@ -13,7 +13,7 @@ import PersistLogin from "./Authentication/PersistentLogin";
 import RequireAuth from "./Authentication/RequireAuth";
 
 //Client Imports
-import Dashboard from "./Client/Dashboard";
+import Dashboard from "./Client/Dashboard/Dashboard";
 import Settings from "./Client/Settings/Settings";
 import Jobs from "./Client/Jobs/Jobs";
 import Candidates from "./Client/Candidates/view-candidate/Candidates";
