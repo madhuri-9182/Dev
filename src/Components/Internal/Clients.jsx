@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -9,6 +8,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import toast from "react-hot-toast";
+import axios from '../../api/axios';
+import { CircularProgress } from '@mui/material';
 
 
 
@@ -39,39 +41,132 @@ function Clients() {
     { name: "Vahan", activeJobs: 6, passiveJobs: 5, totalCandidates: 1 },
     { name: "Zepto", activeJobs: 14, passiveJobs: 12, totalCandidates: 2 },
   ];
-  const [editUser, setEditUser] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
 
-
-  const [rows, setRows] = useState([{ name: "", email: "", mobile: "" }]);
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("Current Route:", location.pathname);
-  }, [location.pathname]);
+  const [rows, setRows] = useState([]);
+  const [addPocOpen, setAddPocOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedRow, setSelectedRow] = useState({});
 
-  const [addPocOpen, setAddPocOpen] = React.useState(false);
-  const [editOpen, setEditOpen] = React.useState(false);
-
-  const handleAddPocOpen = () => {
+  const handleAddPocOpen = (e) => {
+    e.preventDefault();
     setAddPocOpen(true);
   };
 
-  const handleAddPocClose = () => {
+  const handleAddPocClose = (e) => {
+    e.preventDefault();
+    const name = e.target.elements['poc-name'].value;
+    const phone = e.target.elements['poc-phone'].value;
+    const email = e.target.elements['poc-email'].value;
+    setRows([...rows, { name, phone, email }]);
     setAddPocOpen(false);
-  };
+  }
 
-  const handleEditOpen = (name, email, phone) => {
-    setEditUser({ name, email, phone })
+  const validatePOCChange = (e) => {
+    const { name, value } = e.target;
+
+    // Custom validation messages
+    if (name === "poc-name" && (value.length < 1 || value.length > 255)) {
+      e.target.setCustomValidity("Name must be between 1 and 255 characters.");
+    } else if (name === "poc-email" && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+      e.target.setCustomValidity("Email must be in the correct format.");
+    } else if (name === "poc-phone" && !/^[0-9]{10}$/.test(value)) {
+      e.target.setCustomValidity("Phone number must be exactly 10 digits.");
+    } else {
+      e.target.setCustomValidity(""); // Clear custom message
+    }
+  }
+
+  const handleEditOpen = (e, row, index) => {
+    e.preventDefault();
     setEditOpen(true);
+    setSelectedRow({ ...row, index });
   };
 
-  const handleEditClose = () => {
+  const handleEditClose = (e) => {
+    e.preventDefault();
+
+    const name = e.target.elements['poc-name'].value;
+    const phone = e.target.elements['poc-phone'].value;
+    const email = e.target.elements['poc-email'].value;
+
+    const updatedRows = rows.map((row, index) => {
+      if (index === selectedRow.index) {
+        return { ...row, name, phone, email };
+      }
+      return row;
+    });
+
+    setRows(updatedRows);
+    setSelectedRow(null);
     setEditOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (rows?.length < 1) {
+      toast.error("Please add at least one POC.", { position: "top-right" });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const payload = {
+        "name": e.target.elements['name'].value,
+        "website": e.target.elements['website'].value,
+        "domain": e.target.elements['domain'].value,
+        "gstin": e.target.elements['gstin'].value,
+        "pan": e.target.elements['pan'].value,
+        "is_signed": e.target.elements['is_signed'].value === "Signed",
+        "assigned_to": "-",//e.target.elements['assigned_to'].value,
+        "address": e.target.elements['address'].value,
+        "points_of_contact": rows.map(row => ({ ...row, phone: `+91${row.phone}` }))
+      }
+      await axios.post("/api/internal/internal-client/", payload);
+      toast.success(
+        "Client added successfully",
+        {
+          position: "top-right",
+        }
+      );
+      navigate("/internal/clients");
+    } catch (error) {
+      let errorMessages;
+      if (error?.response?.data?.errors?.errors) {
+        errorMessages = Object.entries(error.response.data.errors.errors).flatMap(([key, values]) => values.map(value => `${key}: ${value}`));
+      } else if (error?.response?.data?.errors) {
+        errorMessages = Object.entries(error.response.data.errors).flatMap(([key, value]) => Object.entries(value).flatMap(([errorKey, errorValues]) => errorValues.map(errorValue => `${errorKey}: ${errorValue}`)));
+      }
+      toast.error(errorMessages.join(', ') || "Failed to add client", { position: "top-right" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    // Custom validation messages
+    if (name === "name" && (value.length < 1 || value.length > 255)) {
+      e.target.setCustomValidity("Name must be between 1 and 255 characters.");
+    } else if (name === "website" && !/^https?:\/\/.+/.test(value)) {
+      e.target.setCustomValidity("Website must be a valid URL.");
+    } else if (name === "domain" && (value.length < 1 || value.length > 255)) {
+      e.target.setCustomValidity("Domain must be between 1 and 255 characters.");
+    } else if (name === "gstin" && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(value)) {
+      e.target.setCustomValidity("GSTIN must be in the format 22AAAAA0000A1Z5");
+    } else if (name === "pan" && !/[A-Z]{5}[0-9]{4}[A-Z]{1}/.test(value)) {
+      e.target.setCustomValidity("PAN must be in the format ABCDE1234F.");
+      // } else if (name === "assigned_to" && (value.length < 1 || value.length > 255)) {
+      //   e.target.setCustomValidity("Assigned To must be between 1 and 255 characters.");
+    } else if (name === "address" && (value.length < 1 || value.length > 255)) {
+      e.target.setCustomValidity("Address must be between 1 and 255 characters.");
+    } else {
+      e.target.setCustomValidity(""); // Clear custom message
+    }
   };
 
   const [selectedFilters, setSelectedFilters] = useState({
@@ -88,12 +183,6 @@ function Clients() {
       [category]: value,
     }));
   };
-
-  const [addPocDate, setAddPocDate] = useState("")
-
-  const addPocHandleDateChange = (e) => {
-    setAddPocDate(e.target.value)
-  }
 
   return (
     <div className="px-6">
@@ -255,326 +344,175 @@ function Clients() {
 
       <div>
         {location.pathname === "/internal/clients/addclient" && (
-          <div>
-
+          <form onSubmit={handleSubmit} >
             <div>
-              <div class="">
-                <ul className="flex flex-col gap-y-2">
-                  <li className="flex items-centers">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Client Registered Name</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Client Name"
-                      className="block w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Website</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Web Address"
-                      className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Domain</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Domain Name"
-                      className="block  w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">GSTIN</label>
-                    <input
-                      type="text"
-                      placeholder="Enter GSTIN "
-                      className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">PAN</label>
-                    <input
-                      type="text"
-                      placeholder="Enter PAN"
-                      className="block w-[360px] h-[32px] text-left border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Signed/Not Signed</label>
-                    <input
-                      type="text"
-                      placeholder="Signed"
-                      className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Assigned To</label>
-                    <input
-                      type="text"
-                      placeholder="Select user"
-                      className="block  w-[360px] h-[32px] border text-left border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                  <li className="flex items-center">
-                    <label class="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Address</label>
-                    <textarea
-                      type="text"
-                      placeholder="Add Address"
-                      className="block  w-[360px] h-[114px] border border-gray-300 rounded-lg shadow-sm  sm:text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </li>
-                </ul>
-              </div>
+              <ul className="flex flex-col gap-y-2">
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">Client Registered Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter Client Name"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li>
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">Website</label>
+                  <input
+                    type="url"
+                    name="website"
+                    placeholder="Enter Web Address"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li>
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">Domain</label>
+                  <input
+                    type="text"
+                    name="domain"
+                    placeholder="Enter Domain Name"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li>
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">GSTIN</label>
+                  <input
+                    type="text"
+                    name="gstin"
+                    placeholder="Enter GSTIN"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li>
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">PAN</label>
+                  <input
+                    type="text"
+                    name="pan"
+                    placeholder="Enter PAN"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li>
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">Signed/Not Signed</label>
+                  <select
+                    name="is_signed"
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="Signed">Signed</option>
+                    <option value="Not Signed">Not Signed</option>
+                  </select>
+                </li>
+                {/* <li className="flex items-center">
+                  <label className="text-sm font-medium text-right text-gray-700 w-1/6 px-4">Assigned To</label>
+                  <input
+                    type="text"
+                    name="assigned_to"
+                    placeholder="Select user"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li> */}
+                <li className="flex items-center">
+                  <label className="text-[#6B6F7B] font-bold text-xs w-1/6 px-4">Address</label>
+                  <textarea
+                    name="address"
+                    placeholder="Add Address"
+                    onChange={handleInputChange}
+                    required
+                    className="block w-[360px] h-[114px] border border-gray-300 rounded-lg shadow-sm text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </li>
+              </ul>
             </div>
 
             <div className="p-6 rounded-md w-full mt-6">
               <div className="flex items-center gap-x-5 mb-4">
-                <div class="relative group inline-block">
+                <div className="relative group inline-block">
                   {/* Always visible text */}
-                  <h2 class="text-lg font-semibold text-gray-700">POC</h2>
+                  <h2 className="text-sm font-semibold text-black">POC</h2>
 
                   {/* Tooltip */}
                   <div
-                    class="absolute left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+                    className="absolute left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
                   >
                     Point of Contact
                   </div>
                 </div>
 
-                <React.Fragment>
-                  <div>
-                    <button
-                      className="border p-2 px-4 rounded-full bg-purple-200 font-medium"
-                      onClick={handleAddPocOpen}
-                    >
-                      + Add
-                    </button>
-                  </div>
-                  <BootstrapDialog
-                    onClose={handleAddPocClose}
-                    aria-labelledby="add-poc-dialog-title"
-                    open={addPocOpen}
-                    BackdropProps={{
-                      sx: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                      },
-                    }}
-                  >
-                    <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                      <h1 className='font-bold text-[#056DDC] text-lg text-center'>ADD POC</h1>
-                    </DialogTitle>
-                    <IconButton
-                      aria-label="close"
-                      onClick={handleAddPocClose}
-                      sx={(theme) => ({
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: theme.palette.grey[500],
-                      })}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                    <DialogContent dividers>
-                      <div>
-                        <div className="p-1 flex flex-col items-start justify-center gap-2">
-                          <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
-                          <input
-                            type="text"
-                            placeholder="Enter POC Name"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="p-1 flex flex-col items-start justify-center gap-2">
-                          <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
-                          <input
-                            type="number"
-                            placeholder="Enter Phone Number"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="p-1 flex flex-col items-center justify-center gap-2">
-                          <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-                          <input
-                            type="mail"
-                            placeholder="Enter Mail ID"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
-
-                    </DialogContent>
-                    <DialogActions>
-                      <div className="px-5 py-2">
-                        <button
-                          onClick={handleAddPocClose}
-                          className="text-white border py-2  px-5 rounded-full bg-[#056DDC] ">
-                          SAVE
-                        </button>
-                      </div>
-                    </DialogActions>
-                  </BootstrapDialog>
-                </React.Fragment>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                <button
+                  className="border p-2 px-4 rounded-full bg-purple-200 font-medium text-sm"
+                  onClick={handleAddPocOpen}
+                >
+                  + Add
+                </button>
               </div>
 
               {/* Rows */}
-              <div className="space-y-4">
+              <div className="space-y-4 pl-[65px]">
                 {rows.map((row, index) => (
                   <div key={index} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4">
                     <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="text-base font-medium text-gray-600">Name:</label>
+                      <label className="text-[#6B6F7B] font-bold text-xs">Name:</label>
                       <input
                         type="text"
-                        value="Robert"
+                        value={row.name}
                         disabled
-                        className="w-full p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full h-[32px] p-2 border text-center text-xs border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                     <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="text-base font-medium text-gray-600">Email:</label>
+                      <label className="text-[#6B6F7B] font-bold text-xs min-w-fit">Email ID:</label>
                       <input
                         type="email"
-                        value="robert@xyz.com"
+                        value={row.email}
                         disabled
-                        className="w-full p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full h-[32px] p-2 border text-center text-xs border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                     <div className="p-2 flex items-center justify-center gap-3">
-                      <label className="text-base font-medium text-gray-600">Mobile:</label>
+                      <label className="text-[#6B6F7B] font-bold text-xs min-w-fit">Mobile No.:</label>
                       <input
-                        type="number"
-                        value="919876543210"
+                        type="text"
+                        value={row.phone}
                         disabled
-                        className="w-full p-2 border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full h-[32px] p-2 border text-center text-xs border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                     <div className="col-span-1 flex items-center space-x-2">
 
-                      <div>
-                        <React.Fragment>
-                          <div>
-                            <button
-                              className="flex items-center justify-center hover:bg-blue-100 hover:duration-300 p-3 rounded-xl"
-                              onClick={handleEditOpen}
-                            >
-                              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#171717" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                              </svg>
-
-                            </button>
-                          </div>
-                          <BootstrapDialog
-                            onClose={handleEditClose}
-                            aria-labelledby="edit-dialog-title"
-                            open={editOpen}
-                            BackdropProps={{
-                              sx: {
-                                backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                              },
-                            }}
-                          >
-                            <DialogTitle sx={{ m: 0, p: 2 }} id="edit-dialog-title">
-                              <h1 className='font-bold text-[#056DDC] text-center text-lg'>EDIT POC</h1>
-                            </DialogTitle>
-                            <IconButton
-                              aria-label="close"
-                              onClick={handleEditClose}
-                              sx={(theme) => ({
-                                position: 'absolute',
-                                right: 8,
-                                top: 8,
-                                color: theme.palette.grey[500],
-                              })}
-                            >
-                              <CloseIcon />
-                            </IconButton>
-                            <DialogContent dividers>
-                              <div>
-                                <div className="p-1 flex flex-col items-center justify-center gap-2">
-                                  <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
-                                  <input
-                                    type="text"
-                                    value="Robert"
-                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                  />
-                                </div>
-                                <div className="p-1 flex flex-col items-center justify-center gap-2">
-                                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
-                                  <input
-                                    type="number"
-                                    value="9876543210"
-                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                  />
-                                </div>
-                                <div className="p-1 flex flex-col items-center justify-center gap-2">
-                                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-                                  <input
-                                    type="mail"
-                                    value="rober@xyz.com"
-                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                  />
-                                </div>
-                              </div>
-                            </DialogContent>
-                            <DialogActions>
-                              <div
-                                className='px-5 py-2'
-                              >
-                                <button
-                                  onClick={handleEditClose}
-                                  className="text-white border py-2 px-5 rounded-full bg-[#056DDC] ">
-                                  SAVE
-                                </button>
-                              </div>
-                            </DialogActions>
-                          </BootstrapDialog>
-                        </React.Fragment>
-                      </div>
-                      <button className="p-2 text-gray-500 hover:text-red-500">
+                      <button
+                        className="flex items-center justify-center hover:bg-blue-100 hover:duration-300 p-2 rounded-xl"
+                        onClick={(e) => handleEditOpen(e, row, index)}
+                      >
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M8.6084 13.75H11.3834" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M7.9165 10.4165H12.0832" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#171717" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#171717" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-
+                      </button>
+                      <button onClick={(e) => {
+                        e.preventDefault();
+                        setRows((prevRows) => prevRows.filter((row, idx) => idx !== index));
+                      }} className="p-2 text-gray-500 hover:text-red-500">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M8.6084 13.75H11.3834" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M7.9165 10.4165H12.0832" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                       </button>
                     </div>
                   </div>
@@ -582,16 +520,170 @@ function Clients() {
               </div>
 
               <div className="mt-6 flex justify-end">
-                <button className="px-6 py-2 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600">
-                  Save
-                </button>
+                <Button disabled={loading} type="submit" sx={{ backgroundColor: "rgb(59, 130, 246)", color: "rgb(255, 255, 255)", borderRadius: "9999px" }} className="px-6 py-2 text-sm font-medium hover:bg-blue-600">
+                  {loading ? (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        color: "white", // Change this to any color you want
+                      }}
+                    />
+                  ) : (
+                    "Save"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
+        )}
+      </div>
+      <BootstrapDialog
+        aria-labelledby="add-poc-dialog-title"
+        open={addPocOpen}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(255, 255, 255, 0.8)'
+          },
+        }}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
+          <h1 className='font-bold text-[#056DDC] text-lg text-center'>ADD POC</h1>
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={() => setAddPocOpen(false)}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <form onSubmit={handleAddPocClose}>
+          <DialogContent dividers>
+            <div>
+              <div className="p-1 flex flex-col items-start justify-center gap-2">
+                <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
+                <input
+                  type="text"
+                  name="poc-name"
+                  required
+                  placeholder="Enter POC Name"
+                  onChange={validatePOCChange}
+                  className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div className="p-1 flex flex-col items-start justify-center gap-2">
+                <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
+                <input
+                  type="text"
+                  name="poc-phone"
+                  required
+                  placeholder="Enter Phone Number"
+                  onChange={validatePOCChange}
+                  className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div className="p-1 flex flex-col items-center justify-center gap-2">
+                <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+                <input
+                  type="mail"
+                  required
+                  name="poc-email"
+                  placeholder="Enter Mail ID"
+                  onChange={validatePOCChange}
+                  className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
               </div>
             </div>
 
-          </div>
-        )}
-      </div>
+          </DialogContent>
+          <DialogActions>
+            <div className="px-5 py-2">
+              <button
+                type="html"
+                className="text-white text-sm border py-2  px-5 rounded-full bg-[#056DDC] ">
+                Save
+              </button>
+            </div>
+          </DialogActions>
+        </form>
+      </BootstrapDialog>
 
+      <BootstrapDialog
+        aria-labelledby="edit-dialog-title"
+        open={editOpen}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(255, 255, 255, 0.8)'
+          },
+        }}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="edit-dialog-title">
+          <h1 className='font-bold text-[#056DDC] text-center text-lg'>EDIT POC</h1>
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={() => setEditOpen(false)}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <form onSubmit={handleEditClose}>
+          <DialogContent dividers>
+            <div>
+              <div className="p-1 flex flex-col items-center justify-center gap-2">
+                <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
+                <input
+                  type="text"
+                  defaultValue={selectedRow?.name}
+                  name="poc-name"
+                  onChange={validatePOCChange}
+                  className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div className="p-1 flex flex-col items-center justify-center gap-2">
+                <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
+                <input
+                  type="text"
+                  defaultValue={selectedRow?.phone}
+                  onChange={validatePOCChange}
+                  name="poc-phone"
+                  className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div className="p-1 flex flex-col items-center justify-center gap-2">
+                <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+                <input
+                  type="mail"
+                  defaultValue={selectedRow?.email}
+                  name="poc-email"
+                  onChange={validatePOCChange}
+                  className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <div
+              className='px-5 py-2'
+            >
+              <button
+                type="submit"
+                className="text-white text-sm border py-2 px-5 rounded-full bg-[#056DDC] ">
+                Save
+              </button>
+            </div>
+          </DialogActions>
+        </form>
+      </BootstrapDialog>
     </div>
   );
 }
