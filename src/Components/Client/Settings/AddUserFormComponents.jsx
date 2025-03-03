@@ -1,10 +1,12 @@
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+  Listbox,
+  Transition,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+} from "@headlessui/react";
 
 export const FormField = ({ label, error, children }) => (
   <div className="space-y-1">
@@ -57,7 +59,7 @@ Input.propTypes = {
   maxLength: PropTypes.number,
 };
 
-// Custom Select component matching the provided design
+// Custom Select
 export const CustomSelect = ({
   options,
   value,
@@ -65,80 +67,70 @@ export const CustomSelect = ({
   placeholder,
   type,
   errors,
+  required,
 }) => {
-  const [isDropdownOpen, setIsDropdownOpen] =
-    useState(false);
-  const optionRef = useRef(null);
+  // Find selected option
+  const selectedOption =
+    options.find((option) => option.id === value) || null;
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        optionRef.current &&
-        !optionRef.current.contains(event.target)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    }
-
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-    };
-  }, []);
-
-  // Find selected option name
-  const selectedOptionName = useMemo(() => {
-    const selected = options.find(
-      (option) => option.id === value
-    );
-    return selected ? selected.name : "";
-  }, [options, value]);
+  const handleChange = (option) => {
+    // Format the change to match the expected onChange interface
+    onChange({ target: { value: option.id } });
+  };
 
   return (
-    <div className="relative w-full" ref={optionRef}>
-      {/* Select Box */}
-      <div
-        className={`rounded-lg text-2xs py-2 px-3 border cursor-pointer custom-select ${
-          errors?.[type]
-            ? "border-[#B10E0EE5]"
-            : "border-[#CAC4D0]"
-        }`}
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-      >
-        <span
-          className={
-            value ? "text-[#49454F]" : "text-gray-400"
-          }
-        >
-          {selectedOptionName || placeholder}
-        </span>
-      </div>
-
-      {/* Dropdown Options */}
-      {isDropdownOpen && (
-        <div className="absolute left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-auto z-10">
-          {options.map((option) => (
-            <div
-              key={option.id}
-              className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-2xs"
-              onClick={() => {
-                onChange({ target: { value: option.id } });
-                setIsDropdownOpen(false);
-              }}
+    <Listbox value={selectedOption} onChange={handleChange}>
+      {({ open }) => (
+        <div className="relative w-full">
+          <ListboxButton
+            className={`relative w-full rounded-lg text-2xs py-2 px-3 border text-left cursor-pointer custom-select ${
+              errors?.[type]
+                ? "border-[#B10E0EE5]"
+                : "border-[#CAC4D0]"
+            }`}
+          >
+            <span
+              className={`block truncate ${
+                selectedOption
+                  ? "text-[#49454F]"
+                  : "text-gray-400"
+              }`}
             >
-              {option.name}
-            </div>
-          ))}
+              {selectedOption
+                ? selectedOption.name
+                : placeholder}
+              {required && !selectedOption && " *"}
+            </span>
+          </ListboxButton>
+
+          <Transition
+            show={open}
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <ListboxOptions className="absolute left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-auto z-10">
+              {options.map((option) => (
+                <ListboxOption
+                  key={option.id}
+                  value={option}
+                  className={({ active }) =>
+                    `p-2 cursor-pointer text-2xs ${
+                      active
+                        ? "bg-[#007AFF] text-white"
+                        : "bg-white text-[#49454F]"
+                    }`
+                  }
+                >
+                  {option.name}
+                </ListboxOption>
+              ))}
+            </ListboxOptions>
+          </Transition>
         </div>
       )}
-    </div>
+    </Listbox>
   );
 };
 

@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { AnimatePresence } from "framer-motion";
-import Modal from "../../shared/Modal";
 import { useEffect, useState, useMemo } from "react";
 import {
   useQueryClient,
@@ -19,6 +18,7 @@ import {
   FormField,
   CustomSelect,
 } from "./AddUserFormComponents";
+import Modal from "../../shared/Modal";
 
 // Main component
 const AddUserModal = ({
@@ -37,7 +37,7 @@ const AddUserModal = ({
     email: "",
     role: "",
     jobs_assigned: [],
-    accessibility: "AJ",
+    accessibility: "", // Empty by default
     phone: "",
   };
 
@@ -49,17 +49,9 @@ const AddUserModal = ({
   const [fieldsValidated, setFieldsValidated] = useState({
     email: false,
     phone: false,
+    role: false,
+    accessibility: false,
   });
-
-  // Dropdown states
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] =
-    useState(false);
-  const [
-    isAccessibilityDropdownOpen,
-    setIsAccessibilityDropdownOpen,
-  ] = useState(false);
-  const [isJobDropdownOpen, setIsJobDropdownOpen] =
-    useState(false);
 
   // Reset form when modal closes or opens with different user
   useEffect(() => {
@@ -76,7 +68,7 @@ const AddUserModal = ({
           selectedUser.assigned_jobs?.map(
             (job) => job.id
           ) || [],
-        accessibility: selectedUser.accessibility || "AJ",
+        accessibility: selectedUser.accessibility || "",
         phone: selectedUser.user?.phone
           ? selectedUser.user.phone.replace("+91", "")
           : "",
@@ -90,7 +82,12 @@ const AddUserModal = ({
     }
 
     setInputErrors({});
-    setFieldsValidated({ email: false, phone: false });
+    setFieldsValidated({
+      email: false,
+      phone: false,
+      role: false,
+      accessibility: false,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, selectedUser]);
 
@@ -133,27 +130,35 @@ const AddUserModal = ({
   });
 
   // Helper functions for form handling
-  const validateField = (field, value, regex) => {
-    if (
-      fieldsValidated[field] &&
-      value.length > 0 &&
-      !regex.test(value)
-    ) {
+  const validateField = (field, value, regex = null) => {
+    if (regex) {
+      if (
+        fieldsValidated[field] &&
+        value.length > 0 &&
+        !regex.test(value)
+      ) {
+        setInputErrors((prev) => ({
+          ...prev,
+          [field]: `Invalid ${field}`,
+        }));
+        return false;
+      }
+    } else if (fieldsValidated[field] && !value) {
       setInputErrors((prev) => ({
         ...prev,
-        [field]: `Invalid ${field}`,
+        [field]: `${field} is required`,
       }));
       return false;
-    } else {
-      setInputErrors((prev) => ({ ...prev, [field]: "" }));
-      return true;
     }
+
+    setInputErrors((prev) => ({ ...prev, [field]: "" }));
+    return true;
   };
 
   const handleChange = (field, value, regex = null) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    if (regex) {
+    if (fieldsValidated[field]) {
       validateField(field, value, regex);
     }
   };
@@ -208,8 +213,26 @@ const AddUserModal = ({
       isValid = false;
     }
 
+    // Validate required select fields
+    if (!formData.role) {
+      errors.role = "Please select a user type";
+      isValid = false;
+    }
+
+    if (!formData.accessibility) {
+      errors.accessibility = "Please select accessibility";
+      isValid = false;
+    }
+
+    // Jobs are not required, so we don't validate them
+
     setInputErrors(errors);
-    setFieldsValidated({ email: true, phone: true });
+    setFieldsValidated({
+      email: true,
+      phone: true,
+      role: true,
+      accessibility: true,
+    });
 
     if (!isValid) return;
 
@@ -350,7 +373,10 @@ const AddUserModal = ({
                 />
               </FormField>
 
-              <FormField label="User Type">
+              <FormField
+                label="User Type"
+                error={inputErrors.role}
+              >
                 <CustomSelect
                   type="role"
                   placeholder="Select User Type"
@@ -360,13 +386,14 @@ const AddUserModal = ({
                   }
                   options={roleOptions}
                   errors={inputErrors}
-                  isDropdownOpen={isRoleDropdownOpen}
-                  setIsDropdownOpen={setIsRoleDropdownOpen}
                   required
                 />
               </FormField>
 
-              <FormField label="Accessibility">
+              <FormField
+                label="Accessibility"
+                error={inputErrors.accessibility}
+              >
                 <CustomSelect
                   type="accessibility"
                   placeholder="Select Accessibility"
@@ -379,12 +406,6 @@ const AddUserModal = ({
                   }
                   options={accessibilityOptions}
                   errors={inputErrors}
-                  isDropdownOpen={
-                    isAccessibilityDropdownOpen
-                  }
-                  setIsDropdownOpen={
-                    setIsAccessibilityDropdownOpen
-                  }
                   required
                 />
               </FormField>
@@ -401,16 +422,18 @@ const AddUserModal = ({
                         jobId
                       )
                     ) {
-                      handleChange("jobs_assigned", [
+                      const updatedJobs = [
                         ...formData.jobs_assigned,
                         jobId,
-                      ]);
+                      ];
+                      handleChange(
+                        "jobs_assigned",
+                        updatedJobs
+                      );
                     }
                   }}
                   options={jobOptions}
                   errors={inputErrors}
-                  isDropdownOpen={isJobDropdownOpen}
-                  setIsDropdownOpen={setIsJobDropdownOpen}
                   required={false}
                 />
               </FormField>
@@ -449,12 +472,14 @@ const AddUserModal = ({
                 Cancel
               </button>
               <button
-                className="px-6 py-[5px] rounded-[100px] text-white border border-[#007AFF] bg-[#007AFF] transition-all duration-300 ease-in-out
-                hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
+                className="px-6 py-[5px] rounded-[100px] text-white border text-xs font-semibold cursor-pointer
+                 enabled:border-[#007AFF] enabled:bg-[#007AFF] 
+                 enabled:hover:bg-gradient-to-r enabled:hover:from-[#007AFF] enabled:hover:to-[#005BBB] 
+                 disabled:cursor-not-allowed disabled:bg-[#CAC4D0] disabled:border-[#CAC4D0] transition-all duration-300 ease-in-out"
                 type="submit"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               >
-                {mutation.isLoading ? "Saving..." : "Save"}
+                {mutation.isPending ? "Saving..." : "Save"}
               </button>
             </div>
           </form>
