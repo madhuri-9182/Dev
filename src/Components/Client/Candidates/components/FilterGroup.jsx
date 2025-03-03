@@ -19,7 +19,7 @@ export const FilterGroup = ({
           className={`rounded-lg px-2 font-medium py-1 text-2xs flex items-center justify-center 
                 ${
                   selectedOption === option.id
-                    ? "bg-[#E8DEF8] text-[#4A4459] border-0"
+                    ? "bg-[#E8DEF8] text-[#4A4459] border border-[#E8DEF8]"
                     : "text-[#4A4459] border border-[#CAC4D0]"
                 }`}
           onClick={() => onSelect?.(option.id)}

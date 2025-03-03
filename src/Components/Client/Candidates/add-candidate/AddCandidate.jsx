@@ -1,4 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+} from "react";
 import useAllJobs from "../../../../hooks/useFetchAllJobs";
 import {
   CANDIDATE_SOURCE,
@@ -14,9 +19,12 @@ import {
 } from "./AddCandidateComponents";
 import { FilterGroup } from "../components/FilterGroup";
 import { useUploadProgress } from "./useUploadProgress";
+import { useLocation } from "react-router-dom";
 
 function ClientAddCandidate() {
-  // Hooks
+  // Get location to access route state
+  const location = useLocation();
+  const selectedJob = location.state?.selectedJob;
   const { data: roles } = useAllJobs();
   const {
     isUploading,
@@ -34,7 +42,7 @@ function ClientAddCandidate() {
   // State
   const [filesMap, setFilesMap] = useState(new Map());
   const [filters, setFilters] = useState({
-    role: "",
+    role: selectedJob?.id || "", // Prefill with selected job id if available
     specialization: "",
     source: "",
   });
@@ -42,6 +50,15 @@ function ClientAddCandidate() {
     []
   );
   const [editingRowId, setEditingRowId] = useState(null);
+
+  useEffect(() => {
+    if (selectedJob?.id) {
+      setFilters((prev) => ({
+        ...prev,
+        role: selectedJob.id,
+      }));
+    }
+  }, [selectedJob]);
 
   // Derived state
   const isUploadButtonDisabled =

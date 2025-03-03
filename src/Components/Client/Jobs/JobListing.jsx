@@ -11,9 +11,11 @@ import {
 import { useJobContext } from "../../../context/JobContext";
 import ArchiveModal from "./ArchiveModal";
 import { AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const JobListing = ({ data }) => {
   const { count, results } = data;
+  const navigate = useNavigate();
   const {
     handleAddJobClick,
     handleShowJobDetails,
@@ -49,6 +51,20 @@ const JobListing = ({ data }) => {
 
   const handleArchiveModalClose = () => {
     setIsArchiveModalOpen(false);
+  };
+
+  const handleAddCandidateClick = (job) => {
+    console.log(job, "job");
+    // Navigate to add candidate page with job info in state
+    navigate("/client/candidates/add-candidate", {
+      state: {
+        selectedJob: {
+          id: job.id,
+          name: job.name,
+          label: getJobLabel(job.name),
+        },
+      },
+    });
   };
 
   return (
@@ -176,7 +192,12 @@ const JobListing = ({ data }) => {
                     >
                       View
                     </button>
-                    <button className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-36 py-1 flex items-center justify-center rounded-[100px]">
+                    <button
+                      className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-36 py-1 flex items-center justify-center rounded-[100px]"
+                      onClick={() => {
+                        handleAddCandidateClick(row);
+                      }}
+                    >
                       + Add Candidate
                     </button>
 
