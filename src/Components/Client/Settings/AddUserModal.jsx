@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { AnimatePresence } from "framer-motion";
 import Modal from "../../shared/Modal";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   useQueryClient,
   useMutation,
@@ -14,7 +14,13 @@ import toast from "react-hot-toast";
 import { updateUser, createUser } from "./api";
 import useAllJobs from "../../../hooks/useFetchAllJobs";
 import { getJobLabel } from "../../../utils/util";
+import {
+  Input,
+  FormField,
+  CustomSelect,
+} from "./AddUserFormComponents";
 
+// Main component
 const AddUserModal = ({
   isOpen,
   onClose,
@@ -23,41 +29,72 @@ const AddUserModal = ({
 }) => {
   const isEdit = title === "Edit User";
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
+  const { data: jobs = [] } = useAllJobs();
+
+  // Initialize form state
+  const initialFormState = {
     name: "",
     email: "",
     role: "",
     jobs_assigned: [],
-    accessibility: "",
+    accessibility: "AJ",
     phone: "",
+  };
+
+  const [formData, setFormData] = useState(
+    initialFormState
+  );
+  const [originalData, setOriginalData] = useState(null); // For tracking changes
+  const [inputErrors, setInputErrors] = useState({});
+  const [fieldsValidated, setFieldsValidated] = useState({
+    email: false,
+    phone: false,
   });
-  const [inputError, setInputError] = useState({});
-  const [showEmailError, setShowEmailError] =
+
+  // Dropdown states
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] =
     useState(false);
-  const [showPhoneError, setShowPhoneError] =
+  const [
+    isAccessibilityDropdownOpen,
+    setIsAccessibilityDropdownOpen,
+  ] = useState(false);
+  const [isJobDropdownOpen, setIsJobDropdownOpen] =
     useState(false);
 
+  // Reset form when modal closes or opens with different user
   useEffect(() => {
-    if (selectedUser) {
-      setFormData({
-        name: selectedUser.name,
-        email: selectedUser.user.email,
-        role: selectedUser.user.role,
-        jobs_assigned: selectedUser.assigned_jobs
-          ? selectedUser.assigned_jobs.map((job) => job.id)
-          : [],
-        accessibility: selectedUser.accessibility
-          ? selectedUser.accessibility
-          : "AJ",
-        phone: selectedUser.user.phone
-          ? selectedUser.user.phone.split("+91")[1]
-          : "",
-      });
+    if (!isOpen) {
+      return;
     }
-  }, [selectedUser]);
 
-  const { data: jobs } = useAllJobs();
+    if (selectedUser) {
+      const userData = {
+        name: selectedUser.name || "",
+        email: selectedUser.user?.email || "",
+        role: selectedUser.user?.role || "",
+        jobs_assigned:
+          selectedUser.assigned_jobs?.map(
+            (job) => job.id
+          ) || [],
+        accessibility: selectedUser.accessibility || "AJ",
+        phone: selectedUser.user?.phone
+          ? selectedUser.user.phone.replace("+91", "")
+          : "",
+      };
 
+      setFormData(userData);
+      setOriginalData(userData); // Save original data for comparison
+    } else {
+      setFormData(initialFormState);
+      setOriginalData(null);
+    }
+
+    setInputErrors({});
+    setFieldsValidated({ email: false, phone: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, selectedUser]);
+
+  // Mutation for creating/updating user
   const mutation = useMutation({
     mutationFn: isEdit ? updateUser : createUser,
     onSuccess: () => {
@@ -65,290 +102,338 @@ const AddUserModal = ({
         isEdit
           ? "User updated successfully"
           : "User created successfully",
-        {
-          position: "top-right",
-        }
+        { position: "top-right" }
       );
-      handleModalClose();
+      onClose();
       queryClient.invalidateQueries(["users"]);
     },
     onError: (error) => {
-      console.log(error);
-      toast.error(
-        error.response.data.message
-          ? error.response?.data?.message
-          : "Failed to create user",
-        {
-          position: "top-right",
-        }
-      );
+      console.error("API Error:", error);
+
+      if (error.response?.data?.errors) {
+        const allErrorMessages = Object.values(
+          error.response.data.errors
+        ).flat();
+
+        allErrorMessages.forEach((errorMessage, index) => {
+          setTimeout(() => {
+            toast.error(errorMessage, {
+              position: "top-right",
+            });
+          }, index * 100);
+        });
+      } else {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to process user data",
+          { position: "top-right" }
+        );
+      }
     },
   });
 
-  const handleRemoveJob = (job) => {
+  // Helper functions for form handling
+  const validateField = (field, value, regex) => {
+    if (
+      fieldsValidated[field] &&
+      value.length > 0 &&
+      !regex.test(value)
+    ) {
+      setInputErrors((prev) => ({
+        ...prev,
+        [field]: `Invalid ${field}`,
+      }));
+      return false;
+    } else {
+      setInputErrors((prev) => ({ ...prev, [field]: "" }));
+      return true;
+    }
+  };
+
+  const handleChange = (field, value, regex = null) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+    if (regex) {
+      validateField(field, value, regex);
+    }
+  };
+
+  const handleRemoveJob = (jobId) => {
     setFormData((prev) => ({
       ...prev,
-      jobs_assigned: prev.jobs_assigned?.filter(
-        (j) => j !== job
+      jobs_assigned: prev.jobs_assigned.filter(
+        (id) => id !== jobId
       ),
     }));
   };
 
-  const handleEmailChange = (e) => {
-    const emailValue = e.target.value;
-    if (showEmailError) {
-      if (
-        !EMAIL_REGEX.test(emailValue) &&
-        emailValue.length > 0
-      ) {
-        setInputError({
-          ...inputError,
-          email: "Invalid email address",
-        });
-      } else {
-        setInputError({ ...inputError, email: "" });
+  // Function to get only changed fields
+  const getChangedFields = () => {
+    if (!isEdit || !originalData) return formData;
+
+    const changedFields = {};
+
+    // Compare each field and only include changed ones
+    Object.keys(formData).forEach((key) => {
+      if (key === "jobs_assigned") {
+        // Handle arrays separately - check if they're different
+        if (
+          JSON.stringify(formData[key]) !==
+          JSON.stringify(originalData[key])
+        ) {
+          changedFields[key] = formData[key];
+        }
+      } else if (formData[key] !== originalData[key]) {
+        changedFields[key] = formData[key];
       }
-    } else {
-      setInputError({ ...inputError, email: "" });
-    }
-    setFormData({
-      ...formData,
-      email: e.target.value,
     });
+
+    return changedFields;
   };
 
-  const handlePhoneChange = (e) => {
-    const phoneValue = e.target.value;
-    if (showPhoneError) {
-      if (
-        !MOBILE_REGEX.test(phoneValue) &&
-        phoneValue.length > 0
-      ) {
-        setInputError({
-          ...inputError,
-          phone: "Invalid mobile number",
-        });
-      } else {
-        setInputError({ ...inputError, phone: "" });
-      }
-    } else {
-      setInputError({ ...inputError, phone: "" });
-    }
-    setFormData({ ...formData, phone: phoneValue });
-  };
-
-  const onSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate all fields
     let errors = {};
+    let isValid = true;
+
     if (!EMAIL_REGEX.test(formData.email)) {
       errors.email = "Invalid email address";
-      setShowEmailError(true);
+      isValid = false;
     }
+
     if (!MOBILE_REGEX.test(formData.phone)) {
       errors.phone = "Invalid mobile number";
-      setShowPhoneError(true);
+      isValid = false;
     }
-    if (Object.keys(errors).length > 0) {
-      setInputError(errors);
+
+    setInputErrors(errors);
+    setFieldsValidated({ email: true, phone: true });
+
+    if (!isValid) return;
+
+    // Get only changed fields if editing
+    const changedFields = isEdit
+      ? getChangedFields()
+      : formData;
+
+    // If nothing has changed in edit mode, just close the modal and return
+    if (isEdit && Object.keys(changedFields).length === 0) {
+      toast.success("No changes to save", {
+        position: "top-right",
+      });
+      onClose();
       return;
     }
 
-    const updatedFormData = {
-      ...formData,
-      phone: formData.phone.startsWith("+91")
-        ? formData.phone
-        : `+91${formData.phone}`,
+    // Process and submit data
+    const processedData = {
+      ...changedFields,
+      // Only include phone if it was changed or we're creating a new user
+      ...(changedFields.phone && {
+        phone: changedFields.phone.startsWith("+91")
+          ? changedFields.phone
+          : `+91${changedFields.phone}`,
+      }),
     };
-    isEdit
-      ? mutation.mutate({
-          userData: updatedFormData,
-          id: selectedUser.id,
-        })
-      : mutation.mutate(updatedFormData);
+
+    if (isEdit) {
+      mutation.mutate({
+        userData: processedData,
+        id: selectedUser.id,
+      });
+    } else {
+      mutation.mutate(processedData);
+    }
   };
 
-  const handleModalClose = () => {
-    onClose();
-    setFormData({
-      name: "",
-      email: "",
-      role: "",
-      jobs_assigned: [],
-      accessibility: "",
-      phone: "",
-    });
-  };
+  // Memoize options to prevent unnecessary rerenders
+  const roleOptions = useMemo(
+    () => [
+      { id: "client_admin", name: "Admin" },
+      { id: "client_user", name: "User" },
+      { id: "agency", name: "Agency" },
+    ],
+    []
+  );
+
+  const accessibilityOptions = useMemo(
+    () => [
+      { id: "AGJ", name: "Assigned Jobs" },
+      { id: "AJ", name: "All Jobs" },
+    ],
+    []
+  );
+
+  const jobOptions = useMemo(
+    () =>
+      jobs.map((job) => ({
+        id: job.id,
+        name: getJobLabel(job.name),
+      })),
+    [jobs]
+  );
+
+  // Find selected jobs for display
+  const selectedJobs = useMemo(
+    () =>
+      formData.jobs_assigned
+        .map((jobId) => {
+          const job = jobs.find((j) => j.id === jobId);
+          return job
+            ? { id: jobId, name: getJobLabel(job.name) }
+            : null;
+        })
+        .filter(Boolean),
+    [formData.jobs_assigned, jobs]
+  );
 
   return (
     <AnimatePresence>
       {isOpen && (
         <Modal
           isOpen={isOpen}
-          onClose={handleModalClose}
+          onClose={onClose}
           title={title}
         >
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit}>
             <div className="space-y-3">
-              <div className="space-y-1">
-                <Label
-                  name={"name"}
-                  label={
-                    "Full Name (First Name + Last Name)"
-                  }
-                />
+              <FormField label="Full Name (First Name + Last Name)">
                 <Input
                   type="text"
                   value={formData.name}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      name: e.target.value,
-                    })
+                    handleChange("name", e.target.value)
                   }
                   placeholder="Enter Full Name"
                   required
                 />
-              </div>
+              </FormField>
 
-              <div className="space-y-1">
-                <Label name={"email"} label={"Email ID"} />
+              <FormField
+                label="Email ID"
+                error={inputErrors.email}
+              >
                 <Input
                   type="email"
                   value={formData.email}
-                  onChange={handleEmailChange}
+                  onChange={(e) =>
+                    handleChange(
+                      "email",
+                      e.target.value,
+                      EMAIL_REGEX
+                    )
+                  }
                   placeholder="Enter Email ID"
                   required
                 />
+              </FormField>
 
-                <p
-                  className={`text-[#B10E0EE5] text-[10px] ${
-                    inputError?.email
-                      ? "visible mt-2"
-                      : "invisible"
-                  }`}
-                >
-                  {inputError?.email}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <Label
-                  name={"phone"}
-                  label={"Mobile Number"}
-                />
+              <FormField
+                label="Mobile Number"
+                error={inputErrors.phone}
+              >
                 <Input
                   type="tel"
                   value={formData.phone}
-                  onChange={handlePhoneChange}
-                  placeholder="Enter Mobile Number"
-                  required
-                />
-                <p
-                  className={`text-[#B10E0EE5] text-[10px] ${
-                    inputError?.phone
-                      ? "visible mt-2"
-                      : "invisible"
-                  }`}
-                >
-                  {inputError?.phone}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <Label name={"role"} label={"User Type"} />
-                <CustomSelect
-                  placeholder={"Select User Type"}
-                  value={formData.role}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      role: e.target.value,
-                    });
-                  }}
-                  options={[
-                    { id: "client_admin", name: "Admin" },
-                    { id: "client_user", name: "User" },
-                    { id: "agency", name: "Agency" },
-                  ]}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label
-                  name={"accessibility"}
-                  label={"Accessibility"}
-                />
-                <CustomSelect
-                  placeholder={"Select Accessibility"}
-                  value={formData.accessibility}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      accessibility: e.target.value,
-                    });
-                  }}
-                  options={[
-                    { id: "AGJ", name: "Assigned Jobs" },
-                    { id: "AJ", name: "All Jobs" },
-                  ]}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label
-                  name={"jobs_assigned"}
-                  label={"Jobs Assigned"}
-                />
-                <CustomSelect
-                  placeholder={"Select Jobs"}
-                  value={""}
-                  onChange={(e) => {
-                    if (
-                      formData.jobs_assigned.includes(
-                        Number(e.target.value)
-                      )
+                  onChange={(e) =>
+                    handleChange(
+                      "phone",
+                      e.target.value,
+                      MOBILE_REGEX
                     )
-                      return;
-                    setFormData({
-                      ...formData,
-                      jobs_assigned: [
+                  }
+                  placeholder="Enter Mobile Number"
+                  maxLength={10}
+                  required
+                />
+              </FormField>
+
+              <FormField label="User Type">
+                <CustomSelect
+                  type="role"
+                  placeholder="Select User Type"
+                  value={formData.role}
+                  onChange={(e) =>
+                    handleChange("role", e.target.value)
+                  }
+                  options={roleOptions}
+                  errors={inputErrors}
+                  isDropdownOpen={isRoleDropdownOpen}
+                  setIsDropdownOpen={setIsRoleDropdownOpen}
+                  required
+                />
+              </FormField>
+
+              <FormField label="Accessibility">
+                <CustomSelect
+                  type="accessibility"
+                  placeholder="Select Accessibility"
+                  value={formData.accessibility}
+                  onChange={(e) =>
+                    handleChange(
+                      "accessibility",
+                      e.target.value
+                    )
+                  }
+                  options={accessibilityOptions}
+                  errors={inputErrors}
+                  isDropdownOpen={
+                    isAccessibilityDropdownOpen
+                  }
+                  setIsDropdownOpen={
+                    setIsAccessibilityDropdownOpen
+                  }
+                  required
+                />
+              </FormField>
+
+              <FormField label="Jobs Assigned">
+                <CustomSelect
+                  type="jobs_assigned"
+                  placeholder="Select Jobs"
+                  value=""
+                  onChange={(e) => {
+                    const jobId = Number(e.target.value);
+                    if (
+                      !formData.jobs_assigned.includes(
+                        jobId
+                      )
+                    ) {
+                      handleChange("jobs_assigned", [
                         ...formData.jobs_assigned,
-                        Number(e.target.value),
-                      ],
-                    });
+                        jobId,
+                      ]);
+                    }
                   }}
-                  options={jobs.map((job) => ({
-                    id: job.id,
-                    name: getJobLabel(job.name),
-                  }))}
+                  options={jobOptions}
+                  errors={inputErrors}
+                  isDropdownOpen={isJobDropdownOpen}
+                  setIsDropdownOpen={setIsJobDropdownOpen}
                   required={false}
                 />
-              </div>
+              </FormField>
             </div>
-            {formData.jobs_assigned.length > 0 && (
+
+            {selectedJobs.length > 0 && (
               <div className="mt-4">
                 <div className="flex flex-wrap gap-2">
-                  {formData.jobs_assigned.map((jobId) => {
-                    const job = jobs?.find(
-                      (j) => j.id == jobId
-                    );
-                    return (
-                      <span
-                        key={jobId}
-                        className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-2xs border border-[#CAC4D0] text-[#49454F] font-medium "
+                  {selectedJobs.map(({ id, name }) => (
+                    <span
+                      key={id}
+                      className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-2xs border border-[#CAC4D0] text-[#49454F] font-medium"
+                    >
+                      {name}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveJob(id)}
+                        className="ml-2 text-[#49454F] font-medium"
                       >
-                        {getJobLabel(job.name)}{" "}
-                        {/* Show job name or fallback */}
-                        <button
-                          onClick={() =>
-                            handleRemoveJob(jobId)
-                          }
-                          className="ml-2 text-[#49454F] font-medium"
-                        >
-                          &#10005;
-                        </button>
-                      </span>
-                    );
-                  })}
+                        &#10005;
+                      </button>
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
@@ -359,16 +444,17 @@ const AddUserModal = ({
                 className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
                 transition-all duration-300 ease-in-out 
                 hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
-                onClick={handleModalClose}
+                onClick={onClose}
               >
-                Delete
+                Cancel
               </button>
               <button
                 className="px-6 py-[5px] rounded-[100px] text-white border border-[#007AFF] bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
+                hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
                 type="submit"
+                disabled={mutation.isLoading}
               >
-                Save
+                {mutation.isLoading ? "Saving..." : "Save"}
               </button>
             </div>
           </form>
@@ -378,89 +464,11 @@ const AddUserModal = ({
   );
 };
 
-export default AddUserModal;
-
 AddUserModal.propTypes = {
   isOpen: PropTypes.bool,
-  onClose: PropTypes.func,
-  title: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
   selectedUser: PropTypes.object,
 };
 
-const Label = ({ name, label }) => {
-  return (
-    <label
-      htmlFor={name}
-      className="block text-[#6B6F7B] text-2xs font-bold"
-    >
-      {label}
-    </label>
-  );
-};
-
-Label.propTypes = {
-  name: PropTypes.string,
-  label: PropTypes.string,
-};
-
-const Input = ({
-  type,
-  value,
-  onChange,
-  placeholder,
-  required,
-}) => {
-  return (
-    <input
-      maxLength={type === "tel" ? 10 : null}
-      type={type}
-      value={value}
-      onChange={onChange}
-      required={required}
-      placeholder={placeholder}
-      className="w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium"
-    />
-  );
-};
-
-Input.propTypes = {
-  type: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  placeholder: PropTypes.string,
-  required: PropTypes.bool,
-};
-
-const CustomSelect = ({
-  options,
-  value,
-  onChange,
-  placeholder,
-  required,
-}) => {
-  return (
-    <select
-      value={value || ""}
-      onChange={onChange}
-      className="custom-select w-full px-3 py-2 border rounded-lg text-2xs font-medium bg-white text-[#6B6F7B]"
-      required={required}
-    >
-      <option value="" disabled hidden>
-        {placeholder}
-      </option>
-      {options.map((option) => (
-        <option key={option.id} value={option.id}>
-          {option.name}
-        </option>
-      ))}
-    </select>
-  );
-};
-
-CustomSelect.propTypes = {
-  options: PropTypes.array,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  placeholder: PropTypes.string,
-  required: PropTypes.bool,
-};
+export default AddUserModal;
