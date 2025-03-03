@@ -1,16 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "../../App.css";
 import {
   Input,
   Label,
   MatchedPassword,
+  PasswordCriteriaList,
   SubmitButton,
   ViewHideEyeButton,
-} from "../shared/form-components";
+} from "../shared/auth-form-components";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 import toast from "react-hot-toast";
 import { FaCircleCheck } from "react-icons/fa6";
+import { useMutation } from "@tanstack/react-query";
+
+// Create API client for password reset
+const resetPassword = async ({ password, token }) => {
+  const response = await axios.post(
+    "/api/password_reset/confirm/",
+    { password, token }
+  );
+  return response.data;
+};
 
 const PasswordReset = () => {
   const [isNewPasswordVisible, setIsNewPasswordVisible] =
@@ -37,27 +48,38 @@ const PasswordReset = () => {
     specialChar: false,
   });
   const [success, setSuccess] = useState(false);
-  const [errMessage, setErrMessage] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
+  const token = location.pathname.split("/")[3];
 
-  useEffect(() => {
-    if (errMessage) {
-      toast.error(errMessage, {
-        position: "top-right",
-      });
-    }
-  }, [errMessage]);
+  // Setup React Query mutation
+  const passwordResetMutation = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      setSuccess(true);
+    },
+    onError: (error) => {
+      if (!error?.response) {
+        toast.error("No Server Response", {
+          position: "top-right",
+        });
+      } else if (error.response?.status === 404) {
+        toast.error(error.response.data.errors[0], {
+          position: "top-right",
+        });
+      } else {
+        toast.error("Password reset failed", {
+          position: "top-right",
+        });
+      }
+    },
+  });
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
-    setPassword(e.target.value);
-    setIsMatch(
-      e.target.value !== "" &&
-        e.target.value === confirmPassword
-    );
+    setPassword(value);
+    setIsMatch(value !== "" && value === confirmPassword);
     setCriteria({
       length: value.length >= 8 && value.length <= 20,
       uppercase: /[A-Z]/.test(value),
@@ -65,6 +87,7 @@ const PasswordReset = () => {
       specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
     });
   };
+
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     setIsMatch(
@@ -72,60 +95,18 @@ const PasswordReset = () => {
     );
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setErrMessage("");
-    setLoading(true);
-    const token = location.pathname.split("/")[3];
-    try {
-      const response = await axios.post(
-        "/api/password_reset/confirm/",
-        {
-          password: password,
-          token: token,
-        }
-      );
-      if (response.status === 200) {
-        setSuccess(true);
-      }
-    } catch (error) {
-      console.log(error, "error");
-      if (!error?.response) {
-        setErrMessage("No Server Response");
-      } else if (error.status === 404) {
-        setErrMessage(error.response.data.errors[0]);
-      }
-    } finally {
-      setLoading(false);
-    }
+    passwordResetMutation.mutate({ password, token });
   };
 
-  const PASSWORD_CRITERIA = [
-    {
-      name: "Between 8 and 20 characters",
-      checked: criteria.length,
-    },
-    {
-      name: "1 upper case letter",
-      checked: criteria.uppercase,
-    },
-    {
-      name: "1 or more numbers",
-      checked: criteria.number,
-    },
-    {
-      name: "1 or more special characters",
-      checked: criteria.specialChar,
-    },
-  ];
-
   return (
-    <div className="flex w-full h-full  mt-5">
-      <div className="parent flex justify-center items-center w-full   ">
+    <div className="flex w-full h-full mt-5">
+      <div className="parent flex justify-center items-center w-full">
         {/* Password Reset Form */}
         {!success ? (
           <form
-            className=" flex flex-col justify-center w-[75%] h-full "
+            className="flex flex-col justify-center w-[75%] h-full"
             onSubmit={handleSubmit}
           >
             <div className="flex flex-col w-full h-full mt-1">
@@ -192,30 +173,7 @@ const PasswordReset = () => {
                 />
               </div>
             </div>
-            <div>
-              <p className="text-[#979DA3] uppercase text-xs font-black mb-5">
-                Your password must contain
-              </p>
-              <ul className="list-none flex flex-col gap-1">
-                {/* Password criteria */}
-                {PASSWORD_CRITERIA.map(
-                  (criteria, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center font-semibold text-xs text-[#989DA3]"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={criteria.checked}
-                        readOnly
-                        className="mr-2 appearance-none w-4 h-4 bg-[#EEEEEE] rounded-full border-[3px] border-[#EEEEEE] checked:bg-[#2ECC71]"
-                      />
-                      {criteria.name}
-                    </li>
-                  )
-                )}
-              </ul>
-            </div>
+            <PasswordCriteriaList criteria={criteria} />
             <div className="mt-10 mb-12">
               <SubmitButton
                 disabled={
@@ -224,15 +182,19 @@ const PasswordReset = () => {
                   !criteria.number ||
                   !criteria.specialChar ||
                   password != confirmPassword ||
-                  loading
+                  passwordResetMutation.isPending
                 }
-                label={"Submit"}
+                label={
+                  passwordResetMutation.isPending
+                    ? "Submitting..."
+                    : "Submit"
+                }
               />
             </div>
           </form>
         ) : (
           <div className="flex flex-col items-center justify-center mt-10 w-[75%] mx-2">
-            <FaCircleCheck className="text-[#2ECC71] w-[70px] h-[70px] font-bold " />
+            <FaCircleCheck className="text-[#2ECC71] w-[70px] h-[70px] font-bold" />
             <p className="text-xs font-bold uppercase text-[#00000096] mt-6 text-center mb-[90px]">
               You have successfully reset your password
             </p>

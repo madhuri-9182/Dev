@@ -1,7 +1,30 @@
-import { Box, Typography } from "@mui/material";
+import { Autocomplete, Box, TextField, Typography } from "@mui/material";
 import React from "react";
 import { NOTICE_PERIOD, SPECIALIZATION_CHOICES } from "../constants";
 import { StyledMenuItem, StyledSelect } from "./StyledSelect";
+import { styled } from "@mui/material/styles";
+
+const StyledTextField = styled(TextField)({
+  "& .MuiInputBase-root": {
+    height: "40px",
+    borderRadius: "8px",
+    fontSize: "12px",
+    paddingBlock: "4px",
+    minWidth: 200,
+
+    "& input": {
+      padding: "0 !important",
+    },
+  },
+  "& .MuiChip-root": {
+    height: "24px",
+
+    fontSize: "12px",
+    "& .MuiChip-deleteIcon": {
+      fontSize: "14px",
+    },
+  },
+});
 
 const Filters = ({ filters, onChipClick, jobs }) => {
   const handleChipClick = (type, value) => {
@@ -13,55 +36,123 @@ const Filters = ({ filters, onChipClick, jobs }) => {
       sx={{
         display: "flex",
         flexWrap: "wrap",
-        gap: 1,
-        mb: 3,
+
         alignItems: "center",
+        "& > div": {
+          marginRight: "20px",
+          mb: 3,
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        },
+        "& .MuiTypography-root": {
+          margin: 0,
+        },
       }}
     >
-      <Typography fontWeight={600} fontSize={12}>
-        Role
-      </Typography>
-      <StyledSelect
-        value={filters.role}
-        onChange={(e) => handleChipClick("role", e.target.value)}
-      >
-        <StyledMenuItem value="all">All</StyledMenuItem>
-        {jobs.map((item) => (
-          <StyledMenuItem key={item.id} value={item.id}>
-            {item.name.split("_").join(" ")}
-          </StyledMenuItem>
-        ))}
-      </StyledSelect>
+      <Box>
+        <Typography fontWeight={600} fontSize={12}>
+          Role
+        </Typography>
+        <Autocomplete
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 12,
+              },
+            },
+          }}
+          multiple
+          filterSelectedOptions
+          options={jobs.map((job) => ({
+            value: job.id,
+            label: job.name,
+          }))}
+          getOptionLabel={(option) => {
+            return option.label.split("_").join(" ");
+          }}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={filters.role.length === 0 ? "All" : ""}
+            />
+          )}
+          loading={jobs.length === 0}
+          value={filters.role}
+          onChange={(event, newValue) => {
+            handleChipClick("role", newValue);
+          }}
+        />
+      </Box>
 
-      <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
-        Function
-      </Typography>
-      <StyledSelect
-        value={filters.function}
-        onChange={(e) => handleChipClick("function", e.target.value)}
-      >
-        <StyledMenuItem value="all">All</StyledMenuItem>
-        {SPECIALIZATION_CHOICES.map((item, i) => (
-          <StyledMenuItem key={i} value={item.value}>
-            {item.label}
-          </StyledMenuItem>
-        ))}
-      </StyledSelect>
+      <Box>
+        <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
+          Function
+        </Typography>
+        <Autocomplete
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 12,
+              },
+            },
+          }}
+          multiple
+          options={SPECIALIZATION_CHOICES}
+          getOptionLabel={(option) => {
+            return option.label;
+          }}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={filters.function.length === 0 ? "All" : ""}
+            />
+          )}
+          value={filters.function}
+          onChange={(event, newValue) => {
+            handleChipClick("function", newValue);
+          }}
+        />
+      </Box>
 
-      <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
-        Notice Period
-      </Typography>
-      <StyledSelect
-        value={filters.notice}
-        onChange={(e) => handleChipClick("notice", e.target.value)}
-      >
-        <StyledMenuItem value="all">All</StyledMenuItem>
-        {NOTICE_PERIOD.map((item, i) => (
-          <StyledMenuItem key={i} value={item.value}>
-            {item.label}
-          </StyledMenuItem>
-        ))}
-      </StyledSelect>
+      <Box>
+        <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
+          Notice Period
+        </Typography>
+
+        <Autocomplete
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 12,
+              },
+            },
+          }}
+          multiple
+          options={NOTICE_PERIOD}
+          getOptionLabel={(option) => {
+            return option.label;
+          }}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={filters.notice.length === 0 ? "All" : ""}
+            />
+          )}
+          value={filters.notice}
+          onChange={(event, newValue) => {
+            handleChipClick("notice", newValue);
+          }}
+        />
+      </Box>
     </Box>
   );
 };

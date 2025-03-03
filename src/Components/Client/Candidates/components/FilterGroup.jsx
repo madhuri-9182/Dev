@@ -8,15 +8,15 @@ export const FilterGroup = ({
   selectedOption,
   onSelect,
 }) => (
-  <div className="flex items-center gap-4">
-    <span className="text-xs font-semibold w-14 min-w-14">
+  <div className="flex items-center gap-3">
+    <span className="text-2xs font-semibold w-14 min-w-14">
       {label}
     </span>
     <div className="flex items-center gap-2 flex-wrap">
       {options?.map((option, idx) => (
         <button
           key={idx}
-          className={`rounded-lg px-3 font-medium py-[7px] text-xs flex items-center justify-center 
+          className={`rounded-lg px-2 font-medium py-1 text-2xs flex items-center justify-center 
                 ${
                   selectedOption === option.id
                     ? "bg-[#E8DEF8] text-[#4A4459] border-0"

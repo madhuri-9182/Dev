@@ -7,10 +7,10 @@ const fetchAllUsers = async () => {
 
   while (nextUrl) {
     const response = await axios.get(nextUrl);
-    const users = response.data.data.results;
+    const users = response.data.results;
     allUsers = [...allUsers, ...users];
 
-    nextUrl = response.data.data.next || null;
+    nextUrl = response.data.next || null;
   }
 
   return allUsers.map(({ id, name }) => ({

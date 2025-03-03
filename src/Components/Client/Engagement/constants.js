@@ -1,9 +1,9 @@
 export const ENAGAGEMENT_STATUS = [
-  { label: "Yet to join", value: "YTJ" },
-  { label: "Joined", value: "JND" },
-  { label: "Declined", value: "DCL" },
-  { label: "Doubtful", value: "DBT" },
-  { label: "On Hold", value: "OHD" },
+  { label: "Yet to join", value: "YTJ", color: "#4489ff" },
+  { label: "Joined", value: "JND", color: "green" },
+  { label: "Declined", value: "DCL", color: "red" },
+  { label: "Doubtful", value: "DBT", color: "#ff5d00" },
+  { label: "On Hold", value: "OHD", color: "#e0d504" },
 ];
 
 export const NOTICE_PERIOD = [

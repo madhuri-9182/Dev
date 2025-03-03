@@ -3,6 +3,7 @@ import React, {
   useState,
   useDeferredValue,
   useCallback,
+  useMemo,
 } from "react";
 import StatsCard from "./components/StatsCard";
 import Filters from "./components/Filters";
@@ -13,7 +14,6 @@ import { Box, debounce, TextField } from "@mui/material";
 import Button from "./components/Button";
 import { useEngagements, useJobs, useUpdateEngagementStatus } from "./api";
 import { useNavigate } from "react-router-dom";
-import { LoaderIcon } from "react-hot-toast";
 
 const StyledSearch = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
@@ -31,16 +31,16 @@ const StyledSearch = styled(TextField)(({ theme }) => ({
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
-    role: "all",
-    function: "all",
-    notice: "all",
+    role: [],
+    function: [],
+    notice: [],
     search: "",
   });
 
   const [debouncedFilters, setDebouncedFilters] = useState({
-    role: "all",
-    function: "all",
-    notice: "all",
+    role: [],
+    function: [],
+    notice: [],
     search: "",
   });
 
@@ -87,12 +87,23 @@ function EngagementDashboard({ setSelectedEngagement }) {
     setSelectedEngagement(null);
   }, []);
 
-  const stats = [
-    { title: "Total Candidates", value: data?.total_candidates },
-    { title: "Joined", value: data?.joined },
-    { title: "Declined", value: data?.declined },
-    { title: "Pending", value: data?.pending },
-  ];
+  const [stats, setStats] = useState([
+    { title: "Total Candidates", value: undefined },
+    { title: "Joined", value: undefined },
+    { title: "Declined", value: undefined },
+    { title: "Pending", value: undefined },
+  ]);
+
+  useEffect(() => {
+    if (data) {
+      setStats([
+        { title: "Total Candidates", value: data?.total_candidates },
+        { title: "Joined", value: data?.joined },
+        { title: "Declined", value: data?.declined },
+        { title: "Pending", value: data?.pending },
+      ]);
+    }
+  }, [data]);
 
   if (isError) {
     return <div>Error: {error.message}</div>;
@@ -124,12 +135,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
 
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
         {stats.map((stat) => (
-          <StatsCard
-            isLoading={isLoading}
-            key={stat.title}
-            title={stat.title}
-            value={stat.value}
-          />
+          <StatsCard key={stat.title} title={stat.title} value={stat.value} />
         ))}
       </Box>
 

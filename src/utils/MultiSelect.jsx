@@ -53,13 +53,11 @@ const MultiSelect = ({
 
   const removeTag = (option) => {
     setSelectedRecruiters(
-      selectedRecruiters.filter(
-        (item) => item.id !== option
-      )
+      selectedRecruiters.filter((item) => item !== option)
     );
   };
 
-  const dropdownOptions = options.filter(
+  const dropdownOptions = options?.filter(
     (option) => !selectedRecruiters.includes(option.name)
   );
 
@@ -67,7 +65,7 @@ const MultiSelect = ({
     <div className="relative w-2/3" ref={optionRef}>
       {/* Select Box with Tags */}
       <div
-        className={`rounded-lg text-xs ${
+        className={`rounded-lg text-2xs ${
           selectedRecruiters.length ? "py-1" : "py-2"
         } px-3 border ${
           errors.recruiters
@@ -84,15 +82,16 @@ const MultiSelect = ({
           selectedRecruiters.map((option, idx) => (
             <span
               key={idx}
-              className="flex items-center justify-between bg-[#F8F8F8] text-xs font-semibold px-2 py-1 rounded-lg border border-[#CAC4D0] text-[#49454F]"
+              className="flex items-center justify-between bg-[#F8F8F8] text-2xs font-semibold px-2 py-1 rounded-lg border border-[#CAC4D0] text-[#49454F]"
             >
               {
-                dropdownOptions.find(
+                dropdownOptions?.find(
                   (dropdownOption) =>
                     dropdownOption.id === option
                 )?.name
               }
               <button
+                type="button"
                 className="ml-1 text-[#49454F] focus:outline-none"
                 onClick={(e) => {
                   e.stopPropagation();

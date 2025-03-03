@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import axios from "../../api/axios";
 
 import useAuth from "../../hooks/useAuth";
@@ -17,18 +18,16 @@ import {
   Label,
   Input,
   ViewHideEyeButton,
-} from "../shared/form-components";
+} from "../shared/auth-form-components";
 
 const LoginUsingEmail = () => {
-  // eslint-disable-next-line no-unused-vars
-  const { setAuth, auth } = useAuth();
+  const { setAuth } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const [isPasswordVisible, setIsPasswordVisible] =
     useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [inputError, setInputError] = useState({});
   const [email, resetEmail, setEmail] = useInput(
     "email",
@@ -36,9 +35,75 @@ const LoginUsingEmail = () => {
   );
   const [check, toggleCheck] = useToggle("persist", false);
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showEmailError, setShowEmailError] =
     useState(false);
+
+  // React Query mutation for login
+  const loginMutation = useMutation({
+    mutationFn: async (credentials) => {
+      const response = await axios.post(
+        "/api/login/",
+        credentials,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      const accessToken = data.data.access;
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${accessToken}`;
+      const role = data.data.role;
+      const name = data.data.name;
+
+      setAuth({ email, accessToken, role, name });
+      resetEmail();
+      setPassword("");
+
+      toast.success("Logged in successfully", {
+        position: "top-right",
+      });
+
+      const userMainRole = Object.entries(ROLES).find(
+        // eslint-disable-next-line no-unused-vars
+        ([_, roles]) => roles.includes(role)
+      )?.[0];
+
+      const isAccessiblePath =
+        userMainRole &&
+        location.state?.from?.pathname &&
+        location.state.from.pathname.includes(
+          userMainRole.toLowerCase()
+        );
+
+      const from = isAccessiblePath
+        ? location.state.from.pathname
+        : ROLES_REDIRECTS[userMainRole];
+
+      navigate(from, { replace: true });
+    },
+    onError: (error) => {
+      if (!error?.response) {
+        toast.error("No Server Response", {
+          position: "top-right",
+        });
+      } else if (error.response?.status === 400) {
+        toast.error("Invalid credentials", {
+          position: "top-right",
+        });
+      } else if (error.response?.status === 401) {
+        toast.error("Unauthorized", {
+          position: "top-right",
+        });
+      } else {
+        toast.error("Login Failed", {
+          position: "top-right",
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     if (check) {
@@ -47,21 +112,9 @@ const LoginUsingEmail = () => {
       setEmail("");
     }
     setPassword("");
-    setErrorMessage("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (errorMessage) {
-      toast.error(errorMessage, {
-        position: "top-right",
-      });
-    }
-  }, [errorMessage]);
-
-  const handleLGNNavigation = () => {
-    navigate("/auth/signin/loginnumber");
-  };
   const handleFPNavigation = () => {
     navigate("/auth/forgetpass");
   };
@@ -91,75 +144,24 @@ const LoginUsingEmail = () => {
 
   const handleLoginViaEmail = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     if (!EMAIL_REGEX.test(email)) {
       setInputError({
         email: "Invalid email address",
       });
       setShowEmailError(true);
-      setLoading(false);
       return;
     }
 
-    try {
-      setErrorMessage("");
-      const response = await axios.post(
-        "/api/login/",
-        { email, password },
-        {
-          withCredentials: true,
-        }
-      );
-      const accessToken = response.data.data.access;
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${accessToken}`;
-      const role = response.data.data.role;
-      const name = response.data.data.name;
-      setAuth({ email, accessToken, role, name });
-      resetEmail();
-      setPassword("");
-      toast.success("Logged in successfully", {
-        position: "top-right",
-      });
-      const userMainRole = Object.entries(ROLES).find(
-        // eslint-disable-next-line no-unused-vars
-        ([_, roles]) => roles.includes(role)
-      )?.[0];
-
-      const isAccessiblePath =
-        userMainRole &&
-        location.state?.from?.pathname &&
-        location.state.from.pathname.includes(
-          userMainRole.toLowerCase()
-        );
-
-      const from = isAccessiblePath
-        ? location.state.from.pathname
-        : ROLES_REDIRECTS[userMainRole];
-      navigate(from, { replace: true });
-    } catch (err) {
-      if (!err?.response) {
-        setErrorMessage("No Server Response");
-      } else if (err.response?.status === 400) {
-        setErrorMessage("Invalid credentials");
-      } else if (err.response?.status === 401) {
-        setErrorMessage("Unauthorized");
-      } else {
-        setErrorMessage("Login Failed");
-      }
-    } finally {
-      setLoading(false);
-    }
+    loginMutation.mutate({ email, password });
   };
 
   return (
     <div className="w-full h-full mt-5">
-      <div className=" flex items-center justify-center ">
+      <div className="flex items-center justify-center">
         <form
           onSubmit={handleLoginViaEmail}
-          className=" p-2 w-[75%] h-full "
+          className="p-2 w-[75%] h-full"
         >
           <div className="flex flex-col w-full h-full mt-1">
             <Label
@@ -214,7 +216,7 @@ const LoginUsingEmail = () => {
             <div className="flex items-center">
               <input
                 type="checkbox"
-                className="w-[15px] h-[15px] font-[1px] text-[#D9CFFB] rounded-[2px] mr-1 "
+                className="w-[15px] h-[15px] font-[1px] text-[#D9CFFB] rounded-[2px] mr-1"
                 id="persist"
                 onChange={toggleCheck}
                 checked={check}
@@ -237,14 +239,18 @@ const LoginUsingEmail = () => {
 
           <div className="mb-12 mt-10">
             <SubmitButton
-              disabled={loading}
-              label={"Submit"}
+              disabled={loginMutation.isPending}
+              label={
+                loginMutation.isPending
+                  ? "Loading..."
+                  : "Submit"
+              }
             />
-            <SecondaryButton
+            {/* <SecondaryButton
               disabled={true}
               label={"Login Using Mobile Number"}
               onClick={handleLGNNavigation}
-            />
+            /> */}
             <SecondaryButton
               disabled={true}
               label={"Login Using SSO"}

@@ -9,7 +9,7 @@ export const fetchUsers = async (page) => {
       params: { limit, offset },
     }
   );
-  return response.data.data;
+  return response.data;
 };
 
 export const updateUser = async ({ userData, id }) => {

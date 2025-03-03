@@ -8,7 +8,11 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
       <motion.div
-        className="bg-white rounded-lg shadow-lg w-[500px] p-5 absolute top-[20%] left-[40%] transform -translate-x-1/2"
+        className={`bg-white rounded-lg shadow-lg w-[420px] p-4 absolute ${
+          title === "Add User" || title === "Edit User"
+            ? "top-[10%]"
+            : "top-[20%]"
+        } left-[40%] transform -translate-x-1/2`}
         initial={{ opacity: 0, scale: 0.9 }} // Start hidden & small
         animate={{ opacity: 1, scale: 1 }} // Fully visible & normal size
         exit={{ opacity: 0, scale: 0.9 }} // Shrink and fade out
@@ -17,7 +21,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         {/* Header */}
         <div className="flex justify-center items-center border-b pb-2">
           <h2
-            className={`text-xl font-bold ${
+            className={`text-base font-bold ${
               title === "Delete User"
                 ? "text-[#f00001]"
                 : "text-[#005BBB]"
@@ -27,7 +31,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           </h2>
         </div>
         <CloseSquare
-          size={30}
+          size={22}
           className="transition-transform text-[#f00001] cursor-pointer duration-300 hover:scale-105 hover:text-[#F22129]  absolute top-4 right-4"
           onClick={onClose}
         />

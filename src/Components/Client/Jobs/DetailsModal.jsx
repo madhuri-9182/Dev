@@ -118,10 +118,10 @@ const DetailsModal = ({
               />
             </div>
           </div>
-          <div className="flex justify-end items-center gap-3 mt-8">
+          <div className="flex justify-end items-center gap-2 mt-4 mb-2">
             <button
               type="button"
-              className="px-6 py-[10px] rounded-[100px] text-[#65558F] border border-[#79747E] text-sm font-semibold cursor-pointer 
+              className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
                 transition-all duration-300 ease-in-out 
                 hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
               onClick={onClose}
@@ -129,8 +129,8 @@ const DetailsModal = ({
               Cancel
             </button>
             <button
-              className="px-6 py-[10px] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-sm font-semibold cursor-pointer"
+              className="px-6 py-[5px] rounded-[100px] text-white bg-[#007AFF] border border-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
               type="submit"
             >
               Save
@@ -156,7 +156,7 @@ const Label = ({ name, label }) => {
   return (
     <label
       htmlFor={name}
-      className="block text-[#6B6F7B] text-xs font-bold"
+      className="block text-[#6B6F7B] text-2xs font-bold"
     >
       {label}
     </label>
@@ -183,7 +183,7 @@ const Input = ({
       onChange={onChange}
       required={required}
       placeholder={placeholder}
-      className="w-full px-3 py-2 border rounded-lg text-[13px] text-[#6B6F7B] font-medium"
+      className="w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium"
     />
   );
 };

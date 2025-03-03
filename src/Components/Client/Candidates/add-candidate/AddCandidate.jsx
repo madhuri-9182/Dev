@@ -1,39 +1,23 @@
 import { useState, useRef, useCallback } from "react";
-import useAllJobs from "../../../hooks/useFetchAllJobs";
+import useAllJobs from "../../../../hooks/useFetchAllJobs";
 import {
   CANDIDATE_SOURCE,
   SPECIALIZATIONS,
-} from "../../Constants/constants";
+} from "../../../Constants/constants";
 import { useMutation } from "@tanstack/react-query";
-import { parseResume } from "./api";
+import { parseResume } from "../api";
 import UploadProgress from "./UploadProgress";
 import toast from "react-hot-toast";
 import {
   ResumeTable,
   UploadButton,
 } from "./AddCandidateComponents";
-import { FilterGroup } from "./components/FilterGroup";
+import { FilterGroup } from "../components/FilterGroup";
 import { useUploadProgress } from "./useUploadProgress";
 
-// Main component
 function ClientAddCandidate() {
+  // Hooks
   const { data: roles } = useAllJobs();
-
-  const uploadCVRef = useRef(null);
-  const uploadBulkCVRef = useRef(null);
-
-  const [filesMap, setFilesMap] = useState(new Map());
-  const [selectedRole, setSelectedRole] = useState("");
-  const [
-    selectedSpecialization,
-    setSelectedSpecialization,
-  ] = useState("");
-  const [selectedSource, setSelectedSource] = useState("");
-  const [resumeTableData, setResumeTableData] = useState(
-    []
-  ); // Store table data
-  const [editingRowId, setEditingRowId] = useState(null); // Track editing row
-
   const {
     isUploading,
     uploadProgress,
@@ -43,7 +27,38 @@ function ClientAddCandidate() {
     setUploadProgress,
   } = useUploadProgress();
 
-  const { mutate } = useMutation({
+  // Refs
+  const uploadCVRef = useRef(null);
+  const uploadBulkCVRef = useRef(null);
+
+  // State
+  const [filesMap, setFilesMap] = useState(new Map());
+  const [filters, setFilters] = useState({
+    role: "",
+    specialization: "",
+    source: "",
+  });
+  const [resumeTableData, setResumeTableData] = useState(
+    []
+  );
+  const [editingRowId, setEditingRowId] = useState(null);
+
+  // Derived state
+  const isUploadButtonDisabled =
+    !filters.role ||
+    !filters.specialization ||
+    !filters.source;
+
+  // Filter handlers
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
+  const { mutate: parseResumeMutation } = useMutation({
     mutationFn: (formdata) =>
       parseResume(formdata, setUploadProgress),
     onMutate: startProgress,
@@ -52,9 +67,7 @@ function ClientAddCandidate() {
       setUploadProgress(100);
       const dataWithId = data.data.map((row, index) => ({
         ...row,
-        id: `${Date.now()}-${Math.random()
-          .toString(36)
-          .substr(2, 9)}`,
+        id: generateUniqueId(),
         file: filesMap.get(index),
       }));
       setResumeTableData(dataWithId);
@@ -71,6 +84,23 @@ function ClientAddCandidate() {
     onSettled: stopProgress,
   });
 
+  // Helper functions
+
+  const generateUniqueId = () =>
+    `${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+
+  const createFilesMap = (filesArray) => {
+    const newFilesMap = new Map();
+    filesArray.forEach((file, index) =>
+      newFilesMap.set(index, file)
+    );
+    return newFilesMap;
+  };
+
+  // File upload handlers
+
   const handleFileUpload = useCallback(
     (files) => {
       const formdata = new FormData();
@@ -82,22 +112,18 @@ function ClientAddCandidate() {
         formdata.append("resume", file)
       );
 
-      // Store files in a map for later association with parsed data
-      const newFilesMap = new Map();
-      filesArray.forEach((file, index) =>
-        newFilesMap.set(index, file)
-      );
+      const newFilesMap = createFilesMap(filesArray);
       setFilesMap(newFilesMap);
 
-      mutate(formdata);
+      parseResumeMutation(formdata);
     },
-    [mutate]
+    [parseResumeMutation]
   );
 
-  const isUploadButtonDisabled =
-    !selectedRole ||
-    !selectedSpecialization ||
-    !selectedSource;
+  const handleSingleFileUpload = () =>
+    uploadCVRef.current?.click();
+  const handleBulkFileUpload = () =>
+    uploadBulkCVRef.current?.click();
 
   return (
     <div>
@@ -106,20 +132,26 @@ function ClientAddCandidate() {
           <FilterGroup
             label="Role"
             options={roles}
-            selectedOption={selectedRole}
-            onSelect={setSelectedRole}
+            selectedOption={filters.role}
+            onSelect={(value) =>
+              handleFilterChange("role", value)
+            }
           />
           <FilterGroup
             label="Function"
             options={SPECIALIZATIONS}
-            selectedOption={selectedSpecialization}
-            onSelect={setSelectedSpecialization}
+            selectedOption={filters.specialization}
+            onSelect={(value) =>
+              handleFilterChange("specialization", value)
+            }
           />
           <FilterGroup
             label="Source"
             options={CANDIDATE_SOURCE}
-            selectedOption={selectedSource}
-            onSelect={setSelectedSource}
+            selectedOption={filters.source}
+            onSelect={(value) =>
+              handleFilterChange("source", value)
+            }
           />
         </div>
       </div>
@@ -136,7 +168,7 @@ function ClientAddCandidate() {
         />
         <UploadButton
           label="Upload CV"
-          onClick={() => uploadCVRef.current?.click()}
+          onClick={handleSingleFileUpload}
           disabled={isUploadButtonDisabled}
         />
         <input
@@ -151,7 +183,7 @@ function ClientAddCandidate() {
         />
         <UploadButton
           label="Bulk Upload CV"
-          onClick={() => uploadBulkCVRef.current?.click()}
+          onClick={handleBulkFileUpload}
           disabled={isUploadButtonDisabled}
         />
       </div>
@@ -167,9 +199,9 @@ function ClientAddCandidate() {
           setData={setResumeTableData}
           editingRowId={editingRowId}
           setEditingRowId={setEditingRowId}
-          selectedSource={selectedSource}
-          selectedRole={selectedRole}
-          selectedSpecialization={selectedSpecialization}
+          selectedSource={filters.source}
+          selectedRole={filters.role}
+          selectedSpecialization={filters.specialization}
         />
       )}
     </div>

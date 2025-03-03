@@ -1,9 +1,5 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-import {
-  JOB_NAMES,
-  JOB_TYPES,
-} from "../../Constants/constants";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
 import toast from "react-hot-toast";
 import ArchiveModal from "./ArchiveModal";
@@ -13,14 +9,17 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import { createJob, updateJob } from "./api";
+import { useJobContext } from "../../../context/JobContext";
+import {
+  JOB_NAMES,
+  JOB_TYPES,
+} from "../../Constants/constants";
 
-const JobDetails = ({
-  formdata,
-  setFormdata,
-  onBack,
-  onSubmit,
-  isEdit,
-}) => {
+const JobDetails = () => {
+  const navigate = useNavigate();
+  const { formdata, setFormdata, isEdit, selectedData } =
+    useJobContext();
+
   const queryClient = useQueryClient();
   const [archiveModalOpen, setArchiveModalOpen] =
     useState(false);
@@ -50,6 +49,14 @@ const JobDetails = ({
     setDetailsModalOpen(true);
   };
 
+  const onBack = () => {
+    window.history.back();
+  };
+
+  const onSubmit = () => {
+    navigate("/client/jobs");
+  };
+
   const mutation = useMutation({
     mutationFn: isEdit ? updateJob : createJob,
     onSuccess: () => {
@@ -75,6 +82,21 @@ const JobDetails = ({
       );
     },
   });
+
+  useEffect(() => {
+    const isFirstLoad =
+      localStorage.getItem("hasLoaded") !== "true";
+
+    if (!isFirstLoad) {
+      navigate("/client/jobs");
+    } else {
+      localStorage.setItem("hasLoaded", "true");
+    }
+
+    return () => {
+      localStorage.removeItem("hasLoaded");
+    };
+  }, [navigate]);
 
   const handleSubmit = () => {
     const formdataToSubmit = new FormData();
@@ -121,7 +143,7 @@ const JobDetails = ({
     isEdit
       ? mutation.mutate({
           jobData: formdataToSubmit,
-          id: formdata.id,
+          id: selectedData.id,
         })
       : mutation.mutate(formdataToSubmit);
   };
@@ -137,7 +159,7 @@ const JobDetails = ({
             <input
               type="text"
               value={
-                JOB_NAMES.find(
+                JOB_NAMES?.find(
                   (job) => job.id === formdata.name
                 )?.name
                   ? JOB_NAMES.find(
@@ -197,7 +219,7 @@ const JobDetails = ({
             <select
               className={`${inputClassName} custom-select`}
               value={
-                JOB_TYPES.ACTIVE.includes(
+                JOB_TYPES?.ACTIVE.includes(
                   formdata.reason_for_archived
                 )
                   ? "Active"
@@ -213,7 +235,7 @@ const JobDetails = ({
               className={`${btnClassName} w-[24%]`}
               onClick={() => {
                 if (
-                  JOB_TYPES.ACTIVE.includes(
+                  JOB_TYPES?.ACTIVE.includes(
                     formdata.reason_for_archived
                   )
                 ) {
@@ -235,8 +257,8 @@ const JobDetails = ({
           </div>
         </div>
 
-        <div className="grid gap-2 mt-12">
-          <div className="grid grid-cols-[20%_15%_55%_10%] text-xs font-bold text-black ml-5 items-center">
+        <div className="grid gap-2 mt-8">
+          <div className="grid grid-cols-[20%_15%_55%_10%] text-2xs font-bold text-black ml-5 items-center">
             <div>DETAILS</div>
             <div>TIME</div>
             <div>GUIDELINES</div>
@@ -254,7 +276,7 @@ const JobDetails = ({
             details.map((row, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[20%_15%_55%_10%] text-xs font-medium items-center text-black bg-[#EBEBEB80] py-3 px-6 rounded-2xl"
+                className="grid grid-cols-[20%_15%_55%_10%] text-2xs font-medium items-center text-black bg-[#EBEBEB80] py-2 px-4 rounded-2xl"
               >
                 <div>{row.details}</div>
                 <div>
@@ -285,10 +307,10 @@ const JobDetails = ({
             ))}
         </div>
 
-        <div className="flex justify-end items-center gap-3 mt-8">
+        <div className="flex justify-end items-center gap-2 mt-6">
           <button
             type="button"
-            className="px-6 py-[10px] rounded-[100px] text-[#65558F] border border-[#79747E] text-sm font-semibold cursor-pointer 
+            className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
                 transition-all duration-300 ease-in-out 
                 hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
             onClick={onBack}
@@ -296,8 +318,8 @@ const JobDetails = ({
             Back
           </button>
           <button
-            className="px-6 py-[10px] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-sm font-semibold cursor-pointer"
+            className="px-6 py-[5px] border border-[#007AFF] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
             type="button"
             onClick={handleSubmit}
           >
@@ -330,21 +352,13 @@ const JobDetails = ({
 
 export default JobDetails;
 
-JobDetails.propTypes = {
-  formdata: PropTypes.object,
-  setFormdata: PropTypes.func,
-  isEdit: PropTypes.bool,
-  onBack: PropTypes.func,
-  onSubmit: PropTypes.func,
-};
-
 const labelClassName =
-  "text-xs font-bold text-[#6B6F7B] text-right w-1/5";
+  "text-2xs font-bold text-[#6B6F7B] text-right w-1/5";
 
 const inputClassName =
-  "rounded-lg text-xs py-2 px-3 w-1/2 border border-[#CAC4D0] text-[#49454F] text-center";
+  "rounded-lg text-2xs py-2 px-3 w-1/2 border border-[#CAC4D0] text-[#49454F] text-center";
 
 const btnClassName =
-  " bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-semibold transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center";
+  " bg-[#E8DEF8] text-[#4A4459] text-2xs py-2 px-3 rounded-[100px] font-semibold transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center";
 
 const formRowClassName = "flex items-center mb-3 gap-4";

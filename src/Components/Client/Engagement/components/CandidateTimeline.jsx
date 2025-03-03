@@ -69,11 +69,11 @@ const CandidateTimeline = ({
   );
 
   return (
-    <TimelineContainer
-      onClick={() => onEngagementClick && onEngagementClick(engagement)}
-      className={onEngagementClick ? "cursor-pointer" : ""}
-    >
-      <CandidateInfo>
+    <TimelineContainer>
+      <CandidateInfo
+        onClick={() => onEngagementClick && onEngagementClick(engagement)}
+        className={onEngagementClick ? "cursor-pointer" : ""}
+      >
         <Typography className="candidate-initials">
           {engagement?.candidate_name}
         </Typography>
