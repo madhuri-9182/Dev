@@ -54,7 +54,6 @@ const JobListing = ({ data }) => {
   };
 
   const handleAddCandidateClick = (job) => {
-    console.log(job, "job");
     // Navigate to add candidate page with job info in state
     navigate("/client/candidates/add-candidate", {
       state: {
