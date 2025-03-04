@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   useQueryClient,
   useMutation,
@@ -19,6 +19,7 @@ import {
   CustomSelect,
 } from "./AddUserFormComponents";
 import Modal from "../../shared/Modal";
+import { useForm, Controller } from "react-hook-form";
 
 // Main component
 const AddUserModal = ({
@@ -31,65 +32,29 @@ const AddUserModal = ({
   const queryClient = useQueryClient();
   const { data: jobs = [] } = useAllJobs();
 
-  // Initialize form state
-  const initialFormState = {
-    name: "",
-    email: "",
-    role: "",
-    jobs_assigned: [],
-    accessibility: "", // Empty by default
-    phone: "",
-  };
-
-  const [formData, setFormData] = useState(
-    initialFormState
-  );
-  const [originalData, setOriginalData] = useState(null); // For tracking changes
-  const [inputErrors, setInputErrors] = useState({});
-  const [fieldsValidated, setFieldsValidated] = useState({
-    email: false,
-    phone: false,
-    role: false,
-    accessibility: false,
+  // Setup React Hook Form
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      name: "",
+      email: "",
+      role: "",
+      jobs_assigned: [],
+      accessibility: "",
+      phone: "",
+    },
   });
 
-  // Reset form when modal closes or opens with different user
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    if (selectedUser) {
-      const userData = {
-        name: selectedUser.name || "",
-        email: selectedUser.user?.email || "",
-        role: selectedUser.user?.role || "",
-        jobs_assigned:
-          selectedUser.assigned_jobs?.map(
-            (job) => job.id
-          ) || [],
-        accessibility: selectedUser.accessibility || "",
-        phone: selectedUser.user?.phone
-          ? selectedUser.user.phone.replace("+91", "")
-          : "",
-      };
-
-      setFormData(userData);
-      setOriginalData(userData); // Save original data for comparison
-    } else {
-      setFormData(initialFormState);
-      setOriginalData(null);
-    }
-
-    setInputErrors({});
-    setFieldsValidated({
-      email: false,
-      phone: false,
-      role: false,
-      accessibility: false,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, selectedUser]);
+  // Watch accessibility to conditionally validate job selection
+  const accessibility = watch("accessibility");
+  const jobs_assigned = watch("jobs_assigned");
 
   // Mutation for creating/updating user
   const mutation = useMutation({
@@ -129,52 +94,58 @@ const AddUserModal = ({
     },
   });
 
-  // Helper functions for form handling
-  const validateField = (field, value, regex = null) => {
-    if (regex) {
-      if (
-        fieldsValidated[field] &&
-        value.length > 0 &&
-        !regex.test(value)
-      ) {
-        setInputErrors((prev) => ({
-          ...prev,
-          [field]: `Invalid ${field}`,
-        }));
-        return false;
-      }
-    } else if (fieldsValidated[field] && !value) {
-      setInputErrors((prev) => ({
-        ...prev,
-        [field]: `${field} is required`,
-      }));
-      return false;
+  // Reset form when modal closes or opens with different user
+  useEffect(() => {
+    if (!isOpen) {
+      return;
     }
 
-    setInputErrors((prev) => ({ ...prev, [field]: "" }));
-    return true;
-  };
+    if (selectedUser) {
+      const userData = {
+        name: selectedUser.name || "",
+        email: selectedUser.user?.email || "",
+        role: selectedUser.user?.role || "",
+        jobs_assigned:
+          selectedUser.assigned_jobs?.map(
+            (job) => job.id
+          ) || [],
+        accessibility: selectedUser.accessibility || "",
+        phone: selectedUser.user?.phone
+          ? selectedUser.user.phone.replace("+91", "")
+          : "",
+      };
 
-  const handleChange = (field, value, regex = null) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-
-    if (fieldsValidated[field]) {
-      validateField(field, value, regex);
+      // Reset form with user data
+      reset(userData);
+    } else {
+      // Reset to initial state for new user
+      reset({
+        name: "",
+        email: "",
+        role: "",
+        jobs_assigned: [],
+        accessibility: "",
+        phone: "",
+      });
     }
-  };
+  }, [isOpen, selectedUser, reset]);
 
-  const handleRemoveJob = (jobId) => {
-    setFormData((prev) => ({
-      ...prev,
-      jobs_assigned: prev.jobs_assigned.filter(
-        (id) => id !== jobId
-      ),
-    }));
-  };
+  // Function to get only changed fields for edit mode
+  const getChangedFields = (formData) => {
+    if (!isEdit || !selectedUser) return formData;
 
-  // Function to get only changed fields
-  const getChangedFields = () => {
-    if (!isEdit || !originalData) return formData;
+    const originalData = {
+      name: selectedUser.name || "",
+      email: selectedUser.user?.email || "",
+      role: selectedUser.user?.role || "",
+      jobs_assigned:
+        selectedUser.assigned_jobs?.map((job) => job.id) ||
+        [],
+      accessibility: selectedUser.accessibility || "",
+      phone: selectedUser.user?.phone
+        ? selectedUser.user.phone.replace("+91", "")
+        : "",
+    };
 
     const changedFields = {};
 
@@ -196,49 +167,11 @@ const AddUserModal = ({
     return changedFields;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Validate all fields
-    let errors = {};
-    let isValid = true;
-
-    if (!EMAIL_REGEX.test(formData.email)) {
-      errors.email = "Invalid email address";
-      isValid = false;
-    }
-
-    if (!MOBILE_REGEX.test(formData.phone)) {
-      errors.phone = "Invalid mobile number";
-      isValid = false;
-    }
-
-    // Validate required select fields
-    if (!formData.role) {
-      errors.role = "Please select a user type";
-      isValid = false;
-    }
-
-    if (!formData.accessibility) {
-      errors.accessibility = "Please select accessibility";
-      isValid = false;
-    }
-
-    // Jobs are not required, so we don't validate them
-
-    setInputErrors(errors);
-    setFieldsValidated({
-      email: true,
-      phone: true,
-      role: true,
-      accessibility: true,
-    });
-
-    if (!isValid) return;
-
+  // Form submission handler
+  const onSubmit = (formData) => {
     // Get only changed fields if editing
     const changedFields = isEdit
-      ? getChangedFields()
+      ? getChangedFields(formData)
       : formData;
 
     // If nothing has changed in edit mode, just close the modal and return
@@ -271,6 +204,16 @@ const AddUserModal = ({
     }
   };
 
+  const handleRemoveJob = (jobId) => {
+    const updatedJobs = jobs_assigned.filter(
+      (id) => id !== jobId
+    );
+    setValue("jobs_assigned", updatedJobs, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
   // Memoize options to prevent unnecessary rerenders
   const roleOptions = useMemo(
     () => [
@@ -301,7 +244,7 @@ const AddUserModal = ({
   // Find selected jobs for display
   const selectedJobs = useMemo(
     () =>
-      formData.jobs_assigned
+      jobs_assigned
         .map((jobId) => {
           const job = jobs.find((j) => j.id === jobId);
           return job
@@ -309,7 +252,7 @@ const AddUserModal = ({
             : null;
         })
         .filter(Boolean),
-    [formData.jobs_assigned, jobs]
+    [jobs_assigned, jobs]
   );
 
   return (
@@ -320,123 +263,180 @@ const AddUserModal = ({
           onClose={onClose}
           title={title}
         >
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-3">
-              <FormField label="Full Name (First Name + Last Name)">
-                <Input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    handleChange("name", e.target.value)
-                  }
-                  placeholder="Enter Full Name"
-                  required
-                />
-              </FormField>
+              <Controller
+                name="name"
+                control={control}
+                rules={{
+                  required: "Full name is required",
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="Full Name (First Name + Last Name)"
+                    error={errors.name?.message}
+                  >
+                    <Input
+                      type="text"
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(e.target.value)
+                      }
+                      placeholder="Enter Full Name"
+                      error={errors.name?.message}
+                    />
+                  </FormField>
+                )}
+              />
 
-              <FormField
-                label="Email ID"
-                error={inputErrors.email}
-              >
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    handleChange(
-                      "email",
-                      e.target.value,
-                      EMAIL_REGEX
-                    )
-                  }
-                  placeholder="Enter Email ID"
-                  required
-                />
-              </FormField>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: EMAIL_REGEX,
+                    message: "Invalid email address",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="Email ID"
+                    error={errors.email?.message}
+                  >
+                    <Input
+                      type="text"
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(e.target.value)
+                      }
+                      placeholder="Enter Email ID"
+                      error={errors.email?.message}
+                    />
+                  </FormField>
+                )}
+              />
 
-              <FormField
-                label="Mobile Number"
-                error={inputErrors.phone}
-              >
-                <Input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    handleChange(
-                      "phone",
-                      e.target.value,
-                      MOBILE_REGEX
-                    )
-                  }
-                  placeholder="Enter Mobile Number"
-                  maxLength={10}
-                  required
-                />
-              </FormField>
+              <Controller
+                name="phone"
+                control={control}
+                rules={{
+                  required: "Mobile number is required",
+                  pattern: {
+                    value: MOBILE_REGEX,
+                    message: "Invalid mobile number",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="Mobile Number"
+                    error={errors.phone?.message}
+                  >
+                    <Input
+                      type="tel"
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(e.target.value)
+                      }
+                      placeholder="Enter Mobile Number"
+                      maxLength={10}
+                      error={errors.phone?.message}
+                    />
+                  </FormField>
+                )}
+              />
 
-              <FormField
-                label="User Type"
-                error={inputErrors.role}
-              >
-                <CustomSelect
-                  type="role"
-                  placeholder="Select User Type"
-                  value={formData.role}
-                  onChange={(e) =>
-                    handleChange("role", e.target.value)
-                  }
-                  options={roleOptions}
-                  errors={inputErrors}
-                  required
-                />
-              </FormField>
+              <Controller
+                name="role"
+                control={control}
+                rules={{
+                  required: "User type is required",
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="User Type"
+                    error={errors.role?.message}
+                  >
+                    <CustomSelect
+                      type="role"
+                      placeholder="Select User Type"
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(e.target.value)
+                      }
+                      options={roleOptions}
+                      errors={errors}
+                    />
+                  </FormField>
+                )}
+              />
 
-              <FormField
-                label="Accessibility"
-                error={inputErrors.accessibility}
-              >
-                <CustomSelect
-                  type="accessibility"
-                  placeholder="Select Accessibility"
-                  value={formData.accessibility}
-                  onChange={(e) =>
-                    handleChange(
-                      "accessibility",
-                      e.target.value
-                    )
-                  }
-                  options={accessibilityOptions}
-                  errors={inputErrors}
-                  required
-                />
-              </FormField>
+              <Controller
+                name="accessibility"
+                control={control}
+                rules={{
+                  required: "Accessibility is required",
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="Accessibility"
+                    error={errors.accessibility?.message}
+                  >
+                    <CustomSelect
+                      type="accessibility"
+                      placeholder="Select Accessibility"
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(e.target.value)
+                      }
+                      options={accessibilityOptions}
+                      errors={errors}
+                    />
+                  </FormField>
+                )}
+              />
 
-              <FormField label="Jobs Assigned">
-                <CustomSelect
-                  type="jobs_assigned"
-                  placeholder="Select Jobs"
-                  value=""
-                  onChange={(e) => {
-                    const jobId = Number(e.target.value);
+              <Controller
+                name="jobs_assigned"
+                control={control}
+                rules={{
+                  validate: (value) => {
                     if (
-                      !formData.jobs_assigned.includes(
-                        jobId
-                      )
+                      accessibility === "AGJ" &&
+                      (!value || value.length === 0)
                     ) {
-                      const updatedJobs = [
-                        ...formData.jobs_assigned,
-                        jobId,
-                      ];
-                      handleChange(
-                        "jobs_assigned",
-                        updatedJobs
-                      );
+                      return "At least one job must be assigned";
                     }
-                  }}
-                  options={jobOptions}
-                  errors={inputErrors}
-                  required={false}
-                />
-              </FormField>
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="Jobs Assigned"
+                    error={errors.jobs_assigned?.message}
+                  >
+                    <CustomSelect
+                      type="jobs_assigned"
+                      placeholder="Select Jobs"
+                      value=""
+                      onChange={(e) => {
+                        const jobId = Number(
+                          e.target.value
+                        );
+                        if (!field.value.includes(jobId)) {
+                          const updatedJobs = [
+                            ...field.value,
+                            jobId,
+                          ];
+                          field.onChange(updatedJobs);
+                        }
+                      }}
+                      options={jobOptions}
+                      errors={errors}
+                    />
+                  </FormField>
+                )}
+              />
             </div>
 
             {selectedJobs.length > 0 && (

@@ -39,6 +39,7 @@ function Settings() {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+    setSelectedUser({});
   };
 
   if (isLoading) return <LoadingState />;

@@ -36,17 +36,18 @@ export const Input = ({
   value,
   onChange,
   placeholder,
-  required,
   maxLength,
+  error,
 }) => (
   <input
     type={type}
     value={value}
     onChange={onChange}
-    required={required}
     maxLength={maxLength}
     placeholder={placeholder}
-    className="w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium"
+    className={`w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium ${
+      error ? "border-[#B10E0EE5]" : "border-[#CAC4D0]"
+    }`}
   />
 );
 
@@ -55,8 +56,8 @@ Input.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  required: PropTypes.bool,
   maxLength: PropTypes.number,
+  error: PropTypes.string,
 };
 
 // Custom Select
@@ -67,7 +68,6 @@ export const CustomSelect = ({
   placeholder,
   type,
   errors,
-  required,
 }) => {
   // Find selected option
   const selectedOption =
@@ -99,7 +99,6 @@ export const CustomSelect = ({
               {selectedOption
                 ? selectedOption.name
                 : placeholder}
-              {required && !selectedOption && " *"}
             </span>
           </ListboxButton>
 
@@ -142,7 +141,6 @@ CustomSelect.propTypes = {
   ]),
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  required: PropTypes.bool,
   type: PropTypes.string,
   errors: PropTypes.object,
 };
