@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { useForm, Controller } from "react-hook-form";
 import axios from "../../api/axios";
 
 import useAuth from "../../hooks/useAuth";
-import useInput from "../../hooks/useInput";
 import useToggle from "../../hooks/useToggle";
 import {
   EMAIL_REGEX,
@@ -19,24 +19,31 @@ import {
   Input,
   ViewHideEyeButton,
 } from "../shared/auth-form-components";
+import { useState } from "react";
 
 const LoginUsingEmail = () => {
   const { setAuth } = useAuth();
-
   const navigate = useNavigate();
   const location = useLocation();
-
   const [isPasswordVisible, setIsPasswordVisible] =
     useState(false);
-  const [inputError, setInputError] = useState({});
-  const [email, resetEmail, setEmail] = useInput(
-    "email",
-    ""
-  );
   const [check, toggleCheck] = useToggle("persist", false);
-  const [password, setPassword] = useState("");
-  const [showEmailError, setShowEmailError] =
-    useState(false);
+
+  // Setup React Hook Form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    getValues,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   // React Query mutation for login
   const loginMutation = useMutation({
@@ -57,10 +64,10 @@ const LoginUsingEmail = () => {
       ] = `Bearer ${accessToken}`;
       const role = data.data.role;
       const name = data.data.name;
+      const email = getValues("email");
 
       setAuth({ email, accessToken, role, name });
-      resetEmail();
-      setPassword("");
+      reset();
 
       toast.success("Logged in successfully", {
         position: "top-right",
@@ -106,14 +113,16 @@ const LoginUsingEmail = () => {
   });
 
   useEffect(() => {
+    // Set remembered email if check is true
     if (check) {
-      setEmail(email);
+      const rememberedEmail =
+        localStorage.getItem("email") || "";
+      setValue("email", rememberedEmail);
     } else {
-      setEmail("");
+      setValue("email", "");
     }
-    setPassword("");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setValue("password", "");
+  }, [check, setValue]);
 
   const handleFPNavigation = () => {
     navigate("/auth/forgetpass");
@@ -123,44 +132,26 @@ const LoginUsingEmail = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleEmailChange = (e) => {
-    const emailValue = e.target.value;
-    if (showEmailError) {
-      if (
-        !EMAIL_REGEX.test(emailValue) &&
-        emailValue.length > 0
-      ) {
-        setInputError({
-          email: "Invalid email address",
-        });
-      } else {
-        setInputError({ email: "" });
-      }
+  // Form submission handler
+  const onSubmit = (data) => {
+    // Save email to localStorage if remember me is checked
+    if (check) {
+      localStorage.setItem("email", data.email);
     } else {
-      setInputError({ email: "" });
-    }
-    setEmail(e.target.value);
-  };
-
-  const handleLoginViaEmail = async (e) => {
-    e.preventDefault();
-
-    if (!EMAIL_REGEX.test(email)) {
-      setInputError({
-        email: "Invalid email address",
-      });
-      setShowEmailError(true);
-      return;
+      localStorage.removeItem("email");
     }
 
-    loginMutation.mutate({ email, password });
+    loginMutation.mutate({
+      email: data.email,
+      password: data.password,
+    });
   };
 
   return (
     <div className="w-full h-full mt-5">
       <div className="flex items-center justify-center">
         <form
-          onSubmit={handleLoginViaEmail}
+          onSubmit={handleSubmit(onSubmit)}
           className="p-2 w-[75%] h-full"
         >
           <div className="flex flex-col w-full h-full mt-1">
@@ -169,41 +160,62 @@ const LoginUsingEmail = () => {
               className="mb-1"
               label="Login using Email"
             />
-            <Input
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              required
-              id="email"
-              autoComplete="off"
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: EMAIL_REGEX,
+                  message: "Invalid email address",
+                },
+              }}
+              render={({ field }) => (
+                <Input
+                  type="email"
+                  value={field.value}
+                  onChange={field.onChange}
+                  id="email"
+                  autoComplete="off"
+                />
+              )}
             />
             <p
               className={`text-[#B10E0EE5] text-xs ${
-                inputError?.email
+                errors.email
                   ? "visible mt-2"
                   : "invisible h-[12px]"
               }`}
             >
-              {inputError?.email}
+              {errors.email?.message}
             </p>
           </div>
+
           <div className="flex flex-col w-full h-full mt-1">
             <Label
-              name="number"
+              name="password"
               className="mb-1 mt-3"
               label="Password"
             />
             <div className="flex items-center justify-start">
-              <Input
-                id="number"
-                value={password}
-                onChange={(e) =>
-                  setPassword(e.target.value)
-                }
-                required
-                type={
-                  isPasswordVisible ? "text" : "password"
-                }
+              <Controller
+                name="password"
+                control={control}
+                rules={{
+                  required: "Password is required",
+                }}
+                render={({ field }) => (
+                  <Input
+                    id="password"
+                    value={field.value}
+                    onChange={field.onChange}
+                    type={
+                      isPasswordVisible
+                        ? "text"
+                        : "password"
+                    }
+                  />
+                )}
               />
               <ViewHideEyeButton
                 onClick={togglePassVisibility}
@@ -211,7 +223,17 @@ const LoginUsingEmail = () => {
                 className={"ml-[-10%]"}
               />
             </div>
+            <p
+              className={`text-[#B10E0EE5] text-xs ${
+                errors.password
+                  ? "visible mt-2"
+                  : "invisible h-[12px]"
+              }`}
+            >
+              {errors.password?.message}
+            </p>
           </div>
+
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center">
               <input

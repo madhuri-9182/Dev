@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import axios from "../../api/axios";
 import { EMAIL_REGEX } from "../Constants/constants";
+import { useForm, Controller } from "react-hook-form";
 import {
   SubmitButton,
   Label,
@@ -11,19 +11,26 @@ import {
 } from "../shared/auth-form-components";
 
 function ForgetPass() {
-  const [email, setEmail] = useState("");
-  const [inputError, setInputError] = useState({});
-  const [showEmailError, setShowEmailError] =
-    useState(false);
-
   const navigate = useNavigate();
+
+  // Setup React Hook Form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid, isDirty },
+  } = useForm({
+    mode: "onTouched",
+    defaultValues: {
+      email: "",
+    },
+  });
 
   // React Query mutation for password reset
   const resetPasswordMutation = useMutation({
-    mutationFn: async (email) => {
+    mutationFn: async (data) => {
       const response = await axios.post(
         "/api/password_reset/",
-        { email }
+        { email: data.email }
       );
       return response.data;
     },
@@ -55,35 +62,9 @@ function ForgetPass() {
     },
   });
 
-  const handleEmailChange = (e) => {
-    const emailValue = e.target.value;
-    if (showEmailError) {
-      if (
-        !EMAIL_REGEX.test(emailValue) &&
-        emailValue.length > 0
-      ) {
-        setInputError({
-          email: "Invalid email address",
-        });
-      } else {
-        setInputError({});
-      }
-    }
-    setEmail(emailValue);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!EMAIL_REGEX.test(email)) {
-      setInputError({
-        email: "Invalid email address",
-      });
-      setShowEmailError(true);
-      return;
-    }
-
-    resetPasswordMutation.mutate(email);
+  // Submit handler that gets called when form is valid
+  const onSubmit = (data) => {
+    resetPasswordMutation.mutate(data);
   };
 
   return (
@@ -91,42 +72,65 @@ function ForgetPass() {
       <div className="flex items-center justify-center">
         <form
           className="p-2 w-[75%] h-[441px]"
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
         >
           <p className="ml-[3%] mb-7 w-full mt-1 text-default font-medium font-outfit text-label">
             Please enter your registered E-mail Id
           </p>
+
           <div className="flex flex-col w-full mt-1 mb-10">
             <Label
               className="mb-5"
               label={"E-Mail Id :"}
               name={"email"}
             />
-            <Input
-              type={"email"}
-              name={"email"}
-              required={true}
-              value={email}
-              onChange={handleEmailChange}
-              autoComplete={"off"}
+
+            {/* Using Controller to wrap the custom Input component */}
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: EMAIL_REGEX,
+                  message: "Invalid email address",
+                },
+              }}
+              render={({ field }) => (
+                <Input
+                  type="email"
+                  name="email"
+                  required={true}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  autoComplete="off"
+                />
+              )}
             />
+
             <p
               className={`text-[#B10E0EE5] text-xs ${
-                inputError?.email
+                errors.email
                   ? "visible mt-2"
                   : "invisible h-[12px]"
               }`}
             >
-              {inputError?.email}
+              {errors.email?.message}
             </p>
           </div>
+
           <SubmitButton
             label={
               resetPasswordMutation.isPending
                 ? "Submitting..."
                 : "Submit"
             }
-            disabled={resetPasswordMutation.isPending}
+            disabled={
+              !isDirty ||
+              !isValid ||
+              resetPasswordMutation.isPending
+            }
           />
         </form>
       </div>

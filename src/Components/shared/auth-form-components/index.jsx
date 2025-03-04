@@ -4,7 +4,7 @@ import {
   AiOutlineEye,
   AiOutlineEyeInvisible,
 } from "react-icons/ai";
-import { FaCheck, FaCircleCheck } from "react-icons/fa6";
+import { FaCircleCheck } from "react-icons/fa6";
 import { Switch } from "@headlessui/react";
 
 export const Input = ({
@@ -23,7 +23,7 @@ export const Input = ({
         onChange={onChange}
         required={required}
         id={id}
-        className="border-2 rounded-md w-[100%] px-2 py-[10px] text-[14px]"
+        className="border-2 rounded-md w-[100%] px-2 py-[10px] text-xs"
         {...props}
       />
     </React.Fragment>
@@ -42,7 +42,7 @@ export const Label = ({ name, label, className }) => {
   return (
     <label
       htmlFor={name}
-      className={`text-default font-medium font-outfit text-label ${className}`}
+      className={`text-xs font-medium font-outfit text-label ${className}`}
     >
       {label}
     </label>
@@ -60,7 +60,7 @@ export const SubmitButton = ({ disabled, label }) => {
     <button
       type="submit"
       disabled={disabled}
-      className="w-full p-[11px] font-outfit font-bold text-base text-[#FFFFFF] tracking-[1%] leading-[auto] bg-[#056DDC] rounded-[100px] disabled:bg-[#B0B0B0] disabled:cursor-not-allowed"
+      className="w-full p-[11px] font-outfit font-bold text-sm text-[#FFFFFF] tracking-[1%] leading-[auto] bg-[#056DDC] rounded-[100px] disabled:bg-[#B0B0B0] disabled:cursor-not-allowed"
     >
       {label}
     </button>
@@ -81,7 +81,7 @@ export const SecondaryButton = ({
     <button
       disabled={disabled}
       onClick={onClick}
-      className="w-full p-2 mt-5 font-bold text-base text-link border-0 shadow-md bg-[#FFFFFF] rounded-[21px] disabled:cursor-not-allowed"
+      className="w-full p-2 mt-5 font-bold text-sm text-link border-0 shadow-md bg-[#FFFFFF] rounded-[21px] disabled:cursor-not-allowed"
     >
       {label}
     </button>
@@ -101,7 +101,7 @@ export const ViewHideEyeButton = ({
 }) => {
   return (
     <p
-      className={`text-[22px] cursor-pointer ${className}`}
+      className={`text-[20px] cursor-pointer ${className}`}
       onClick={onClick}
     >
       {isPasswordVisible ? (
@@ -127,7 +127,7 @@ export const MatchedPassword = ({
     <p>
       {isMatched && (
         <FaCircleCheck
-          className={`text-[#2ECC71] text-xl font-bold ${className}`}
+          className={`text-[#2ECC71] text-lg font-bold ${className}`}
         />
       )}
     </p>
@@ -161,31 +161,22 @@ export const PasswordCriteriaList = ({ criteria }) => {
 
   return (
     <div>
-      <p className="text-gray-500 uppercase text-xs font-bold mb-5">
+      <p className="text-gray-500 uppercase text-xs font-bold mb-4">
         Your password must contain
       </p>
       <ul className="list-none flex flex-col gap-1">
         {PASSWORD_CRITERIA.map((criteriaItem, index) => (
           <li
             key={index}
-            className="flex items-center font-semibold text-xs text-gray-500"
+            className="flex items-center font-semibold text-2xs text-gray-500"
           >
             <Switch
               checked={criteriaItem.checked}
-              className={`${
-                criteriaItem.checked
-                  ? "bg-green-500"
-                  : "bg-gray-200"
-              } relative inline-flex h-5 w-5 mr-2 rounded-full transition-colors focus:outline-none`}
+              className={`${"bg-gray-200"} flex h-4 w-4 mr-2 rounded-full transition-colors focus:outline-none items-center justify-center`}
               disabled
             >
-              <span className="sr-only">
-                {criteriaItem.name}
-              </span>
               {criteriaItem.checked && (
-                <span className="absolute inset-0 flex items-center justify-center text-white">
-                  <FaCheck className="text-xs" />
-                </span>
+                <span className="flex items-center justify-center text-white h-[12px] w-[12px] bg-green-500 rounded-full"></span>
               )}
             </Switch>
             {criteriaItem.name}

@@ -13,6 +13,7 @@ import axios from "../../api/axios";
 import toast from "react-hot-toast";
 import { FaCircleCheck } from "react-icons/fa6";
 import { useMutation } from "@tanstack/react-query";
+import { useForm, Controller } from "react-hook-form";
 
 // Create API client for password reset
 const resetPassword = async ({ password, token }) => {
@@ -30,17 +31,6 @@ const PasswordReset = () => {
     isConfirmPasswordVisible,
     setIsConfirmPasswordVisible,
   ] = useState(false);
-  const toggleNewPassVisibility = () => {
-    setIsNewPasswordVisible(!isNewPasswordVisible);
-  };
-  const toggleConfirmPassVisibility = () => {
-    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
-  };
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
-  const [isMatch, setIsMatch] = useState(false);
   const [criteria, setCriteria] = useState({
     length: false,
     uppercase: false,
@@ -52,6 +42,28 @@ const PasswordReset = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const token = location.pathname.split("/")[3];
+
+  // Setup React Hook Form
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onTouched",
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // Watch password field for validation and password matching
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
+  const isMatch =
+    password &&
+    confirmPassword &&
+    password === confirmPassword;
 
   // Setup React Query mutation
   const passwordResetMutation = useMutation({
@@ -76,10 +88,8 @@ const PasswordReset = () => {
     },
   });
 
-  const handlePasswordChange = (e) => {
-    const value = e.target.value;
-    setPassword(value);
-    setIsMatch(value !== "" && value === confirmPassword);
+  // Update password criteria whenever password changes
+  const updatePasswordCriteria = (value) => {
     setCriteria({
       length: value.length >= 8 && value.length <= 20,
       uppercase: /[A-Z]/.test(value),
@@ -88,16 +98,21 @@ const PasswordReset = () => {
     });
   };
 
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-    setIsMatch(
-      e.target.value !== "" && e.target.value === password
-    );
+  // Toggle password visibility functions
+  const toggleNewPassVisibility = () => {
+    setIsNewPasswordVisible(!isNewPasswordVisible);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    passwordResetMutation.mutate({ password, token });
+  const toggleConfirmPassVisibility = () => {
+    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+  };
+
+  // Submit handler
+  const onSubmit = (data) => {
+    passwordResetMutation.mutate({
+      password: data.password,
+      token,
+    });
   };
 
   return (
@@ -107,70 +122,135 @@ const PasswordReset = () => {
         {!success ? (
           <form
             className="flex flex-col justify-center w-[75%] h-full"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
           >
             <div className="flex flex-col w-full h-full mt-1">
               <Label
-                name={"newPassword"}
+                name={"password"}
                 className="mb-1"
                 label={"New Password"}
               />
-              <div className="flex items-center justify-start mb-4">
-                <Input
-                  type={
-                    isNewPasswordVisible
-                      ? "text"
-                      : "password"
-                  }
-                  required={true}
-                  id="newPassword"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-                <ViewHideEyeButton
-                  isPasswordVisible={isNewPasswordVisible}
-                  onClick={toggleNewPassVisibility}
-                  className={
-                    isMatch ? "ml-[-65px]" : "ml-[-40px]"
-                  }
-                />
-                <MatchedPassword
-                  isMatched={isMatch}
-                  className={"ml-2"}
-                />
+              <div className="flex flex-col w-full">
+                <div className="flex items-center justify-start">
+                  <Controller
+                    name="password"
+                    control={control}
+                    rules={{
+                      required: "Password is required",
+                      validate: (value) => {
+                        if (
+                          !(
+                            value.length >= 8 &&
+                            value.length <= 20
+                          )
+                        ) {
+                          return "Password must be 8-20 characters";
+                        }
+                        if (!/[A-Z]/.test(value)) {
+                          return "Password must include uppercase letter";
+                        }
+                        if (!/\d/.test(value)) {
+                          return "Password must include a number";
+                        }
+                        if (
+                          !/[!@#$%^&*(),.?":{}|<>]/.test(
+                            value
+                          )
+                        ) {
+                          return "Password must include a special character";
+                        }
+                        return true;
+                      },
+                    }}
+                    render={({ field }) => (
+                      <Input
+                        type={
+                          isNewPasswordVisible
+                            ? "text"
+                            : "password"
+                        }
+                        required={true}
+                        id="password"
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          updatePasswordCriteria(
+                            e.target.value
+                          );
+                        }}
+                      />
+                    )}
+                  />
+                  <ViewHideEyeButton
+                    isPasswordVisible={isNewPasswordVisible}
+                    onClick={toggleNewPassVisibility}
+                    className={
+                      isMatch ? "ml-[-65px]" : "ml-[-40px]"
+                    }
+                  />
+                  <MatchedPassword
+                    isMatched={isMatch}
+                    className={"ml-2"}
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-[#B10E0EE5] text-xs mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
-            <div className="flex flex-col w-full h-full mt-1">
+            <div className="flex flex-col w-full h-full mt-4">
               <Label
                 className="mb-1"
                 label="Confirm Password"
                 name="confirmPassword"
               />
-              <div className="flex items-center justify-start mb-11">
-                <Input
-                  type={
-                    isConfirmPasswordVisible
-                      ? "text"
-                      : "password"
-                  }
-                  required={true}
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                />
-                <ViewHideEyeButton
-                  isPasswordVisible={
-                    isConfirmPasswordVisible
-                  }
-                  onClick={toggleConfirmPassVisibility}
-                  className={
-                    isMatch ? "ml-[-65px]" : "ml-[-40px]"
-                  }
-                />
-                <MatchedPassword
-                  isMatched={isMatch}
-                  className={"ml-2"}
-                />
+              <div className="flex flex-col w-full mb-4">
+                <div className="flex items-center justify-start">
+                  <Controller
+                    name="confirmPassword"
+                    control={control}
+                    rules={{
+                      required:
+                        "Please confirm your password",
+                      validate: (value) =>
+                        value === password ||
+                        "Passwords do not match",
+                    }}
+                    render={({ field }) => (
+                      <Input
+                        type={
+                          isConfirmPasswordVisible
+                            ? "text"
+                            : "password"
+                        }
+                        required={true}
+                        id="confirmPassword"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <ViewHideEyeButton
+                    isPasswordVisible={
+                      isConfirmPasswordVisible
+                    }
+                    onClick={toggleConfirmPassVisibility}
+                    className={
+                      isMatch ? "ml-[-65px]" : "ml-[-40px]"
+                    }
+                  />
+                  <MatchedPassword
+                    isMatched={isMatch}
+                    className={"ml-2"}
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-[#B10E0EE5] text-xs mt-1">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
             </div>
             <PasswordCriteriaList criteria={criteria} />
@@ -181,7 +261,7 @@ const PasswordReset = () => {
                   !criteria.uppercase ||
                   !criteria.number ||
                   !criteria.specialChar ||
-                  password != confirmPassword ||
+                  !isMatch ||
                   passwordResetMutation.isPending
                 }
                 label={
