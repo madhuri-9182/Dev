@@ -116,7 +116,7 @@ const MultiSelect = ({
           {dropdownOptions.map((option) => (
             <div
               key={option.id}
-              className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-xs"
+              className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-2xs"
               onClick={() => handleSelect(option.id)}
             >
               {option.name}

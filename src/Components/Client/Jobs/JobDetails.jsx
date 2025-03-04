@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
@@ -14,11 +15,18 @@ import {
   JOB_NAMES,
   JOB_TYPES,
 } from "../../Constants/constants";
+import _ from "lodash";
 
 const JobDetails = () => {
   const navigate = useNavigate();
-  const { formdata, setFormdata, isEdit, selectedData } =
-    useJobContext();
+  const {
+    formdata,
+    setFormdata,
+    isEdit,
+    selectedData,
+    originalFormData,
+    getChangedFields,
+  } = useJobContext();
 
   const queryClient = useQueryClient();
   const [archiveModalOpen, setArchiveModalOpen] =
@@ -26,6 +34,7 @@ const JobDetails = () => {
   const [detailsModalOpen, setDetailsModalOpen] =
     useState(false);
   const [editDetail, setEditDetail] = useState(null);
+  // Initialize details with default value
   const [details, setDetails] = useState([
     {
       id: Date.now(),
@@ -35,6 +44,42 @@ const JobDetails = () => {
         "Introduce Yourself\nAsk Introduction\nEtc.",
     },
   ]);
+  const [initialDetails, setInitialDetails] = useState([]);
+
+  // Update details when formdata changes or in edit mode
+  useEffect(() => {
+    if (isEdit && formdata.other_details) {
+      try {
+        const parsedDetails =
+          typeof formdata.other_details === "string"
+            ? JSON.parse(formdata.other_details)
+            : formdata.other_details;
+
+        if (
+          Array.isArray(parsedDetails) &&
+          parsedDetails.length > 0
+        ) {
+          const detailsWithIds = parsedDetails.map(
+            (detail) => ({
+              ...detail,
+              id: detail.id || Date.now() + Math.random(),
+              time: detail.time.endsWith("min")
+                ? detail.time
+                : `${detail.time}min`,
+            })
+          );
+
+          setDetails(detailsWithIds);
+          setInitialDetails(_.cloneDeep(detailsWithIds));
+        }
+      } catch (error) {
+        console.error(
+          "Error parsing other_details:",
+          error
+        );
+      }
+    }
+  }, [formdata, isEdit]);
 
   const handleAddDetail = () => {
     setEditDetail(null); // Reset edit state
@@ -98,48 +143,183 @@ const JobDetails = () => {
     };
   }, [navigate]);
 
+  // Compare details for changes
+  const haveDetailsChanged = () => {
+    const originalDetails =
+      originalFormData?.other_details || [];
+
+    let parsedOriginalDetails = [];
+    try {
+      parsedOriginalDetails =
+        typeof originalDetails === "string"
+          ? JSON.parse(originalDetails)
+          : originalDetails;
+    } catch (error) {
+      console.error(
+        "Error parsing original details:",
+        error
+      );
+      return true;
+    }
+    if (parsedOriginalDetails.length !== details.length)
+      return true;
+    const normalizedOriginalDetails =
+      parsedOriginalDetails.map((detail) => {
+        const detailObj =
+          typeof detail === "string"
+            ? JSON.parse(detail)
+            : detail;
+        const { id, ...rest } = detailObj;
+        return {
+          ...rest,
+          time: (rest.time || "")
+            .replace(" Minutes", "min")
+            .replace("min", "min"),
+        };
+      });
+
+    const normalizedCurrentDetails = details.map(
+      (detail) => {
+        const { id, ...rest } = detail;
+        return {
+          ...rest,
+          time: rest.time
+            .replace(" Minutes", "min")
+            .replace("min", "min"),
+        };
+      }
+    );
+
+    for (
+      let i = 0;
+      i < normalizedOriginalDetails.length;
+      i++
+    ) {
+      if (
+        !_.isEqual(
+          normalizedOriginalDetails[i],
+          normalizedCurrentDetails[i]
+        )
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const hasDataChanged = () => {
+    if (!isEdit) return true;
+
+    if (!originalFormData) return true;
+
+    if (haveDetailsChanged()) return true;
+
+    const changedFields = getChangedFields();
+
+    return Object.keys(changedFields).length > 0;
+  };
+
   const handleSubmit = () => {
+    // Check if there are any changes
+    if (!hasDataChanged()) {
+      toast.success("No changes to save", {
+        position: "top-right",
+      });
+      navigate("/client/jobs");
+      return;
+    }
+
     const formdataToSubmit = new FormData();
-    formdataToSubmit.append("name", formdata.name);
-    formdataToSubmit.append("job_id", formdata.job_id);
-    formdataToSubmit.append(
-      "recruiter_ids",
-      JSON.stringify(formdata.recruiter_ids)
-    );
-    formdataToSubmit.append(
-      "hiring_manager_id",
-      formdata.hiring_manager_id
-    );
-    formdataToSubmit.append(
-      "total_positions",
-      formdata.total_positions
-    );
-    formdataToSubmit.append(
-      "mandatory_skills",
-      JSON.stringify(formdata.mandatory_skills)
-    );
-    formdataToSubmit.append(
-      "interview_time",
-      formdata.interview_time
-    );
-    formdataToSubmit.append(
-      "job_description_file",
-      formdata.job_description_file
-    );
-    formdataToSubmit.append("other_details", details);
-    formdataToSubmit.append(
-      "reason_for_archived",
-      formdata.reason_for_archived
-        ? formdata.reason_for_archived
-        : ""
-    );
-    details.map((detail) => {
-      detail.time = detail.time.replace(" Minutes", "min");
-    });
-    formdataToSubmit.append(
-      "other_details",
-      JSON.stringify(details)
-    );
+
+    if (!isEdit) {
+      formdataToSubmit.append("name", formdata.name);
+      formdataToSubmit.append("job_id", formdata.job_id);
+      formdataToSubmit.append(
+        "recruiter_ids",
+        JSON.stringify(formdata.recruiter_ids)
+      );
+      formdataToSubmit.append(
+        "hiring_manager_id",
+        formdata.hiring_manager_id
+      );
+      formdataToSubmit.append(
+        "total_positions",
+        formdata.total_positions
+      );
+      formdataToSubmit.append(
+        "mandatory_skills",
+        JSON.stringify(formdata.mandatory_skills)
+      );
+      formdataToSubmit.append(
+        "interview_time",
+        formdata.interview_time
+      );
+      formdataToSubmit.append(
+        "specialization",
+        formdata.specialization
+      );
+      formdataToSubmit.append(
+        "job_description_file",
+        formdata.job_description_file
+      );
+    } else {
+      const changedFields = getChangedFields();
+
+      Object.entries(changedFields).forEach(
+        ([key, value]) => {
+          // Skip other_details as we handle it separately
+          if (key !== "other_details") {
+            if (
+              typeof value === "object" &&
+              !Array.isArray(value) &&
+              !(value instanceof File)
+            ) {
+              formdataToSubmit.append(
+                key,
+                JSON.stringify(value)
+              );
+            } else if (Array.isArray(value)) {
+              formdataToSubmit.append(
+                key,
+                JSON.stringify(value)
+              );
+            } else {
+              formdataToSubmit.append(key, value || "");
+            }
+          }
+        }
+      );
+
+      // Always add other_details if they've changed
+      if (haveDetailsChanged()) {
+        const processedDetails = details.map((detail) => {
+          const detailCopy = { ...detail };
+
+          detailCopy.time = detailCopy.time.replace(
+            " Minutes",
+            "min"
+          );
+          delete detailCopy.id;
+
+          return detailCopy;
+        });
+
+        formdataToSubmit.append(
+          "other_details",
+          JSON.stringify(processedDetails)
+        );
+      }
+    }
+
+    if (isEdit && formdataToSubmit.entries().next().done) {
+      toast.success("No changes to save", {
+        position: "top-right",
+      });
+      navigate("/client/jobs");
+      return;
+    }
+
     isEdit
       ? mutation.mutate({
           jobData: formdataToSubmit,

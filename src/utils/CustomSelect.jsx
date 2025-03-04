@@ -9,7 +9,6 @@ const CustomSelect = ({
   dropdownOptions,
   errors,
   type,
-  setErrors,
 }) => {
   const optionRef = useRef(null);
 
@@ -39,13 +38,6 @@ const CustomSelect = ({
   const handleSelect = (option) => {
     setSelectedValue(option);
     setIsDropdownOpen(false);
-    setErrors((prevErrors) => {
-      const newErrors = { ...prevErrors };
-      if (option && newErrors[type]) {
-        delete newErrors[type];
-      }
-      return newErrors;
-    });
   };
 
   return (
@@ -76,6 +68,8 @@ const CustomSelect = ({
               )?.name
             : type === "jobRole"
             ? "Select Job Role"
+            : type === "specialization"
+            ? "Select Function"
             : "Select Hiring Manager"}
         </span>
       </div>
@@ -110,5 +104,4 @@ CustomSelect.propTypes = {
   dropdownOptions: PropTypes.array,
   errors: PropTypes.object,
   type: PropTypes.string,
-  setErrors: PropTypes.func,
 };

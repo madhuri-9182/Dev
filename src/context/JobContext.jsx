@@ -6,6 +6,7 @@ import {
 } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { createFileFromUrl } from "../utils/util";
+import _ from "lodash";
 
 const JobContext = createContext({});
 
@@ -20,21 +21,25 @@ export const useJobContext = () => {
   return context;
 };
 
+const initialState = {
+  name: "",
+  job_id: "",
+  recruiter_ids: [],
+  hiring_manager_id: "",
+  total_positions: "",
+  mandatory_skills: [],
+  interview_time: "01:00:00",
+  job_description_file: undefined,
+  other_details: [],
+  reason_for_archived: "",
+};
+
 export const JobProvider = () => {
   const navigate = useNavigate();
-  const [formdata, setFormdata] = useState({
-    name: "",
-    job_id: "",
-    recruiter_ids: [],
-    hiring_manager_id: "",
-    total_positions: "",
-    mandatory_skills: [],
-    interview_time: "01:00:00",
-    job_description_file: undefined,
-    other_details: [],
-    reason_for_archived: "",
-  });
+  const [formdata, setFormdata] = useState(initialState);
   const [selectedData, setSelectedData] = useState({});
+  const [originalFormData, setOriginalFormData] =
+    useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [archiveId, setArchiveId] = useState(null);
   const [allJobs, setAllJobs] = useState([]);
@@ -52,6 +57,12 @@ export const JobProvider = () => {
       setSelectedData(data);
     }
     navigate("/client/jobs/job-details");
+  };
+
+  const reset = () => {
+    setFormdata(initialState);
+    setSelectedData({});
+    setOriginalFormData(null);
   };
 
   const handleAddJobClick = (data) => {
@@ -101,7 +112,7 @@ export const JobProvider = () => {
           selectedData
         );
 
-        setFormdata({
+        const normalizedData = {
           ...selectedData,
           hiring_manager_id:
             selectedData.hiring_manager?.id,
@@ -112,12 +123,36 @@ export const JobProvider = () => {
             selectedData.total_positions
           ),
           job_description_file: file, // Now it's a resolved File object
-        });
+        };
+
+        setFormdata(normalizedData);
+        // Store original data for comparison
+        setOriginalFormData(_.cloneDeep(normalizedData));
       };
       fetchFile();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedData]);
+
+  // Create a function to get changes between original and current formdata
+  const getChangedFields = () => {
+    if (!isEdit || !originalFormData) return formdata;
+
+    const changes = {};
+
+    // Compare each field and only include changed ones
+    Object.keys(formdata).forEach((key) => {
+      // Skip other_details as it's handled separately in the component
+      if (
+        key !== "other_details" &&
+        !_.isEqual(formdata[key], originalFormData[key])
+      ) {
+        changes[key] = formdata[key];
+      }
+    });
+
+    return changes;
+  };
 
   return (
     <JobContext.Provider
@@ -126,6 +161,9 @@ export const JobProvider = () => {
         setFormdata,
         selectedData,
         setSelectedData,
+        originalFormData,
+        setOriginalFormData,
+        getChangedFields,
         currentPage,
         setCurrentPage,
         archiveId,
@@ -141,6 +179,7 @@ export const JobProvider = () => {
         handleChangePage,
         handleAddJobClick,
         isEdit,
+        reset,
       }}
     >
       <Outlet />
