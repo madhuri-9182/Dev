@@ -43,7 +43,7 @@ function ClientAddCandidate() {
   const [filesMap, setFilesMap] = useState(new Map());
   const [filters, setFilters] = useState({
     role: selectedJob?.id || "", // Prefill with selected job id if available
-    specialization: "",
+    specialization: selectedJob?.function || "",
     source: "",
   });
   const [resumeTableData, setResumeTableData] = useState(
@@ -153,6 +153,7 @@ function ClientAddCandidate() {
             onSelect={(value) =>
               handleFilterChange("role", value)
             }
+            disabled={!!selectedJob?.id}
           />
           <FilterGroup
             label="Function"
@@ -161,6 +162,7 @@ function ClientAddCandidate() {
             onSelect={(value) =>
               handleFilterChange("specialization", value)
             }
+            disabled={!!selectedJob?.function}
           />
           <FilterGroup
             label="Source"

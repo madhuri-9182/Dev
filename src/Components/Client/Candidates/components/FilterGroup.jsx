@@ -7,6 +7,7 @@ export const FilterGroup = ({
   options,
   selectedOption,
   onSelect,
+  disabled = false, // Add disabled prop with default value
 }) => (
   <div className="flex items-center gap-3">
     <span className="text-2xs font-semibold w-14 min-w-14">
@@ -21,8 +22,24 @@ export const FilterGroup = ({
                   selectedOption === option.id
                     ? "bg-[#E8DEF8] text-[#4A4459] border border-[#E8DEF8]"
                     : "text-[#4A4459] border border-[#CAC4D0]"
+                }
+                ${
+                  disabled && selectedOption !== option.id
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+                ${
+                  disabled && selectedOption === option.id
+                    ? "opacity-90"
+                    : ""
                 }`}
-          onClick={() => onSelect?.(option.id)}
+          onClick={() => !disabled && onSelect?.(option.id)}
+          disabled={disabled}
+          title={
+            disabled
+              ? "This filter is locked based on the selected job"
+              : ""
+          }
         >
           {selectedOption === option.id && (
             <FaCheck className="mr-2" />
@@ -50,4 +67,5 @@ FilterGroup.propTypes = {
     PropTypes.number,
   ]),
   onSelect: PropTypes.func,
+  disabled: PropTypes.bool, // Add PropType for disabled
 };

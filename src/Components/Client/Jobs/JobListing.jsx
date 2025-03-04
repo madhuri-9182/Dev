@@ -54,15 +54,20 @@ const JobListing = ({ data }) => {
   };
 
   const handleAddCandidateClick = (job) => {
-    // Navigate to add candidate page with job info in state
-    navigate("/client/candidates/add-candidate", {
-      state: {
-        selectedJob: {
-          id: job.id,
-          name: job.name,
-          label: getJobLabel(job.name),
-        },
+    const stateObject = {
+      selectedJob: {
+        id: job.id,
+        name: job.name,
+        label: getJobLabel(job.name),
       },
+    };
+
+    if (job.specialization) {
+      stateObject.selectedJob.function = job.specialization;
+    }
+
+    navigate("/client/candidates/add-candidate", {
+      state: stateObject,
     });
   };
 
