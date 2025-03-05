@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import JobListing from "./JobListing";
 import { useQuery } from "@tanstack/react-query";
 import { fetchJobs } from "./api";
@@ -9,8 +8,7 @@ import {
 } from "../../shared/loading-error-state";
 
 const Jobs = () => {
-  const { currentPage, filters, setAllJobs } =
-    useJobContext();
+  const { currentPage, filters } = useJobContext();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [
@@ -26,12 +24,6 @@ const Jobs = () => {
     queryFn: fetchJobs,
     keepPreviousData: true,
   });
-
-  useEffect(() => {
-    if (data?.results && data.results.length > 0) {
-      setAllJobs(data.results);
-    }
-  }, [data, setAllJobs]);
 
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
