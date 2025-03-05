@@ -1,6 +1,6 @@
 import pdfToText from "react-pdftotext";
 import { JOB_NAMES } from "../Components/Constants/constants";
-import axios from "../api/axios";
+import axios, { axiosFile } from "../api/axios";
 
 export const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("en-GB");
@@ -73,13 +73,41 @@ export const base64ToFile = (base64, filename) => {
   return new File([u8arr], filename, { type: mime });
 };
 
+export const extractFilename = (url) => {
+  if (!url) return "";
+  // Extract the path without query parameters
+  const pathWithoutQuery = url.split("?")[0];
+  // Get the last part of the path which should be the filename
+  return pathWithoutQuery.split("/").pop();
+};
+
+export const extractFileExtension = (url) => {
+  if (!url) return "";
+  // Get the filename without query parameters
+  const filename = extractFilename(url);
+  // Split by dot and get the last part which should be the extension
+  const parts = filename.split(".");
+  // If there's no extension, return empty string
+  if (parts.length <= 1) return "";
+  return parts.pop().toLowerCase();
+};
+
+export const processFileUrl = (url) => {
+  return {
+    fileName: extractFilename(url),
+    fileExtension: extractFileExtension(url),
+  };
+};
+
 export const createFileFromUrl = async (url) => {
-  const response = await axios.get(url, {
+  const axiosToUse = url.includes("?X-Amz-Algorithm")
+    ? axiosFile
+    : axios;
+  const response = await axiosToUse.get(url, {
     responseType: "blob",
   });
 
-  const fileName = url.split("/").pop();
-  const fileExtension = url.split(".").pop().toLowerCase();
+  const { fileName, fileExtension } = processFileUrl(url);
 
   let fileType;
   switch (fileExtension) {

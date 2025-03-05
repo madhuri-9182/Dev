@@ -187,13 +187,10 @@ export const FilterTags = ({
     managerFilters.length > 0;
 
   if (!hasFilters) return null;
-  console.log(groupedJobs, "groupedJobs");
 
   const getJobName = (jobId) => {
     for (const [name, ids] of Object.entries(groupedJobs)) {
-      console.log(name, ids, jobId);
       if (ids.includes(jobId[0])) {
-        console.log("found", name);
         return getJobLabel(name);
       }
     }
