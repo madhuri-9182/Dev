@@ -124,7 +124,7 @@ export const FilterListbox = ({
                               : "font-normal"
                           }`}
                         >
-                          {optionLabel}
+                          {getJobLabel(optionLabel)}
                         </span>
                         {isSelected && (
                           <span

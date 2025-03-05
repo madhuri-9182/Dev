@@ -140,7 +140,7 @@ const JobListing = ({ data }) => {
       {/* Filters */}
       <div className="flex items-center gap-4 mb-6 flex-wrap">
         {/* Job Filter */}
-        <div className="min-w-24">
+        <div className="min-w-36">
           <FilterListbox
             value={filters.job_ids}
             onChange={(selectedJobs) => {
