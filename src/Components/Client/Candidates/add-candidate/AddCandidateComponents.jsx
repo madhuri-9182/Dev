@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   CloseCircle,
@@ -83,6 +83,12 @@ const ResumeTableRow = ({
   });
   const [errors, setErrors] = useState({});
 
+  // Validate fields immediately when component mounts
+  useEffect(() => {
+    validateFields();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleChange = (e, field, subField = null) => {
     const value = e.target.value;
     setErrors((prevErrors) => ({
@@ -101,6 +107,8 @@ const ResumeTableRow = ({
       }
       return { ...prev, [field]: value };
     });
+    // Validate the field immediately after changing it
+    setTimeout(() => validateFields(), 0);
   };
 
   const validateFields = () => {

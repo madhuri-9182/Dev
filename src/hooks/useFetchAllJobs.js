@@ -13,11 +13,18 @@ const fetchAllJobs = async () => {
     nextUrl = response.data.next || null;
   }
   return allJobs.map(
-    ({ id, name, clients, hiring_manager }) => ({
+    ({
       id,
       name,
       clients,
       hiring_manager,
+      specialization,
+    }) => ({
+      id,
+      name,
+      clients,
+      hiring_manager,
+      specialization,
     })
   );
 };

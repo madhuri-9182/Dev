@@ -50,15 +50,46 @@ function ClientAddCandidate() {
     []
   );
   const [editingRowId, setEditingRowId] = useState(null);
+  const [
+    isSpecializationDisabled,
+    setIsSpecializationDisabled,
+  ] = useState(!!selectedJob?.function);
 
   useEffect(() => {
     if (selectedJob?.id) {
       setFilters((prev) => ({
         ...prev,
         role: selectedJob.id,
+        specialization:
+          selectedJob.function || prev.specialization,
       }));
+
+      if (selectedJob.function) {
+        setIsSpecializationDisabled(true);
+      }
     }
   }, [selectedJob]);
+
+  useEffect(() => {
+    if (!filters.role || selectedJob?.id) return;
+
+    const selectedRoleData = roles?.find(
+      (role) => role.id === filters.role
+    );
+
+    if (
+      selectedRoleData &&
+      selectedRoleData.specialization
+    ) {
+      setFilters((prev) => ({
+        ...prev,
+        specialization: selectedRoleData.specialization,
+      }));
+      setIsSpecializationDisabled(true);
+    } else {
+      setIsSpecializationDisabled(false);
+    }
+  }, [filters.role, roles, selectedJob]);
 
   // Derived state
   const isUploadButtonDisabled =
@@ -88,6 +119,23 @@ function ClientAddCandidate() {
         file: filesMap.get(index),
       }));
       setResumeTableData(dataWithId);
+
+      const incompleteResumes = dataWithId.filter(
+        (row) =>
+          !row.name ||
+          !row.email ||
+          !row.phone_number ||
+          !row.current_company ||
+          (row.years_of_experience.year === 0 &&
+            row.years_of_experience.month === 0)
+      );
+
+      if (incompleteResumes.length > 0) {
+        toast.error(
+          `${incompleteResumes.length} resume(s) require manual editing. Please check the highlighted fields.`,
+          { position: "top-right", duration: 5000 }
+        );
+      }
       setTimeout(resetProgress, 0);
     },
     onError: (error) => {
@@ -162,7 +210,7 @@ function ClientAddCandidate() {
             onSelect={(value) =>
               handleFilterChange("specialization", value)
             }
-            disabled={!!selectedJob?.function}
+            disabled={isSpecializationDisabled}
           />
           <FilterGroup
             label="Source"
