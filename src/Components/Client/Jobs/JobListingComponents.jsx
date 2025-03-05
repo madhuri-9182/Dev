@@ -312,12 +312,13 @@ export const JobCard = ({
   onView,
   onArchive,
   onAddCandidate,
+  onEdit,
 }) => (
   <div className="rounded-2xl bg-[#EBEBEB80] flex justify-between items-center px-7 py-2">
     <div className="flex items-center justify-between gap-3 w-2/3">
       <p
         className="text-2xs uppercase cursor-pointer w-[30%]"
-        onClick={() => onView(job)}
+        onClick={() => onEdit(job)}
       >
         {getJobLabel(job.name)}
       </p>
@@ -360,4 +361,5 @@ JobCard.propTypes = {
   onView: PropTypes.func.isRequired,
   onArchive: PropTypes.func.isRequired,
   onAddCandidate: PropTypes.func.isRequired,
+  onEdit: PropTypes.func,
 };

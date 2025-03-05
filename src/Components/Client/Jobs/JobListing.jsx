@@ -267,6 +267,7 @@ const JobListing = ({ data }) => {
                 key={job.id || index}
                 job={job}
                 onView={handleShowJobDetails}
+                onEdit={handleAddJobClick}
                 onArchive={handleArchiveModalOpen}
                 onAddCandidate={handleAddCandidateClick}
               />
