@@ -10,17 +10,16 @@ import {
 const Jobs = () => {
   const { currentPage, filters } = useJobContext();
 
+  const queryFilters = {
+    page: currentPage,
+    job_ids: filters.job_ids,
+    hiring_manager_ids: filters.hiring_manager_ids,
+    recruiter_ids: filters.recruiter_ids,
+    post_job_date: filters.post_job_date,
+  };
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: [
-      "jobs",
-      {
-        page: currentPage,
-        job_ids: filters.job_ids,
-        hiring_manager_ids: filters.hiring_manager_ids,
-        recruiter_ids: filters.recruiter_ids,
-        post_job_date: filters.post_job_date,
-      },
-    ],
+    queryKey: ["jobs", queryFilters],
     queryFn: fetchJobs,
     keepPreviousData: true,
   });
