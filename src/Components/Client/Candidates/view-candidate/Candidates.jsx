@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "@mui/material";
 
 // Components
-import { FilterGroup } from "../components/FilterGroup";
 import SearchInput from "../../../shared/SearchInput";
 import CandidateList from "./CandidateList";
 import CandidateStats from "./CandidateStats";
@@ -14,10 +13,10 @@ import {
 } from "../../../shared/loading-error-state";
 
 // Hooks and utilities
-import useAllJobs from "../../../../hooks/useFetchAllJobs";
 import {
   fileToBase64,
   createFileFromUrl,
+  getJobLabel,
 } from "../../../../utils/util";
 import { useDebounce } from "../../../../hooks/useDebounce";
 
@@ -28,11 +27,25 @@ import {
   CANDIDATE_STATUS,
   JOB_NAMES,
 } from "../../../Constants/constants";
+import useAllCandidates from "../../../../hooks/useFetchAllCandidates";
+import { CandidateFilters } from "./CandidateFilters";
 
 function Candidates() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: roles } = useAllJobs();
+  const { data: candidates } = useAllCandidates();
+  const roles = candidates
+    ? [
+        ...new Set(
+          candidates.map((candidate) =>
+            JSON.stringify({
+              id: candidate.designation.id,
+              name: candidate.designation.name,
+            })
+          )
+        ),
+      ].map((str) => JSON.parse(str))
+    : [];
 
   // State management
   const [currentPage, setCurrentPage] = useState(1);
@@ -148,6 +161,12 @@ function Candidates() {
     },
   };
 
+  const handleResetFilters = () => {
+    setSelectedRole("");
+    setSelectedStatus("All");
+    setSearchQuery("");
+  };
+
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
 
@@ -175,19 +194,47 @@ function Candidates() {
       <CandidateStats stats={candidateStats} />
 
       {/* Filters */}
-      <div className="flex flex-col gap-2">
-        <FilterGroup
-          label="Role"
-          options={roles}
-          selectedOption={selectedRole}
-          onSelect={setSelectedRole}
-        />
-        <FilterGroup
-          label="Status"
-          options={CANDIDATE_STATUS}
-          selectedOption={selectedStatus}
-          onSelect={setSelectedStatus}
-        />
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="min-w-36">
+          <CandidateFilters
+            value={selectedRole}
+            onChange={setSelectedRole}
+            options={[
+              { id: "", name: "All Roles" },
+              ...roles,
+            ]}
+            placeholder="All Roles"
+            displayValue={
+              selectedRole
+                ? getJobLabel(
+                    roles.find((r) => r.id === selectedRole)
+                      ?.name
+                  )
+                : "All Roles"
+            }
+          />
+        </div>
+
+        {/* Status Filter */}
+        <div className="min-w-36">
+          <CandidateFilters
+            value={selectedStatus}
+            onChange={setSelectedStatus}
+            options={[...CANDIDATE_STATUS]}
+            placeholder="All Status"
+            displayValue={
+              CANDIDATE_STATUS.find(
+                (status) => status.id === selectedStatus
+              )?.name || "All Status"
+            }
+          />
+        </div>
+        <button
+          className="text-xs font-semibold text-[#4A4459] hover:text-[#007AFF] bg-transparent py-1 flex items-center"
+          onClick={handleResetFilters}
+        >
+          Reset Filters
+        </button>
       </div>
 
       {/* Candidate List */}
