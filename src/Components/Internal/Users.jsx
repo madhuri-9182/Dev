@@ -116,7 +116,7 @@ function Users() {
     <div>
       {/* Search Input Section */}
       <div className="flex flex-col justify-end sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0 ml-auto">
-        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80">
+        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80 border focus-within:border-blue-700">
           <input
             type="text"
             placeholder="Search users by name"

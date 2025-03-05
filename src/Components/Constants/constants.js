@@ -191,6 +191,19 @@ export const SPECIALIZATIONS = [
   { id: "mobile", name: "Mobile (Android + iOS)" },
 ];
 
+export const DOMAINS = {
+  frontend: "Frontend",
+  backend: "Backend",
+  fullstack: "Fullstack",
+  aiml: "AI/ML",
+  devops: "DevOps",
+  data_engineer: "Data Engineering",
+  testing: "Testing",
+  android: "Android",
+  ios: "iOS",
+  mobile: "Mobile (Android + iOS)"
+}
+
 export const CANDIDATE_STATUS = [
   {
     id: "All",

@@ -96,3 +96,11 @@
 .hover-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Error Message for Form Inputs */
+.error-message {
+  color: red;
+  font-size: 11px;
+  display: block;
+  margin-top: 3px;
+}
