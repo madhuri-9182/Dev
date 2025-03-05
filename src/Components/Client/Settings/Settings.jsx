@@ -155,7 +155,7 @@ function Settings() {
                     </td>
                   </tr>
                 ))
-              : data && (
+              : data?.data && (
                   <tr
                     className={`${"bg-[#EBEBEB80]"} h-[50px] border-b-2`}
                   >
@@ -165,18 +165,24 @@ function Settings() {
                       }
                     >
                       {" "}
-                      {data.name}
+                      {data?.data.name}
                     </td>
-                    <TableCell>{data.user.email}</TableCell>
                     <TableCell>
-                      {USER_TYPE[data.user.role]}
+                      {data?.data.user.email}
                     </TableCell>
                     <TableCell>
-                      {data.accessibility
-                        ? ACCESSIBILITY[data.accessibility]
+                      {USER_TYPE[data?.data.user.role]}
+                    </TableCell>
+                    <TableCell>
+                      {data?.data.accessibility
+                        ? ACCESSIBILITY[
+                            data?.data.accessibility
+                          ]
                         : "All Jobs"}
                     </TableCell>
-                    <TableCell>{data.created_at}</TableCell>
+                    <TableCell>
+                      {data?.data.created_at}
+                    </TableCell>
                     <td className="py-2 px-4 ">
                       <div className="flex gap-2">
                         <Edit
@@ -185,7 +191,7 @@ function Settings() {
                           className="hover:scale-110 hover:duration-150 cursor-pointer"
                           onClick={() => {
                             handleDialogOpen("Edit");
-                            setSelectedUser(data);
+                            setSelectedUser(data?.data);
                           }}
                         />
                       </div>
