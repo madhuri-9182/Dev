@@ -52,7 +52,7 @@ function Interviewer() {
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, trigger } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset, trigger, setError, clearErrors } = useForm();
 
   // Debounced function to fetch data
   const fetchData = useCallback(debounce((page, isMounted = true) => {
@@ -75,6 +75,14 @@ function Interviewer() {
         }
       });
   }, 1000), [filters, searchTerm]);
+
+  const validateRoles = useCallback(() => {
+    if (items.length === 0) {
+      setError("role", { type: "manual", message: "Please select at least one role." });
+    } else {
+      clearErrors("role");
+    }  
+  }, [items, setError, clearErrors]);
 
   useEffect(() => {
     let isMounted = true; // Flag to track if the component is mounted
@@ -112,8 +120,8 @@ function Interviewer() {
 
   useEffect(() => {
     // Revalidate role when items change
-    trigger("role"); // Trigger validation
-  }, [items, trigger]);
+    validateRoles();
+  }, [items, validateRoles]);
 
   const handleChipClick = (type, value) => {
     setFilters((prev) => ({ ...prev, [type]: value }));
@@ -168,10 +176,10 @@ function Interviewer() {
 
   const handleEditUserClose = () => setEditUserOpen(false);
 
-  const handleSelection = (e) => {
-    const newOption = e.target.value;
-    if (newOption && !items.includes(newOption)) {
-      setItems([...items, newOption]);
+  const handleSelection = (value) => {
+    const newOption = value;
+    if (newOption && !items.includes(newOption.id)) {
+      setItems([...items, newOption.id]);
     }
   }
 
@@ -397,65 +405,68 @@ function Interviewer() {
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <form onSubmit={handleSubmit(handleEditUserSubmit)}>
+          <form onSubmit={(e)=>{
+            handleSubmit(handleEditUserSubmit)(e);
+            validateRoles();
+            }}>
             <DialogContent dividers>
               <div className="w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
                 <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-1/4 text-sm font-medium text-gray-600">Name</label>
+                  <label className="w-1/4 text-[12px] font-medium text-gray-600">Name</label>
                   <input
                     type="text"
                     placeholder="Enter Name"
                     {...register("name", { required: "Name is required" })}
-                    className={`p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
+                    className={`p-1 text-[12px] w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
                   />
                   {errors.name && <span className="error-message">{errors.name.message}</span>}
                 </div>
                 <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+                  <label className="w-1/4 text-[12px] font-medium text-[#6B6F7B]">Mail ID</label>
                   <input
                     type="email"
                     placeholder="Enter Mail ID"
                     {...register("email", { required: "Email is required" })}
-                    className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
+                    className={`w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
                   />
                   {errors.email && <span className="error-message">{errors.email.message}</span>}
                 </div>
                 <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
+                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Phone Number</label>
                   <input
                     type="tel"
                     placeholder="Enter number"
                     {...register("phone", { required: "Phone number is required" })}
-                    className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
+                    className={`w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
                   />
                   {errors.phone && <span className="error-message">{errors.phone.message}</span>}
                 </div>
                 <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Total Experience</label>
+                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Total Experience</label>
                   <div className='flex items-center 2xl:gap-2 w-full justify-between' >
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="experience_years" placeholder='Years' className='w-[160px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        <input type="number" name="experience_years" placeholder='Years' className='w-[185px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
                           {...register("experience_years", { required: "Total experience in years is required", validate: value => value >= 0 && value <= 100 || "Total experience in years must be between 0 and 100" })}
                         />
-                        <span>Years</span>
+                        <span className="font-medium text-[#6B6F7B] text-[12px]" >Years</span>
                       </div>
                       {errors.experience_years && <span className="error-message" >{errors.experience_years.message}</span>}
                     </div>
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="experience_months" placeholder='Months' className='w-[160px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        <input type="number" name="experience_months" placeholder='Months' className='w-[185px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
                           {...register("experience_months", { required: "Total experience in months is required", validate: value => value >= 0 && value <= 11 || "Total experience in months must be between 0 and 11" })}
                         />
-                        <span>Months</span>
+                        <span className="font-medium text-[#6B6F7B] text-[12px]" >Months</span>
                       </div>
                       {errors.experience_months && <span className="error-message" >{errors.experience_months.message}</span>}
                     </div>
                   </div>
                 </div>
                 <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full text-sm font-medium text-[#6B6F7B]">Job Assigned</label>
-                  <RolesSelect className='w-full h-[29.6px]' register={register} errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
+                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Job Assigned</label>
+                  <RolesSelect className='w-full h-[29.6px] text-[12px]' register={register} errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
                 </div>
               </div>
             </DialogContent>
