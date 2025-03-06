@@ -32,6 +32,8 @@ const initialState = {
   job_description_file: undefined,
   other_details: [],
   reason_for_archived: "",
+  hiring_manager_name: "",
+  recruiter_names: [],
 };
 
 export const JobProvider = () => {
@@ -118,6 +120,11 @@ export const JobProvider = () => {
           recruiter_ids: selectedData.clients.map(
             (client) => client.id
           ),
+          recruiter_names: selectedData.clients.map(
+            (client) => client.name
+          ),
+          hiring_manager_name:
+            selectedData.hiring_manager?.name,
           total_positions: String(
             selectedData.total_positions
           ),

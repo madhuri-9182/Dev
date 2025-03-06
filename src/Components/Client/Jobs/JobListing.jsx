@@ -21,11 +21,13 @@ import {
   revertDateFormat,
   getJobLabel,
 } from "../../../utils/util";
+import useAuth from "../../../hooks/useAuth";
 
 // Sub-components
 
 // Main component
 const JobListing = ({ data }) => {
+  const { auth } = useAuth();
   const { count, results } = data;
   const navigate = useNavigate();
   const {
@@ -131,10 +133,12 @@ const JobListing = ({ data }) => {
   return (
     <>
       <div className="flex items-center justify-end gap-2 mb-4">
-        <AddButton
-          onClick={handleAddJobClick}
-          label="+ Add Job"
-        />
+        {auth.role !== "client_user" ? (
+          <AddButton
+            onClick={handleAddJobClick}
+            label="+ Add Job"
+          />
+        ) : null}
       </div>
 
       {/* Filters */}

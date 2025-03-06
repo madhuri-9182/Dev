@@ -16,8 +16,10 @@ import {
 } from "../../../utils/util";
 import toast from "react-hot-toast";
 import { useJobContext } from "../../../context/JobContext";
+import useAuth from "../../../hooks/useAuth";
 
 const AddJob = () => {
+  const { auth } = useAuth();
   const navigate = useNavigate();
   const {
     formdata,
@@ -49,6 +51,9 @@ const AddJob = () => {
       essentialSkills: [],
     },
   });
+  const shouldBeDisabled =
+    auth?.role === "client_user" && isEdit;
+  const isClientUser = auth?.role === "client_user";
 
   // Controlled values from form
   const selectedRecruiters = watch("recruiters") || [];
@@ -88,6 +93,10 @@ const AddJob = () => {
         (recruiter) => recruiter === user.id
       )
   );
+
+  const [hiringManagerName, setHiringManagerName] =
+    useState("");
+  const [recruiterNames, setRecruiterNames] = useState([]);
 
   // Handle file upload button click
   const handleUploadButtonClick = () => {
@@ -214,9 +223,13 @@ const AddJob = () => {
         handleFileUpload(formdata.job_description_file);
       }
       reset(resetData);
+      if (isClientUser) {
+        setHiringManagerName(formdata?.hiring_manager_name);
+        setRecruiterNames(formdata?.recruiter_names);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formdata, reset, setValue]);
+  }, [formdata, reset, setValue, isClientUser]);
 
   return (
     <div className="flex gap-x-14">
@@ -226,26 +239,35 @@ const AddJob = () => {
             <label className={labelClassName}>
               Job Role
             </label>
-            <Controller
-              name="jobRole"
-              control={control}
-              rules={{ required: "Job Role is required" }}
-              render={({ field }) => (
-                <CustomSelect
-                  isDropdownOpen={isJobRoleDropdownOpen}
-                  setIsDropdownOpen={
-                    setIsJobRoleDropdownOpen
-                  }
-                  selectedValue={field.value}
-                  setSelectedValue={(value) =>
-                    field.onChange(value)
-                  }
-                  dropdownOptions={JOB_NAMES}
-                  errors={errors}
-                  type="jobRole"
-                />
-              )}
-            />
+            {isClientUser && isEdit ? (
+              <div className="w-2/3 rounded-lg text-2xs py-2 px-3 border border-[#CAC4D0] bg-gray-100 opacity-70 cursor-not-allowed text-[#49454F]">
+                {JOB_NAMES.find(
+                  (job) => job.id === watch("jobRole")
+                )?.name || ""}
+              </div>
+            ) : (
+              <Controller
+                name="jobRole"
+                control={control}
+                rules={{ required: "Job Role is required" }}
+                render={({ field }) => (
+                  <CustomSelect
+                    isDropdownOpen={isJobRoleDropdownOpen}
+                    setIsDropdownOpen={
+                      setIsJobRoleDropdownOpen
+                    }
+                    selectedValue={field.value}
+                    setSelectedValue={(value) =>
+                      field.onChange(value)
+                    }
+                    dropdownOptions={JOB_NAMES}
+                    errors={errors}
+                    type="jobRole"
+                    disabled={shouldBeDisabled}
+                  />
+                )}
+              />
+            )}
           </div>
 
           <div className={formRowClassName}>
@@ -269,59 +291,89 @@ const AddJob = () => {
             <label className={labelClassName}>
               Assigned Recruiter
             </label>
-            <Controller
-              name="recruiters"
-              control={control}
-              rules={{
-                required: "Recruiters are required",
-              }}
-              render={({ field }) => (
-                <MultiSelect
-                  selectedRecruiters={field.value}
-                  setSelectedRecruiters={(value) =>
-                    field.onChange(value)
-                  }
-                  isRecruitersDropdownOpen={
-                    isRecruitersDropdownOpen
-                  }
-                  setIsRecruitersDropdownOpen={
-                    setIsRecruitersDropdownOpen
-                  }
-                  options={filteredRecruiters}
-                  errors={errors}
-                />
-              )}
-            />
+            {isClientUser && isEdit ? (
+              <div className="w-2/3 rounded-lg text-2xs py-1 px-3 border border-[#CAC4D0] bg-gray-100 opacity-70 cursor-not-allowed">
+                <div className="flex flex-wrap gap-1">
+                  {recruiterNames.length > 0 ? (
+                    recruiterNames.map((name, idx) => (
+                      <span
+                        key={idx}
+                        className="flex items-center bg-[#F8F8F8] text-2xs font-semibold px-2 py-1 rounded-lg border border-[#CAC4D0] text-[#49454F]"
+                      >
+                        {name}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400">
+                      No recruiters assigned
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <Controller
+                name="recruiters"
+                control={control}
+                rules={{
+                  required: "Recruiters are required",
+                }}
+                render={({ field }) => (
+                  <MultiSelect
+                    selectedRecruiters={field.value}
+                    setSelectedRecruiters={(value) =>
+                      field.onChange(value)
+                    }
+                    isRecruitersDropdownOpen={
+                      isRecruitersDropdownOpen
+                    }
+                    setIsRecruitersDropdownOpen={
+                      setIsRecruitersDropdownOpen
+                    }
+                    options={filteredRecruiters}
+                    errors={errors}
+                    disabled={shouldBeDisabled}
+                  />
+                )}
+              />
+            )}
           </div>
 
           <div className={formRowClassName}>
             <label className={labelClassName}>
               Hiring Manager
             </label>
-            <Controller
-              name="hiringManager"
-              control={control}
-              rules={{
-                required: "Hiring Manager is required",
-              }}
-              render={({ field }) => (
-                <CustomSelect
-                  isDropdownOpen={
-                    isHiringManagersDropdownOpen
-                  }
-                  setIsDropdownOpen={
-                    setIsHiringManagersDropdownOpen
-                  }
-                  selectedValue={field.value}
-                  setSelectedValue={(value) =>
-                    field.onChange(value)
-                  }
-                  dropdownOptions={filteredHiringManagers}
-                  errors={errors}
-                  type="hiringManager"
-                />
-              )}
-            />
+            {isClientUser && isEdit ? (
+              <div className="w-2/3 rounded-lg text-2xs py-2 px-3 border border-[#CAC4D0] bg-gray-100 opacity-70 cursor-not-allowed text-[#49454F]">
+                {hiringManagerName ||
+                  "No hiring manager assigned"}
+              </div>
+            ) : (
+              <Controller
+                name="hiringManager"
+                control={control}
+                rules={{
+                  required: "Hiring Manager is required",
+                }}
+                render={({ field }) => (
+                  <CustomSelect
+                    isDropdownOpen={
+                      isHiringManagersDropdownOpen
+                    }
+                    setIsDropdownOpen={
+                      setIsHiringManagersDropdownOpen
+                    }
+                    selectedValue={field.value}
+                    setSelectedValue={(value) =>
+                      field.onChange(value)
+                    }
+                    dropdownOptions={filteredHiringManagers}
+                    errors={errors}
+                    type="hiringManager"
+                    disabled={shouldBeDisabled}
+                  />
+                )}
+              />
+            )}
           </div>
 
           <div className={formRowClassName}>
