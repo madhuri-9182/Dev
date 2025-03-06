@@ -10,11 +10,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from '../../api/axios';
 import { DOMAINS } from '../Constants/constants';
 import { debounce } from 'lodash';
-import { Autocomplete, Button, CircularProgress, TableCell, TableRow, TextField } from '@mui/material';
+import { Button, CircularProgress, TableCell, TableRow } from '@mui/material';
 import * as XLSX from 'xlsx';
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import RolesSelect from './Components/RolesSelect';
+import MultiSelectFilter from '../../utils/MultiSelectFilter';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -27,28 +28,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     width: '515px', // Customize width as needed
   },
 }));
-
-const StyledTextField = styled(TextField)({
-  "& .MuiInputBase-root": {
-    height: "40px",
-    borderRadius: "8px",
-    fontSize: "12px",
-    paddingBlock: "4px",
-    minWidth: 200,
-
-    "& input": {
-      padding: "0 !important",
-    },
-  },
-  "& .MuiChip-root": {
-    height: "24px",
-
-    fontSize: "12px",
-    "& .MuiChip-deleteIcon": {
-      fontSize: "14px",
-    },
-  },
-});
 
 function Interviewer() {
   const [editUserOpen, setEditUserOpen] = useState(false);
@@ -315,68 +294,10 @@ function Interviewer() {
             <div className="flex items-center space-x-4 p-1">
               <div className="flex flex-wrap gap-y-2 gap-x-4">
                 {/*Strength Filter */}
-                <div className="flex font-medium items-center space-x-1">
-                  <span className="flex font-bold mr-2">Strength</span>
-                  <Autocomplete
-                    isOptionEqualToValue={(option, value) => option.value === value.value}
-                    disableCloseOnSelect
-                    slotProps={{
-                      paper: {
-                        sx: {
-                          fontSize: 12,
-                        },
-                      },
-                    }}
-                    multiple
-                    options={STRENGTHS}
-                    getOptionLabel={(option) => {
-                      return option.label;
-                    }}
-                    filterSelectedOptions
-                    renderInput={(params) => (
-                      <StyledTextField
-                        {...params}
-                        placeholder={filters?.strength?.length === 0 ? "All" : ""}
-                      />
-                    )}
-                    value={filters?.strength}
-                    onChange={(event, newValue) => {
-                      handleChipClick("strength", newValue);
-                    }}
-                  />
-                </div>
+                <MultiSelectFilter label='Strength' options={STRENGTHS} filter_state_name="strength" current_value={filters?.strength} handleChipClick={handleChipClick} />
 
                 {/* Experience Filter */}
-                <div className="flex items-center font-medium space-x-1">
-                  <span className="font-bold mr-2">Experience</span>
-                  <Autocomplete
-                    isOptionEqualToValue={(option, value) => option.value === value.value}
-                    disableCloseOnSelect
-                    slotProps={{
-                      paper: {
-                        sx: {
-                          fontSize: 12,
-                        },
-                      },
-                    }}
-                    multiple
-                    options={EXPERIENCES}
-                    getOptionLabel={(option) => {
-                      return option.label;
-                    }}
-                    filterSelectedOptions
-                    renderInput={(params) => (
-                      <StyledTextField
-                        {...params}
-                        placeholder={filters?.experience?.length === 0 ? "All" : ""}
-                      />
-                    )}
-                    value={filters?.experience}
-                    onChange={(event, newValue) => {
-                      handleChipClick("experience", newValue);
-                    }}
-                  />
-                </div>
+                <MultiSelectFilter label='Experience' options={EXPERIENCES} filter_state_name="experience" current_value={filters?.experience} handleChipClick={handleChipClick} />
               </div>
             </div>
             <div className='flex gap-2 justify-center items-center font-bold'>
