@@ -112,7 +112,7 @@ export const FilterListbox = ({
                           ? "bg-[#007AFF] text-white"
                           : "text-gray-900"
                       }
-                      relative cursor-pointer select-none py-2 px-3`
+                      relative cursor-pointer select-none py-1 px-3`
                     }
                   >
                     {({ active }) => (
