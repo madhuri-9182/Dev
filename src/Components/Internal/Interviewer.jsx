@@ -57,7 +57,7 @@ function Interviewer() {
   // Debounced function to fetch data
   const fetchData = useCallback(debounce((page, isMounted = true) => {
     setLoading(true);
-    axios.get(`/api/internal/interviewers/?offset=${(page - 1) * 10}${searchTerm ? `&q=${searchTerm}` : ''}${filters?.strength?.length > 0 ? `&strength=${filters?.strength?.map((item) => item.value)?.join(",")}` : ""}${filters?.experience?.length > 0 ? `&experience=${filters?.experience?.map((item) => item.value)?.join(",")}` : ""}`)
+    axios.get(`/api/internal/interviewers/?offset=${(page - 1) * 10}${searchTerm ? `&q=${searchTerm}` : ''}${filters?.strength?.length > 0 ? `&strengths=${filters?.strength?.map((item) => item.value)?.join(",")}` : ""}${filters?.experience?.length > 0 ? `&experiences=${filters?.experience?.map((item) => item.value)?.join(",")}` : ""}`)
       .then(res => {
         if (isMounted) {
           setSummary(prev => ({
