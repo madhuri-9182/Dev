@@ -47,8 +47,8 @@ RolesSelect.propTypes = {
   items: PropTypes.array.isRequired,
   handleSelection: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
-  removeItem: PropTypes.object.isRequired,
-  className: PropTypes.object.optional,
+  removeItem: PropTypes.func.isRequired,
+  className: PropTypes.string,
 };
 
 export default RolesSelect;
