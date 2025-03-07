@@ -17,6 +17,7 @@ function RolesSelect({ errors, items, handleSelection, removeItem, className = "
         placeholder='Select Role'
         className={className}
         maxId={items.length > 0 ? Math.max(...items) : 10}
+        changeValue={false}
       />
       {errors.role && <span className="error-message" >{errors.role.message}</span>}
       <div className='mt-[8px] gap-x-4'>
@@ -44,7 +45,6 @@ function RolesSelect({ errors, items, handleSelection, removeItem, className = "
 }
 
 RolesSelect.propTypes = {
-  register: PropTypes.func.isRequired,
   items: PropTypes.array.isRequired,
   handleSelection: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,

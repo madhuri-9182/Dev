@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from '../../src/api/axios';  // Import axios instance
 import { KeyboardArrowDown } from '@mui/icons-material';
 
-const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", maxId = 10 }) => {
+const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true }) => {
     const [items, setItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -86,7 +86,11 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
 
     const handleSelect = (item) => {
         if (mountedRef.current) {
-            setSelectedItem("");
+            if (changeValue){
+                setSelectedItem(item);
+            }else{
+                setSelectedItem("");
+            }
             onSelect(item);
             setIsOpen(false);
         }
@@ -105,7 +109,7 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
             {isOpen && (
                 <div 
                     ref={scrollRef}
-                    className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto"
+                    className={`absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropdownClassName}`}
                 >
                     {items.map(item => (
                         <div
@@ -134,7 +138,9 @@ InfiniteScrollSelect.propTypes = {
     setParentItems: PropTypes.func,
     placeholder: PropTypes.string,
     className: PropTypes.string,
+    dropdownClassName: PropTypes.string,
     maxId: PropTypes.number,
+    changeValue: PropTypes.bool,
 };
 
 export default InfiniteScrollSelect;

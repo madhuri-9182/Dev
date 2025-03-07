@@ -313,7 +313,7 @@ function AddInterviewer() {
                   <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold ">Interview Assigned For</label>
                 </div>
                 <div className='w-1/2'>
-                  <RolesSelect register={register} errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} className='max-w-[140px] h-[32px] text-[12px]' />
+                  <RolesSelect errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} className='max-w-[140px] h-[32px] text-[12px]' />
                 </div>
               </li>
 

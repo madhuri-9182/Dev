@@ -466,7 +466,7 @@ function Interviewer() {
                 </div>
                 <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
                   <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Job Assigned</label>
-                  <RolesSelect className='w-full h-[29.6px] text-[12px]' register={register} errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
+                  <RolesSelect className='w-full h-[29.6px] text-[12px]' errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
                 </div>
               </div>
             </DialogContent>
