@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from '../../src/api/axios';  // Import axios instance
 import { KeyboardArrowDown } from '@mui/icons-material';
 
-const InfiniteScrollSelect = ({ apiEndpoint, onSelect, setParentItems = ()=>{}, placeholder = "Select an option", className = "", maxId = 10 }) => {
+const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", maxId = 10 }) => {
     const [items, setItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -113,7 +113,7 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, setParentItems = ()=>{}, 
                             onClick={() => handleSelect(item)}
                             className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         >
-                            {item.full_name}
+                            {item[optionLabel]}
                         </div>
                     ))}
                     {loading && (
@@ -130,6 +130,7 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, setParentItems = ()=>{}, 
 InfiniteScrollSelect.propTypes = {
     apiEndpoint: PropTypes.string.isRequired,
     onSelect: PropTypes.func.isRequired,
+    optionLabel: PropTypes.string.isRequired,
     setParentItems: PropTypes.func,
     placeholder: PropTypes.string,
     className: PropTypes.string,

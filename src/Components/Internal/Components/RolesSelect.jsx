@@ -12,6 +12,7 @@ function RolesSelect({ errors, items, handleSelection, removeItem, className = "
         onSelect={(value) => {
           handleSelection(value);
          }}
+        optionLabel='full_name'
         setParentItems={setRoles}
         placeholder='Select Role'
         className={className}
