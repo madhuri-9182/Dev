@@ -16,6 +16,7 @@ import {
 } from "./Components";
 import { Hello } from "./Components";
 import { InternalAddInterviewer } from "./Components/Internal/AddInterviewer";
+import InternalAddClient from "./Components/Internal/AddClient";
 import { Feedback } from "./Components/Interviewer/Feedback";
 // Internal Imports
 import {
@@ -229,7 +230,7 @@ const router = createBrowserRouter(
               />
               <Route
                 path="addclient"
-                element={<InternalClients />}
+                element={<InternalAddClient />}
               />
             </Route>
             <Route
