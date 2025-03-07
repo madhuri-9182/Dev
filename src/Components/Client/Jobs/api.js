@@ -26,6 +26,9 @@ const getQueryParams = (params) => {
   if (params.post_job_date) {
     queryParams.post_job_date = params.post_job_date;
   }
+  if (params.status) {
+    queryParams.status = params.status;
+  }
   return queryParams;
 };
 

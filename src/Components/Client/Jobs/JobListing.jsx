@@ -22,6 +22,7 @@ import {
   getJobLabel,
 } from "../../../utils/util";
 import useAuth from "../../../hooks/useAuth";
+import { JOB_STATUS } from "../../Constants/constants";
 
 // Sub-components
 
@@ -87,7 +88,7 @@ const JobListing = ({ data }) => {
       job_ids: [],
       hiring_manager_ids: [],
       recruiter_ids: [],
-      status: "Active",
+      status: "active",
     });
   };
 
@@ -216,10 +217,12 @@ const JobListing = ({ data }) => {
                 status,
               });
             }}
-            options={[
-              { value: "Active", label: "Active" },
-              { value: "Archived", label: "Archived" },
-            ]}
+            options={JOB_STATUS}
+            displayValue={
+              JOB_STATUS.find(
+                (s) => s.value === filters.status
+              )?.label || "Status"
+            }
             placeholder="Status"
             multiple={false}
           />

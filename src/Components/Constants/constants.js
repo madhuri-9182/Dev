@@ -14,7 +14,8 @@ import {
   Personalcard,
 } from "iconsax-react";
 
-export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const EMAIL_REGEX =
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const MOBILE_REGEX = /^\d{10}$/;
 
@@ -201,8 +202,8 @@ export const DOMAINS = {
   testing: "Testing",
   android: "Android",
   ios: "iOS",
-  mobile: "Mobile (Android + iOS)"
-}
+  mobile: "Mobile (Android + iOS)",
+};
 
 export const CANDIDATE_STATUS = [
   {
@@ -224,5 +225,16 @@ export const CANDIDATE_STATUS = [
   {
     id: "NSCH",
     name: "Not Scheduled",
+  },
+];
+
+export const JOB_STATUS = [
+  {
+    value: "active",
+    label: "Active",
+  },
+  {
+    value: "archive",
+    label: "Archived",
   },
 ];
