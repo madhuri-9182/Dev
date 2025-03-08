@@ -28,10 +28,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 function AddClient() {
     const [rows, setRows] = useState([]);
-    const [addPocOpen, setAddPocOpen] = useState(false);
-    const [editOpen, setEditOpen] = useState(false);
+    const [pocDialogOpen, setPocDialogOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [selectedRow, setSelectedRow] = useState({});
+    const [selectedRow, setSelectedRow] = useState(null);
     const [assignedTo, setAssignedTo] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
@@ -43,6 +42,15 @@ function AddClient() {
 
     const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
     const { register, handleSubmit, formState: { errors }, setError, clearErrors, setValue } = useForm();
+    
+    // POC form using React Hook Form
+    const { 
+        register: registerPoc, 
+        handleSubmit: handleSubmitPoc, 
+        formState: { errors: pocErrors }, 
+        reset: resetPocForm,
+        setValue: setPocValue
+    } = useForm();
 
     // Fetch client data if in edit mode
     useEffect(() => {
@@ -99,58 +107,55 @@ function AddClient() {
         }
     }, [rows, validatePOC]);
 
-    const handleAddPocOpen = (e) => {
+    const handleOpenPocDialog = (e, row = null, index = null) => {
         e.preventDefault();
-        setAddPocOpen(true);
-    };
-
-    const handleAddPocSubmit = (e) => {
-        e.preventDefault();
-        const name = e.target.elements['poc-name'].value;
-        const phone = e.target.elements['poc-phone'].value;
-        const email = e.target.elements['poc-email'].value;
-        setRows([...rows, { name, phone, email }]);
-        setAddPocOpen(false);
-    }
-
-    const validatePOCChange = (e) => {
-        const { name, value } = e.target;
-
-        // Custom validation messages
-        if (name === "poc-name" && (value.length < 1 || value.length > 255)) {
-            e.target.setCustomValidity("Name must be between 1 and 255 characters.");
-        } else if (name === "poc-email" && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-            e.target.setCustomValidity("Email must be in the correct format.");
-        } else if (name === "poc-phone" && !/^[0-9]{10}$/.test(value)) {
-            e.target.setCustomValidity("Phone number must be exactly 10 digits.");
+        if (row) {
+            setSelectedRow({ ...row, index });
+            // Pre-fill form values for editing
+            setPocValue("pocName", row.name);
+            setPocValue("pocPhone", row.phone);
+            setPocValue("pocEmail", row.email);
         } else {
-            e.target.setCustomValidity(""); // Clear custom message
+            setSelectedRow(null);
+            resetPocForm(); // Reset form when adding new POC
         }
-    }
-
-    const handleEditOpen = (e, row, index) => {
-        e.preventDefault();
-        setEditOpen(true);
-        setSelectedRow({ ...row, index });
+        setPocDialogOpen(true);
     };
 
-    const handleEditClose = (e) => {
-        e.preventDefault();
-
-        const name = e.target.elements['poc-name'].value;
-        const phone = e.target.elements['poc-phone'].value;
-        const email = e.target.elements['poc-email'].value;
-
-        const updatedRows = rows.map((row, index) => {
-            if (index === selectedRow.index) {
-                return { ...row, name, phone, email };
-            }
-            return row;
-        });
-
-        setRows(updatedRows);
+    const handleClosePocDialog = () => {
+        setPocDialogOpen(false);
         setSelectedRow(null);
-        setEditOpen(false);
+        resetPocForm();
+    };
+
+    const handlePocSubmit = (data) => {
+        if (selectedRow) {
+            // Update existing POC
+            const updatedRows = rows.map((row, index) => {
+                if (index === selectedRow.index) {
+                    return { 
+                        name: data.pocName,
+                        phone: data.pocPhone,
+                        email: data.pocEmail 
+                    };
+                }
+                return row;
+            });
+            setRows(updatedRows);
+        } else {
+            // Add new POC
+            setRows([...rows, { 
+                name: data.pocName,
+                phone: data.pocPhone,
+                email: data.pocEmail 
+            }]);
+        }
+        handleClosePocDialog();
+    };
+
+    const handleDeletePoc = (e, index) => {
+        e.preventDefault();
+        setRows((prevRows) => prevRows.filter((_, idx) => idx !== index));
     };
 
     const onSubmit = async (data) => {
@@ -356,7 +361,7 @@ function AddClient() {
 
                                 <button
                                     className="border p-2 px-4 rounded-full bg-purple-200 font-medium text-sm"
-                                    onClick={handleAddPocOpen}
+                                    onClick={(e) => handleOpenPocDialog(e)}
                                 >
                                     + Add
                                 </button>
@@ -394,10 +399,9 @@ function AddClient() {
                                             />
                                         </div>
                                         <div className="col-span-1 flex items-center space-x-2">
-
                                             <button
                                                 className="flex items-center justify-center hover:bg-blue-100 hover:duration-300 p-2 rounded-xl"
-                                                onClick={(e) => handleEditOpen(e, row, index)}
+                                                onClick={(e) => handleOpenPocDialog(e, row, index)}
                                             >
                                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -405,10 +409,7 @@ function AddClient() {
                                                     <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#171717" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                             </button>
-                                            <button onClick={(e) => {
-                                                e.preventDefault();
-                                                setRows((prevRows) => prevRows.filter((row, idx) => idx !== index));
-                                            }} className="p-2 text-gray-500 hover:text-red-500">
+                                            <button onClick={(e) => handleDeletePoc(e, index)} className="p-2 text-gray-500 hover:text-red-500">
                                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                                     <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -442,20 +443,22 @@ function AddClient() {
                 )}
             </div>
             <BootstrapDialog
-                aria-labelledby="add-poc-dialog-title"
-                open={addPocOpen}
+                aria-labelledby="poc-dialog-title"
+                open={pocDialogOpen}
                 BackdropProps={{
                     sx: {
                         backgroundColor: 'rgba(255, 255, 255, 0.8)'
                     },
                 }}
             >
-                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                    <h1 className='font-bold text-[#056DDC] text-lg text-center'>ADD POC</h1>
+                <DialogTitle sx={{ m: 0, p: 2 }} id="poc-dialog-title">
+                    <h1 className='font-bold text-[#056DDC] text-lg text-center'>
+                        {selectedRow ? 'EDIT POC' : 'ADD POC'}
+                    </h1>
                 </DialogTitle>
                 <IconButton
                     aria-label="close"
-                    onClick={() => setAddPocOpen(false)}
+                    onClick={handleClosePocDialog}
                     sx={(theme) => ({
                         position: 'absolute',
                         right: 8,
@@ -465,123 +468,61 @@ function AddClient() {
                 >
                     <CloseIcon />
                 </IconButton>
-                <form onSubmit={handleAddPocSubmit}>
+                <form onSubmit={handleSubmitPoc(handlePocSubmit)}>
                     <DialogContent dividers>
                         <div>
                             <div className="p-1 flex flex-col items-start justify-center gap-2">
                                 <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
                                 <input
                                     type="text"
-                                    name="poc-name"
-                                    required
                                     placeholder="Enter POC Name"
-                                    onChange={validatePOCChange}
+                                    {...registerPoc("pocName", {
+                                        required: "POC Name is required",
+                                        maxLength: { value: 255, message: "Name must be between 1 and 255 characters." }
+                                    })}
                                     className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 />
+                                {pocErrors.pocName && <span className="error-message">{pocErrors.pocName.message}</span>}
                             </div>
                             <div className="p-1 flex flex-col items-start justify-center gap-2">
                                 <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
                                 <input
                                     type="text"
-                                    name="poc-phone"
-                                    required
                                     placeholder="Enter Phone Number"
-                                    onChange={validatePOCChange}
+                                    {...registerPoc("pocPhone", {
+                                        required: "Phone number is required",
+                                        pattern: { 
+                                            value: /^[0-9]{10}$/, 
+                                            message: "Phone number must be exactly 10 digits." 
+                                        }
+                                    })}
                                     className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 />
+                                {pocErrors.pocPhone && <span className="error-message">{pocErrors.pocPhone.message}</span>}
                             </div>
-                            <div className="p-1 flex flex-col items-center justify-center gap-2">
+                            <div className="p-1 flex flex-col items-start justify-center gap-2">
                                 <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
                                 <input
-                                    type="mail"
-                                    required
-                                    name="poc-email"
+                                    type="email"
                                     placeholder="Enter Mail ID"
-                                    onChange={validatePOCChange}
+                                    {...registerPoc("pocEmail", {
+                                        required: "Email is required",
+                                        pattern: { 
+                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 
+                                            message: "Email must be in the correct format." 
+                                        }
+                                    })}
                                     className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 />
+                                {pocErrors.pocEmail && <span className="error-message">{pocErrors.pocEmail.message}</span>}
                             </div>
                         </div>
-
                     </DialogContent>
                     <DialogActions>
                         <div className="px-5 py-2">
                             <button
-                                type="html"
-                                className="text-white text-sm border py-2  px-5 rounded-full bg-[#056DDC] ">
-                                Save
-                            </button>
-                        </div>
-                    </DialogActions>
-                </form>
-            </BootstrapDialog>
-
-            <BootstrapDialog
-                aria-labelledby="edit-dialog-title"
-                open={editOpen}
-                BackdropProps={{
-                    sx: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                    },
-                }}
-            >
-                <DialogTitle sx={{ m: 0, p: 2 }} id="edit-dialog-title">
-                    <h1 className='font-bold text-[#056DDC] text-center text-lg'>EDIT POC</h1>
-                </DialogTitle>
-                <IconButton
-                    aria-label="close"
-                    onClick={() => setEditOpen(false)}
-                    sx={(theme) => ({
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: theme.palette.grey[500],
-                    })}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <form onSubmit={handleEditClose}>
-                    <DialogContent dividers>
-                        <div>
-                            <div className="p-1 flex flex-col items-center justify-center gap-2">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
-                                <input
-                                    type="text"
-                                    defaultValue={selectedRow?.name}
-                                    name="poc-name"
-                                    onChange={validatePOCChange}
-                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div className="p-1 flex flex-col items-center justify-center gap-2">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
-                                <input
-                                    type="text"
-                                    defaultValue={selectedRow?.phone}
-                                    onChange={validatePOCChange}
-                                    name="poc-phone"
-                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div className="p-1 flex flex-col items-center justify-center gap-2">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-                                <input
-                                    type="mail"
-                                    defaultValue={selectedRow?.email}
-                                    name="poc-email"
-                                    onChange={validatePOCChange}
-                                    className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                            </div>
-                        </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <div
-                            className='px-5 py-2'
-                        >
-                            <button
                                 type="submit"
-                                className="text-white text-sm border py-2 px-5 rounded-full bg-[#056DDC] ">
+                                className="text-white text-sm border py-2 px-5 rounded-full bg-[#056DDC]">
                                 Save
                             </button>
                         </div>
