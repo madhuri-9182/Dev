@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import axios from '../../api/axios';
 import toast from 'react-hot-toast';
 import { Button, CircularProgress } from '@mui/material';
@@ -13,47 +13,51 @@ function AddInterviewer() {
   const [itemsSkills, setItemsSkills] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }, trigger, setError, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, trigger, setError, setValue, clearErrors } = useForm();
   const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
+
+  const validateRoles = useCallback(() => {
+    if (items.length === 0) {
+      setError("role", { type: "manual", message: "Please select at least one role." });
+    } else {
+      clearErrors("role");
+    }  
+  }, [items, setError, clearErrors]);
 
   useEffect(() => {
     // Revalidate role when items change, only if the user has interacted
     if (hasInteracted.current) {
-      trigger("role"); // Trigger validation
+      validateRoles();
     }
-  }, [items, trigger]);
+  }, [items, validateRoles]);
 
   useEffect(() => {
-    // Revalidate role when items change, only if the user has interacted
+    // Revalidate skills when items change, only if the user has interacted
     if (hasInteracted.current) {
       trigger("skills"); // Trigger validation
       }
   }, [itemsSkills, trigger]);
   
   useEffect(() => {
-    // Revalidate role when items change, only if the user has interacted
+    // Revalidate strength when items change, only if the user has interacted
     if (hasInteracted.current) {
       trigger("strength"); // Trigger validation
       }
   }, [selectedStrength, trigger]);
 
 
-  const handleSelection = (e) => {
-    const selectedRole = e.target.value;
+  const handleSelection = (value) => {
+    const selectedRole = value;
     hasInteracted.current = true; // Mark as interacted
 
-    if (selectedRole && !items.includes(selectedRole)) {
-      setItems([...items, selectedRole]);
+    if (selectedRole && !items.includes(selectedRole.id)) {
+      setItems([...items, selectedRole.id]);
     }
   }
 
   const removeItem = (ItemToRemove) => {
     const updatedItems = items.filter(item => item !== ItemToRemove);
     setItems(updatedItems);
-
-    if (updatedItems.length === 0) {
-      setError("role", { type: "manual", message: "Please select at least one role." }); // Set error if no items
-    }
   }
 
   const handleSkillSelection = (e) => {
@@ -113,7 +117,10 @@ function AddInterviewer() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={(e)=>{
+      handleSubmit(onSubmit)(e);
+      validateRoles();
+      }}>
       <div className=' text-[14px]' >
         <div className='  ' >
 
@@ -124,14 +131,14 @@ function AddInterviewer() {
             <ul className='grid grid-cols-2 grid-rows-2 gap-2  pl-0 '>
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label htmlFor="interviewerName" className=" w-full  text-right ">Interviewer Name</label>
+                  <label htmlFor="interviewerName" className="w-full text-right text-[12px] text-[#6B6F7B] font-bold">Interviewer Name</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="text"
                     name="interviewerName"
                     placeholder='Interviewer Name'
-                    className=" 2xl:w-[360px] xl:w-[300px]  h-[32px] md: border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" 2xl:w-[360px] xl:w-[300px]  h-[32px] md: border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     {...register("interviewerName", { required: "Interviewer Name is required", maxLength: { value: 255, message: "Name must be less than 255 characters" } })}
                   />
                   {errors.interviewerName && <span className="error-message" >{errors.interviewerName.message}</span>}
@@ -140,14 +147,14 @@ function AddInterviewer() {
 
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label htmlFor="phone" className=" w-full  text-right ">Phone Number</label>
+                  <label htmlFor="phone" className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Phone Number</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="text"
                     name="phone"
                     placeholder='Phone Number'
-                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     {...register("phone", { required: "Phone Number is required", pattern: { value: /^[0-9]{10}$/, message: "Phone number must be exactly 10 digits" } })}
                   />
                   {errors.phone && <span className="error-message" >{errors.phone.message}</span>}
@@ -155,14 +162,14 @@ function AddInterviewer() {
               </li>
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label htmlFor="email" className=" w-full  text-right ">Email ID</label>
+                  <label htmlFor="email" className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Email ID</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="email"
                     name="email"
                     placeholder='Email ID'
-                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     {...register("email", { required: "Email is required", pattern: { value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Email must be in the correct format" } })}
                   />
                   {errors.email && <span className="error-message" >{errors.email.message}</span>}
@@ -181,14 +188,14 @@ function AddInterviewer() {
             <ul className='grid grid-cols-2 grid-rows-2 gap-2 '>
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label htmlFor="currentCompany" className=" w-full  text-right ">Current Company</label>
+                  <label htmlFor="currentCompany" className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Current Company</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="text"
                     name="currentCompany"
                     placeholder='Current Company'
-                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     {...register("currentCompany", { required: "Current Company is required", maxLength: { value: 255, message: "Current company must be less than 255 characters" } })}
                   />
                   {errors.currentCompany && <span className="error-message" >{errors.currentCompany.message}</span>}
@@ -197,14 +204,14 @@ function AddInterviewer() {
 
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label htmlFor="previousCompany" className=" w-full  text-right ">Previous Company</label>
+                  <label htmlFor="previousCompany" className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Previous Company</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="text"
                     name="previousCompany"
                     placeholder='Previous Company'
-                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     {...register("previousCompany", { required: "Previous Company is required", maxLength: { value: 255, message: "Previous company must be less than 255 characters" } })}
                   />
                   {errors.previousCompany && <span className="error-message" >{errors.previousCompany.message}</span>}
@@ -212,14 +219,14 @@ function AddInterviewer() {
               </li>
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label htmlFor="currentDesignation" className=" w-full  text-right ">Current Designation</label>
+                  <label htmlFor="currentDesignation" className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Current Designation</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="text"
                     name="currentDesignation"
                     placeholder='Current Designation'
-                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     {...register("currentDesignation", { required: "Current Designation is required", maxLength: { value: 255, message: "Current designation must be less than 255 characters" } })}
                   />
                   {errors.currentDesignation && <span className="error-message" >{errors.currentDesignation.message}</span>}
@@ -236,25 +243,25 @@ function AddInterviewer() {
             <ul className='grid grid-cols-2 gap-2   '>
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label className=" w-full  text-right ">Total Experience</label>
+                  <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Total Experience</label>
                 </div>
                 <div className='flex-col justify-start items-center w-1/2  '>
                   <div className='flex items-center 2xl:gap-2 gap-[6px]' >
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="totalExperienceYears" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        <input type="number" name="totalExperienceYears" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
                           {...register("totalExperienceYears", { required: "Total experience in years is required", validate: value => value >= 0 && value <= 100 || "Total experience in years must be between 0 and 100" })}
                         />
-                        <span>Years</span>
+                        <span className='text-[12px] text-[#6B6F7B] font-bold' >Years</span>
                       </div>
                       {errors.totalExperienceYears && <span className="error-message" >{errors.totalExperienceYears.message}</span>}
                     </div>
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="totalExperienceMonths" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        <input type="number" name="totalExperienceMonths" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
                           {...register("totalExperienceMonths", { required: "Total experience in months is required", validate: value => value >= 0 && value <= 11 || "Total experience in months must be between 0 and 11" })}
                         />
-                        <span>Months</span>
+                        <span className='text-[12px] text-[#6B6F7B] font-bold' >Months</span>
                       </div>
                       {errors.totalExperienceMonths && <span className="error-message" >{errors.totalExperienceMonths.message}</span>}
                     </div>
@@ -264,25 +271,25 @@ function AddInterviewer() {
 
               <li className='flex items-center justify-start gap-x-4  '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label className=" w-full  text-right ">Interview Experience</label>
+                  <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Interview Experience</label>
                 </div>
                 <div className='flex-col justify-center items-center w-1/2  '>
                   <div className='flex items-center 2xl:gap-2 gap-[6px]' >
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="interviewExperienceYears" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        <input type="number" name="interviewExperienceYears" placeholder='Years' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
                           {...register("interviewExperienceYears", { required: "Interview experience in years is required", validate: value => value >= 0 && value <= 100 || "Interview experience in years must be between 0 and 100" })}
                         />
-                        <span>Years</span>
+                        <span className='text-[12px] text-[#6B6F7B] font-bold' >Years</span>
                       </div>
                       {errors.interviewExperienceYears && <span className="error-message" >{errors.interviewExperienceYears.message}</span>}
                     </div>
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="interviewExperienceMonths" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        <input type="number" name="interviewExperienceMonths" placeholder='Months' className=' w-[80px] h-[32px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
                           {...register("interviewExperienceMonths", { required: "Interview experience in months is required", validate: value => value >= 0 && value <= 11 || "Interview experience in months must be between 0 and 11" })}
                         />
-                        <span>Months</span>
+                        <span className='text-[12px] text-[#6B6F7B] font-bold' >Months</span>
                       </div>
                       {errors.interviewExperienceMonths && <span className="error-message" >{errors.interviewExperienceMonths.message}</span>}
                     </div>
@@ -303,16 +310,16 @@ function AddInterviewer() {
             <ul className='grid grid-cols-2 gap-2  pb-0 '>
               <li className='flex items-center gap-x-4 justify-start  '>
                 <div className='w-[30%]  flex items-center justify-center  '>
-                  <label className=" w-full  text-right  ">Interview Assigned For</label>
+                  <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold ">Interview Assigned For</label>
                 </div>
                 <div className='w-1/2'>
-                  <RolesSelect register={register} errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
+                  <RolesSelect errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} className='max-w-[140px] h-[32px] text-[12px]' />
                 </div>
               </li>
 
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-center justify-center'>
-                  <label className=" w-full  text-right ">Skills</label>
+                  <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Skills</label>
                 </div>
                 <div className='w-1/2'>
                   <select
@@ -322,7 +329,7 @@ function AddInterviewer() {
                     })}
                     onChange={handleSkillSelection}
                     value={""}
-                    className={`w-[134px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${itemsSkills.length === 0 ? "text-gray-500" : "text-black"}`}
+                    className={`w-[140px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px] border-[#CAC4D0] ${itemsSkills.length === 0 ? "text-gray-500" : "text-black"}`}
                   >
                     <option value="" disabled>Select Skills</option>
                     <option value="Python">Python</option>
@@ -359,7 +366,7 @@ function AddInterviewer() {
           <ul className='grid grid-cols-2 grid-rows gap-2 '>
             <li className='flex items-center justify-start gap-x-4 '>
               <div className='w-[30%]  flex items-end justify-end'>
-                <label className=" w-full  text-right ">Strength</label>
+                <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Strength</label>
               </div>
               <div className='w-1/2'>
                 <select
@@ -370,7 +377,7 @@ function AddInterviewer() {
                     setSelectedStrength(e.target.value);
                     setValue("strength", e.target.value);
                   }}
-                  className={`w-[134px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-[#CAC4D0] ${selectedStrength === "" ? "text-gray-500" : "text-black"}`}
+                  className={`w-[140px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px] border-[#CAC4D0] ${selectedStrength === "" ? "text-gray-500" : "text-black"}`}
                   defaultValue={""}
                 >
                   <option value="" disabled>Select Strength</option>
@@ -398,14 +405,14 @@ function AddInterviewer() {
             <ul className='grid grid-cols-2 gap-2 '>
               <li className='flex items-center justify-start gap-x-4 '>
                 <div className='w-[30%]  flex items-end justify-end'>
-                  <label className=" w-full  text-right ">Upload CV</label>
+                  <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold">Upload CV</label>
                 </div>
                 <div className='w-1/2'>
                   <input
                     type="file"
                     name="cv"
                     {...register("cv", { required: "CV is required." })}
-                    className="border border-gray-300 rounded-lg"
+                    className="border border-gray-300 rounded-lg text-[12px]"
                   />
                   {errors.cv && <span className="error-message" >{errors.cv.message}</span>}
                 </div>
