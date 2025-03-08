@@ -38,7 +38,7 @@ function AddClient() {
     const { state } = location;
     const { isEditing, clientData } = useMemo(() => ({
         isEditing: state?.isEditing || false,
-        clientData: state?.clientData || {}
+        clientData: state?.clientData || null
     }), [state]);
 
     const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
@@ -58,8 +58,8 @@ function AddClient() {
             setAssignedTo(clientData?.assigned_to?.id);
 
             // Set POC rows
-            if (clientData.points_of_contact && clientData.points_of_contact.length > 0) {
-                const formattedPocs = clientData.points_of_contact.map(poc => ({
+            if (clientData?.points_of_contact && clientData?.points_of_contact.length > 0) {
+                const formattedPocs = clientData?.points_of_contact.map(poc => ({
                     name: poc.name,
                     email: poc.email,
                     phone: poc.phone ? poc.phone.replace('+91', '') : ''
@@ -161,21 +161,21 @@ function AddClient() {
             };
 
             // Check for changes and add to payload
-            if (data.name !== clientData.name) payload.name = data.name;
-            if (data.website !== clientData.website) payload.website = data.website;
-            if (data.domain !== clientData.domain) payload.domain = data.domain;
-            if (data.gstin !== clientData.gstin) payload.gstin = data.gstin;
-            if (data.pan !== clientData.pan) payload.pan = data.pan;
-            if (data.is_signed !== clientData.is_signed) payload.is_signed = data.is_signed === "true";
-            if (data.address !== clientData.address) payload.address = data.address;
-            if (assignedTo !== clientData.assigned_to.id) payload.assigned_to = assignedTo;
+            if (data.name !== clientData?.name) payload.name = data.name;
+            if (data.website !== clientData?.website) payload.website = data.website;
+            if (data.domain !== clientData?.domain) payload.domain = data.domain;
+            if (data.gstin !== clientData?.gstin) payload.gstin = data.gstin;
+            if (data.pan !== clientData?.pan) payload.pan = data.pan;
+            if (data.is_signed !== clientData?.is_signed) payload.is_signed = data.is_signed === "true";
+            if (data.address !== clientData?.address) payload.address = data.address;
+            if (assignedTo !== clientData?.assigned_to?.id) payload.assigned_to = assignedTo;
 
             // Check for changes in points of contact
             payload.points_of_contact = rows.map(row => ({ ...row, phone: `+91${row.phone}` }));
 
-            if (isEditing && clientData.id) {
+            if (isEditing && clientData?.id) {
                 // Use PATCH for updating
-                await axios.patch(`/api/internal/internal-client/${clientData.id}/`, payload);
+                await axios.patch(`/api/internal/internal-client/${clientData?.id}/`, payload);
                 toast.success("Client updated successfully", { position: "top-right" });
             } else {
                 // Use POST for creating
