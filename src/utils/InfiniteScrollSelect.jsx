@@ -3,13 +3,13 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from '../../src/api/axios';  // Import axios instance
 import { KeyboardArrowDown } from '@mui/icons-material';
 
-const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true }) => {
+const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null }) => {
     const [items, setItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(defaultValue);
     const dropdownRef = useRef(null);
     const scrollRef = useRef(null);
     const mountedRef = useRef(false);
@@ -35,6 +35,10 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
             }
         }
     }, [apiEndpoint]);
+
+    useEffect(() => {
+        setSelectedItem(defaultValue);
+    }, [defaultValue]);
 
     // Initial load
     useEffect(() => {
@@ -101,7 +105,7 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center justify-between w-full p-2 text-left text-gray-500 border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+                className={`flex items-center justify-between w-full p-2 text-left text-[rgb(0 0 0 / 87%)] border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
             >
                 {selectedItem ? selectedItem.name : placeholder} <KeyboardArrowDown fontSize='small'/>
             </button>
@@ -141,6 +145,7 @@ InfiniteScrollSelect.propTypes = {
     dropdownClassName: PropTypes.string,
     maxId: PropTypes.number,
     changeValue: PropTypes.bool,
+    defaultValue: PropTypes.object,
 };
 
 export default InfiniteScrollSelect;

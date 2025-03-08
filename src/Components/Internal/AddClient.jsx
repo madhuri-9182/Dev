@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,10 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
 import toast from "react-hot-toast";
 import axios from '../../api/axios';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
 
@@ -34,8 +34,40 @@ function AddClient() {
     const [selectedRow, setSelectedRow] = useState({});
     const [assignedTo, setAssignedTo] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+    const { state } = location;
+    const { isEditing, clientData } = useMemo(() => ({
+        isEditing: state?.isEditing || false,
+        clientData: state?.clientData || {}
+    }), [state]);
+
     const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
-    const { register, handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
+    const { register, handleSubmit, formState: { errors }, setError, clearErrors, setValue } = useForm();
+
+    // Fetch client data if in edit mode
+    useEffect(() => {
+        if (clientData) {
+            // Prefill form data
+            setValue("name", clientData?.name);
+            setValue("website", clientData?.website);
+            setValue("domain", clientData?.domain);
+            setValue("gstin", clientData?.gstin);
+            setValue("pan", clientData?.pan);
+            setValue("is_signed", `${clientData?.is_signed}`);
+            setValue("address", clientData?.address);
+            setAssignedTo(clientData?.assigned_to?.id);
+
+            // Set POC rows
+            if (clientData.points_of_contact && clientData.points_of_contact.length > 0) {
+                const formattedPocs = clientData.points_of_contact.map(poc => ({
+                    name: poc.name,
+                    email: poc.email,
+                    phone: poc.phone ? poc.phone.replace('+91', '') : ''
+                }));
+                setRows(formattedPocs);
+            }
+        }
+    }, [clientData, setValue]);
 
     const validateAssignTo = useCallback(() => {
         if (!assignedTo) {
@@ -125,32 +157,41 @@ function AddClient() {
         try {
             setLoading(true);
             const payload = {
-                "name": data.name,
-                "website": data.website,
-                "domain": data.domain,
-                "gstin": data.gstin,
-                "pan": data.pan,
-                "is_signed": data.is_signed,
-                "assigned_to": assignedTo,
-                "address": data.address,
-                "points_of_contact": rows.map(row => ({ ...row, phone: `+91${row.phone}` }))
+                // Only include fields that have changed
+            };
+
+            // Check for changes and add to payload
+            if (data.name !== clientData.name) payload.name = data.name;
+            if (data.website !== clientData.website) payload.website = data.website;
+            if (data.domain !== clientData.domain) payload.domain = data.domain;
+            if (data.gstin !== clientData.gstin) payload.gstin = data.gstin;
+            if (data.pan !== clientData.pan) payload.pan = data.pan;
+            if (data.is_signed !== clientData.is_signed) payload.is_signed = data.is_signed === "true";
+            if (data.address !== clientData.address) payload.address = data.address;
+            if (assignedTo !== clientData.assigned_to.id) payload.assigned_to = assignedTo;
+
+            // Check for changes in points of contact
+            payload.points_of_contact = rows.map(row => ({ ...row, phone: `+91${row.phone}` }));
+
+            if (isEditing && clientData.id) {
+                // Use PATCH for updating
+                await axios.patch(`/api/internal/internal-client/${clientData.id}/`, payload);
+                toast.success("Client updated successfully", { position: "top-right" });
+            } else {
+                // Use POST for creating
+                await axios.post("/api/internal/internal-client/", payload);
+                toast.success("Client added successfully", { position: "top-right" });
             }
-            await axios.post("/api/internal/internal-client/", payload);
-            toast.success(
-                "Client added successfully",
-                {
-                    position: "top-right",
-                }
-            );
+
             navigate("/internal/clients");
         } catch (error) {
             let errorMessages;
             if (error?.response?.data?.errors?.errors) {
                 errorMessages = Object.entries(error.response.data.errors.errors).flatMap(([key, values]) => values.map(value => `${key}: ${value}`));
             } else if (error?.response?.data?.errors) {
-                errorMessages = Object.entries(error.response.data.errors).flatMap(([key, value]) => Object.entries(value).flatMap(([errorKey, errorValues]) => errorValues.map(errorValue => `${errorKey}: ${errorValue}`)));
+                errorMessages = Object.entries(error.response.data.errors).flatMap(([rowNo, errors]) => Object.entries(errors).flatMap(([errorKey, errorValues]) => errorValues.map(errorValue => `Row No. ${rowNo} - ${errorKey}: ${errorValue}`)));
             }
-            toast.error(errorMessages.join(', ') || "Failed to add client", { position: "top-right" });
+            toast.error(errorMessages?.join(', ') || (isEditing ? "Failed to update client" : "Failed to add client"), { position: "top-right" });
         } finally {
             setLoading(false);
         }
@@ -160,12 +201,13 @@ function AddClient() {
         <React.Fragment>
             <div>
                 {location.pathname === "/internal/clients/addclient" && (
-                    <form onSubmit={(e)=>{
+                    <form onSubmit={(e) => {
                         handleSubmit(onSubmit)(e);
                         validateAssignTo();
                         validatePOC();
-                        }}>
+                    }}>
                         <div>
+                            <h1 className="text-xl font-bold mb-6">{isEditing ? "Edit Client" : "Add Client"}</h1>
                             <ul className="flex flex-col gap-y-2">
                                 <li className="flex items-center">
                                     <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Client Registered Name</label>
@@ -256,8 +298,8 @@ function AddClient() {
                                             className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         >
                                             <option disabled value="">Select</option>
-                                            <option value={true}>Signed</option>
-                                            <option value={false}>Not Signed</option>
+                                            <option value={"true"}>Signed</option>
+                                            <option value={"false"}>Not Signed</option>
                                         </select>
                                         {errors.is_signed && <span className="error-message">{errors.is_signed.message}</span>}
                                     </div>
@@ -275,6 +317,7 @@ function AddClient() {
                                             placeholder='Select User'
                                             className="text-[12px] h-[32px] min-w-[360px] text-center justify-center"
                                             dropdownClassName="text-[12px]"
+                                            defaultValue={clientData?.assigned_to}
                                         />
                                         {errors.assigned_to && <span className="error-message">{errors.assigned_to.message}</span>}
                                     </div>

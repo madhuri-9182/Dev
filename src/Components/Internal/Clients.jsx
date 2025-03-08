@@ -4,6 +4,25 @@ import MultiSelectFilter from '../../utils/MultiSelectFilter';
 import debounce from 'lodash/debounce';
 import axios from '../../api/axios';
 import TableLoadingWrapper from '../../utils/TableLoadingWrapper';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import { IconButton, styled } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import toast from 'react-hot-toast';
+import { Close, CreditCard, Done, Edit, Language, Mail, Person, Phone, PinDrop, ReceiptLong, Work } from '@mui/icons-material';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+  '& .MuiDialog-paper': {
+    width: '500px', // You can customize this value to whatever you need
+  },
+}));
 
 function Clients() {
   // Data for the table
@@ -12,14 +31,15 @@ function Clients() {
   const [offset, setOffset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const [filters, setFilters] = useState({
     domain: [],
     status: []
   });
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const STATUSES = [
     { label: "Active", value: "active" },
@@ -45,7 +65,6 @@ function Clients() {
     }
   };
 
-
   const handleSearchChange = debounce((event) => {
     setOffset(0);
     setClients([]);
@@ -61,6 +80,26 @@ function Clients() {
     if (scrollHeight - scrollTop <= clientHeight + 20 && !isLoading && hasMore) {
       setOffset((prev) => prev + 10);
     }
+  };
+
+  const handleClientClick = async (clientId) => {
+    try {
+      const response = await axios.get(`/api/internal/internal-client/${clientId}/`);
+      setSelectedClient(response.data.data);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching client data:', error);
+      toast.error("Failed to load client data", { position: "top-right" });
+    }
+  };
+
+  const handleEditClick = () => {
+    navigate(`${location.pathname}/addclient`, { state: { clientData: selectedClient, isEditing: true } });
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedClient(null);
   };
 
   return (
@@ -133,7 +172,10 @@ function Clients() {
               <tbody>
                 {clients.map((client, index) => (
                   <tr key={index} className="border-b">
-                    <td className="px-6 py-4 text-blue-600 font-bold ">
+                    <td
+                      className="px-6 py-4 text-blue-600 font-bold cursor-pointer hover:underline"
+                      onClick={() => handleClientClick(client.id)}
+                    >
                       {client.name}
                     </td>
                     <td className="px-6 py-4 text-center">{client.active_jobs}</td>
@@ -146,6 +188,157 @@ function Clients() {
           </div>
         </TableLoadingWrapper>
       </div>
+
+      {/* Modal for Client Details */}
+      <BootstrapDialog
+        aria-labelledby="add-poc-dialog-title"
+        open={isModalOpen}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(255, 255, 255, 0.8)'
+          },
+        }}
+      >
+        <DialogTitle sx={{ m: 0, p: 2, pb: 0 }} id="add-poc-dialog-title">
+          <h1 className='font-bold text-[#056DDC] text-lg text-center'>View Client Details</h1>
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={() => closeModal()}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent>
+          <div>
+            {/* Primary Details Section */}
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">Client Information</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start">
+                    <Person className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Registered Name</p>
+                      <p className="font-medium text-xs">{selectedClient?.name}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Language className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Website</p>
+                      <a href={selectedClient?.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs">{selectedClient?.website}</a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Work className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Domain</p>
+                      <p className="font-medium text-xs">{selectedClient?.domain}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">Address</h3>
+                <div className="flex items-center">
+                  <PinDrop className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                  <div>
+                    <p className="font-medium text-xs">{selectedClient?.address}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">Tax Information</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start">
+                    <ReceiptLong className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                    <div>
+                      <p className="text-[10px] text-gray-500">GSTIN</p>
+                      <p className="font-medium text-xs">{selectedClient?.gstin}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <CreditCard className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                    <div>
+                      <p className="text-[10px] text-gray-500">PAN</p>
+                      <p className="font-medium text-xs">{selectedClient?.pan}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">Status Information</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start">
+                    <div className="flex items-center mt-1 mr-3">
+                      {selectedClient?.is_signed === true ?
+                        <Done className="text-green-500" size={14} /> :
+                        <Close className="text-red-500" size={14} />
+                      }
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Status</p>
+                      <p className="font-medium text-xs">{selectedClient?.is_signed === true ? "Signed" : "Not Signed"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Person className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                    <div>
+                      <p className="text-[10px] text-gray-500">Assigned To</p>
+                      <p className="font-medium text-xs">{selectedClient?.assigned_to?.name}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Points of Contact Section */}
+            <div className="flex items-center justify-between mt-4 mb2 pl-4">
+              {/* <h2 className="text-sm font-semibold">Points of Contact</h2> */}
+              <h2 className="text-xs uppercase text-gray-500 font-semibold mb-2">Points of Contact</h2>
+            </div>
+
+            {selectedClient?.points_of_contact?.map((poc, index) => (
+              <div key={index} className="bg-gray-50 p-4 rounded-md mb-2">
+                <div className="flex justify-between">
+                  <h3 className="font-medium text-xs">{poc.name}</h3>
+                </div>
+                <div className="mt-3">
+                  <div className="flex items-center">
+                    <Mail className="text-indigo-500 mr-2" size={10} />
+                    <a href={`mailto:${poc.email}`} className="text-blue-600 hover:underline text-xs">{poc.email}</a>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <Phone className="text-indigo-500 mr-2" size={10} />
+                    <a href={`tel:${poc.phone}`} className="text-blue-600 hover:underline text-xs">{poc.phone}</a>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Action Buttons */}
+            <div className="flex justify-end mt-4">
+              <button className='bg-[#056DDC] text-white p-2 px-4 rounded-full mb-2 text-sm' onClick={handleEditClick} >Edit Details <Edit sx={{ fontSize: 18, paddingBottom: '2px', paddingLeft: '2px' }} /></button>
+            </div>
+
+          </div>
+        </DialogContent>
+      </BootstrapDialog>
     </div>
   );
 }
