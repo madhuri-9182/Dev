@@ -73,6 +73,7 @@ import {
 import { JobProvider } from "./context/JobContext";
 import AddJob from "./Components/Client/Jobs/AddJob";
 import JobDetails from "./Components/Client/Jobs/JobDetails";
+import EmailVerification from "./Components/Authentication/EmailVerification";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -102,6 +103,10 @@ const router = createBrowserRouter(
               element={<PasswordReset />}
             />
           </Route>
+          <Route
+            path="verification/:verification_data_uid"
+            element={<EmailVerification />}
+          />
         </Route>
         {/* User Routes */}
         <Route

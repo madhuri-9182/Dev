@@ -6,6 +6,11 @@ const useRefreshToken = () => {
 
   const refresh = async () => {
     try {
+      // Check if the current window endpoint matches verification/:id
+      if (window.location.pathname.startsWith('/verification/')) {
+        throw new Error('Moving to Verification page'); // Call logout function
+      }
+
       const response = await axios.post(
         "/api/refresh/",
         {},

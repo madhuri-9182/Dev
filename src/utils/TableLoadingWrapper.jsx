@@ -15,13 +15,15 @@ function TableLoadingWrapper({loading, data, children}) {
               <CircularProgress />
             </div>
           ) : 
-          <div className='flex justify-center items-center'>
-          <TableRow>
-            <TableCell>
-              No Data Found
-            </TableCell>
-          </TableRow>
-          </div>
+          <table className='flex justify-center items-center'>
+            <tbody>
+              <TableRow>
+                <TableCell>
+                  No Data Found
+                </TableCell>
+              </TableRow>
+            </tbody>
+          </table>
           }
     </> );
 }
