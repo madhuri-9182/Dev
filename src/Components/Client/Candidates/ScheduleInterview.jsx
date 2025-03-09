@@ -6,10 +6,10 @@ import BasicDatePicker from "../../../utils/BasicDatePicker";
 import {
   base64ToFile,
   formatExperience,
+  getJobLabel,
 } from "../../../utils/util";
 import {
   CANDIDATE_SOURCE,
-  JOB_NAMES,
   SPECIALIZATIONS,
 } from "../../Constants/constants";
 import { useMutation } from "@tanstack/react-query";
@@ -161,8 +161,7 @@ function ClientScheduleInterview() {
   const role = jobs?.find(
     (job) => job.id === item?.role
   )?.name;
-  const roleValue =
-    JOB_NAMES.find((job) => job.id === role)?.name || role;
+  const roleValue = getJobLabel(role);
   const functionValue = SPECIALIZATIONS.find(
     (spec) => spec.id === item?.specialization
   )?.name;

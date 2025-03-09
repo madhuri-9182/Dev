@@ -238,3 +238,18 @@ export const JOB_STATUS = [
     label: "Archived",
   },
 ];
+
+export const GENDERS = [
+  {
+    id: "M",
+    name: "Male",
+  },
+  {
+    id: "F",
+    name: "Female",
+  },
+  {
+    id: "TG",
+    name: "Other",
+  },
+];

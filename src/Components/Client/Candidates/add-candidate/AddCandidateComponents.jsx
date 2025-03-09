@@ -10,7 +10,10 @@ import {
   fileToBase64,
   formatExperience,
 } from "../../../../utils/util";
-import { EMAIL_REGEX } from "../../../Constants/constants";
+import {
+  EMAIL_REGEX,
+  GENDERS,
+} from "../../../Constants/constants";
 
 export const ResumeTable = ({
   data,
@@ -315,9 +318,11 @@ const ResumeTableRow = ({
                 className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
               >
                 <option value="">Select</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                {GENDERS.map((gender, idx) => (
+                  <option key={idx} value={gender.id}>
+                    {gender.name}
+                  </option>
+                ))}
               </select>
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
@@ -368,8 +373,9 @@ const ResumeTableRow = ({
             </td>
             <td className="px-3 w-[11%]">
               {item.gender
-                ? item.gender.charAt(0).toUpperCase() +
-                  item.gender.slice(1)
+                ? GENDERS.find(
+                    (gender) => gender.id === item.gender
+                  )?.name
                 : "Not specified"}
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
