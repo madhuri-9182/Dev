@@ -164,22 +164,6 @@ const CalendarPopup = ({
     }));
   };
 
-  // Format date for UI display
-  const formatEventDate = () => {
-    try {
-      const eventDate = new Date(newEvent.date);
-      const options = {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      };
-      return eventDate.toLocaleDateString("en-US", options);
-      // eslint-disable-next-line no-unused-vars
-    } catch (e) {
-      return "";
-    }
-  };
-
   return (
     <div
       ref={popupRef}
@@ -223,7 +207,7 @@ const CalendarPopup = ({
           </div>
           <div className="flex-grow">
             <div className="font-medium text-xs">
-              {formatEventDate()} {newEvent.formattedTime}
+              {newEvent.formattedTime}
             </div>
             <div
               className="flex items-center mt-1 text-gray-500 text-2xs cursor-pointer"

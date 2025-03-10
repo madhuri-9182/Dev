@@ -305,6 +305,21 @@ const CalendarComponent = () => {
     const startDate = new Date(selectionInfo.start);
     const endDate = new Date(selectionInfo.end);
 
+    const timeDiffInMinutes =
+      (endDate - startDate) / (1000 * 60);
+
+    if (timeDiffInMinutes < 60) {
+      toast.error(
+        "Please select time frame of at least 1 hour.",
+        {
+          position: "top-right",
+        }
+      );
+
+      calendarRef.current?.getApi().unselect();
+      return;
+    }
+
     // Format dates for display and API
     const dateInfo = formatSelectedDate(startDate, endDate);
     setNewEvent({ ...newEvent, ...dateInfo });
