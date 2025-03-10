@@ -331,6 +331,16 @@ const CalendarComponent = () => {
       end_time: newEvent.end_time,
     };
 
+    const defaultDescription =
+      "This time slot is available for interviews.";
+    if (
+      newEvent.description &&
+      newEvent.description.trim() !== "" &&
+      newEvent.description !== defaultDescription
+    ) {
+      blockData.notes = newEvent.description;
+    }
+
     // If this is a recurring event, add the recurrence data
     if (
       newEvent.recurring !== "none" &&
@@ -395,6 +405,57 @@ const CalendarComponent = () => {
     blockCalendarMutation.mutate(blockData);
   };
 
+  // Add this function to the CalendarComponent
+  const handleEventClick = (clickInfo) => {
+    // Only handle blocked time events (not Google Calendar events)
+    if (
+      clickInfo.event.classNames.includes(
+        "google-cal-blocked-time"
+      )
+    ) {
+      const eventStart = new Date(clickInfo.event.start);
+      const eventEnd = new Date(clickInfo.event.end);
+
+      // Format dates for display and API
+      const dateInfo = formatSelectedDate(
+        eventStart,
+        eventEnd
+      );
+
+      // Get description/notes from the event's extendedProps
+      const description =
+        clickInfo.event.extendedProps?.description ||
+        "This time slot is available for interviews.";
+
+      // Update the newEvent state
+      setNewEvent({
+        ...newEvent,
+        ...dateInfo,
+        description: description,
+        // Preserve other properties
+        recurring: "none", // Reset recurring since we're editing an existing event
+        recurrence: {
+          frequency: "WEEKLY",
+          interval: 1,
+          days: [],
+          count: null,
+          until: null,
+          monthDay: [],
+          yearDay: [],
+        },
+      });
+
+      // Calculate popup position
+      const position = calculatePopupPosition(
+        clickInfo.jsEvent
+      );
+      setPopupPosition(position);
+
+      // Show the popup
+      setPopupVisible(true);
+    }
+  };
+
   return (
     <div className="font-roboto max-w-full p-5 my-0 mx-auto">
       {/* Toolbar */}
@@ -439,6 +500,7 @@ const CalendarComponent = () => {
             googleEvents,
             blockedTimes
           )}
+          eventClick={handleEventClick}
           height="auto"
           eventClassNames="rounded-md text-xs px-1 py-0.5 overflow-hidden text-white shadow-md"
           dayHeaderContent={DayHeaderContent}

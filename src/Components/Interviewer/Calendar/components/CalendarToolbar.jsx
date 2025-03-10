@@ -24,7 +24,7 @@ const CalendarToolbar = ({
     return `${googleCalViewBtn} ${
       activeView === view
         ? "bg-[#e8f0fe] text-[#1a73e8]"
-        : ""
+        : "bg-transparent text-[#3c4043]"
     }`;
   };
 
@@ -96,4 +96,4 @@ const googleCalNavBtn =
   "bg-transparent border-none text-[#5f6368] text-lg w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6]";
 
 const googleCalViewBtn =
-  "bg-transparent border-none text-[#3c4043] text-sm font-medium px-4 py-2 cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6]";
+  " border-none text-sm font-medium px-4 py-2 cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6]";

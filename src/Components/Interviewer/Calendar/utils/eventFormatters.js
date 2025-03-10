@@ -60,6 +60,13 @@ export const getFormattedEvents = (
           borderColor: "#049be5",
           classNames: "google-cal-blocked-time",
           eventKey,
+          extendedProps: {
+            type: "blocked",
+            // Use notes field if available, otherwise use default description
+            description:
+              block.notes ||
+              "This time slot is available for interviews.",
+          },
         };
       } else {
         // Add as a new event
@@ -71,6 +78,13 @@ export const getFormattedEvents = (
           borderColor: "#049be5",
           classNames: "google-cal-blocked-time",
           eventKey,
+          extendedProps: {
+            type: "blocked",
+            // Use notes field if available, otherwise use default description
+            description:
+              block.notes ||
+              "This time slot is available for interviews.",
+          },
         });
 
         eventTimeMap.set(
