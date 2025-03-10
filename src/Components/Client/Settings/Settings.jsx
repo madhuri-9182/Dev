@@ -30,6 +30,8 @@ function Settings() {
     queryKey: ["users", currentPage, auth.role],
     queryFn: () => fetchUsers(currentPage),
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const handleDialogOpen = (title) => {
