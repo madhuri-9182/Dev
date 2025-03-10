@@ -49,6 +49,7 @@ export const JobProvider = () => {
     job_ids: [],
     hiring_manager_ids: [],
     recruiter_ids: [],
+    status: "active",
   });
   const [isArchiveModalOpen, setIsArchiveModalOpen] =
     useState(false);

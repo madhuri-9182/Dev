@@ -42,7 +42,7 @@ import { InternalMessages } from "./Internal/Messages";
 
 // Interviewer Imports
 import Layout from "./Interviewer/Layout";
-import Calendar from "./Interviewer/Calendar";
+import CalendarComponent from "./Interviewer/Calendar";
 import InterviewRecord from "./Interviewer/InterviewRecord";
 import Payments from "./Interviewer/Payments";
 import { Feedback } from "./Interviewer/Feedback";
@@ -98,7 +98,7 @@ export {
 //Interviewer Exports
 export {
   Layout,
-  Calendar,
+  CalendarComponent,
   InterviewRecord,
   Payments,
   Feedback,

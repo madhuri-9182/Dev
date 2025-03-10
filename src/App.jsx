@@ -10,7 +10,7 @@ import UserActivation from "./Components/Client/UserActivation";
 // Interviewer Imports
 import {
   Layout,
-  Calendar,
+  CalendarComponent,
   InterviewRecord,
   Payments,
 } from "./Components";
@@ -279,7 +279,10 @@ const router = createBrowserRouter(
               path="dashboard"
               element={<InterviewRecord />}
             />
-            <Route path="calendar" element={<Calendar />} />
+            <Route
+              path="calendar"
+              element={<CalendarComponent />}
+            />
             <Route path="payments" element={<Payments />} />
             <Route path="feedback" element={<Feedback />} />
           </Route>

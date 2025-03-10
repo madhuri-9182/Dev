@@ -16,6 +16,7 @@ const Jobs = () => {
     hiring_manager_ids: filters.hiring_manager_ids,
     recruiter_ids: filters.recruiter_ids,
     post_job_date: filters.post_job_date,
+    status: filters.status,
   };
 
   const { data, isLoading, isError } = useQuery({
