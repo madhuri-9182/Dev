@@ -159,6 +159,7 @@ Heading.propTypes = {
 };
 
 const Table = ({ data }) => {
+  const navigate = useNavigate();
   return (
     <div className="px-3">
       <table className="w-full border-separate border-spacing-y-2">
@@ -232,14 +233,28 @@ const Table = ({ data }) => {
                     <ReceiveSquare
                       size={16}
                       color="#171717"
+                      className="cursor-pointer"
                     />
-                    <Eye size={16} color="#171717" />
-                    <TickSquare size={16} color="#171717" />
+                    <Eye
+                      size={16}
+                      color="#171717"
+                      className="cursor-pointer"
+                    />
+                    <TickSquare
+                      size={16}
+                      color="#171717"
+                      className="cursor-pointer"
+                    />
                     <MessageText1
                       size={16}
                       color="#171717"
+                      className="cursor-pointer"
+                      onClick={() =>
+                        navigate("/interviewer/feedback")
+                      }
                     />
                     <ArrowSquareRight
+                      className="cursor-pointer"
                       size={16}
                       color="#171717"
                     />
