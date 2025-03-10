@@ -107,7 +107,7 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center justify-between w-full p-2 text-left text-[rgb(0 0 0 / 87%)] border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
             >
-                {selectedItem ? selectedItem.name : placeholder} <KeyboardArrowDown fontSize='small'/>
+                {selectedItem ? selectedItem.name : <span className='text-[#afb3b6]' >{placeholder}</span>} <KeyboardArrowDown fontSize='small'/>
             </button>
 
             {isOpen && (
