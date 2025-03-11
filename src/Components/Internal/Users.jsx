@@ -15,6 +15,7 @@ import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
 import toast from "react-hot-toast";
 import { Button, CircularProgress } from "@mui/material";
 import { ACCESSIBILITY, EMAIL_REGEX, MOBILE_REGEX, USER_TYPE } from "../Constants/constants";
+import useAuth from "../../hooks/useAuth";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -44,6 +45,7 @@ function Users() {
   const [savingClient, setSavingClient] = useState(false);
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedInternalClient, setSelectedInternalClient] = useState({});
+  const {auth} = useAuth();
 
   const { register, handleSubmit, reset, setError, clearErrors, getValues, formState: { errors } } = useForm();
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
@@ -677,7 +679,7 @@ function Users() {
         <div>
           <div className="flex items-center gap-x-5">
             <h1 className="text-sm font-semibold">HDIP USERS</h1>
-            <React.Fragment>
+            {auth?.role === "moderator" ? null : <React.Fragment>
               <div>
                 <button
                   className="border h-[32px] px-6 rounded-full bg-[#056DDC] font-medium text-white text-sm"
@@ -735,7 +737,7 @@ function Users() {
                           defaultValue=""
                         >
                           <option value="" disabled>Select Access</option>
-                          <option value="admin" className="text-black">Admin</option>
+                          <option value="admin" className={auth?.role === "admin" ? "text-gray-500" : "text-black"} disabled={auth?.role === "admin"}>Admin</option>
                           <option value="moderator" className="text-black">Moderator</option>
                         </select>
                         {errors.access && <span className="error-message">{errors.access.message}</span>}
@@ -815,7 +817,7 @@ function Users() {
                   </form>
                 </DialogContent>
               </BootstrapDialog>
-            </React.Fragment>
+            </React.Fragment>}
 
 
             {/* Search Input Section */}
@@ -855,7 +857,7 @@ function Users() {
                   validateClients();
                 }}>
                   <div
-                    className={`${editHdipUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] mt-1 rounded-full items-center justify-center max-h-max`}
+                    className={`${editHdipUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] mt-1 rounded-full items-center justify-center max-h-max min-h-[40px]`}
                   >
                     <div className="px-3 py-1 w-auto">
                       {editHdipUser === index ? (
@@ -974,8 +976,7 @@ function Users() {
 
                         </div>
 
-                        :
-                        <button
+                        : (auth?.role === "moderator" && auth?.email !== item?.user?.email) || (auth?.role === "admin" && auth?.email !== item?.user?.email && item?.user?.role === "admin") ? null : <button
                           className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
                           onClick={() => { toggleEditHdipUser(index) }}
                         >
