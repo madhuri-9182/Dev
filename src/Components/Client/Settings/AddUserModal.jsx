@@ -70,20 +70,31 @@ const AddUserModal = ({
       queryClient.invalidateQueries(["users"]);
     },
     onError: (error) => {
-      console.error("API Error:", error);
-
       if (error.response?.data?.errors) {
-        const allErrorMessages = Object.values(
-          error.response.data.errors
-        ).flat();
+        // Check if errors is a string or an object
+        if (
+          typeof error.response.data.errors === "string"
+        ) {
+          // If it's a string, show that directly
+          toast.error(error.response.data.errors, {
+            position: "top-right",
+          });
+        } else {
+          // If it's an object, use the existing logic
+          const allErrorMessages = Object.values(
+            error.response.data.errors
+          ).flat();
 
-        allErrorMessages.forEach((errorMessage, index) => {
-          setTimeout(() => {
-            toast.error(errorMessage, {
-              position: "top-right",
-            });
-          }, index * 100);
-        });
+          allErrorMessages.forEach(
+            (errorMessage, index) => {
+              setTimeout(() => {
+                toast.error(errorMessage, {
+                  position: "top-right",
+                });
+              }, index * 100);
+            }
+          );
+        }
       } else {
         toast.error(
           error.response?.data?.message ||
@@ -346,30 +357,39 @@ const AddUserModal = ({
                 )}
               />
 
-              <Controller
-                name="role"
-                control={control}
-                rules={{
-                  required: "User type is required",
-                }}
-                render={({ field }) => (
-                  <FormField
-                    label="User Type"
-                    error={errors.role?.message}
-                  >
-                    <CustomSelect
-                      type="role"
-                      placeholder="Select User Type"
-                      value={field.value}
-                      onChange={(e) =>
-                        field.onChange(e.target.value)
-                      }
-                      options={roleOptions}
-                      errors={errors}
-                    />
-                  </FormField>
-                )}
-              />
+              {selectedUser?.user?.role ===
+              "client_owner" ? (
+                <FormField label="User Type">
+                  <div className="w-full rounded-lg text-2xs py-2 px-3 border text-left custom-select border-[#cac4d0] opacity-50 cursor-not-allowed">
+                    Owner
+                  </div>
+                </FormField>
+              ) : (
+                <Controller
+                  name="role"
+                  control={control}
+                  rules={{
+                    required: "User type is required",
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      label="User Type"
+                      error={errors.role?.message}
+                    >
+                      <CustomSelect
+                        type="role"
+                        placeholder="Select User Type"
+                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(e.target.value)
+                        }
+                        options={roleOptions}
+                        errors={errors}
+                      />
+                    </FormField>
+                  )}
+                />
+              )}
 
               <Controller
                 name="accessibility"
