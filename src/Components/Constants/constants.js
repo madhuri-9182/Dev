@@ -17,14 +17,14 @@ import {
 export const EMAIL_REGEX =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-export const MOBILE_REGEX = /^\d{10}$/;
+export const MOBILE_REGEX = /^[6789]\d{9}$/;
 
 export const ROLES = {
   CLIENT: ["client_admin", "client_user", "client_owner"],
   AGENCY: ["agency"],
   INTERVIEWER: ["interviewer"],
   USER: ["user"],
-  INTERNAL: ["super_admin", "moderator"],
+  INTERNAL: ["super_admin", "moderator", "admin"],
 };
 
 export const ROLES_REDIRECTS = {
