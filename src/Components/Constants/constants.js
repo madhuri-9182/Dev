@@ -23,7 +23,7 @@ export const ROLES = {
   AGENCY: ["agency"],
   INTERVIEWER: ["interviewer"],
   USER: ["user"],
-  INTERNAL: ["super_admin", "moderator"],
+  INTERNAL: ["super_admin", "moderator", "admin"],
 };
 
 export const ROLES_REDIRECTS = {
