@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
 import toast from "react-hot-toast";
 import { Button, CircularProgress } from "@mui/material";
-import { ACCESSIBILITY, USER_TYPE } from "../Constants/constants";
+import { ACCESSIBILITY, EMAIL_REGEX, MOBILE_REGEX, USER_TYPE } from "../Constants/constants";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -362,7 +362,7 @@ function Users() {
                           {...clientRegister('email', {
                             required: 'Email is required',
                             pattern: {
-                              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                              value: EMAIL_REGEX,
                               message: 'Please enter email with valid format'
                             }
                           })}
@@ -377,7 +377,7 @@ function Users() {
                           {...clientRegister('phone', {
                             required: 'Phone number is required',
                             pattern: {
-                              value: /^[6789]\d{9}$/,
+                              value: MOBILE_REGEX,
                               message: 'Please enter valid phone number.'
                             }
                           })}
@@ -642,7 +642,7 @@ function Users() {
                           {...register('email', {
                             required: 'Email is required',
                             pattern: {
-                              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                              value: EMAIL_REGEX,
                               message: 'Please enter email with valid format'
                             }
                           })}
@@ -657,7 +657,7 @@ function Users() {
                           {...register('phone', {
                             required: 'Phone number is required',
                             pattern: {
-                              value: /^[6789]\d{9}$/,
+                              value: MOBILE_REGEX,
                               message: 'Please enter valid phone number.'
                             }
                           })}

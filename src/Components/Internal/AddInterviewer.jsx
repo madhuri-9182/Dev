@@ -3,7 +3,7 @@ import axios from '../../api/axios';
 import toast from 'react-hot-toast';
 import { Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { DOMAINS } from '../Constants/constants';
+import { DOMAINS, EMAIL_REGEX, MOBILE_REGEX } from '../Constants/constants';
 import { useForm } from 'react-hook-form';
 import RolesSelect from './Components/RolesSelect';
 
@@ -155,7 +155,7 @@ function AddInterviewer() {
                     name="phone"
                     placeholder='Phone Number'
                     className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300  text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
-                    {...register("phone", { required: "Phone Number is required", pattern: { value: /^[0-9]{10}$/, message: "Phone number must be exactly 10 digits" } })}
+                    {...register("phone", { required: "Phone Number is required", pattern: { value: MOBILE_REGEX, message: "Phone number must be exactly 10 digits" } })}
                   />
                   {errors.phone && <span className="error-message" >{errors.phone.message}</span>}
                 </div>
@@ -170,7 +170,7 @@ function AddInterviewer() {
                     name="email"
                     placeholder='Email ID'
                     className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
-                    {...register("email", { required: "Email is required", pattern: { value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Email must be in the correct format" } })}
+                    {...register("email", { required: "Email is required", pattern: { value: EMAIL_REGEX, message: "Email must be in the correct format" } })}
                   />
                   {errors.email && <span className="error-message" >{errors.email.message}</span>}
                 </div>

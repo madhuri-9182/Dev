@@ -13,6 +13,7 @@ import axios from '../../api/axios';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
+import { EMAIL_REGEX, MOBILE_REGEX } from "../Constants/constants";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -492,7 +493,7 @@ function AddClient() {
                                     {...registerPoc("pocPhone", {
                                         required: "Phone number is required",
                                         pattern: { 
-                                            value: /^[0-9]{10}$/, 
+                                            value: MOBILE_REGEX, 
                                             message: "Phone number must be exactly 10 digits." 
                                         }
                                     })}
@@ -508,7 +509,7 @@ function AddClient() {
                                     {...registerPoc("pocEmail", {
                                         required: "Email is required",
                                         pattern: { 
-                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 
+                                            value: EMAIL_REGEX,
                                             message: "Email must be in the correct format." 
                                         }
                                     })}
