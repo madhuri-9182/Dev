@@ -213,7 +213,7 @@ function AddClient() {
                         validatePOC();
                     }}>
                         <div>
-                            <h1 className="text-xl font-bold mb-6">{isEditing ? "Edit Client" : "Add Client"}</h1>
+                            <div className="text-xl font-bold mb-6">{isEditing ? "Edit Client" : "Add Client"}</div>
                             <ul className="flex flex-col gap-y-2">
                                 <li className="flex items-center">
                                     <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Client Registered Name</label>
@@ -350,7 +350,7 @@ function AddClient() {
                             <div className="flex items-center gap-x-5 mb-4">
                                 <div className="relative group inline-block">
                                     {/* Always visible text */}
-                                    <h2 className="text-sm font-semibold text-black">POC</h2>
+                                    <div className="text-sm font-semibold text-black">POC</div>
 
                                     {/* Tooltip */}
                                     <div
@@ -453,9 +453,9 @@ function AddClient() {
                 }}
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="poc-dialog-title">
-                    <h1 className='font-bold text-[#056DDC] text-lg text-center'>
+                    <div className='font-bold text-[#056DDC] text-lg text-center'>
                         {selectedRow ? 'EDIT POC' : 'ADD POC'}
-                    </h1>
+                    </div>
                 </DialogTitle>
                 <IconButton
                     aria-label="close"
