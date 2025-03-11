@@ -784,6 +784,7 @@ function Users() {
                           className='h-[29.6px] text-sm'
                           dropdownClassName='text-sm'
                           changeValue={false}
+                          selectedOptions={selectedClients}
                         />
                         {errors.client && <span className="error-message">{errors.client.message}</span>}
                         {selectedClients.length > 0 &&
@@ -940,6 +941,7 @@ function Users() {
                             className='h-[29.6px] text-sm'
                             dropdownClassName='text-sm'
                             changeValue={false}
+                            selectedOptions={selectedClients}
                           />
                           {errors.client && <span className="error-message">{errors.client.message}</span>}
                           {selectedClients.length > 0 &&

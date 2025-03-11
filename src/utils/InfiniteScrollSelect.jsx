@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from '../../src/api/axios';  // Import axios instance
 import { KeyboardArrowDown } from '@mui/icons-material';
 
-const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null }) => {
+const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null, selectedOptions = [] }) => {
     const [items, setItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -90,13 +90,13 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
 
     const handleSelect = (item) => {
         if (mountedRef.current) {
-            if (changeValue){
+            if (changeValue) {
                 setSelectedItem(item);
-            }else{
+                setIsOpen(false);
+            } else {
                 setSelectedItem("");
             }
             onSelect(item);
-            setIsOpen(false);
         }
     };
 
@@ -115,7 +115,7 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
                     ref={scrollRef}
                     className={`absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropdownClassName}`}
                 >
-                    {items.map(item => (
+                    {items?.filter(item => !selectedOptions?.map(si=>si?.id || si)?.includes(item.id))?.map(item => (
                         <div
                             key={item.id}
                             onClick={() => handleSelect(item)}
@@ -146,6 +146,7 @@ InfiniteScrollSelect.propTypes = {
     maxId: PropTypes.number,
     changeValue: PropTypes.bool,
     defaultValue: PropTypes.object,
+    selectedOptions: PropTypes.array
 };
 
 export default InfiniteScrollSelect;
