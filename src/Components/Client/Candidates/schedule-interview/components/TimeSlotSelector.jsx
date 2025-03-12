@@ -33,11 +33,7 @@ function TimeSlotSelector({
       </div>
 
       {/* Time Slots */}
-      <div className="mt-8">
-        <h3 className="font-medium text-sm mb-3 text-[#49454F]">
-          Select Time Slot
-        </h3>
-
+      <div className="mt-14">
         {isLoading ? (
           <p className="text-default text-[#6B6F7B] flex items-center gap-3">
             Loading availability{" "}
@@ -49,16 +45,16 @@ function TimeSlotSelector({
               "Could not load availability data"}
           </p>
         ) : (
-          <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+          <div className="flex justify-start items-center gap-4">
             {availableHourlySlots.map((slot, index) => (
               <div
                 key={index}
-                className={`text-center py-1 px-3 rounded-lg text-xs max-w-max ${
+                className={`flex items-center justify-center py-1 px-3 h-8 rounded-[4px] text-xs max-w-max ${
                   slot.available
                     ? selectedTimeSlot === slot.time
-                      ? "bg-[#3D884A] text-white cursor-pointer"
+                      ? "border-2 border-black bg-[#59B568] text-white cursor-pointer"
                       : "bg-[#59B568] text-white cursor-pointer hover:bg-[#4da75c]"
-                    : "bg-[#C7C7C7] text-[#6B6F7B]"
+                    : "bg-[#C7C7C7] text-[#6B6F7B] cursor-not-allowed"
                 }`}
                 onClick={() => {
                   if (slot.available) {

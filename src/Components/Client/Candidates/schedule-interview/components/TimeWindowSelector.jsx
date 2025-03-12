@@ -13,21 +13,21 @@ function TimeWindowSelector({
     return null;
 
   return (
-    <div className="mt-8">
+    <div className="mt-12">
       <div className="flex items-center space-x-1">
         <span className="text-xs font-bold mr-4 text-[#6B6F7B]">
-          Available 1-hour Windows
+          Available Slots
         </span>
-        <div className="flex items-center space-x-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           {availableWindows.map((window, index) => (
             <button
               key={index}
               type="button"
               onClick={() => handleWindowSelect(window)}
-              className={`flex items-center justify-center px-2 py-1 border rounded-md text-2xs w-auto ${
+              className={`flex items-center justify-center px-3 py-1 border rounded-lg text-2xs w-auto h-8 text-[#4A4459] ${
                 selectedWindow === window.window
-                  ? "bg-purple-100 text-purple-700 border-purple-300"
-                  : "bg-white text-gray-700 border-gray-300"
+                  ? "bg-[#E8DEF8] border-[#E8DEF8]"
+                  : "bg-white border-[#CAC4D0]"
               }`}
             >
               {selectedWindow === window.window && (

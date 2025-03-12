@@ -374,12 +374,12 @@ function ClientScheduleInterview() {
             />
 
             {/* Action Buttons */}
-            <div className="mt-8 flex items-center justify-end gap-x-3">
+            <div className="mt-20 flex items-center justify-end gap-x-3">
               <button
                 type="button"
-                className="py-[6px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
+                className="py-2 rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
                   transition-all duration-300 ease-in-out 
-                  hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 h-8 flex items-center justify-center"
+                  hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 flex items-center justify-center"
                 onClick={handleDeleteCandidate}
               >
                 Drop Candidate
@@ -390,8 +390,8 @@ function ClientScheduleInterview() {
                 : true) && (
                 <button
                   type="button"
-                  className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out 
-                    hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36 h-8"
+                  className="bg-[#E8DEF8] border border-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out 
+                    hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36"
                   onClick={() => {
                     // Call onSubmit with scheduleNow=false
                     handleSubmit((data) =>
@@ -410,10 +410,10 @@ function ClientScheduleInterview() {
               <button
                 type="button"
                 disabled={!selectedWindow}
-                className={`px-6 py-[10px] rounded-[100px] text-white font-medium cursor-pointer w-28 h-8 flex items-center justify-center uppercase text-xs ${
+                className={`px-6 py-2 border rounded-[100px] text-white font-medium cursor-pointer w-32 flex items-center justify-center uppercase text-xs ${
                   selectedWindow
-                    ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
-                    : "bg-[#A0CFFF] cursor-not-allowed"
+                    ? "bg-[#007AFF] border-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
+                    : "bg-[#A0CFFF] border-[#A0CFFF] cursor-not-allowed"
                 }`}
                 onClick={() => {
                   if (!selectedWindow) {
