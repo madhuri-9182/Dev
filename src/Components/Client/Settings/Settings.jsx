@@ -102,7 +102,7 @@ function Settings() {
           <AddButton
             onClick={() => handleDialogOpen("Add")}
             label={"+ Invite User"}
-            className={"w-28"}
+            className={"w-32"}
           />
         )}
       </div>

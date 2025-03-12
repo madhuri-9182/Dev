@@ -138,7 +138,7 @@ const JobListing = ({ data }) => {
           <AddButton
             onClick={handleAddJobClick}
             label="+ Add Job"
-            className={"w-28"}
+            className={"w-32"}
           />
         ) : null}
       </div>

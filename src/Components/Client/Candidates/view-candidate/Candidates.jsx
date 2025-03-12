@@ -184,7 +184,7 @@ function Candidates() {
             navigate(`${location.pathname}/add-candidate`)
           }
           label="+ Add Candidate"
-          className={"w-36"}
+          className={"w-40"}
         />
       </div>
 
