@@ -66,10 +66,7 @@ const DetailsModal = ({
     toast.success(
       editDetail
         ? "Detail updated successfully!"
-        : "Detail added successfully!",
-      {
-        position: "top-right",
-      }
+        : "Detail added successfully!"
     );
     onClose();
   };

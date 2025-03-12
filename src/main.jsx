@@ -27,7 +27,12 @@ const RootComponent = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <App />
-          <Toaster />
+          <Toaster
+            toastOptions={{
+              position: "top-right",
+              className: "text-default",
+            }}
+          />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

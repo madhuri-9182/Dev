@@ -25,10 +25,7 @@ const UserActivation = () => {
         } else {
           setSuccess(true);
           toast.success(
-            "Your account has already been activated",
-            {
-              position: "top-right",
-            }
+            "Your account has already been activated"
           );
         }
       }

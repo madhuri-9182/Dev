@@ -63,8 +63,7 @@ const AddUserModal = ({
       toast.success(
         isEdit
           ? "User updated successfully"
-          : "User created successfully",
-        { position: "top-right" }
+          : "User created successfully"
       );
       onClose();
       queryClient.invalidateQueries(["users"]);
@@ -76,9 +75,7 @@ const AddUserModal = ({
           typeof error.response.data.errors === "string"
         ) {
           // If it's a string, show that directly
-          toast.error(error.response.data.errors, {
-            position: "top-right",
-          });
+          toast.error(error.response.data.errors);
         } else {
           // If it's an object, use the existing logic
           const allErrorMessages = Object.values(
@@ -88,9 +85,7 @@ const AddUserModal = ({
           allErrorMessages.forEach(
             (errorMessage, index) => {
               setTimeout(() => {
-                toast.error(errorMessage, {
-                  position: "top-right",
-                });
+                toast.error(errorMessage);
               }, index * 100);
             }
           );
@@ -98,8 +93,7 @@ const AddUserModal = ({
       } else {
         toast.error(
           error.response?.data?.message ||
-            "Failed to process user data",
-          { position: "top-right" }
+            "Failed to process user data"
         );
       }
     },
@@ -187,9 +181,7 @@ const AddUserModal = ({
 
     // If nothing has changed in edit mode, just close the modal and return
     if (isEdit && Object.keys(changedFields).length === 0) {
-      toast.success("No changes to save", {
-        position: "top-right",
-      });
+      toast.success("No changes to save");
       onClose();
       return;
     }

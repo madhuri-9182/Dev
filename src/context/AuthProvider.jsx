@@ -17,9 +17,7 @@ export const AuthProvider = ({ children }) => {
         }
       );
       if (response.status === 205) {
-        toast.success("Logged out successfully", {
-          position: "top-right",
-        });
+        toast.success("Logged out successfully");
         setAuth({});
       }
     } catch (error) {

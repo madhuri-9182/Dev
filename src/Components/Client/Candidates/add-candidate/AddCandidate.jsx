@@ -133,7 +133,7 @@ function ClientAddCandidate() {
       if (incompleteResumes.length > 0) {
         toast.error(
           `${incompleteResumes.length} resume(s) require manual editing. Please check the highlighted fields.`,
-          { position: "top-right", duration: 5000 }
+          { duration: 5000 }
         );
       }
       setTimeout(resetProgress, 0);
@@ -141,9 +141,7 @@ function ClientAddCandidate() {
     onError: (error) => {
       stopProgress();
       resetProgress();
-      toast.error("Error parsing resume", {
-        position: "top-right",
-      });
+      toast.error("Error parsing resume");
       console.error("Error parsing resume", error);
     },
     onSettled: stopProgress,

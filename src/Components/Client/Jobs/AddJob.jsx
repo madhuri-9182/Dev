@@ -123,9 +123,7 @@ const AddJob = () => {
         setValue("jobDescription", content)
       );
     } else {
-      toast.error("Unsupported file type", {
-        position: "top-right",
-      });
+      toast.error("Unsupported file type");
     }
   };
 

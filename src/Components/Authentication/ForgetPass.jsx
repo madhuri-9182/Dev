@@ -37,27 +37,18 @@ function ForgetPass() {
     onSuccess: () => {
       navigate("/auth/signin/loginmail");
       toast.success(
-        "Password reset link sent to your email",
-        {
-          position: "top-right",
-        }
+        "Password reset link sent to your email"
       );
     },
     onError: (error) => {
       console.error("Password reset error:", error);
 
       if (!error?.response) {
-        toast.error("No Server Response", {
-          position: "top-right",
-        });
+        toast.error("No Server Response");
       } else if (error.response?.status === 404) {
-        toast.error("Email not found", {
-          position: "top-right",
-        });
+        toast.error("Email not found");
       } else {
-        toast.error("Failed to send reset link", {
-          position: "top-right",
-        });
+        toast.error("Failed to send reset link");
       }
     },
   });
