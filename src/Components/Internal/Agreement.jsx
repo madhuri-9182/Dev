@@ -340,8 +340,8 @@ function Agreement() {
                   <CloseIcon />
                 </IconButton>
                 <DialogContent dividers className='' >
-                  <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
-                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
+                  <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
+                    <div className="p-1 flex flex-col items-start w-full">
                       <label className="w-full text-sm font-medium text-gray-700">Company Name</label>
                       <input
                         type="text"
@@ -349,7 +349,7 @@ function Agreement() {
                         className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
+                    <div className="p-1 flex flex-col items-start w-full">
                       <label className="w-full text-sm font-medium text-gray-700">0-4 Years Rate</label>
                       <input
                         type="number"
@@ -357,7 +357,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
+                    <div className="p-1 flex flex-col items-start w-full">
                       <label className="w-full text-sm font-medium text-gray-700">4-6 Years Rate</label>
                       <input
                         type="number"
@@ -365,7 +365,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start custom_lg:gap-2md:gap-1 w-full">
+                    <div className="p-1 flex flex-col items-start w-full">
                       <label className="w-full text-sm font-medium text-gray-700">6-8 Years Rate</label>
                       <input
                         type="number"
@@ -373,7 +373,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start lcustom_lg:gap-2 md:gap-1 w-full">
+                    <div className="p-1 flex flex-col items-start w-full">
                       <label className="w-full text-sm font-medium text-gray-700">8-10 Years Rate</label>
                       <input
                         type="numbers"
@@ -381,7 +381,7 @@ function Agreement() {
                         className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-1 w-full">
+                    <div className="p-1 flex flex-col items-start w-full">
                       <label className="w-full text-sm font-medium text-gray-700">10+ Years Rate</label>
                       <input
                         type="numbers"

@@ -45,7 +45,7 @@ function Users() {
   const [savingClient, setSavingClient] = useState(false);
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedInternalClient, setSelectedInternalClient] = useState({});
-  const {auth} = useAuth();
+  const { auth } = useAuth();
 
   const { register, handleSubmit, reset, setError, clearErrors, getValues, formState: { errors } } = useForm();
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
@@ -164,7 +164,7 @@ function Users() {
   const toggleSaveClientUser = () => {
     setEditClientUser(null)
   }
-  
+
   const [addHdipUser, setAddHdipUser] = React.useState(false);
   const handleAddHdipUserOpen = () => {
     reset();
@@ -231,7 +231,7 @@ function Users() {
       role: data.access,
       client_ids: selectedClients.map(client => client.id)
     })
-      .then(res => {
+      .then(() => {
         toast.success("HDIP User created successfully", { position: "top-right" })
         if (hdipPage === 1) {
           fetchHdipUsers();
@@ -261,7 +261,7 @@ function Users() {
     if (selectedClients?.map(client => client.id) !== e?.item?.client?.map(client => client.id)) payload.client_ids = selectedClients?.map(client => client.id);
 
     axios.patch(`/api/internal/hdip-user/${e?.item?.id}/`, payload)
-      .then(res => {
+      .then(() => {
         toast.success("HDIP User updated successfully", { position: "top-right" })
         setSavingHdip(false);
         toggleSaveHdipUser()
@@ -294,7 +294,7 @@ function Users() {
       role: data.role,
       internal_client_id: selectedInternalClient?.id
     })
-      .then(res => {
+      .then(() => {
         toast.success("Client User created successfully", { position: "top-right" })
         if (clientPage === 1) {
           fetchClientUsers();
@@ -324,7 +324,7 @@ function Users() {
     if (selectedInternalClient?.id !== e?.item?.client?.id) payload.internal_client_id = selectedInternalClient?.id;
 
     axios.patch(`/api/internal/internal-client-user/${e?.item?.id}/`, payload)
-      .then(res => {
+      .then(() => {
         toast.success("Client User updated successfully", { position: "top-right" })
         setSavingClient(false);
         toggleSaveClientUser()
@@ -394,9 +394,9 @@ function Users() {
                     clientHandleSubmit(onSubmitClientUser)(e);
                     validateInternalClient();
                   }} >
-                    <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-gray-600">Client</label>
+                    <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
+                      <div className="p-1 flex flex-col items-start w-full">
+                        <label className="w-1/4 text-sm font-medium text-gray-600 required-field-label">Client</label>
                         <InfiniteScrollSelect
                           apiEndpoint={`/api/internal/internal-client/`}
                           onSelect={(value) => {
@@ -410,8 +410,8 @@ function Users() {
                         />
                         {clientErrors.internal_client && <span className="error-message">{clientErrors.internal_client.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">User Name</label>
+                      <div className="p-1 flex flex-col items-start w-full">
+                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B] required-field-label">User Name</label>
                         <input
                           type="text"
                           placeholder="Ashok Samal"
@@ -420,8 +420,8 @@ function Users() {
                         />
                         {clientErrors.name && <span className="error-message">{clientErrors.name.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+                      <div className="p-1 flex flex-col items-start w-full">
+                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
                         <input
                           type="text"
                           placeholder="rober@xyz.com"
@@ -436,8 +436,8 @@ function Users() {
                         />
                         {clientErrors.email && <span className="error-message">{clientErrors.email.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
+                      <div className="p-1 flex flex-col items-start w-full">
+                        <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
                         <input
                           placeholder="9876543210"
                           className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -451,8 +451,8 @@ function Users() {
                         />
                         {clientErrors.phone && <span className="error-message">{clientErrors.phone.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Role</label>
+                      <div className="p-1 flex flex-col items-start w-full">
+                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B] required-field-label">Role</label>
                         <select
                           defaultValue={""}
                           className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${clientGetValues("role") ? "text-black" : "text-gray-400"}`}
@@ -464,8 +464,8 @@ function Users() {
                         </select>
                         {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className=" text-sm font-medium text-[#6B6F7B]">Access</label>
+                      <div className="p-1 flex flex-col items-start w-full">
+                        <label className=" text-sm font-medium text-[#6B6F7B] required-field-label">Access</label>
                         <select
                           defaultValue={""}
                           className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${clientGetValues("accessibility") ? "text-black" : "text-gray-400"}`}
@@ -718,9 +718,9 @@ function Users() {
                     handleSubmit(onSubmitHdipUser)(e);
                     validateClients();
                   }}>
-                    <div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-gray-600">Name</label>
+                    <div className="flex flex-col custom_lg:gap-2 md:gap-y-0">
+                      <div className="p-1 flex flex-col items-start justify-center">
+                        <label className="w-full text-sm font-medium text-gray-600 required-field-label">Name</label>
                         <input
                           type="text"
                           placeholder="John Doe"
@@ -729,8 +729,8 @@ function Users() {
                         />
                         {errors.name && <span className="error-message">{errors.name.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Access</label>
+                      <div className="p-1 flex flex-col items-start justify-center">
+                        <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Access</label>
                         <select
                           {...register('access', { required: 'Access is required' })}
                           className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${getValues("access") ? "text-black" : "text-gray-500"}`}
@@ -742,8 +742,8 @@ function Users() {
                         </select>
                         {errors.access && <span className="error-message">{errors.access.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+                      <div className="p-1 flex flex-col items-start justify-center">
+                        <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
                         <input
                           placeholder="rober@xyz.com"
                           className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -757,8 +757,8 @@ function Users() {
                         />
                         {errors.email && <span className="error-message">{errors.email.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
+                      <div className="p-1 flex flex-col items-start justify-center">
+                        <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
                         <input
                           placeholder="9876543210"
                           className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -772,8 +772,8 @@ function Users() {
                         />
                         {errors.phone && <span className="error-message">{errors.phone.message}</span>}
                       </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Client</label>
+                      <div className="p-1 flex flex-col items-start justify-center">
+                        <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Client</label>
                         <InfiniteScrollSelect
                           apiEndpoint={`/api/internal/internal-client/`}
                           onSelect={(value) => {
@@ -781,15 +781,15 @@ function Users() {
                           }}
                           optionLabel='name'
                           placeholder='Select Client'
-                          className='h-[29.6px] text-sm'
-                          dropdownClassName='text-sm'
+                          className='h-[29.6px] text-xs'
+                          dropdownClassName='text-xs'
                           changeValue={false}
                           selectedOptions={selectedClients}
                         />
                         {errors.client && <span className="error-message">{errors.client.message}</span>}
                         {selectedClients.length > 0 &&
                           <div className=' mt-[8px] w-[300px] gap-x-4'>
-                            <ul className='flex flex-wrap justify-start gap-2 items-center text-sm' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
+                            <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
                               onClick={(e) => {
                                 e.preventDefault();
                                 removeSkill(item);
@@ -864,7 +864,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <input
-                          defaultValue={item?.name}
+                            defaultValue={item?.name}
                             type="text"
                             placeholder="John Doe"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -894,7 +894,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <input
-                          defaultValue={item?.user?.email}
+                            defaultValue={item?.user?.email}
                             placeholder="rober@xyz.com"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                             {...register('email', {
@@ -913,7 +913,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <input
-                          defaultValue={item?.user?.phone?.slice(3)}
+                            defaultValue={item?.user?.phone?.slice(3)}
                             placeholder="9876543210"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                             {...register('phone', {
@@ -938,15 +938,15 @@ function Users() {
                             }}
                             optionLabel='name'
                             placeholder='Select Client'
-                            className='h-[29.6px] text-sm'
-                            dropdownClassName='text-sm'
+                            className='h-[29.6px] text-xs'
+                            dropdownClassName='text-xs'
                             changeValue={false}
                             selectedOptions={selectedClients}
                           />
                           {errors.client && <span className="error-message">{errors.client.message}</span>}
                           {selectedClients.length > 0 &&
-                            <div className=' mt-[8px] w-[300px] gap-x-4'>
-                              <ul className='flex flex-wrap justify-start gap-2 items-center text-sm' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
+                            <div className=' mt-[8px] gap-x-4'>
+                              <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
                                 onClick={(e) => {
                                   e.preventDefault();
                                   removeSkill(item);

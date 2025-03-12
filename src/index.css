@@ -104,3 +104,15 @@
   display: block;
   margin-top: 3px;
 }
+
+/* Astrik to show in required fields lable */
+.required-field-label::before {
+  display: inline-block;
+  margin-inline-end: 2px;
+  color: red;
+  font-size: 12px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: "*";
+  vertical-align: super;
+}

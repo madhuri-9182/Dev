@@ -405,18 +405,18 @@ function Interviewer() {
           }}>
             <DialogContent dividers>
               <div className="w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-1/4 text-[12px] font-medium text-gray-600">Name</label>
+                <div className="p-1 flex flex-col items-start w-full">
+                  <label className="w-1/4 text-[12px] font-medium text-gray-600 required-field-label">Name</label>
                   <input
                     type="text"
                     placeholder="Enter Name"
-                    {...register("name", { required: "Name is required" })}
+                    {...register("name", { required: "Name is required", maxLength: { value: 255, message: "Name must be less than 255 characters" } })}
                     className={`p-1 text-[12px] w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
                   />
                   {errors.name && <span className="error-message">{errors.name.message}</span>}
                 </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-1/4 text-[12px] font-medium text-[#6B6F7B]">Mail ID</label>
+                <div className="p-1 flex flex-col items-start w-full">
+                  <label className="w-1/4 text-[12px] font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
                   <input
                     type="email"
                     placeholder="Enter Mail ID"
@@ -425,8 +425,8 @@ function Interviewer() {
                   />
                   {errors.email && <span className="error-message">{errors.email.message}</span>}
                 </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Phone Number</label>
+                <div className="p-1 flex flex-col items-start w-full">
+                  <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">Phone Number</label>
                   <input
                     type="tel"
                     placeholder="Enter number"
@@ -435,8 +435,8 @@ function Interviewer() {
                   />
                   {errors.phone && <span className="error-message">{errors.phone.message}</span>}
                 </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Total Experience</label>
+                <div className="p-1 flex flex-col items-start w-full">
+                  <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">Total Experience</label>
                   <div className='flex items-center 2xl:gap-2 w-full justify-between' >
                     <div>
                       <div className='flex items-center 2xl:gap-2 gap-[6px]'>
@@ -458,9 +458,9 @@ function Interviewer() {
                     </div>
                   </div>
                 </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Job Assigned</label>
-                  <RolesSelect className='w-full h-[29.6px] text-[12px]' errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
+                <div className="p-1 flex flex-col items-start w-full">
+                  <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">Job Assigned</label>
+                  <RolesSelect className='w-full h-[29.6px] text-[12px]' dropdownClassName='text-xs' errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
                 </div>
               </div>
             </DialogContent>

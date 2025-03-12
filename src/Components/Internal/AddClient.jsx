@@ -216,7 +216,7 @@ function AddClient() {
                             <div className="text-xl font-bold mb-6">{isEditing ? "Edit Client" : "Add Client"}</div>
                             <ul className="flex flex-col gap-y-2">
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Client Registered Name</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Client Registered Name</label>
                                     <div>
                                         <input
                                             type="text"
@@ -232,7 +232,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Website</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Website</label>
                                     <div>
                                         <input
                                             name="website"
@@ -247,7 +247,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Domain</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Domain</label>
                                     <div>
                                         <input
                                             type="text"
@@ -263,7 +263,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">GSTIN</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">GSTIN</label>
                                     <div>
                                         <input
                                             type="text"
@@ -279,7 +279,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">PAN</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">PAN</label>
                                     <div>
                                         <input
                                             type="text"
@@ -295,7 +295,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Signed/Not Signed</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Signed/Not Signed</label>
                                     <div>
                                         <select
                                             name="is_signed"
@@ -311,7 +311,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Assigned To</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Assigned To</label>
                                     <div>
                                         <InfiniteScrollSelect
                                             apiEndpoint={`/api/internal/hdip-users/`}
@@ -329,7 +329,7 @@ function AddClient() {
                                     </div>
                                 </li>
                                 <li className="flex items-center">
-                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4">Address</label>
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Address</label>
                                     <div>
                                         <textarea
                                             name="address"
@@ -350,7 +350,7 @@ function AddClient() {
                             <div className="flex items-center gap-x-5 mb-4">
                                 <div className="relative group inline-block">
                                     {/* Always visible text */}
-                                    <div className="text-sm font-semibold text-black">POC</div>
+                                    <div className="text-sm font-semibold text-black required-field-label">POC</div>
 
                                     {/* Tooltip */}
                                     <div
@@ -471,9 +471,9 @@ function AddClient() {
                 </IconButton>
                 <form onSubmit={handleSubmitPoc(handlePocSubmit)}>
                     <DialogContent dividers>
-                        <div>
-                            <div className="p-1 flex flex-col items-start justify-center gap-2">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B]">POC Name</label>
+                        <div className="flex-col flex custom_lg:gap-2 md:gap-y-0">
+                            <div className="p-1 flex flex-col items-start justify-center">
+                                <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">POC Name</label>
                                 <input
                                     type="text"
                                     placeholder="Enter POC Name"
@@ -485,8 +485,8 @@ function AddClient() {
                                 />
                                 {pocErrors.pocName && <span className="error-message">{pocErrors.pocName.message}</span>}
                             </div>
-                            <div className="p-1 flex flex-col items-start justify-center gap-2">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
+                            <div className="p-1 flex flex-col items-start justify-center">
+                                <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
                                 <input
                                     type="text"
                                     placeholder="Enter Phone Number"
@@ -501,8 +501,8 @@ function AddClient() {
                                 />
                                 {pocErrors.pocPhone && <span className="error-message">{pocErrors.pocPhone.message}</span>}
                             </div>
-                            <div className="p-1 flex flex-col items-start justify-center gap-2">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
+                            <div className="p-1 flex flex-col items-start justify-center">
+                                <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
                                 <input
                                     type="email"
                                     placeholder="Enter Mail ID"
