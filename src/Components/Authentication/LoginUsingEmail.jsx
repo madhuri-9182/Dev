@@ -69,9 +69,7 @@ const LoginUsingEmail = () => {
       setAuth({ email, accessToken, role, name });
       reset();
 
-      toast.success("Logged in successfully", {
-        position: "top-right",
-      });
+      toast.success("Logged in successfully");
 
       const userMainRole = Object.entries(ROLES).find(
         // eslint-disable-next-line no-unused-vars
@@ -93,21 +91,13 @@ const LoginUsingEmail = () => {
     },
     onError: (error) => {
       if (!error?.response) {
-        toast.error("No Server Response", {
-          position: "top-right",
-        });
+        toast.error("No Server Response");
       } else if (error.response?.status === 400) {
-        toast.error("Invalid credentials", {
-          position: "top-right",
-        });
+        toast.error("Invalid credentials");
       } else if (error.response?.status === 401) {
-        toast.error("Unauthorized", {
-          position: "top-right",
-        });
+        toast.error("Unauthorized");
       } else {
-        toast.error("Login Failed", {
-          position: "top-right",
-        });
+        toast.error("Login Failed");
       }
     },
   });

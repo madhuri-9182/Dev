@@ -17,7 +17,7 @@ export default function DynamicMultiSelect({
   };
 
   return (
-    <div className="w-2/3 relative">
+    <div className="relative">
       {/* Input Field */}
       <input
         ref={inputRef}

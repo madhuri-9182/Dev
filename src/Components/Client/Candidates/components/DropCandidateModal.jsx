@@ -18,17 +18,13 @@ const DropCandidateModal = ({ onClose, id }) => {
   const deleteCandidateMutation = useMutation({
     mutationFn: deleteCandidate,
     onSuccess: () => {
-      toast.success("Candidate deleted successfully", {
-        position: "top-right",
-      });
+      toast.success("Candidate deleted successfully");
       queryClient.invalidateQueries("candidates");
       navigate("/client/candidates");
       onClose();
     },
     onError: () => {
-      toast.error("Failed to delete candidate", {
-        position: "top-right",
-      });
+      toast.error("Failed to delete candidate");
     },
   });
 

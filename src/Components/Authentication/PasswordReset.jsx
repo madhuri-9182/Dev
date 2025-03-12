@@ -73,17 +73,11 @@ const PasswordReset = () => {
     },
     onError: (error) => {
       if (!error?.response) {
-        toast.error("No Server Response", {
-          position: "top-right",
-        });
+        toast.error("No Server Response");
       } else if (error.response?.status === 404) {
-        toast.error(error.response.data.errors[0], {
-          position: "top-right",
-        });
+        toast.error(error.response.data.errors[0]);
       } else {
-        toast.error("Password reset failed", {
-          position: "top-right",
-        });
+        toast.error("Password reset failed");
       }
     },
   });

@@ -30,6 +30,8 @@ function Settings() {
     queryKey: ["users", currentPage, auth.role],
     queryFn: () => fetchUsers(currentPage),
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const handleDialogOpen = (title) => {
@@ -45,17 +47,44 @@ function Settings() {
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
 
-  const canShowTrashIcon = (userRole) => {
+  const canShowTrashIcon = (user) => {
+    // Client owner cannot delete themselves but can delete other roles
     if (auth.role === "client_owner") {
-      return [
-        "client_admin",
-        "agency",
-        "client_user",
-      ].includes(userRole);
-    } else if (auth.role === "client_admin") {
-      return ["agency", "client_user"].includes(userRole);
+      return (
+        user.user.role !== "client_owner" &&
+        ["client_admin", "agency", "client_user"].includes(
+          user.user.role
+        )
+      );
     }
-    return false; // No trash icon for users
+    // Client admin cannot delete themselves, other admins, or owners
+    else if (auth.role === "client_admin") {
+      return (
+        user.user.role !== "client_owner" &&
+        user.user.role !== "client_admin" &&
+        ["agency", "client_user"].includes(user.user.role)
+      );
+    }
+    // Regular users cannot delete anyone
+    return false;
+  };
+
+  const canShowEditIcon = (user) => {
+    // Client owner cannot edit themselves
+    if (auth.role === "client_owner") {
+      return user.user.role !== "client_owner";
+    }
+    // Client admin cannot edit themselves or other admins
+    else if (auth.role === "client_admin") {
+      return (
+        user.user.role !== "client_owner" &&
+        user.user.role !== "client_admin"
+      );
+    }
+    // Regular users cannot edit themselves
+    else {
+      return false;
+    }
   };
 
   const handleDeleteUser = (id) => {
@@ -73,6 +102,7 @@ function Settings() {
           <AddButton
             onClick={() => handleDialogOpen("Add")}
             label={"+ Invite User"}
+            className={"w-28"}
           />
         )}
       </div>
@@ -130,18 +160,18 @@ function Settings() {
                     <TableCell>{user.created_at}</TableCell>
                     <td className="py-2 px-4 ">
                       <div className="flex gap-2">
-                        <Edit
-                          size={16}
-                          color="#171717"
-                          className="hover:scale-110 hover:duration-150 cursor-pointer"
-                          onClick={() => {
-                            handleDialogOpen("Edit");
-                            setSelectedUser(user);
-                          }}
-                        />
-                        {canShowTrashIcon(
-                          user.user.role
-                        ) && (
+                        {canShowEditIcon(user) ? (
+                          <Edit
+                            size={16}
+                            color="#171717"
+                            className="hover:scale-110 hover:duration-150 cursor-pointer"
+                            onClick={() => {
+                              handleDialogOpen("Edit");
+                              setSelectedUser(user);
+                            }}
+                          />
+                        ) : null}
+                        {canShowTrashIcon(user) && (
                           <Trash
                             size={16}
                             color="#F00"
@@ -183,19 +213,7 @@ function Settings() {
                     <TableCell>
                       {data?.data.created_at}
                     </TableCell>
-                    <td className="py-2 px-4 ">
-                      <div className="flex gap-2">
-                        <Edit
-                          size={16}
-                          color="#171717"
-                          className="hover:scale-110 hover:duration-150 cursor-pointer"
-                          onClick={() => {
-                            handleDialogOpen("Edit");
-                            setSelectedUser(data?.data);
-                          }}
-                        />
-                      </div>
-                    </td>
+                    <td className="py-2 px-4 "></td>
                   </tr>
                 )}
           </tbody>

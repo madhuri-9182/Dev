@@ -29,6 +29,7 @@ import {
 } from "../../../Constants/constants";
 import useAllCandidates from "../../../../hooks/useFetchAllCandidates";
 import { CandidateFilters } from "./CandidateFilters";
+import AddButton from "../../../shared/AddButton";
 
 function Candidates() {
   const location = useLocation();
@@ -178,16 +179,13 @@ function Candidates() {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        <button
-          className="p-1 px-4 rounded-full text-xs font-semibold text-white w-[130px] h-[32px] 
-             bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
+        <AddButton
           onClick={() =>
             navigate(`${location.pathname}/add-candidate`)
           }
-        >
-          + Add Candidate
-        </button>
+          label="+ Add Candidate"
+          className={"w-36"}
+        />
       </div>
 
       {/* Candidate Statistics */}

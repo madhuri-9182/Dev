@@ -23,6 +23,8 @@ const Jobs = () => {
     queryKey: ["jobs", queryFilters],
     queryFn: fetchJobs,
     keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   if (isLoading) return <LoadingState />;

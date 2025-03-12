@@ -16,16 +16,16 @@ const DeleteUserModal = ({ isOpen, onClose, id }) => {
       await axios.delete(`/api/client/client-user/${id}/`);
     },
     onSuccess: () => {
-      toast.success("User deleted successfully", {
-        position: "top-right",
-      });
+      toast.success("User deleted successfully");
       queryClient.invalidateQueries(["users"]); // Refetch users data
       onClose(); // Close modal after successful deletion
     },
-    onError: () => {
-      toast.error("Failed to delete user", {
-        position: "top-right",
-      });
+    onError: (error) => {
+      console.log(error, "error");
+      const errorToDisplay = error?.response?.data?.message
+        ? error.response.data.message
+        : "Failed to delete user";
+      toast.error(errorToDisplay);
     },
   });
 

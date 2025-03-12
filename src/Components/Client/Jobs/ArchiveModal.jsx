@@ -24,9 +24,7 @@ const ArchiveModal = ({
   const mutation = useMutation({
     mutationFn: archiveJob,
     onSuccess: () => {
-      toast.success("Job archived successfully", {
-        position: "top-right",
-      });
+      toast.success("Job archived successfully");
       queryClient.invalidateQueries("jobs");
       onClose();
     },
@@ -34,10 +32,7 @@ const ArchiveModal = ({
       toast.error(
         error.response.data.message
           ? error.response.data.message
-          : "Failed to archive job",
-        {
-          position: "top-right",
-        }
+          : "Failed to archive job"
       );
     },
   });

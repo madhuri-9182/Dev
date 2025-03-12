@@ -110,20 +110,14 @@ const JobDetails = () => {
       toast.success(
         isEdit
           ? "Job Updated Successfully"
-          : "Job Created Successfully",
-        {
-          position: "top-right",
-        }
+          : "Job Created Successfully"
       );
     },
     onError: () => {
       toast.error(
         isEdit
           ? "Failed to update job"
-          : "Failed to create job",
-        {
-          position: "top-right",
-        }
+          : "Failed to create job"
       );
     },
   });
@@ -223,9 +217,7 @@ const JobDetails = () => {
   const handleSubmit = () => {
     // Check if there are any changes
     if (!hasDataChanged()) {
-      toast.success("No changes to save", {
-        position: "top-right",
-      });
+      toast.success("No changes to save");
       navigate("/client/jobs");
       return;
     }
@@ -313,9 +305,7 @@ const JobDetails = () => {
     }
 
     if (isEdit && formdataToSubmit.entries().next().done) {
-      toast.success("No changes to save", {
-        position: "top-right",
-      });
+      toast.success("No changes to save");
       navigate("/client/jobs");
       return;
     }
@@ -382,9 +372,7 @@ const JobDetails = () => {
                     5000
                   );
                 } else {
-                  toast.error("No file uploaded", {
-                    position: "top-right",
-                  });
+                  toast.error("No file uploaded");
                 }
               }}
             >
