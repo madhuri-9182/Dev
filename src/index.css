@@ -104,3 +104,58 @@
   display: block;
   margin-top: 3px;
 }
+
+/* Astrik to show in required fields lable */
+.required-field-label::before {
+  display: inline-block;
+  margin-inline-end: 2px;
+  color: red;
+  font-size: 12px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: "*";
+  vertical-align: super;
+}
+
+.primary-button {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-width: 1px;
+  border-color: #007AFF;
+  border-radius: 100px;
+  color: white;
+  background-color: #007AFF;
+  transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-image: linear-gradient(to right, #007AFF, #005BBB);
+}
+
+.secondary-button {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 100px;
+  color: #65558F;
+  border-width: 1px;
+  border-color: #79747E;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.secondary-button:hover {
+  background-image: linear-gradient(to right, #ECE8F2, #DCD6E6);
+}

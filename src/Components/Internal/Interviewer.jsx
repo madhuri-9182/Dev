@@ -1,34 +1,18 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Link } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 import { DOMAINS } from '../Constants/constants';
 import { debounce } from 'lodash';
-import { Button, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import * as XLSX from 'xlsx';
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import RolesSelect from './Components/RolesSelect';
 import MultiSelectFilter from '../../utils/MultiSelectFilter';
 import TableLoadingWrapper from '../../utils/TableLoadingWrapper';
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
-  },
-  '& .MuiDialog-paper': {
-    width: '515px', // Customize width as needed
-  },
-}));
+import { Edit, Trash } from 'iconsax-react';
+import { IoSearchSharp } from "react-icons/io5";
+import Modal from '../shared/Modal';
 
 function Interviewer() {
   const [editUserOpen, setEditUserOpen] = useState(false);
@@ -53,11 +37,11 @@ function Interviewer() {
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, trigger, setError, clearErrors } = useForm();
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }, reset, setError, clearErrors } = useForm();
 
   // Debounced function to fetch data
   const fetchData = useCallback(debounce((page, isMounted = true) => {
-    setLoading(true);
     axios.get(`/api/internal/interviewers/?offset=${(page - 1) * 10}${searchTerm ? `&q=${searchTerm}` : ''}${filters?.strength?.length > 0 ? `&strengths=${filters?.strength?.map((item) => item.value)?.join(",")}` : ""}${filters?.experience?.length > 0 ? `&experiences=${filters?.experience?.map((item) => item.value)?.join(",")}` : ""}`)
       .then(res => {
         if (isMounted) {
@@ -66,8 +50,8 @@ function Interviewer() {
             ...res.data,
             results: res?.data?.results?.length > 0 ? [...prev.results, ...res.data.results] : [],
           }));
+          setLoading(false);
         }
-        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -89,6 +73,7 @@ function Interviewer() {
     let isMounted = true; // Flag to track if the component is mounted
     setSummary({ results: [] });
     setPage(1);
+    setLoading(true);
     fetchData(1, isMounted); // Call fetchData with searchTerm
 
     return () => {
@@ -103,6 +88,7 @@ function Interviewer() {
 
       if (bottom && !loading && summary.next !== null) {
         setPage((prev) => prev + 1);
+        setLoading(true);
         fetchData(page + 1);
       }
     };
@@ -146,6 +132,7 @@ function Interviewer() {
           results: []
         });
         setPage(1);
+        setLoading(true);
         fetchData(1);
         setEditUserOpen(false);
         toast.success("Interviewer updated successfully", { position: "top-right" });
@@ -260,42 +247,37 @@ function Interviewer() {
     <div className='p-6 pt-0 pl-0 text-[14px]'>
       <div className='w-full h-full flex flex-col items-center'>
         <div className='w-full flex pb-[12px] pr-3 justify-end space-x-4'>
-          <div className='w-[466px] h-[40px] flex justify-around items-center border border-[#F4F4F4] bg-[#F4F4F4] rounded-[28px] pr-1 pl-1 focus-within:border-blue-700'>
+          <div className='w-[466px] flex justify-around items-center border border-[#F4F4F4] bg-[#F4F4F4] rounded-[28px] pr-1 pl-1 focus-within:border-blue-700'>
             <input
-              className='w-[358px] h-[36px] ml-1 text-[#979DA3] bg-[#F4F4F4] border-none focus:outline-none' type="text"
+              className='w-[358px] ml-1 text-[#979DA3] bg-[#F4F4F4] border-none focus:outline-none text-xs' type="text"
               placeholder='Search interviewer by Name, Email & Mobile Number'
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <button>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
-            </button>
+            <IoSearchSharp className="text-[#49454F]" />
           </div>
-          <div className='w-[171px] h-[40px] text-[14px] flex justify-center items-center bg-[#007AFF] border-0 rounded-[100px] text-[#FFFFFF] font-medium'>
-            <Link to="/internal/addinterviewer">
-              + Add Interviewers</Link>
-          </div>
+          <button className='primary-button h-[32px]' onClick={() => navigate("/internal/addinterviewer")}>+ Add Interviewers</button>
         </div>
         <div className='w-full h-[104px] grid grid-cols-[1fr_1fr_1fr_1fr_1fr] 2xl:gap-x-7 gap-x-4 justify-between items-center p-2'>
           <div className='flex flex-col justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px]'>
-            <span className='font-normal'>Total Interviewers</span>
-            <span className='font-semibold text-[24px]'>{summary.total_interviewers}</span>
+            <span className='font-normal text-2xs'>Total Interviewers</span>
+            <span className='text-[20px]'>{summary.total_interviewers || 0}</span>
           </div>
           <div className='flex flex-col justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px]'>
-            <span className='font-normal'>0-4 Years</span>
-            <span className='font-semibold text-[24px]'>{summary.years_0_4}</span>
+            <span className='font-normal text-2xs'>0-4 Years</span>
+            <span className='text-[20px]'>{summary.years_0_4 || 0}</span>
           </div>
           <div className='flex flex-col justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px]'>
-            <span className='font-normal'>4-8 Years</span>
-            <span className='font-semibold text-[24px]'>{summary.years_5_8}</span>
+            <span className='font-normal text-2xs'>4-8 Years</span>
+            <span className='text-[20px]'>{summary.years_5_8 || 0}</span>
           </div>
           <div className='flex flex-col justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px]'>
-            <span className='font-normal'>8-10 Years</span>
-            <span className='font-semibold text-[24px]'>{summary.years_9_10}</span>
+            <span className='font-normal text-2xs'>8-10 Years</span>
+            <span className='text-[20px]'>{summary.years_9_10 || 0}</span>
           </div>
           <div className='flex flex-col justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px]'>
-            <span className='font-normal'>10+ Years</span>
-            <span className='font-semibold text-[24px]'>{summary.years_11}</span>
+            <span className='font-normal text-2xs'>10+ Years</span>
+            <span className='text-[20px]'>{summary.years_11 || 0}</span>
           </div>
         </div>
         <div className='w-full flex flex-col p-2 mt-1 mb-1'>
@@ -310,13 +292,13 @@ function Interviewer() {
               </div>
             </div>
             <div className='flex gap-2 justify-center items-center font-bold'>
-              <svg className='min-w-[20px]' width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className='min-w-[18px]' width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.49996 18.3332H12.5C16.6666 18.3332 18.3333 16.6665 18.3333 12.4998V7.49984C18.3333 3.33317 16.6666 1.6665 12.5 1.6665H7.49996C3.33329 1.6665 1.66663 3.33317 1.66663 7.49984V12.4998C1.66663 16.6665 3.33329 18.3332 7.49996 18.3332Z" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M7.5 9.59131L10 12.0913L12.5 9.59131" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M10 12.0915V5.4248" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M5 13.7583C8.24167 14.8416 11.7583 14.8416 15 13.7583" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <button className='min-w-max' onClick={downloadExcelReport}>Download Report</button>
+              <button className='min-w-max text-xs' onClick={downloadExcelReport}>Download Report</button>
             </div>
           </div>
         </div>
@@ -326,7 +308,7 @@ function Interviewer() {
           <div className="w-full mt-5 table-wrapper h-[355px] overflow-y-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b-2 border-black text-sm font-semibold text-[#2B313E]">
+                <tr className="border-b-2 border-black text-xs font-semibold text-[#2B313E]">
                   <th className="py-2 px-4">USERS</th>
                   <th className="py-2 px-4">EMAIL ID</th>
                   <th className="py-2 px-4">PHONE NO</th>
@@ -341,36 +323,33 @@ function Interviewer() {
                   <tr
                     key={index}
                     className={`${index % 2 === 0 ? '' : 'bg-[#FFF8E0]'
-                      } h-[80px] border-b-2`}
+                      } h-[80px] border-b-2 text-xs`}
                   >
-                    <td className="py-3 px-4 font-semibold text-sm">{user.name}</td>
+                    <td className="py-3 px-4 font-semibold">{user.name}</td>
                     <td className="py-3 px-4">{user.email}</td>
                     <td className="py-3 px-4">{user.phone_number}</td>
                     <td className="py-3 px-4">{DOMAINS[user.strength]}</td>
                     <td className="py-3 px-4">{user.skills.join(', ')}</td>
                     <td className="py-3 px-4">{`${user.total_experience_years > 0 && `${user.total_experience_years} Years `}${user.total_experience_months > 0 && `${user.total_experience_months} Months`}`}</td>
                     <td className="py-3 px-4">
-                      <div className='w-full flex items-center justify-between'>
-                        <button
-                          className="hover:scale-110 hover:duration-150"
-                          onClick={() => { handleEditUserOpen(user) }}
-                        >
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.1665 1.6665H7.49984C3.33317 1.6665 1.6665 3.33317 1.6665 7.49984V12.4998C1.6665 16.6665 3.33317 18.3332 7.49984 18.3332H12.4998C16.6665 18.3332 18.3332 16.6665 18.3332 12.4998V10.8332" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M13.3666 2.51688L6.7999 9.08354C6.5499 9.33354 6.2999 9.82521 6.2499 10.1835L5.89157 12.6919C5.75823 13.6002 6.3999 14.2335 7.30823 14.1085L9.81657 13.7502C10.1666 13.7002 10.6582 13.4502 10.9166 13.2002L17.4832 6.63354C18.6166 5.50021 19.1499 4.18354 17.4832 2.51688C15.8166 0.850211 14.4999 1.38354 13.3666 2.51688Z" stroke="#171717" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12.4248 3.4585C12.9831 5.45016 14.5415 7.0085 16.5415 7.57516" stroke="#171717" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
+                      <div className='w-full flex items-center gap-2'>
+                        <Edit
+                          size={16}
+                          color="#171717"
+                          className="hover:scale-110 hover:duration-150 cursor-pointer"
+                          onClick={() => {
+                            handleEditUserOpen(user)
+                          }}
+                        />
 
-                        <button className='hover:scale-110 hover:duration-150' onClick={() => handleDeleteUser(user.id)}>
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.5 4.98356C14.725 4.70856 11.9333 4.56689 9.15 4.56689C7.5 4.56689 5.85 4.65023 4.2 4.81689L2.5 4.98356" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M7.0835 4.1415L7.26683 3.04984C7.40016 2.25817 7.50016 1.6665 8.9085 1.6665H11.0918C12.5002 1.6665 12.6085 2.2915 12.7335 3.05817L12.9168 4.1415" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M15.7082 7.6167L15.1665 16.0084C15.0748 17.3167 14.9998 18.3334 12.6748 18.3334H7.32484C4.99984 18.3334 4.92484 17.3167 4.83317 16.0084L4.2915 7.6167" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M8.6084 13.75H11.3834" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M7.9165 10.4165H12.0832" stroke="#171717" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
+                        <Trash
+                          size={16}
+                          color="#F00"
+                          className="hover:scale-110 hover:duration-150 cursor-pointer"
+                          onClick={() => {
+                            handleDeleteUser(user.id);
+                          }}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -381,91 +360,72 @@ function Interviewer() {
         </TableLoadingWrapper>
 
         {/* Edit User Dialog */}
-        <BootstrapDialog
-          onClose={handleEditUserClose}
-          aria-labelledby="edit-user-dialog-title"
-          open={editUserOpen}
-          BackdropProps={{
-            sx: { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
-          }}
-        >
-          <DialogTitle id="edit-user-dialog-title" sx={{ m: 0, p: 2 }}>
-            <h1 className="font-bold text-[#056DDC] text-lg text-center">EDIT INTERVIEWER</h1>
-            <IconButton
-              aria-label="close"
-              onClick={handleEditUserClose}
-              sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
+        <Modal isOpen={editUserOpen} onClose={handleEditUserClose} title="EDIT INTERVIEWER" className='w-[515px]' >
           <form onSubmit={(e) => {
             handleSubmit(handleEditUserSubmit)(e);
             validateRoles();
           }}>
-            <DialogContent dividers>
-              <div className="w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-1/4 text-[12px] font-medium text-gray-600">Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter Name"
-                    {...register("name", { required: "Name is required" })}
-                    className={`p-1 text-[12px] w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
-                  />
-                  {errors.name && <span className="error-message">{errors.name.message}</span>}
-                </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-1/4 text-[12px] font-medium text-[#6B6F7B]">Mail ID</label>
-                  <input
-                    type="email"
-                    placeholder="Enter Mail ID"
-                    {...register("email", { required: "Email is required" })}
-                    className={`w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
-                  />
-                  {errors.email && <span className="error-message">{errors.email.message}</span>}
-                </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Phone Number</label>
-                  <input
-                    type="tel"
-                    placeholder="Enter number"
-                    {...register("phone", { required: "Phone number is required" })}
-                    className={`w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
-                  />
-                  {errors.phone && <span className="error-message">{errors.phone.message}</span>}
-                </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Total Experience</label>
-                  <div className='flex items-center 2xl:gap-2 w-full justify-between' >
-                    <div>
-                      <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="experience_years" placeholder='Years' className='w-[185px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
-                          {...register("experience_years", { required: "Total experience in years is required", validate: value => value >= 0 && value <= 100 || "Total experience in years must be between 0 and 100" })}
-                        />
-                        <span className="font-medium text-[#6B6F7B] text-[12px]" >Years</span>
-                      </div>
-                      {errors.experience_years && <span className="error-message" >{errors.experience_years.message}</span>}
+            <div className="w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-1/4 text-[12px] font-medium text-gray-600 required-field-label">Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter Name"
+                  {...register("name", { required: "Name is required", maxLength: { value: 255, message: "Name must be less than 255 characters" } })}
+                  className={`p-1 text-[12px] w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.name ? 'border-red-500' : ''}`}
+                />
+                {errors.name && <span className="error-message">{errors.name.message}</span>}
+              </div>
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-1/4 text-[12px] font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
+                <input
+                  type="email"
+                  placeholder="Enter Mail ID"
+                  {...register("email", { required: "Email is required" })}
+                  className={`w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
+                />
+                {errors.email && <span className="error-message">{errors.email.message}</span>}
+              </div>
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">Phone Number</label>
+                <input
+                  type="tel"
+                  placeholder="Enter number"
+                  {...register("phone", { required: "Phone number is required" })}
+                  className={`w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
+                />
+                {errors.phone && <span className="error-message">{errors.phone.message}</span>}
+              </div>
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">Total Experience</label>
+                <div className='flex items-center 2xl:gap-2 w-full justify-between' >
+                  <div>
+                    <div className='flex items-center 2xl:gap-2 gap-[6px]'>
+                      <input type="number" name="experience_years" placeholder='Years' className='w-[185px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
+                        {...register("experience_years", { required: "Total experience in years is required", validate: value => value >= 0 && value <= 100 || "Total experience in years must be between 0 and 100" })}
+                      />
+                      <span className="font-medium text-[#6B6F7B] text-[12px]" >Years</span>
                     </div>
-                    <div>
-                      <div className='flex items-center 2xl:gap-2 gap-[6px]'>
-                        <input type="number" name="experience_months" placeholder='Months' className='w-[185px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
-                          {...register("experience_months", { required: "Total experience in months is required", validate: value => value >= 0 && value <= 11 || "Total experience in months must be between 0 and 11" })}
-                        />
-                        <span className="font-medium text-[#6B6F7B] text-[12px]" >Months</span>
-                      </div>
-                      {errors.experience_months && <span className="error-message" >{errors.experience_months.message}</span>}
+                    {errors.experience_years && <span className="error-message" >{errors.experience_years.message}</span>}
+                  </div>
+                  <div>
+                    <div className='flex items-center 2xl:gap-2 gap-[6px]'>
+                      <input type="number" name="experience_months" placeholder='Months' className='w-[185px] h-[29.6px] border border-gray-300  text-center rounded-lg pl-2  focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]'
+                        {...register("experience_months", { required: "Total experience in months is required", validate: value => value >= 0 && value <= 11 || "Total experience in months must be between 0 and 11" })}
+                      />
+                      <span className="font-medium text-[#6B6F7B] text-[12px]" >Months</span>
                     </div>
+                    {errors.experience_months && <span className="error-message" >{errors.experience_months.message}</span>}
                   </div>
                 </div>
-                <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                  <label className="w-full font-medium text-[#6B6F7B] text-[12px]">Job Assigned</label>
-                  <RolesSelect className='w-full h-[29.6px] text-[12px]' errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
-                </div>
               </div>
-            </DialogContent>
-            <DialogActions>
-              <Button disabled={updateLoading} type="submit" sx={{ backgroundColor: "rgb(59, 130, 246)", color: "rgb(255, 255, 255)", borderRadius: "9999px" }} className="px-6 py-2 text-sm font-medium hover:bg-blue-600">
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">Job Assigned</label>
+                <RolesSelect className='w-full h-[29.6px] text-[12px]' dropdownClassName='text-xs' errors={errors} items={items} handleSelection={handleSelection} removeItem={removeItem} />
+              </div>
+            </div>
+            <div className='flex flex-row-reverse mt-2' >
+              <button disabled={updateLoading} type="submit" className="primary-button">
                 {updateLoading ? (
                   <CircularProgress
                     size={24}
@@ -476,35 +436,23 @@ function Interviewer() {
                 ) : (
                   "Save"
                 )}
-              </Button>
-            </DialogActions>
+              </button>
+            </div>
           </form>
-        </BootstrapDialog>
+        </Modal>
 
         {/* Confirmation Dialog */}
-        <BootstrapDialog
-          onClose={cancelDelete}
-          aria-labelledby="confirm-delete-dialog-title"
-          open={confirmDeleteOpen}
-          BackdropProps={{
-            sx: { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
-          }}
-        >
-          <DialogTitle id="confirm-delete-dialog-title" sx={{ m: 0, p: 2 }}>
-            <h1 className="font-bold text-[#056DDC] text-lg text-center">Confirm Deletion</h1>
-          </DialogTitle>
-          <DialogContent dividers>
-            <p>Are you sure you want to delete this Interviewer?</p>
-          </DialogContent>
-          <DialogActions>
-            <button onClick={cancelDelete} className="text-[#4A4459] border py-1 px-3 rounded-full bg-[#E8DEF8]">
-              Cancel
-            </button>
-            <button onClick={confirmDelete} className="text-white border py-1 px-3 rounded-full bg-[#056DDC]">
-              Confirm
-            </button>
-          </DialogActions>
-        </BootstrapDialog>
+        <Modal isOpen={confirmDeleteOpen} onClose={cancelDelete} title="Confirm Deletion" >
+          <p>Are you sure you want to delete this Interviewer?</p>
+          <div className='flex justify-end mt-2 gap-2' >
+          <button onClick={cancelDelete} className="secondary-button">
+            Cancel
+          </button>
+          <button onClick={confirmDelete} className="primary-button">
+            Confirm
+          </button>
+          </div>
+        </Modal>
       </div>
     </div>
   )

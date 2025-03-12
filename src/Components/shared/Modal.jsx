@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { CloseSquare } from "iconsax-react";
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, className = "", children }) => {
   if (!isOpen) return null;
 
   return (
@@ -12,7 +12,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           title === "Add User" || title === "Edit User"
             ? "top-[10%]"
             : "top-[20%]"
-        } left-[40%] transform -translate-x-1/2`}
+        } left-[40%] transform -translate-x-1/2 overflow-auto ${className}`}
         initial={{ opacity: 0, scale: 0.9 }} // Start hidden & small
         animate={{ opacity: 1, scale: 1 }} // Fully visible & normal size
         exit={{ opacity: 0, scale: 0.9 }} // Shrink and fade out
@@ -49,5 +49,6 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string,
+  className: PropTypes.string,
   children: PropTypes.node,
 };

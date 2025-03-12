@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import InfiniteScrollSelect from '../../../utils/InfiniteScrollSelect';
 import { useState } from 'react';
 
-function RolesSelect({ errors, items, handleSelection, removeItem, className = "" }) {
+function RolesSelect({ errors, items, handleSelection, removeItem, className = "", dropdownClassName = "" }) {
   const [roles, setRoles] = useState([]);
   
   return (
@@ -16,15 +16,17 @@ function RolesSelect({ errors, items, handleSelection, removeItem, className = "
         setParentItems={setRoles}
         placeholder='Select Role'
         className={className}
+        dropdownClassName={dropdownClassName}
         maxId={items.length > 0 ? Math.max(...items) : 10}
         changeValue={false}
         selectedOptions={items}
+        showDropdownAbove={true}
       />
       {errors.role && <span className="error-message" >{errors.role.message}</span>}
-      <div className='mt-[8px] gap-x-4'>
+      {items?.length > 0 && <div className='mt-[8px] gap-x-4'>
         <ul className='flex flex-wrap justify-start gap-2 items-center'>
           {items.map((item, index) => (
-            <li key={`${item}-${index}`} className="flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg text-[#49454F]">
+            <li key={`${item}-${index}`} className={`flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg text-[#49454F] ${dropdownClassName}`}>
               {roles.find(role => role.id === Number(item))?.full_name}
               <button
                 onClick={(e) => {
@@ -40,7 +42,7 @@ function RolesSelect({ errors, items, handleSelection, removeItem, className = "
             </li>
           ))}
         </ul>
-      </div>
+      </div>}
     </>
   );
 }
@@ -51,6 +53,7 @@ RolesSelect.propTypes = {
   errors: PropTypes.object.isRequired,
   removeItem: PropTypes.func.isRequired,
   className: PropTypes.string,
+  dropdownClassName: PropTypes.string,
 };
 
 export default RolesSelect;

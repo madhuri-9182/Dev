@@ -76,11 +76,6 @@ const AddJob = () => {
     isSpecializationDropdownOpen,
     setIsSpecializationDropdownOpen,
   ] = useState(false);
-  const [
-    isEssentialSkillsDropdownOpen,
-    setIsEssentialSkillsDropdownOpen,
-  ] = useState(false);
-  const [inputValue, setInputValue] = useState("");
 
   // Filter users for recruiters and hiring managers
   const filteredRecruiters = users?.filter(
@@ -125,22 +120,6 @@ const AddJob = () => {
     } else {
       toast.error("Unsupported file type");
     }
-  };
-
-  // Handle adding essential skills tag
-  const handleAddTag = (value) => {
-    if (
-      value.trim() &&
-      !selectedEssentialSkills.includes(value)
-    ) {
-      setValue(
-        "essentialSkills",
-        [...selectedEssentialSkills, value],
-        { shouldValidate: true }
-      );
-    }
-    setInputValue("");
-    setIsEssentialSkillsDropdownOpen(false);
   };
 
   // Handle removing essential skills tag
@@ -388,11 +367,10 @@ const AddJob = () => {
                 <input
                   type="number"
                   placeholder="-"
-                  className={`${inputClassName} ${
-                    errors.totalPositions
-                      ? "border-[#B10E0EE5]"
-                      : ""
-                  }`}
+                  className={`${inputClassName} ${errors.totalPositions
+                    ? "border-[#B10E0EE5]"
+                    : ""
+                    }`}
                   onChange={field.onChange}
                   value={field.value}
                 />
@@ -472,11 +450,10 @@ const AddJob = () => {
                     <button
                       type="button"
                       onClick={handleUploadButtonClick}
-                      className={`border border-dashed ${
-                        errors.jobDescriptionFile
-                          ? "border-[#B10E0EE5]"
-                          : "border-[#6B6F7B]"
-                      } rounded-xl w-full py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
+                      className={`border border-dashed ${errors.jobDescriptionFile
+                        ? "border-[#B10E0EE5]"
+                        : "border-[#6B6F7B]"
+                        } rounded-xl w-full py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
                     >
                       <LogoutCurve
                         className="rotate-90"
@@ -520,16 +497,13 @@ const AddJob = () => {
                     "At least one essential skill is required",
                 })}
               />
-              <DynamicMultiSelect
-                inputValue={inputValue}
-                setInputValue={setInputValue}
-                isEssentialSkillsDropdownOpen={
-                  isEssentialSkillsDropdownOpen
-                }
-                setIsEssentialSkillsDropdownOpen={
-                  setIsEssentialSkillsDropdownOpen
-                }
-                handleAddTag={handleAddTag}
+              <DynamicMultiSelect selectedValues={selectedEssentialSkills} placeholder="Essential Skills"
+                setValue={(value) =>
+                  setValue(
+                    "essentialSkills",
+                    [...selectedEssentialSkills, value],
+                    { shouldValidate: true }
+                  )}
               />
               {errors.essentialSkills && (
                 <p className="text-xs text-[#B10E0EE5] mt-1">

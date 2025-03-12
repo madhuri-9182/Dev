@@ -1,34 +1,16 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useState } from 'react';
 import axios from '../../api/axios';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import TableLoadingWrapper from '../../utils/TableLoadingWrapper';
 import { debounce } from 'lodash';
 import { useForm } from 'react-hook-form';
 import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
 import toast from "react-hot-toast";
-import { Button, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { ACCESSIBILITY, EMAIL_REGEX, MOBILE_REGEX, USER_TYPE } from "../Constants/constants";
 import useAuth from "../../hooks/useAuth";
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
-  },
-  '& .MuiDialog-paper': {
-    width: '400px' // You can customize this value to whatever you need
-  },
-}));
-
+import { IoSearchSharp } from 'react-icons/io5';
+import Modal from '../shared/Modal';
 
 function Users() {
   const [clientUsers, setClientUsers] = useState([]);
@@ -45,7 +27,7 @@ function Users() {
   const [savingClient, setSavingClient] = useState(false);
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedInternalClient, setSelectedInternalClient] = useState({});
-  const {auth} = useAuth();
+  const { auth } = useAuth();
 
   const { register, handleSubmit, reset, setError, clearErrors, getValues, formState: { errors } } = useForm();
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
@@ -164,7 +146,7 @@ function Users() {
   const toggleSaveClientUser = () => {
     setEditClientUser(null)
   }
-  
+
   const [addHdipUser, setAddHdipUser] = React.useState(false);
   const handleAddHdipUserOpen = () => {
     reset();
@@ -231,7 +213,7 @@ function Users() {
       role: data.access,
       client_ids: selectedClients.map(client => client.id)
     })
-      .then(res => {
+      .then(() => {
         toast.success("HDIP User created successfully", { position: "top-right" })
         if (hdipPage === 1) {
           fetchHdipUsers();
@@ -261,7 +243,7 @@ function Users() {
     if (selectedClients?.map(client => client.id) !== e?.item?.client?.map(client => client.id)) payload.client_ids = selectedClients?.map(client => client.id);
 
     axios.patch(`/api/internal/hdip-user/${e?.item?.id}/`, payload)
-      .then(res => {
+      .then(() => {
         toast.success("HDIP User updated successfully", { position: "top-right" })
         setSavingHdip(false);
         toggleSaveHdipUser()
@@ -294,7 +276,7 @@ function Users() {
       role: data.role,
       internal_client_id: selectedInternalClient?.id
     })
-      .then(res => {
+      .then(() => {
         toast.success("Client User created successfully", { position: "top-right" })
         if (clientPage === 1) {
           fetchClientUsers();
@@ -324,7 +306,7 @@ function Users() {
     if (selectedInternalClient?.id !== e?.item?.client?.id) payload.internal_client_id = selectedInternalClient?.id;
 
     axios.patch(`/api/internal/internal-client-user/${e?.item?.id}/`, payload)
-      .then(res => {
+      .then(() => {
         toast.success("Client User updated successfully", { position: "top-right" })
         setSavingClient(false);
         toggleSaveClientUser()
@@ -358,143 +340,117 @@ function Users() {
             <React.Fragment>
               <div>
                 <button
-                  className="border h-[32px] px-6 rounded-full bg-[#056DDC] font-medium text-white text-sm"
+                  className="primary-button h-[32px]"
                   onClick={handleAddClientUserOpen}
                 >
                   + Add
                 </button>
               </div>
-              <BootstrapDialog
-                onClose={handleAddClientUserClose}
-                aria-labelledby="add-poc-dialog-title"
-                open={addClientUser}
-                BackdropProps={{
-                  sx: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                  },
-                }}
-              >
-                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                  <div className='font-bold text-[#056DDC] text-lg text-center'>ADD CLIENT USER</div>
-                </DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  onClick={handleAddClientUserClose}
-                  sx={(theme) => ({
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    color: theme.palette.grey[500],
-                  })}
-                >
-                  <CloseIcon />
-                </IconButton>
-                <DialogContent dividers>
-                  <form onSubmit={(e) => {
-                    clientHandleSubmit(onSubmitClientUser)(e);
-                    validateInternalClient();
-                  }} >
-                    <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0 ">
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-gray-600">Client</label>
-                        <InfiniteScrollSelect
-                          apiEndpoint={`/api/internal/internal-client/`}
-                          onSelect={(value) => {
-                            setSelectedInternalClient(value);
-                            hasInteracted.current = true; // Mark as interacted
-                          }}
-                          optionLabel='name'
-                          placeholder='Select Client'
-                          className="text-sm h-[29.6px]"
-                          dropdownClassName="text-sm"
-                        />
-                        {clientErrors.internal_client && <span className="error-message">{clientErrors.internal_client.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">User Name</label>
-                        <input
-                          type="text"
-                          placeholder="Ashok Samal"
-                          className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          {...clientRegister('name', { required: 'Name is required', maxLength: { value: 100, message: 'Name must be 100 characters or less' } })}
-                        />
-                        {clientErrors.name && <span className="error-message">{clientErrors.name.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-                        <input
-                          type="text"
-                          placeholder="rober@xyz.com"
-                          className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          {...clientRegister('email', {
-                            required: 'Email is required',
-                            pattern: {
-                              value: EMAIL_REGEX,
-                              message: 'Please enter email with valid format'
-                            }
-                          })}
-                        />
-                        {clientErrors.email && <span className="error-message">{clientErrors.email.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
-                        <input
-                          placeholder="9876543210"
-                          className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          {...clientRegister('phone', {
-                            required: 'Phone number is required',
-                            pattern: {
-                              value: MOBILE_REGEX,
-                              message: 'Please enter valid phone number.'
-                            }
-                          })}
-                        />
-                        {clientErrors.phone && <span className="error-message">{clientErrors.phone.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className="w-1/4 text-sm font-medium text-[#6B6F7B]">Role</label>
-                        <select
-                          defaultValue={""}
-                          className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${clientGetValues("role") ? "text-black" : "text-gray-400"}`}
-                          {...clientRegister("role", { required: "Please select role." })}
-                        >
-                          <option disabled value="">Select</option>
-                          <option value="client_user" className="text-black">Client User</option>
-                          <option value={"client_admin"} className="text-black">Client Admin</option>
-                        </select>
-                        {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start custom_lg:gap-2 md:gap-0 w-full">
-                        <label className=" text-sm font-medium text-[#6B6F7B]">Access</label>
-                        <select
-                          defaultValue={""}
-                          className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${clientGetValues("accessibility") ? "text-black" : "text-gray-400"}`}
-                          {...clientRegister("accessibility", { required: "Please select access." })}
-                        >
-                          <option value="" disabled>Select Access</option>
-                          <option value="AJ" className="text-black">All Jobs</option>
-                          <option value="AGJ" className="text-black">Assigned Jobs</option>
-                        </select>
-                        {clientErrors.accessibility && <span className="error-message">{clientErrors.accessibility.message}</span>}
-                      </div>
+              <Modal isOpen={addClientUser} onClose={handleAddClientUserClose} title="ADD CLIENT USER" className="top-auto" >
+                <form onSubmit={(e) => {
+                  clientHandleSubmit(onSubmitClientUser)(e);
+                  validateInternalClient();
+                }} >
+                  <div className=" w-full flex-col flex items-center justify-center custom_lg:gap-2 md:gap-y-0">
+                    <div className="p-1 flex flex-col items-start w-full">
+                      <label className="w-1/4 text-sm font-medium text-gray-600 required-field-label">Client</label>
+                      <InfiniteScrollSelect
+                        apiEndpoint={`/api/internal/internal-client/`}
+                        onSelect={(value) => {
+                          setSelectedInternalClient(value);
+                          hasInteracted.current = true; // Mark as interacted
+                        }}
+                        optionLabel='name'
+                        placeholder='Select Client'
+                        className="text-sm h-[29.6px]"
+                        dropdownClassName="text-sm"
+                      />
+                      {clientErrors.internal_client && <span className="error-message">{clientErrors.internal_client.message}</span>}
                     </div>
-                    <DialogActions>
-                      <Button disabled={savingClient} type="submit" sx={{ backgroundColor: "rgb(59, 130, 246)", color: "rgb(255, 255, 255)", borderRadius: "9999px" }} className="px-6 py-2 text-sm font-medium hover:bg-blue-600">
-                        {savingClient ? (
-                          <CircularProgress
-                            size={24}
-                            sx={{
-                              color: "white", // Change this to any color you want
-                            }}
-                          />
-                        ) : (
-                          "SAVE"
-                        )}
-                      </Button>
-                    </DialogActions>
-                  </form>
-                </DialogContent>
-              </BootstrapDialog>
+                    <div className="p-1 flex flex-col items-start w-full">
+                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B] required-field-label">User Name</label>
+                      <input
+                        type="text"
+                        placeholder="Ashok Samal"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        {...clientRegister('name', { required: 'Name is required', maxLength: { value: 100, message: 'Name must be 100 characters or less' } })}
+                      />
+                      {clientErrors.name && <span className="error-message">{clientErrors.name.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start w-full">
+                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
+                      <input
+                        type="text"
+                        placeholder="rober@xyz.com"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        {...clientRegister('email', {
+                          required: 'Email is required',
+                          pattern: {
+                            value: EMAIL_REGEX,
+                            message: 'Please enter email with valid format'
+                          }
+                        })}
+                      />
+                      {clientErrors.email && <span className="error-message">{clientErrors.email.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start w-full">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
+                      <input
+                        placeholder="9876543210"
+                        className="w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        {...clientRegister('phone', {
+                          required: 'Phone number is required',
+                          pattern: {
+                            value: MOBILE_REGEX,
+                            message: 'Please enter valid phone number.'
+                          }
+                        })}
+                      />
+                      {clientErrors.phone && <span className="error-message">{clientErrors.phone.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start w-full">
+                      <label className="w-1/4 text-sm font-medium text-[#6B6F7B] required-field-label">Role</label>
+                      <select
+                        defaultValue={""}
+                        className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${clientGetValues("role") ? "text-black" : "text-gray-400"}`}
+                        {...clientRegister("role", { required: "Please select role." })}
+                      >
+                        <option disabled value="">Select</option>
+                        <option value="client_user" className="text-black">Client User</option>
+                        <option value={"client_admin"} className="text-black">Client Admin</option>
+                      </select>
+                      {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start w-full">
+                      <label className=" text-sm font-medium text-[#6B6F7B] required-field-label">Access</label>
+                      <select
+                        defaultValue={""}
+                        className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${clientGetValues("accessibility") ? "text-black" : "text-gray-400"}`}
+                        {...clientRegister("accessibility", { required: "Please select access." })}
+                      >
+                        <option value="" disabled>Select Access</option>
+                        <option value="AJ" className="text-black">All Jobs</option>
+                        <option value="AGJ" className="text-black">Assigned Jobs</option>
+                      </select>
+                      {clientErrors.accessibility && <span className="error-message">{clientErrors.accessibility.message}</span>}
+                    </div>
+                  </div>
+                  <div className="flex flex-row-reverse mt-3" >
+                    <button disabled={savingClient} type="submit" className="primary-button">
+                      {savingClient ? (
+                        <CircularProgress
+                          size={24}
+                          sx={{
+                            color: "white", // Change this to any color you want
+                          }}
+                        />
+                      ) : (
+                        "SAVE"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </Modal>
             </React.Fragment>
 
 
@@ -504,10 +460,10 @@ function Users() {
                 <input
                   type="text"
                   placeholder="Search users by name"
-                  className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
+                  className="flex-1 bg-transparent text-gray-600 outline-none text-xs"
                   onChange={(e) => debouncedClientSearch(e.target.value)}
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
+                <IoSearchSharp className="text-[#49454F]" />
               </div>
             </div>
           </div>
@@ -682,142 +638,117 @@ function Users() {
             {auth?.role === "moderator" ? null : <React.Fragment>
               <div>
                 <button
-                  className="border h-[32px] px-6 rounded-full bg-[#056DDC] font-medium text-white text-sm"
+                  className="primary-button h-[32px]"
                   onClick={handleAddHdipUserOpen}
                 >
                   + Add
                 </button>
               </div>
-              <BootstrapDialog
-                onClose={handleAddHdipUserClose}
-                aria-labelledby="add-poc-dialog-title"
-                open={addHdipUser}
-                BackdropProps={{
-                  sx: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                  },
-                }}
-              >
-                <DialogTitle sx={{ m: 0, p: 2 }} id="add-poc-dialog-title">
-                  <div className='font-bold text-[#056DDC] text-lg text-center'>ADD HDIP USER</div>
-                </DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  onClick={handleAddHdipUserClose}
-                  sx={(theme) => ({
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    color: theme.palette.grey[500],
-                  })}
-                >
-                  <CloseIcon />
-                </IconButton>
-                <DialogContent dividers>
-                  <form onSubmit={(e) => {
-                    handleSubmit(onSubmitHdipUser)(e);
-                    validateClients();
-                  }}>
-                    <div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-gray-600">Name</label>
-                        <input
-                          type="text"
-                          placeholder="John Doe"
-                          className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          {...register('name', { required: 'Name is required', maxLength: { value: 255, message: 'Name must be 255 characters or less' } })}
-                        />
-                        {errors.name && <span className="error-message">{errors.name.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Access</label>
-                        <select
-                          {...register('access', { required: 'Access is required' })}
-                          className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${getValues("access") ? "text-black" : "text-gray-500"}`}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Select Access</option>
-                          <option value="admin" className={auth?.role === "admin" ? "text-gray-500" : "text-black"} disabled={auth?.role === "admin"}>Admin</option>
-                          <option value="moderator" className="text-black">Moderator</option>
-                        </select>
-                        {errors.access && <span className="error-message">{errors.access.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Mail ID</label>
-                        <input
-                          placeholder="rober@xyz.com"
-                          className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          {...register('email', {
-                            required: 'Email is required',
-                            pattern: {
-                              value: EMAIL_REGEX,
-                              message: 'Please enter email with valid format'
-                            }
-                          })}
-                        />
-                        {errors.email && <span className="error-message">{errors.email.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Phone Number</label>
-                        <input
-                          placeholder="9876543210"
-                          className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          {...register('phone', {
-                            required: 'Phone number is required',
-                            pattern: {
-                              value: MOBILE_REGEX,
-                              message: 'Please enter valid phone number.'
-                            }
-                          })}
-                        />
-                        {errors.phone && <span className="error-message">{errors.phone.message}</span>}
-                      </div>
-                      <div className="p-1 flex flex-col items-start justify-center gap-2">
-                        <label className="w-full text-sm font-medium text-[#6B6F7B]">Client</label>
-                        <InfiniteScrollSelect
-                          apiEndpoint={`/api/internal/internal-client/`}
-                          onSelect={(value) => {
-                            handleClientSelection(value);
-                          }}
-                          optionLabel='name'
-                          placeholder='Select Client'
-                          className='h-[29.6px] text-sm'
-                          dropdownClassName='text-sm'
-                          changeValue={false}
-                          selectedOptions={selectedClients}
-                        />
-                        {errors.client && <span className="error-message">{errors.client.message}</span>}
-                        {selectedClients.length > 0 &&
-                          <div className=' mt-[8px] w-[300px] gap-x-4'>
-                            <ul className='flex flex-wrap justify-start gap-2 items-center text-sm' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                removeSkill(item);
-                              }}
-                              className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
-                              </svg>
-                            </button> </li>))} </ul>
-                          </div>}
-                      </div>
+              <Modal isOpen={addHdipUser} onClose={handleAddHdipUserClose} title="ADD HDIP USER" >
+                <form onSubmit={(e) => {
+                  handleSubmit(onSubmitHdipUser)(e);
+                  validateClients();
+                }}>
+                  <div className="flex flex-col custom_lg:gap-2 md:gap-y-0">
+                    <div className="p-1 flex flex-col items-start justify-center">
+                      <label className="w-full text-sm font-medium text-gray-600 required-field-label">Name</label>
+                      <input
+                        type="text"
+                        placeholder="John Doe"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        {...register('name', { required: 'Name is required', maxLength: { value: 255, message: 'Name must be 255 characters or less' } })}
+                      />
+                      {errors.name && <span className="error-message">{errors.name.message}</span>}
                     </div>
-                    <DialogActions>
-                      <Button disabled={savingHdip} type="submit" sx={{ backgroundColor: "rgb(59, 130, 246)", color: "rgb(255, 255, 255)", borderRadius: "9999px" }} className="px-6 py-2 text-sm font-medium hover:bg-blue-600">
-                        {savingHdip ? (
-                          <CircularProgress
-                            size={24}
-                            sx={{
-                              color: "white", // Change this to any color you want
+                    <div className="p-1 flex flex-col items-start justify-center">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Access</label>
+                      <select
+                        {...register('access', { required: 'Access is required' })}
+                        className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${getValues("access") ? "text-black" : "text-gray-500"}`}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Select Access</option>
+                        <option value="admin" className={auth?.role === "admin" ? "text-gray-500" : "text-black"} disabled={auth?.role === "admin"}>Admin</option>
+                        <option value="moderator" className="text-black">Moderator</option>
+                      </select>
+                      {errors.access && <span className="error-message">{errors.access.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start justify-center">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
+                      <input
+                        placeholder="rober@xyz.com"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        {...register('email', {
+                          required: 'Email is required',
+                          pattern: {
+                            value: EMAIL_REGEX,
+                            message: 'Please enter email with valid format'
+                          }
+                        })}
+                      />
+                      {errors.email && <span className="error-message">{errors.email.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start justify-center">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
+                      <input
+                        placeholder="9876543210"
+                        className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        {...register('phone', {
+                          required: 'Phone number is required',
+                          pattern: {
+                            value: MOBILE_REGEX,
+                            message: 'Please enter valid phone number.'
+                          }
+                        })}
+                      />
+                      {errors.phone && <span className="error-message">{errors.phone.message}</span>}
+                    </div>
+                    <div className="p-1 flex flex-col items-start justify-center">
+                      <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Client</label>
+                      <InfiniteScrollSelect
+                        apiEndpoint={`/api/internal/internal-client/`}
+                        onSelect={(value) => {
+                          handleClientSelection(value);
+                        }}
+                        optionLabel='name'
+                        placeholder='Select Client'
+                        className='h-[29.6px] text-xs'
+                        dropdownClassName='text-xs'
+                        changeValue={false}
+                        selectedOptions={selectedClients}
+                        showDropdownAbove={true}
+                      />
+                      {errors.client && <span className="error-message">{errors.client.message}</span>}
+                      {selectedClients.length > 0 &&
+                        <div className=' mt-[8px] w-[300px] gap-x-4'>
+                          <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              removeSkill(item);
                             }}
-                          />
-                        ) : (
-                          "SAVE"
-                        )}
-                      </Button>
-                    </DialogActions>
-                  </form>
-                </DialogContent>
-              </BootstrapDialog>
+                            className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
+                            </svg>
+                          </button> </li>))} </ul>
+                        </div>}
+                    </div>
+                  </div>
+                  <div className="flex flex-row-reverse mt-3">
+                    <button disabled={savingHdip} type="submit" className="primary-button">
+                      {savingHdip ? (
+                        <CircularProgress
+                          size={24}
+                          sx={{
+                            color: "white", // Change this to any color you want
+                          }}
+                        />
+                      ) : (
+                        "SAVE"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </Modal>
             </React.Fragment>}
 
 
@@ -827,10 +758,10 @@ function Users() {
                 <input
                   type="text"
                   placeholder="Search users by name"
-                  className="flex-1 bg-transparent text-gray-600 outline-none text-sm"
+                  className="flex-1 bg-transparent text-gray-600 outline-none text-xs"
                   onChange={(e) => debouncedHdipSearch(e.target.value)}
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
+                <IoSearchSharp className="text-[#49454F]" />
               </div>
             </div>
           </div>
@@ -864,7 +795,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <input
-                          defaultValue={item?.name}
+                            defaultValue={item?.name}
                             type="text"
                             placeholder="John Doe"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -894,7 +825,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <input
-                          defaultValue={item?.user?.email}
+                            defaultValue={item?.user?.email}
                             placeholder="rober@xyz.com"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                             {...register('email', {
@@ -913,7 +844,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <input
-                          defaultValue={item?.user?.phone?.slice(3)}
+                            defaultValue={item?.user?.phone?.slice(3)}
                             placeholder="9876543210"
                             className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                             {...register('phone', {
@@ -938,15 +869,16 @@ function Users() {
                             }}
                             optionLabel='name'
                             placeholder='Select Client'
-                            className='h-[29.6px] text-sm'
-                            dropdownClassName='text-sm'
+                            className='h-[29.6px] text-xs'
+                            dropdownClassName='text-xs'
                             changeValue={false}
                             selectedOptions={selectedClients}
+                            showDropdownAbove={true}
                           />
                           {errors.client && <span className="error-message">{errors.client.message}</span>}
                           {selectedClients.length > 0 &&
-                            <div className=' mt-[8px] w-[300px] gap-x-4'>
-                              <ul className='flex flex-wrap justify-start gap-2 items-center text-sm' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
+                            <div className=' mt-[8px] gap-x-4'>
+                              <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
                                 onClick={(e) => {
                                   e.preventDefault();
                                   removeSkill(item);
