@@ -1,12 +1,20 @@
 import PropTypes from "prop-types";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
-export default function DynamicMultiSelect({
-  inputValue,
-  handleAddTag,
-  setInputValue,
-}) {
+export default function DynamicMultiSelect({selectedValues, setValue, placeholder }) {
   const inputRef = useRef(null);
+  const [inputValue, setInputValue] = useState("");
+  
+  // Handle adding tag
+  const handleAddTag = (value) => {
+    if (
+      value.trim() &&
+      !selectedValues.includes(value)
+    ) {
+      setValue(value)
+    }
+    setInputValue("");
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && inputValue.trim()) {
@@ -23,7 +31,7 @@ export default function DynamicMultiSelect({
         ref={inputRef}
         type="text"
         className="rounded-lg text-2xs py-2 px-3 border border-[#CAC4D0] text-[#49454F] w-full"
-        placeholder="Essential Skills (Press Enter to add)"
+        placeholder={`${placeholder} (Press Enter to add)`}
         value={inputValue}
         onChange={(e) => {
           setInputValue(e.target.value);
@@ -35,7 +43,7 @@ export default function DynamicMultiSelect({
 }
 
 DynamicMultiSelect.propTypes = {
-  inputValue: PropTypes.string,
-  handleAddTag: PropTypes.func,
-  setInputValue: PropTypes.func,
+  selectedValues: PropTypes.array.isRequired,
+  setValue: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired
 };

@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import axios from '../../api/axios';
 import toast from 'react-hot-toast';
-import { Button, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { DOMAINS, EMAIL_REGEX, MOBILE_REGEX } from '../Constants/constants';
 import { useForm } from 'react-hook-form';
 import RolesSelect from './Components/RolesSelect';
+import DynamicMultiSelect from '../../utils/DynamicMultiSelect';
 
 function AddInterviewer() {
   const [selectedStrength, setSelectedStrength] = useState("")
@@ -53,7 +54,7 @@ function AddInterviewer() {
       trigger("strength"); // Trigger validation
     }
   }, [selectedStrength, trigger]);
-  
+
   useEffect(() => {
     if (hasInteracted.current) {
       validateFile();
@@ -74,13 +75,9 @@ function AddInterviewer() {
     setItems(updatedItems);
   }
 
-  const handleSkillSelection = (e) => {
-    const newSkillOption = e.target.value;
+  const handleSkillSelection = (value) => {
     hasInteracted.current = true; // Mark as interacted
-
-    if (newSkillOption && !itemsSkills.includes(newSkillOption)) {
-      setItemsSkills([...itemsSkills, newSkillOption]);
-    }
+      setItemsSkills([...itemsSkills, value]);
   }
 
   const removeSkill = (ItemToRemove) => {
@@ -350,24 +347,15 @@ function AddInterviewer() {
                   <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold required-field-label">Skills</label>
                 </div>
                 <div className='w-1/2'>
-                  <select
-                    name="skills"
+                  <input
+                    type="hidden"
                     {...register("skills", {
                       validate: () => itemsSkills.length > 0 || "Please select at least one skill."
                     })}
-                    onChange={handleSkillSelection}
-                    value={""}
-                    className={`w-[140px] h-[32px] text-center text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px] border-[#CAC4D0] ${itemsSkills.length === 0 ? "text-gray-500" : "text-black"}`}
-                  >
-                    <option value="" disabled>Select Skills</option>
-                    <option value="Python">Python</option>
-                    <option value="Kafka">Kafka</option>
-                    <option value="Java">Java</option>
-                    <option value="DSA">DSA</option>
-                    <option value="OOPS">OOPS</option>
-                  </select>
+                  />
+                  <DynamicMultiSelect selectedValues={itemsSkills} setValue={handleSkillSelection} placeholder="Skills" />
                   {errors.skills && <span className="error-message" >{errors.skills.message}</span>}
-                  <div className=' mt-[8px] w-[300px] gap-x-4'>
+                  {itemsSkills?.length > 0 && <div className='mt-[8px] w-[300px] gap-x-4'>
                     <ul className='flex flex-wrap justify-start gap-2 items-center ' > {itemsSkills.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item} <button
                       onClick={(e) => {
                         e.preventDefault();
@@ -377,7 +365,7 @@ function AddInterviewer() {
                         <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
                       </svg>
                     </button> </li>))} </ul>
-                  </div>
+                  </div>}
                 </div>
               </li>
             </ul>
@@ -494,7 +482,7 @@ function AddInterviewer() {
           {/* Submit Button */}
 
           <div className='mt-4 flex justify-end mr-10 '>
-            <Button disabled={loading} type="submit" sx={{ backgroundColor: "rgb(59, 130, 246)", color: "rgb(255, 255, 255)", borderRadius: "9999px" }} className="px-6 py-2 text-sm font-medium hover:bg-blue-600">
+            <button disabled={loading} type="submit" className="primary-button">
               {loading ? (
                 <CircularProgress
                   size={24}
@@ -505,7 +493,7 @@ function AddInterviewer() {
               ) : (
                 "Save"
               )}
-            </Button>
+            </button>
           </div>
 
         </div>

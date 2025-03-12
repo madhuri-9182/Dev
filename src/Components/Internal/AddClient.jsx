@@ -1,31 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import { CircularProgress } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import toast from "react-hot-toast";
 import axios from '../../api/axios';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
 import { EMAIL_REGEX, MOBILE_REGEX } from "../Constants/constants";
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-        padding: theme.spacing(2),
-    },
-    '& .MuiDialogActions-root': {
-        padding: theme.spacing(1),
-    },
-    '& .MuiDialog-paper': {
-        width: '400px', // You can customize this value to whatever you need
-    },
-}));
+import Modal from "../shared/Modal";
 
 function AddClient() {
     const [rows, setRows] = useState([]);
@@ -43,12 +24,12 @@ function AddClient() {
 
     const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
     const { register, handleSubmit, formState: { errors }, setError, clearErrors, setValue } = useForm();
-    
+
     // POC form using React Hook Form
-    const { 
-        register: registerPoc, 
-        handleSubmit: handleSubmitPoc, 
-        formState: { errors: pocErrors }, 
+    const {
+        register: registerPoc,
+        handleSubmit: handleSubmitPoc,
+        formState: { errors: pocErrors },
         reset: resetPocForm,
         setValue: setPocValue
     } = useForm();
@@ -134,10 +115,10 @@ function AddClient() {
             // Update existing POC
             const updatedRows = rows.map((row, index) => {
                 if (index === selectedRow.index) {
-                    return { 
+                    return {
                         name: data.pocName,
                         phone: data.pocPhone,
-                        email: data.pocEmail 
+                        email: data.pocEmail
                     };
                 }
                 return row;
@@ -145,10 +126,10 @@ function AddClient() {
             setRows(updatedRows);
         } else {
             // Add new POC
-            setRows([...rows, { 
+            setRows([...rows, {
                 name: data.pocName,
                 phone: data.pocPhone,
-                email: data.pocEmail 
+                email: data.pocEmail
             }]);
         }
         handleClosePocDialog();
@@ -426,7 +407,7 @@ function AddClient() {
                             </div>
 
                             <div className="mt-6 flex justify-end">
-                                <Button disabled={loading} type="submit" sx={{ backgroundColor: "rgb(59, 130, 246)", color: "rgb(255, 255, 255)", borderRadius: "9999px" }} className="px-6 py-2 text-sm font-medium hover:bg-blue-600">
+                                <button disabled={loading} type="submit" className="primary-button">
                                     {loading ? (
                                         <CircularProgress
                                             size={24}
@@ -437,99 +418,71 @@ function AddClient() {
                                     ) : (
                                         "Save"
                                     )}
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </form>
                 )}
             </div>
-            <BootstrapDialog
-                aria-labelledby="poc-dialog-title"
-                open={pocDialogOpen}
-                BackdropProps={{
-                    sx: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)'
-                    },
-                }}
-            >
-                <DialogTitle sx={{ m: 0, p: 2 }} id="poc-dialog-title">
-                    <div className='font-bold text-[#056DDC] text-lg text-center'>
-                        {selectedRow ? 'EDIT POC' : 'ADD POC'}
-                    </div>
-                </DialogTitle>
-                <IconButton
-                    aria-label="close"
-                    onClick={handleClosePocDialog}
-                    sx={(theme) => ({
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: theme.palette.grey[500],
-                    })}
-                >
-                    <CloseIcon />
-                </IconButton>
+            <Modal isOpen={pocDialogOpen} onClose={handleClosePocDialog} title={selectedRow ? 'Edit POC' : 'Add POC'}>
                 <form onSubmit={handleSubmitPoc(handlePocSubmit)}>
-                    <DialogContent dividers>
-                        <div className="flex-col flex custom_lg:gap-2 md:gap-y-0">
-                            <div className="p-1 flex flex-col items-start justify-center">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">POC Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter POC Name"
-                                    {...registerPoc("pocName", {
-                                        required: "POC Name is required",
-                                        maxLength: { value: 255, message: "Name must be between 1 and 255 characters." }
-                                    })}
-                                    className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                                {pocErrors.pocName && <span className="error-message">{pocErrors.pocName.message}</span>}
-                            </div>
-                            <div className="p-1 flex flex-col items-start justify-center">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Phone Number"
-                                    {...registerPoc("pocPhone", {
-                                        required: "Phone number is required",
-                                        pattern: { 
-                                            value: MOBILE_REGEX, 
-                                            message: "Phone number must be exactly 10 digits." 
-                                        }
-                                    })}
-                                    className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                                {pocErrors.pocPhone && <span className="error-message">{pocErrors.pocPhone.message}</span>}
-                            </div>
-                            <div className="p-1 flex flex-col items-start justify-center">
-                                <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
-                                <input
-                                    type="email"
-                                    placeholder="Enter Mail ID"
-                                    {...registerPoc("pocEmail", {
-                                        required: "Email is required",
-                                        pattern: { 
-                                            value: EMAIL_REGEX,
-                                            message: "Email must be in the correct format." 
-                                        }
-                                    })}
-                                    className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                                {pocErrors.pocEmail && <span className="error-message">{pocErrors.pocEmail.message}</span>}
-                            </div>
+                    <div className="flex-col flex custom_lg:gap-2 md:gap-y-0">
+                        <div className="p-1 flex flex-col items-start justify-center">
+                            <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">POC Name</label>
+                            <input
+                                type="text"
+                                placeholder="Enter POC Name"
+                                {...registerPoc("pocName", {
+                                    required: "POC Name is required",
+                                    maxLength: { value: 255, message: "Name must be between 1 and 255 characters." }
+                                })}
+                                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                            {pocErrors.pocName && <span className="error-message">{pocErrors.pocName.message}</span>}
                         </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <div className="px-5 py-2">
-                            <button
-                                type="submit"
-                                className="text-white text-sm border py-2 px-5 rounded-full bg-[#056DDC]">
-                                Save
-                            </button>
+                        <div className="p-1 flex flex-col items-start justify-center">
+                            <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Phone Number</label>
+                            <input
+                                type="text"
+                                placeholder="Enter Phone Number"
+                                {...registerPoc("pocPhone", {
+                                    required: "Phone number is required",
+                                    pattern: {
+                                        value: MOBILE_REGEX,
+                                        message: "Phone number must be exactly 10 digits."
+                                    }
+                                })}
+                                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                            {pocErrors.pocPhone && <span className="error-message">{pocErrors.pocPhone.message}</span>}
                         </div>
-                    </DialogActions>
+                        <div className="p-1 flex flex-col items-start justify-center">
+                            <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Mail ID</label>
+                            <input
+                                type="email"
+                                placeholder="Enter Mail ID"
+                                {...registerPoc("pocEmail", {
+                                    required: "Email is required",
+                                    pattern: {
+                                        value: EMAIL_REGEX,
+                                        message: "Email must be in the correct format."
+                                    }
+                                })}
+                                className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                            {pocErrors.pocEmail && <span className="error-message">{pocErrors.pocEmail.message}</span>}
+                        </div>
+                    </div>
+                    <div className="flex flex-row-reverse" >
+                        <button
+                            type="submit"
+                            className="primary-button mt-3"
+                        >
+                            Save
+                        </button>
+                    </div>
                 </form>
-            </BootstrapDialog>
+            </Modal>
         </React.Fragment>
     );
 }

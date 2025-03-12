@@ -6,7 +6,7 @@ import axios from '../../src/api/axios';
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-root": {
     height: "auto",
-    minHeight: "40px",
+    minHeight: "38px",
     borderRadius: "8px",
     fontSize: "12px",
     paddingBlock: "4px",
@@ -70,7 +70,7 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
   };
 
   return (<div className="flex items-center font-medium space-x-1">
-    <span className="font-bold mr-2">{label}</span>
+    <span className="font-bold mr-2 text-xs">{label}</span>
     <Autocomplete
       isOptionEqualToValue={(option, value) =>  (apiEndpoint ? option.id : option.value) === value.value}
       disableCloseOnSelect
