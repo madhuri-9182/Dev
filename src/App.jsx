@@ -63,7 +63,7 @@ import {
   RequireAuth,
 } from "./Components";
 import ClientAddCandidate from "./Components/Client/Candidates/add-candidate/AddCandidate";
-import ClientScheduleInterview from "./Components/Client/Candidates/ScheduleInterview";
+import ClientScheduleInterview from "./Components/Client/Candidates/schedule-interview/ClientScheduleInterview";
 import Engagement from "./Components/Client/Engagement/Engagement";
 import {
   Unauthorized,

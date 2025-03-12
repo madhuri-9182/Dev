@@ -85,14 +85,8 @@ const CalendarComponent = () => {
     queryKey: ["googleEvents"],
     queryFn: () => axios.get("/api/events/"),
     enabled: false,
-    onError: () => {
-      console.error("Error fetching Google events");
-      toast.error("Error fetching Google events", {
-        position: "top-right",
-      });
-      // If we can't get Google events, initialize auth
-      navigate("/interviewer/dashboard/");
-    },
+    retry: 1,
+    retryDelay: 1000,
   });
 
   // Query for blocked calendar times
@@ -119,10 +113,7 @@ const CalendarComponent = () => {
     },
     onError: (error) => {
       toast.error(
-        Object.values(error.response.data?.errors)[0][0],
-        {
-          position: "top-right",
-        }
+        Object.values(error.response.data?.errors)[0][0]
       );
     },
   });
@@ -169,9 +160,7 @@ const CalendarComponent = () => {
 
   useEffect(() => {
     if (googleEventsError) {
-      toast.error("Error fetching Google events", {
-        position: "top-right",
-      });
+      toast.error("Error fetching Google events");
       navigate("/interviewer/dashboard/");
     }
   }, [googleEventsError, navigate]);
@@ -310,10 +299,7 @@ const CalendarComponent = () => {
 
     if (timeDiffInMinutes < 60) {
       toast.error(
-        "Please select time frame of at least 1 hour.",
-        {
-          position: "top-right",
-        }
+        "Please select time frame of at least 1 hour."
       );
 
       calendarRef.current?.getApi().unselect();
@@ -356,120 +342,79 @@ const CalendarComponent = () => {
       blockData.notes = newEvent.description;
     }
 
-    // If this is a recurring event, add the recurrence data
-    if (
-      newEvent.recurring !== "none" &&
-      newEvent.recurrence
-    ) {
-      blockData.recurrence = {
-        frequency: newEvent.recurrence.frequency,
-        intervals: newEvent.recurrence.interval || 1,
-      };
+    // Check if this is a recurring event - either by recurring flag or by recurrence data
+    // const hasRecurrenceData =
+    //   newEvent.recurrence &&
+    //   ((newEvent.recurrence.days &&
+    //     newEvent.recurrence.days.length > 0) ||
+    //     newEvent.recurrence.count ||
+    //     newEvent.recurrence.until);
 
-      // Add days if selected (for weekly recurrence), filtering out null values
-      if (
-        newEvent.recurrence.days &&
-        newEvent.recurrence.days.length > 0
-      ) {
-        const cleanDays = newEvent.recurrence.days.filter(
-          (day) => day !== null
-        );
-        if (cleanDays.length > 0) {
-          blockData.recurrence.days = cleanDays;
-        }
-      }
+    // if (
+    //   newEvent.recurring !== "none" ||
+    //   hasRecurrenceData
+    // ) {
+    //   blockData.recurrence = {
+    //     frequency: newEvent.recurrence.frequency,
+    //     intervals: newEvent.recurrence.interval || 1,
+    //   };
 
-      // Add count or until if specified
-      if (newEvent.recurrence.count) {
-        blockData.recurrence.count =
-          newEvent.recurrence.count;
-      } else if (newEvent.recurrence.until) {
-        blockData.recurrence.until =
-          newEvent.recurrence.until;
-      }
+    //   // Add days if selected (for weekly recurrence), filtering out null values
+    //   if (
+    //     newEvent.recurrence.days &&
+    //     newEvent.recurrence.days.length > 0
+    //   ) {
+    //     const cleanDays = newEvent.recurrence.days.filter(
+    //       (day) => day !== null
+    //     );
+    //     if (cleanDays.length > 0) {
+    //       blockData.recurrence.days = cleanDays;
+    //     }
+    //   }
 
-      // Add month_day or year_day if applicable, filtering out null values
-      if (
-        newEvent.recurrence.monthDay &&
-        newEvent.recurrence.monthDay.length > 0
-      ) {
-        const cleanMonthDays =
-          newEvent.recurrence.monthDay.filter(
-            (day) => day !== null
-          );
-        if (cleanMonthDays.length > 0) {
-          blockData.recurrence.month_day = cleanMonthDays;
-        }
-      }
+    //   // Add count or until if specified
+    //   if (newEvent.recurrence.count) {
+    //     blockData.recurrence.count =
+    //       newEvent.recurrence.count;
+    //   } else if (newEvent.recurrence.until) {
+    //     blockData.recurrence.until =
+    //       newEvent.recurrence.until;
+    //   }
 
-      if (
-        newEvent.recurrence.yearDay &&
-        newEvent.recurrence.yearDay.length > 0
-      ) {
-        const cleanYearDays =
-          newEvent.recurrence.yearDay.filter(
-            (day) => day !== null
-          );
-        if (cleanYearDays.length > 0) {
-          blockData.recurrence.year_day = cleanYearDays;
-        }
-      }
-    }
+    //   // Add month_day or year_day if applicable, filtering out null values
+    //   if (
+    //     newEvent.recurrence.monthDay &&
+    //     newEvent.recurrence.monthDay.length > 0
+    //   ) {
+    //     const cleanMonthDays =
+    //       newEvent.recurrence.monthDay.filter(
+    //         (day) => day !== null
+    //       );
+    //     if (cleanMonthDays.length > 0) {
+    //       blockData.recurrence.month_day = cleanMonthDays;
+    //     }
+    //   }
+
+    //   if (
+    //     newEvent.recurrence.yearDay &&
+    //     newEvent.recurrence.yearDay.length > 0
+    //   ) {
+    //     const cleanYearDays =
+    //       newEvent.recurrence.yearDay.filter(
+    //         (day) => day !== null
+    //       );
+    //     if (cleanYearDays.length > 0) {
+    //       blockData.recurrence.year_day = cleanYearDays;
+    //     }
+    //   }
+    // }
+
+    // Log the data for debugging purposes
+    console.log("Sending block data:", blockData);
 
     // Send the data to the API
     blockCalendarMutation.mutate(blockData);
   };
-
-  // Add this function to the CalendarComponent
-  // const handleEventClick = (clickInfo) => {
-  //   // Only handle blocked time events (not Google Calendar events)
-  //   if (
-  //     clickInfo.event.classNames.includes(
-  //       "google-cal-blocked-time"
-  //     )
-  //   ) {
-  //     const eventStart = new Date(clickInfo.event.start);
-  //     const eventEnd = new Date(clickInfo.event.end);
-
-  //     // Format dates for display and API
-  //     const dateInfo = formatSelectedDate(
-  //       eventStart,
-  //       eventEnd
-  //     );
-
-  //     // Get description/notes from the event's extendedProps
-  //     const description =
-  //       clickInfo.event.extendedProps?.description ||
-  //       "This time slot is available for interviews.";
-
-  //     // Update the newEvent state
-  //     setNewEvent({
-  //       ...newEvent,
-  //       ...dateInfo,
-  //       description: description,
-  //       // Preserve other properties
-  //       recurring: "none", // Reset recurring since we're editing an existing event
-  //       recurrence: {
-  //         frequency: "WEEKLY",
-  //         interval: 1,
-  //         days: [],
-  //         count: null,
-  //         until: null,
-  //         monthDay: [],
-  //         yearDay: [],
-  //       },
-  //     });
-
-  //     // Calculate popup position
-  //     const position = calculatePopupPosition(
-  //       clickInfo.jsEvent
-  //     );
-  //     setPopupPosition(position);
-
-  //     // Show the popup
-  //     setPopupVisible(true);
-  //   }
-  // };
 
   return (
     <div className="font-roboto max-w-full p-5 my-0 mx-auto">

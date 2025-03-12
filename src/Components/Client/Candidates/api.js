@@ -62,3 +62,21 @@ export const deleteCandidate = async ({ id, reason }) => {
   );
   return response.data;
 };
+
+export const getInterviewAvailability = async (data) => {
+  const response = await axios.get(
+    "/api/client/interviewer-availability/",
+    {
+      params: data,
+    }
+  );
+  return response.data;
+};
+
+export const scheduleInterview = async (data) => {
+  const response = await axios.post(
+    "/api/interviewer/interviewer-request-notification/",
+    data
+  );
+  return response.data;
+};

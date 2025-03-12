@@ -1,25 +1,47 @@
-import * as React from "react";
+import { useEffect } from "react";
+import PropTypes from "prop-types";
 import dayjs from "dayjs";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
-export default function ResponsiveDatePickers() {
+const BasicDatePicker = ({
+  selectedDate,
+  setSelectedDate,
+}) => {
+  // Set default date to tomorrow
+  const tomorrow = dayjs().add(1, "day");
+
+  // Initialize with tomorrow's date if no selectedDate is provided
+  useEffect(() => {
+    if (!selectedDate) {
+      setSelectedDate(tomorrow);
+    }
+  }, [selectedDate, setSelectedDate, tomorrow]);
+
+  // Handle date change
+  const handleDateChange = (newDate) => {
+    console.log("Selected date: ", newDate);
+    setSelectedDate(newDate);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoItem>
         <DesktopDatePicker
-          defaultValue={dayjs("2022-04-17")}
+          value={selectedDate || tomorrow}
+          onChange={handleDateChange}
           format="ddd, DD/MM/YYYY"
+          disablePast={true} // Disable past dates
           sx={{
             "& .MuiOutlinedInput-root": {
-              border: "none", // Remove the border
+              border: "none",
               "& fieldset": {
-                border: "none", // Remove the fieldset border
+                border: "none",
               },
               "& input": {
-                fontSize: "18px", // Adjust input text size if needed
+                fontSize: "18px",
               },
             },
           }}
@@ -27,30 +49,29 @@ export default function ResponsiveDatePickers() {
             popper: {
               sx: {
                 "& .MuiPaper-root": {
-                  backgroundColor: "#ECE6F0", // Calendar background color
+                  backgroundColor: "#ECE6F0",
                   height: "300px",
                 },
               },
             },
             day: {
               sx: {
-                width: "36px", // Reduce the width of each day cell
-                height: "36px", // Reduce the height of each day cell
+                width: "36px",
+                height: "36px",
                 "&:hover": {
-                  backgroundColor: "#8e80b3", // Hover effect background color
+                  backgroundColor: "#8e80b3",
                 },
                 "&.Mui-selected": {
-                  backgroundColor: "#65558F", // Selected date background color
-                  color: "white", // Text color for selected date
+                  backgroundColor: "#65558F",
+                  color: "white",
                 },
               },
             },
-            // Change font color of month and year in the calendar header
             toolbar: {
               sx: {
                 "& .MuiTypography-root": {
-                  color: "green", // Set the font color to green for the month and year
-                  fontSize: "16px", // Optionally adjust the font size
+                  color: "#65558F",
+                  fontSize: "16px",
                 },
               },
             },
@@ -59,4 +80,11 @@ export default function ResponsiveDatePickers() {
       </DemoItem>
     </LocalizationProvider>
   );
-}
+};
+
+export default BasicDatePicker;
+
+BasicDatePicker.propTypes = {
+  selectedDate: PropTypes.object,
+  setSelectedDate: PropTypes.func,
+};
