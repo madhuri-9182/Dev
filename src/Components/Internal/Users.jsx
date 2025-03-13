@@ -706,7 +706,7 @@ function Users() {
                     <div className="p-1 flex flex-col items-start justify-center">
                       <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Client</label>
                       <InfiniteScrollSelect
-                        apiEndpoint={`/api/internal/internal-client/`}
+                        apiEndpoint={`/api/internal/organizations/`}
                         onSelect={(value) => {
                           handleClientSelection(value);
                         }}
@@ -863,7 +863,7 @@ function Users() {
                       {editHdipUser === index ? (
                         <>
                           <InfiniteScrollSelect
-                            apiEndpoint={`/api/internal/internal-client/`}
+                            apiEndpoint={`/api/internal/organizations/`}
                             onSelect={(value) => {
                               handleClientSelection(value);
                             }}
