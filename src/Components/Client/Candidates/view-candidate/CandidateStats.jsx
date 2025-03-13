@@ -1,8 +1,14 @@
 import PropTypes from "prop-types";
 
-const CandidateStats = ({ stats }) => {
+const CandidateStats = ({ stats, title }) => {
   return (
-    <div className="w-full grid grid-cols-5 gap-x-3 justify-evenly">
+    <div
+      className={`w-full grid ${
+        title === "engagement"
+          ? "grid-cols-4 gap-x-4"
+          : "grid-cols-5 gap-x-3"
+      } justify-evenly`}
+    >
       {stats.map((stat, index) => (
         <div
           key={index}
@@ -24,4 +30,5 @@ export default CandidateStats;
 
 CandidateStats.propTypes = {
   stats: PropTypes.array,
+  title: PropTypes.string,
 };

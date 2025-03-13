@@ -1,10 +1,13 @@
-import { Box, Button, LinearProgress, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import EngagementDashboard from "./EngagementDashboard";
 import EmailTemplates from "./EmailTemplates";
 import EventSchedular from "./EventSchedular";
 import EngagementForm from "./EngagementForm";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect } from "react";
 
 const RedirectToDashboard = () => {
@@ -12,11 +15,13 @@ const RedirectToDashboard = () => {
 
   useEffect(() => {
     navigate("/client/engagement/dashboard");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
 
 function Engagement() {
-  const [selectedEngagement, setSelectedEngagement] = useState(null);
+  const [selectedEngagement, setSelectedEngagement] =
+    useState(null);
 
   return (
     <>
@@ -31,7 +36,11 @@ function Engagement() {
         />
         <Route
           path="/email-templates"
-          element={<EmailTemplates engagement={selectedEngagement} />}
+          element={
+            <EmailTemplates
+              engagement={selectedEngagement}
+            />
+          }
         />
 
         <Route
@@ -49,7 +58,9 @@ function Engagement() {
               path="/event-schedular"
               element={
                 <EventSchedular
-                  setSelectedEngagement={setSelectedEngagement}
+                  setSelectedEngagement={
+                    setSelectedEngagement
+                  }
                   engagement={selectedEngagement}
                 />
               }

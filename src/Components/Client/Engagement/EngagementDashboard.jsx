@@ -1,41 +1,26 @@
-import React, {
-  useEffect,
-  useState,
-  useDeferredValue,
-  useCallback,
-  useMemo,
-} from "react";
-import StatsCard from "./components/StatsCard";
+/* eslint-disable react-hooks/exhaustive-deps */
+import PropTypes from "prop-types";
+import { useEffect, useState, useCallback } from "react";
 import Filters from "./components/Filters";
 import CandidateTimeline from "./components/CandidateTimeline";
-import { Add, Height, Search } from "@mui/icons-material";
-import { styled } from "@mui/material/styles";
-import { Box, debounce, TextField } from "@mui/material";
-import Button from "./components/Button";
-import { useEngagements, useJobs, useUpdateEngagementStatus } from "./api";
+import { debounce } from "@mui/material";
+import {
+  useEngagements,
+  useJobs,
+  useUpdateEngagementStatus,
+} from "./api";
 import { useNavigate } from "react-router-dom";
-
-const StyledSearch = styled(TextField)(({ theme }) => ({
-  "& .MuiInputBase-root": {
-    borderRadius: "100px",
-    height: "40px",
-    backgroundColor: "#F4F4F4",
-    fontSize: "12px",
-  },
-  width: "350px",
-
-  "& fieldset": {
-    border: "none",
-  },
-}));
+import AddButton from "../../shared/AddButton";
+import SearchInput from "../../shared/SearchInput";
+import CandidateStats from "../Candidates/view-candidate/CandidateStats";
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
     role: [],
     function: [],
     notice: [],
-    search: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [debouncedFilters, setDebouncedFilters] = useState({
     role: [],
@@ -45,23 +30,31 @@ function EngagementDashboard({ setSelectedEngagement }) {
   });
 
   const updateDebouncedFilters = useCallback(
-    debounce((filters) => {
-      setDebouncedFilters(filters);
+    debounce((filters, searchQuery) => {
+      setDebouncedFilters({
+        ...filters,
+        search: searchQuery,
+      });
     }, 500),
     []
   );
-  const { data: jobsData, isLoading: jobsLoading } = useJobs();
-  const { data, isLoading, isError, error } = useEngagements(debouncedFilters);
-  const [updatingEngagementId, setUpdatingEngagementId] = React.useState(null);
-  const { mutate } = useUpdateEngagementStatus(filters);
+  const { data: jobsData } = useJobs();
+  const { data, isLoading, isError, error } =
+    useEngagements(debouncedFilters);
+  const [updatingEngagementId, setUpdatingEngagementId] =
+    useState(null);
+  const { mutate } = useUpdateEngagementStatus({
+    ...filters,
+    search: searchQuery,
+  });
   const engagements = data?.results || [];
   const jobs = jobsData?.results || [];
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    updateDebouncedFilters(filters);
-  }, [filters]);
+    updateDebouncedFilters(filters, searchQuery);
+  }, [filters, searchQuery, updateDebouncedFilters]);
 
   const onEngagementStatusChange = (status, engagement) => {
     setUpdatingEngagementId(engagement.id);
@@ -88,73 +81,85 @@ function EngagementDashboard({ setSelectedEngagement }) {
   }, []);
 
   const [stats, setStats] = useState([
-    { title: "Total Candidates", value: undefined },
-    { title: "Joined", value: undefined },
-    { title: "Declined", value: undefined },
-    { title: "Pending", value: undefined },
+    { label: "Total Candidates", value: undefined },
+    { label: "Joined", value: undefined },
+    { label: "Declined", value: undefined },
+    { label: "Pending", value: undefined },
   ]);
 
   useEffect(() => {
     if (data) {
       setStats([
-        { title: "Total Candidates", value: data?.total_candidates },
-        { title: "Joined", value: data?.joined },
-        { title: "Declined", value: data?.declined },
-        { title: "Pending", value: data?.pending },
+        {
+          label: "Total Candidates",
+          value: data?.total_candidates,
+        },
+        { label: "Joined", value: data?.joined },
+        { label: "Declined", value: data?.declined },
+        { label: "Pending", value: data?.pending },
       ]);
     }
   }, [data]);
 
   if (isError) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="p-4 text-red-600">
+        Error: {error.message}
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-4">
+        Loading engagements...
+      </div>
+    );
   }
 
   return (
-    <div>
-      <Box sx={{ display: "flex", gap: 3, mb: 4, justifyContent: "right" }}>
-        <StyledSearch
-          placeholder="Search candidate by Name, Email & Mobile Number"
-          InputProps={{ endAdornment: <Search color="#49454F" /> }}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          value={filters.search}
+    <div className="flex flex-col gap-y-5 px-3">
+      <div className="flex w-full justify-end items-center gap-4 ml-auto">
+        <SearchInput
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
         />
-        <Button
-          startIcon={<Add />}
-          sx={{
-            minWidth: "180px",
-            paddingBlock: 1,
-            backgroundColor: "#007AFF",
-            color: "white",
-          }}
-          variant="contained"
-          onClick={() => navigate("/client/engagement/form")}
-        >
-          Add Candidate
-        </Button>
-      </Box>
+        <AddButton
+          label="+ Add Candidate"
+          onClick={() =>
+            navigate("/client/engagement/form")
+          }
+          className={"w-40"}
+        />
+      </div>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
-        {stats.map((stat) => (
-          <StatsCard key={stat.title} title={stat.title} value={stat.value} />
-        ))}
-      </Box>
+      <CandidateStats stats={stats} title={"engagement"} />
 
-      <Filters jobs={jobs} filters={filters} onChipClick={handleChipClick} />
+      <Filters
+        jobs={jobs}
+        filters={filters}
+        onChipClick={handleChipClick}
+      />
 
-      {!isLoading &&
-        engagements.map((engagement) => (
-          <CandidateTimeline
-            key={engagement.id}
-            onStatusChange={(status) =>
-              onEngagementStatusChange(status, engagement)
-            }
-            engagement={engagement}
-            isUpdating={updatingEngagementId == engagement.id}
-            onEngagementClick={() => onEngagementClick(engagement)}
-          />
-        ))}
+      {engagements.map((engagement) => (
+        <CandidateTimeline
+          key={engagement.id}
+          onStatusChange={(status) =>
+            onEngagementStatusChange(status, engagement)
+          }
+          engagement={engagement}
+          isUpdating={updatingEngagementId == engagement.id}
+          onEngagementClick={() =>
+            onEngagementClick(engagement)
+          }
+        />
+      ))}
     </div>
   );
 }
+
+EngagementDashboard.propTypes = {
+  setSelectedEngagement: PropTypes.func,
+};
 
 export default EngagementDashboard;

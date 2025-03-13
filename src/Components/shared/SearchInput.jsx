@@ -48,7 +48,7 @@ const SearchInput = ({ searchQuery, setSearchQuery }) => {
   }, [searchQuery]);
 
   return (
-    <div className="flex items-center rounded-full px-4 py-2 w-[446px] border border-[#F4F4F4] focus-within:border-blue-700 bg-[#F4F4F4]">
+    <div className="flex items-center rounded-full h-[32px] px-4 py-2 w-[446px] border border-[#F4F4F4] focus-within:border-blue-700 bg-[#F4F4F4]">
       <input
         ref={searchInputRef}
         type="text"
