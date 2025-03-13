@@ -196,6 +196,8 @@ const ResumeTableRow = ({
 
     const uniqueKey = `candidateData-${selectedIData.id}`;
 
+    localStorage.clear();
+
     // Store the encoded data in localStorage (or sessionStorage)
     localStorage.setItem(
       uniqueKey,

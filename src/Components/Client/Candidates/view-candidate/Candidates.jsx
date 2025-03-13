@@ -105,6 +105,8 @@ function Candidates() {
         candidateData.file_name = file.name;
       }
 
+      localStorage.clear();
+
       // Store data in localStorage with unique key
       const uniqueKey = `candidateData-${Date.now()}`;
       localStorage.setItem(
