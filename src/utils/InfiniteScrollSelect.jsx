@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from '../../src/api/axios';  // Import axios instance
 import { KeyboardArrowDown } from '@mui/icons-material';
 
-const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null, selectedOptions = [], showDropdownAbove = false }) => {
+const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null, selectedOptions = [], showDropdownAbove = false, disabled = false }) => {
     const [items, setItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -103,9 +103,10 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
     return (
         <div className="relative w-full" ref={dropdownRef}>
             <button
+                disabled={disabled}
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center justify-between w-full p-2 text-left text-[rgb(0 0 0 / 87%)] border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+                className={`flex items-center justify-between w-full p-2 text-left text-[rgb(0 0 0 / 87%)] border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${disabled ? "cursor-not-allowed" : ""} ${className}`}
             >
                 {selectedItem ? selectedItem.name : <span className='text-[#afb3b6]' >{placeholder}</span>} <KeyboardArrowDown fontSize='small'/>
             </button>
@@ -147,7 +148,8 @@ InfiniteScrollSelect.propTypes = {
     changeValue: PropTypes.bool,
     defaultValue: PropTypes.object,
     selectedOptions: PropTypes.array,
-    showDropdownAbove: PropTypes.bool
+    showDropdownAbove: PropTypes.bool,
+    disabled: PropTypes.bool
 };
 
 export default InfiniteScrollSelect;
