@@ -293,25 +293,6 @@ function ClientScheduleInterview() {
         scheduleAfterUpdate: scheduleNow,
       });
     }
-
-    // Log the data that would be sent
-    console.log("Form data being submitted:", {
-      candidateData: {
-        id: item?.id,
-        name: item?.name,
-        email: item?.email,
-        remark: data.remark,
-      },
-      schedulingData:
-        scheduleNow && selectedWindow
-          ? {
-              candidate_id: item?.id || "from response",
-              date: formatDateToDDMMYYYY(selectedDate),
-              time: getTimeFromWindow(selectedWindow),
-              interviewer_ids: selectedSlotIds,
-            }
-          : "Not scheduling now",
-    });
   };
 
   // Handle candidate deletion
