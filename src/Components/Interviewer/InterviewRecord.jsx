@@ -56,7 +56,6 @@ function InterviewRecord() {
   const checkEventsMutation = useMutation({
     mutationFn: getGoogleEvents,
     onSuccess: (data) => {
-      console.log(data, "data");
       if (data && data.status === "success") {
         navigate("/interviewer/calendar");
       } else {
