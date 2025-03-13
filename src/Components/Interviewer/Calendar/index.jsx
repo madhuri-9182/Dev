@@ -343,74 +343,73 @@ const CalendarComponent = () => {
     }
 
     // Check if this is a recurring event - either by recurring flag or by recurrence data
-    // const hasRecurrenceData =
-    //   newEvent.recurrence &&
-    //   ((newEvent.recurrence.days &&
-    //     newEvent.recurrence.days.length > 0) ||
-    //     newEvent.recurrence.count ||
-    //     newEvent.recurrence.until);
+    const hasRecurrenceData =
+      newEvent.recurrence &&
+      ((newEvent.recurrence.days &&
+        newEvent.recurrence.days.length > 0) ||
+        newEvent.recurrence.count ||
+        newEvent.recurrence.until);
 
-    // if (
-    //   newEvent.recurring !== "none" ||
-    //   hasRecurrenceData
-    // ) {
-    //   blockData.recurrence = {
-    //     frequency: newEvent.recurrence.frequency,
-    //     intervals: newEvent.recurrence.interval || 1,
-    //   };
+    if (
+      newEvent.recurring !== "none" ||
+      hasRecurrenceData
+    ) {
+      blockData.recurrence = {
+        frequency: newEvent.recurrence.frequency,
+        intervals: newEvent.recurrence.interval || 1,
+      };
 
-    //   // Add days if selected (for weekly recurrence), filtering out null values
-    //   if (
-    //     newEvent.recurrence.days &&
-    //     newEvent.recurrence.days.length > 0
-    //   ) {
-    //     const cleanDays = newEvent.recurrence.days.filter(
-    //       (day) => day !== null
-    //     );
-    //     if (cleanDays.length > 0) {
-    //       blockData.recurrence.days = cleanDays;
-    //     }
-    //   }
+      // Add days if selected (for weekly recurrence), filtering out null values
+      if (
+        newEvent.recurrence.days &&
+        newEvent.recurrence.days.length > 0
+      ) {
+        // IMPORTANT: Filter out null values to ensure clean data
+        const cleanDays = newEvent.recurrence.days.filter(
+          (day) => day !== null && day !== undefined
+        );
 
-    //   // Add count or until if specified
-    //   if (newEvent.recurrence.count) {
-    //     blockData.recurrence.count =
-    //       newEvent.recurrence.count;
-    //   } else if (newEvent.recurrence.until) {
-    //     blockData.recurrence.until =
-    //       newEvent.recurrence.until;
-    //   }
+        if (cleanDays.length > 0) {
+          blockData.recurrence.days = cleanDays;
+        }
+      }
 
-    //   // Add month_day or year_day if applicable, filtering out null values
-    //   if (
-    //     newEvent.recurrence.monthDay &&
-    //     newEvent.recurrence.monthDay.length > 0
-    //   ) {
-    //     const cleanMonthDays =
-    //       newEvent.recurrence.monthDay.filter(
-    //         (day) => day !== null
-    //       );
-    //     if (cleanMonthDays.length > 0) {
-    //       blockData.recurrence.month_day = cleanMonthDays;
-    //     }
-    //   }
+      // Add count or until if specified
+      if (newEvent.recurrence.count) {
+        blockData.recurrence.count =
+          newEvent.recurrence.count;
+      } else if (newEvent.recurrence.until) {
+        blockData.recurrence.until =
+          newEvent.recurrence.until;
+      }
 
-    //   if (
-    //     newEvent.recurrence.yearDay &&
-    //     newEvent.recurrence.yearDay.length > 0
-    //   ) {
-    //     const cleanYearDays =
-    //       newEvent.recurrence.yearDay.filter(
-    //         (day) => day !== null
-    //       );
-    //     if (cleanYearDays.length > 0) {
-    //       blockData.recurrence.year_day = cleanYearDays;
-    //     }
-    //   }
-    // }
+      // Add month_day or year_day if applicable, filtering out null values
+      if (
+        newEvent.recurrence.monthDay &&
+        newEvent.recurrence.monthDay.length > 0
+      ) {
+        const cleanMonthDays =
+          newEvent.recurrence.monthDay.filter(
+            (day) => day !== null && day !== undefined
+          );
+        if (cleanMonthDays.length > 0) {
+          blockData.recurrence.month_day = cleanMonthDays;
+        }
+      }
 
-    // Log the data for debugging purposes
-    console.log("Sending block data:", blockData);
+      if (
+        newEvent.recurrence.yearDay &&
+        newEvent.recurrence.yearDay.length > 0
+      ) {
+        const cleanYearDays =
+          newEvent.recurrence.yearDay.filter(
+            (day) => day !== null && day !== undefined
+          );
+        if (cleanYearDays.length > 0) {
+          blockData.recurrence.year_day = cleanYearDays;
+        }
+      }
+    }
 
     // Send the data to the API
     blockCalendarMutation.mutate(blockData);

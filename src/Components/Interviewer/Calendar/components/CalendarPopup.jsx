@@ -91,8 +91,7 @@ const CalendarPopup = ({
   useEffect(() => {
     if (
       recurrence.frequency === "WEEKLY" &&
-      (recurrence.days.length === 0 ||
-        recurrence.days.some((day) => day === null))
+      recurrence.days.length === 0
     ) {
       // Get the day of the selected date and set it as default
       try {
@@ -441,8 +440,6 @@ const CalendarPopup = ({
           </div>
         )}
       </div>
-
-      {/* Recurrence options */}
 
       {/* Footer actions */}
       <div className="px-4 py-3 border-t flex justify-end space-x-2 sticky bottom-0 bg-white z-10">
