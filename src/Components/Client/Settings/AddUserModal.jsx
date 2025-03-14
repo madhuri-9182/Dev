@@ -20,6 +20,10 @@ import {
 } from "./AddUserFormComponents";
 import Modal from "../../shared/Modal";
 import { useForm, Controller } from "react-hook-form";
+import {
+  CancelButton,
+  SaveButton,
+} from "../../shared/SaveAndCancelButtons";
 
 // Main component
 const AddUserModal = ({
@@ -473,26 +477,19 @@ const AddUserModal = ({
               </div>
             )}
 
-            <div className="flex justify-end items-center gap-2 mt-4">
-              <button
-                type="button"
-                className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
-                transition-all duration-300 ease-in-out 
-                hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
+            <div className="flex justify-end items-center gap-2 mt-5">
+              <CancelButton
                 onClick={onClose}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-6 py-[5px] rounded-[100px] text-white border text-xs font-semibold cursor-pointer
-                 enabled:border-[#007AFF] enabled:bg-[#007AFF] 
-                 enabled:hover:bg-gradient-to-r enabled:hover:from-[#007AFF] enabled:hover:to-[#005BBB] 
-                 disabled:cursor-not-allowed disabled:bg-[#CAC4D0] disabled:border-[#CAC4D0] transition-all duration-300 ease-in-out"
-                type="submit"
+                label="Cancel"
+              />
+              <SaveButton
                 disabled={mutation.isPending}
-              >
-                {mutation.isPending ? "Saving..." : "Save"}
-              </button>
+                label={
+                  mutation.isPending ? "Saving..." : "Save"
+                }
+                type="submit"
+                onClick={() => {}}
+              />
             </div>
           </form>
         </Modal>

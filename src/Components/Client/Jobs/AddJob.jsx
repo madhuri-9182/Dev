@@ -17,6 +17,10 @@ import {
 import toast from "react-hot-toast";
 import { useJobContext } from "../../../context/JobContext";
 import useAuth from "../../../hooks/useAuth";
+import {
+  CancelButton,
+  SaveButton,
+} from "../../shared/SaveAndCancelButtons";
 
 const AddJob = () => {
   const { auth } = useAuth();
@@ -367,10 +371,11 @@ const AddJob = () => {
                 <input
                   type="number"
                   placeholder="-"
-                  className={`${inputClassName} ${errors.totalPositions
-                    ? "border-[#B10E0EE5]"
-                    : ""
-                    }`}
+                  className={`${inputClassName} ${
+                    errors.totalPositions
+                      ? "border-[#B10E0EE5]"
+                      : ""
+                  }`}
                   onChange={field.onChange}
                   value={field.value}
                 />
@@ -450,10 +455,11 @@ const AddJob = () => {
                     <button
                       type="button"
                       onClick={handleUploadButtonClick}
-                      className={`border border-dashed ${errors.jobDescriptionFile
-                        ? "border-[#B10E0EE5]"
-                        : "border-[#6B6F7B]"
-                        } rounded-xl w-full py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
+                      className={`border border-dashed ${
+                        errors.jobDescriptionFile
+                          ? "border-[#B10E0EE5]"
+                          : "border-[#6B6F7B]"
+                      } rounded-xl w-full py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
                     >
                       <LogoutCurve
                         className="rotate-90"
@@ -497,13 +503,16 @@ const AddJob = () => {
                     "At least one essential skill is required",
                 })}
               />
-              <DynamicMultiSelect selectedValues={selectedEssentialSkills} placeholder="Essential Skills"
+              <DynamicMultiSelect
+                selectedValues={selectedEssentialSkills}
+                placeholder="Essential Skills"
                 setValue={(value) =>
                   setValue(
                     "essentialSkills",
                     [...selectedEssentialSkills, value],
                     { shouldValidate: true }
-                  )}
+                  )
+                }
               />
               {errors.essentialSkills && (
                 <p className="text-xs text-[#B10E0EE5] mt-1">
@@ -540,22 +549,13 @@ const AddJob = () => {
             </p>
           </div>
           <div className="flex justify-end items-center gap-2 mt-4">
-            <button
-              type="button"
-              className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
-                transition-all duration-300 ease-in-out 
-                hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
-              onClick={onBack}
-            >
-              Back
-            </button>
-            <button
-              className="px-6 py-[5px] border border-[#007AFF] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
+            <CancelButton label={"Back"} onClick={onBack} />
+            <SaveButton
+              label={isEdit ? "Update" : "Continue"}
               type="submit"
-            >
-              {isEdit ? "Update" : "Continue"}
-            </button>
+              disabled={false}
+              onClick={() => {}}
+            />
           </div>
         </form>
       </div>
