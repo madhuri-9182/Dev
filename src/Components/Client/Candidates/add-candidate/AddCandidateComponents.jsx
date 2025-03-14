@@ -14,6 +14,7 @@ import {
   EMAIL_REGEX,
   GENDERS,
 } from "../../../Constants/constants";
+import { useNavigate } from "react-router-dom";
 
 export const ResumeTable = ({
   data,
@@ -77,6 +78,7 @@ const ResumeTableRow = ({
   selectedRole,
   selectedSpecialization,
 }) => {
+  const navigate = useNavigate();
   const [editedData, setEditedData] = useState({
     ...item,
     phone_number: item.phone_number.startsWith("+91")
@@ -205,8 +207,12 @@ const ResumeTableRow = ({
     );
     const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
 
-    // Open in a new tab
-    window.open(url, "_blank");
+    // if data length is more than 1 then open in new tab, else open in same tab
+    if (data.length > 1) {
+      window.open(url, "_blank");
+    } else {
+      navigate(url);
+    }
   };
 
   const inputValue = (key) => {

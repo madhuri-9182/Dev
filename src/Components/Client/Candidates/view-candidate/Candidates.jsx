@@ -114,9 +114,8 @@ function Candidates() {
         JSON.stringify(candidateData)
       );
 
-      // Open in new tab
       const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
-      window.open(url, "_blank");
+      navigate(url);
     } catch (error) {
       console.error(
         "Error processing candidate data:",
