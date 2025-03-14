@@ -137,7 +137,6 @@ function ClientScheduleInterview() {
     handleWindowSelect,
     isLoading,
     isError,
-    error,
     getTimeFromWindow,
   } = useInterviewScheduling(
     item,
@@ -343,7 +342,6 @@ function ClientScheduleInterview() {
               handleTimeSlotSelect={handleTimeSlotSelect}
               isLoading={isLoading}
               isError={isError}
-              error={error}
             />
 
             {/* Time Window Selection */}

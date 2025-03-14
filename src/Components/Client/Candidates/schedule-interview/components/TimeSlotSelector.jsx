@@ -5,6 +5,19 @@ import BasicDatePicker from "../../../../../utils/BasicDatePicker";
 /**
  * Component for selecting date and time slots
  */
+
+const hourlySlots = [
+  { time: "10 AM" },
+  { time: "11 AM" },
+  { time: "12 PM" },
+  { time: "1 PM" },
+  { time: "2 PM" },
+  { time: "3 PM" },
+  { time: "4 PM" },
+  { time: "5 PM" },
+  { time: "6 PM" },
+  { time: "7 PM" },
+];
 function TimeSlotSelector({
   selectedDate,
   setSelectedDate,
@@ -13,7 +26,6 @@ function TimeSlotSelector({
   handleTimeSlotSelect,
   isLoading,
   isError,
-  error,
 }) {
   return (
     <>
@@ -40,10 +52,16 @@ function TimeSlotSelector({
             <Loader2 className="animate-spin" />
           </p>
         ) : isError ? (
-          <p className="text-default text-[#6B6F7B]">
-            {error?.response?.data?.message ||
-              "Could not load availability data"}
-          </p>
+          <div className="flex justify-start items-center gap-4">
+            {hourlySlots.map((slot, index) => (
+              <div
+                key={index}
+                className={`flex items-center justify-center py-1 px-3 h-8 rounded-[4px] text-xs max-w-max bg-[#C7C7C7] text-[#6B6F7B] cursor-not-allowed`}
+              >
+                {slot.time}
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="flex justify-start items-center gap-4">
             {availableHourlySlots.map((slot, index) => (
@@ -82,5 +100,4 @@ TimeSlotSelector.propTypes = {
   handleTimeSlotSelect: PropTypes.func,
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
-  error: PropTypes.object,
 };
