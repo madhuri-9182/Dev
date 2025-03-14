@@ -5,6 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
 
 // Field wrapper component for consistent styling
 export const FieldWrapper = ({
@@ -104,52 +105,175 @@ export const SelectField = ({
   labelKey = "label",
   booleanValues = false,
 }) => {
+  const optionRef = useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] =
+    useState(false);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        optionRef.current &&
+        !optionRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, [optionRef]);
+
   return (
     <Controller
       name={name}
       control={control}
       rules={rules}
-      render={({ field, fieldState: { error } }) => (
-        <FieldWrapper label={label} error={error?.message}>
-          <select
-            {...(booleanValues
-              ? {
-                  onChange: (e) =>
-                    field.onChange(!!+e.target.value),
-                  value: field.value ? 1 : 0,
-                }
-              : field)}
-            disabled={disabled}
-            className={`${baseFieldStyles(
-              !!error
-            )} custom-select ${
-              disabled ? "text-[#a3a9b5]" : ""
-            }`}
+      render={({ field, fieldState: { error } }) => {
+        const getDisplayValue = () => {
+          if (!field.value && placeholder)
+            return placeholder;
+
+          if (booleanValues) {
+            const selectedOption = options.find(
+              (option) =>
+                option[valueKey] === (field.value ? 1 : 0)
+            );
+            return selectedOption
+              ? selectedOption[labelKey]
+              : placeholder || "Select an option";
+          } else {
+            const selectedOption = options.find(
+              (option) =>
+                (option[valueKey] || option) === field.value
+            );
+            return selectedOption
+              ? selectedOption[labelKey] || selectedOption
+              : placeholder || "Select an option";
+          }
+        };
+
+        const handleSelect = (option) => {
+          if (booleanValues) {
+            field.onChange(!!+option);
+          } else {
+            field.onChange(option);
+          }
+          setIsDropdownOpen(false);
+        };
+
+        return (
+          <FieldWrapper
+            label={label}
+            error={error?.message}
           >
-            {placeholder ? (
-              <option value="">{placeholder}</option>
-            ) : null}
-            {options.map((option) => (
-              <option
-                key={
-                  booleanValues
-                    ? option[valueKey]
-                    : option[valueKey] || option
-                }
-                value={
-                  booleanValues
-                    ? option[valueKey]
-                    : option[valueKey] || option
-                }
+            <div ref={optionRef} className="relative">
+              <div
+                className={`${baseFieldStyles(
+                  !!error
+                )} custom-select ${
+                  disabled ? "text-[#a3a9b5]" : ""
+                }`}
+                onClick={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                }}
               >
-                {booleanValues
-                  ? option[labelKey]
-                  : option[labelKey] || option}
-              </option>
-            ))}
-          </select>
-        </FieldWrapper>
-      )}
+                {getDisplayValue()}
+              </div>
+              {isDropdownOpen && !disabled && (
+                <div className="absolute left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-auto z-10">
+                  {options.map((option, idx) => (
+                    <div
+                      key={idx}
+                      className="p-2 bg-white hover:bg-[#007AFF] hover:text-white cursor-pointer text-2xs"
+                      onClick={() =>
+                        handleSelect(
+                          booleanValues
+                            ? option[valueKey]
+                            : option[valueKey] || option
+                        )
+                      }
+                    >
+                      {booleanValues
+                        ? option[labelKey]
+                        : option[labelKey] || option}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Hidden native select for form submission */}
+              <select
+                {...field}
+                disabled={disabled}
+                className="hidden"
+                aria-hidden="true"
+              >
+                {placeholder ? (
+                  <option value="">{placeholder}</option>
+                ) : null}
+                {options.map((option, idx) => (
+                  <option
+                    key={idx}
+                    value={
+                      booleanValues
+                        ? option[valueKey]
+                        : option[valueKey] || option
+                    }
+                  >
+                    {booleanValues
+                      ? option[labelKey]
+                      : option[labelKey] || option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* <select
+              {...(booleanValues
+                ? {
+                    onChange: (e) =>
+                      field.onChange(!!+e.target.value),
+                    value: field.value ? 1 : 0,
+                  }
+                : field)}
+              disabled={disabled}
+              className={`${baseFieldStyles(
+                !!error
+              )} custom-select ${
+                disabled ? "text-[#a3a9b5]" : ""
+              }`}
+            >
+              {placeholder ? (
+                <option value="">{placeholder}</option>
+              ) : null}
+              {options.map((option) => (
+                <option
+                  key={
+                    booleanValues
+                      ? option[valueKey]
+                      : option[valueKey] || option
+                  }
+                  value={
+                    booleanValues
+                      ? option[valueKey]
+                      : option[valueKey] || option
+                  }
+                >
+                  {booleanValues
+                    ? option[labelKey]
+                    : option[labelKey] || option}
+                </option>
+              ))}
+            </select> */}
+          </FieldWrapper>
+        );
+      }}
     />
   );
 };
