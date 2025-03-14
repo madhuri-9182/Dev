@@ -196,7 +196,7 @@ const EngagementForm = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full px-3">
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Resume Upload */}
         <div className="flex items-center w-full mb-6">
