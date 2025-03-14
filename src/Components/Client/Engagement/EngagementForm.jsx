@@ -1,214 +1,193 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
-import {
-  Box,
-  TextField,
-  Typography,
-  IconButton,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Divider,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { DocumentUpload, Calendar, SmsTracking, Trash } from "iconsax-react";
-import Button, {
-  primaryButtonStyles,
-  secondaryButtonStyles,
-} from "./components/Button";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+/* eslint-disable no-unused-vars */
+import { useRef, useState } from "react";
+import PropTypes from "prop-types";
+import { useForm } from "react-hook-form";
+import { LogoutCurve, Trash } from "iconsax-react";
+import { NOTICE_PERIOD } from "./constants";
+import { useNavigate } from "react-router-dom";
 import {
   useAddEngagement,
-  useClientUser,
   useJobs,
   useResumeParser,
 } from "./api";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { StyledDatePicker } from "./components/StyledDatePicker";
-import { NOTICE_PERIOD } from "./constants";
-import { Close, Delete } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import {
+  InputField,
+  SelectField,
+  BooleanSelectField,
+  DatePickerField,
+} from "./components/EngagementFormComponents"; // Import the reusable components
+import { Loader2 } from "lucide-react";
+import {
+  CancelButton,
+  SaveButton,
+} from "../../shared/SaveAndCancelButtons";
+import {
+  EMAIL_REGEX,
+  MOBILE_REGEX,
+} from "../../Constants/constants";
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "8px",
-    backgroundColor: "white",
-    height: "30px",
-    "& fieldset": {
-      borderColor: "rgba(202, 196, 208, 1)",
-    },
-    "&:hover fieldset": {
-      borderColor: "rgba(202, 196, 208, 1)",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#007AFF",
-    },
-  },
-  "& .MuiInputBase-input": {
-    fontSize: "12px",
-    padding: "8px 12px",
-    "&::placeholder": {
-      color: "#6B7280",
-      opacity: 1,
-    },
-  },
-}));
+const EngagementForm = ({
+  setSelectedEngagement,
+  engagement,
+}) => {
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const { data: jobsData } = useJobs();
+  const jobs = jobsData?.results || [];
 
-const FieldWrapper = ({ children, label, style }) => {
-  return (
-    <Box
-      sx={{ display: "flex", alignItems: "center", width: "100%" }}
-      style={style}
-    >
-      <Typography
-        fontWeight={600}
-        color="rgba(107, 111, 123, 1)"
-        sx={{ width: "120px", flexShrink: 0 }}
-        fontSize={12}
-      >
-        {label}
-      </Typography>
-      <Box sx={{ flex: 1 }}>{children}</Box>
-    </Box>
-  );
-};
-
-const EngagementForm = ({ setSelectedEngagement, engagement }) => {
   const {
     data,
     isPending,
-    error,
     mutateAsync: getResumeData,
   } = useResumeParser();
-  const { mutateAsync: addEngagement, isPending: isAddingEngagement } =
-    useAddEngagement();
 
-  const navigate = useNavigate();
+  const {
+    mutateAsync: addEngagement,
+    isPending: isAddingEngagement,
+  } = useAddEngagement();
 
-  const fileInputRef = useRef(null);
+  const [resumeFile, setResumeFile] = useState(null);
 
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    reset,
+    trigger,
+    watch,
+  } = useForm({
+    defaultValues: {
+      candidate_name: "",
+      candidate_phone: "",
+      candidate_email: "",
+      candidate_company: "",
+      notice_period: "",
+      offer_accepted: false,
+      offered: false,
+      offer_date: null,
+      client_user_email: "",
+      other_offer: false,
+      job_id: "",
+      client_user_name: "",
+    },
+    mode: "onChange",
+  });
+
+  // Watch the offered value to conditionally validate offer_date
+  const isOffered = watch("offered");
+
+  // Handle file upload
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
+    if (!file) return;
+
     fileInputRef.current.value = "";
-    const [data] = await getResumeData(file);
+    setResumeFile(file);
 
-    let processedPhoneNumber = data.phone_number;
-    if (processedPhoneNumber?.startsWith("+91")) {
-      processedPhoneNumber = processedPhoneNumber.substring(3);
-    } else if (processedPhoneNumber?.startsWith("+")) {
-      processedPhoneNumber = processedPhoneNumber.substring(2);
+    try {
+      const [data] = await getResumeData(file);
+
+      let processedPhoneNumber = data.phone_number;
+      if (processedPhoneNumber?.startsWith("+91")) {
+        processedPhoneNumber =
+          processedPhoneNumber.substring(3);
+      } else if (processedPhoneNumber?.startsWith("+")) {
+        processedPhoneNumber =
+          processedPhoneNumber.substring(1);
+      }
+
+      // Update form values from resume
+      setValue("candidate_name", data.name || "");
+      setValue("candidate_email", data.email || "");
+      setValue(
+        "candidate_phone",
+        processedPhoneNumber || ""
+      );
+      setValue(
+        "candidate_company",
+        data.current_company || ""
+      );
+
+      // Fields to validate
+      const fieldsToValidate = [
+        "candidate_name",
+        "candidate_email",
+        "candidate_phone",
+        "candidate_company",
+        "notice_period",
+        "job_id",
+        "client_user_name",
+        "client_user_email",
+      ];
+
+      // Only validate offer_date if offered is true
+      if (isOffered) {
+        fieldsToValidate.push("offer_date");
+      }
+
+      // Trigger validation for all applicable fields
+      await trigger(fieldsToValidate);
+    } catch (error) {
+      console.error("Error parsing resume:", error);
     }
-
-    setFormData((prev) => {
-      const update = {
-        ...prev,
-        candidate_cv: file,
-        candidate_name: data.name,
-        candidate_email: data.email,
-        candidate_phone: processedPhoneNumber,
-        candidate_company: data.current_company,
-      };
-      validateForm(update);
-      return update;
-    });
-
-    //     current_company
-    // :
-    // "HubSpot"
-    // current_designation
-    // :
-    // "Front-End Developer"
-    // email
-    // :
-    // "j.bach@email.com"
-    // file_name
-    // :
-    // "front-end-developer-resume-example.pdf"
-    // name
-    // :
-    // "JOHANN BACH"
-    // phone_number
-    // :
-    // "+11234567890"
-    // years_of_experience
-    // :
-    // {year: 0, month: 0}
   };
 
-  const validateForm = useCallback((formData) => {
-    const newErrors = {};
+  const handleRemoveFile = () => {
+    setResumeFile(null);
+    reset();
+  };
 
-    // Required fields validation with trim()
-    if (!formData.candidate_name?.trim())
-      newErrors.candidate_name = "Name is required";
-    if (!formData.candidate_phone?.trim())
-      newErrors.candidate_phone = "Phone number is required";
-    if (!formData.candidate_email?.trim())
-      newErrors.candidate_email = "Email is required";
-    if (!formData.client_user_name?.trim())
-      newErrors.client_user_name = "GTP Name is required";
-    if (!formData.client_user_email?.trim())
-      newErrors.client_user_email = "GTP Email is required";
-    if (!formData.candidate_company?.trim())
-      newErrors.candidate_company = "Company is required";
-    if (!formData.notice_period?.trim())
-      newErrors.notice_period = "Notice period is required";
-    if (!formData.job_id) newErrors.job_id = "Role is required";
-
-    if (!formData.candidate_cv) newErrors.candidate_cv = "Resume is required";
-    if (!formData.offer_date && formData.offered)
-      newErrors.offer_date = "Offer date is required";
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (
-      formData.candidate_email?.trim() &&
-      !emailRegex.test(formData.candidate_email.trim())
-    ) {
-      newErrors.candidate_email = "Please enter a valid email address";
+  const onSubmit = async (formData) => {
+    if (!resumeFile) {
+      return;
     }
 
-    if (
-      formData.client_user_email?.trim() &&
-      !emailRegex.test(formData.client_user_email.trim())
-    ) {
-      newErrors.client_user_email = "Please enter a valid email address";
+    // Determine which fields to validate based on offered status
+    const fieldsToValidate = [
+      "candidate_name",
+      "candidate_email",
+      "candidate_phone",
+      "candidate_company",
+      "notice_period",
+      "job_id",
+      "client_user_name",
+      "client_user_email",
+    ];
+
+    // Only validate offer_date if offered is true
+    if (formData.offered) {
+      fieldsToValidate.push("offer_date");
     }
 
-    // Phone validation - must start with +91 followed by 10 digits
-    const phoneRegex = /^\d{10}$/;
-    if (
-      formData.candidate_phone?.trim() &&
-      !phoneRegex.test(formData.candidate_phone.trim())
-    ) {
-      newErrors.candidate_phone = "Please enter a valid phone number";
+    const isValid = await trigger(fieldsToValidate);
+    if (!isValid) return;
+
+    const payload = {
+      ...formData,
+      candidate_cv: resumeFile,
+      candidate_phone: "+91" + formData.candidate_phone,
+      gtp_email: formData.client_user_email,
+      gtp_name: formData.client_user_name,
+    };
+
+    delete payload.client_user_email;
+    delete payload.client_user_name;
+    delete payload.candidate_company;
+    delete payload.client_user_id;
+
+    if (!formData.offered) {
+      delete payload.offer_date;
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, []);
-
-  const handleSubmit = async () => {
-    if (validateForm(formData)) {
-      const payload = {
-        ...formData,
-        candidate_phone: "+91" + formData.candidate_phone,
-      };
-      delete payload.client_user_email;
-      delete payload.client_user_name;
-      delete payload.candidate_company;
-
+    try {
       const res = await addEngagement(payload);
-
       setSelectedEngagement({ ...res.data });
-
       setTimeout(() => {
         navigate("/client/engagement/event-schedular");
       }, 500);
+    } catch (error) {
+      console.error("Error adding engagement:", error);
     }
   };
 
@@ -216,518 +195,257 @@ const EngagementForm = ({ setSelectedEngagement, engagement }) => {
     navigate(-1);
   };
 
-  const handleRemoveFile = () => {
-    setFormData({ ...formData, candidate_cv: null });
-  };
-
-  const { data: jobsData } = useJobs();
-  // const { data: clientUserData } = useClientUser();
-
-  const jobs = jobsData?.results || [];
-
-  const [errors, setErrors] = useState({});
-
-  const [formData, setFormData] = useState({
-    candidate_cv: null,
-    candidate_name: "",
-    candidate_phone: "",
-    candidate_email: "",
-    candidate_company: "",
-    notice_period: "",
-    offer_accepted: false,
-    offered: false,
-    offer_date: null,
-    client_user_id: "",
-    client_user_email: "",
-    other_offer: false,
-    job_id: "",
-    client_user_name: "",
-  });
-
-  // useEffect(() => {
-  //   if (clientUserData) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       client_user_id: clientUserData.data.id,
-  //       client_user_email: clientUserData.data.user.email,
-  //       client_user_name: clientUserData.data.name,
-  //     }));
-  //   }
-  // }, [clientUserData]);
-
-  useEffect(() => {
-    if (!formData.candidate_cv) {
-      resetAllErrors({});
-      setFormData({
-        candidate_cv: null,
-        candidate_name: "",
-        candidate_phone: "",
-        candidate_email: "",
-        candidate_company: "",
-        notice_period: "",
-        offer_accepted: false,
-        offered: false,
-        offer_date: null,
-        client_user_id: "",
-        client_user_email: "",
-        other_offer: false,
-        job_id: "",
-        client_user_name: "",
-      });
-    }
-  }, [formData.candidate_cv]);
-
-  const resetAllErrors = () => {
-    setErrors({});
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   return (
-    <div>
-      <FieldWrapper
-        style={{ justifyContent: "flex-start" }}
-        label={"Upload CV"}
-      >
-        <Button
-          startIcon={<DocumentUpload size={20} />}
-          sx={{
-            borderStyle: "dashed",
-            color: "rgba(107, 111, 123, 1)",
-            backgroundColor: "rgba(248, 248, 248, 1)",
-            borderColor: errors.candidate_cv ? "red" : "rgba(107, 111, 123, 1)",
-            borderRadius: "8px",
-            paddingInline: "40px",
-            minWidth: "300px",
-          }}
-          endIcon={
-            formData.candidate_cv ? (
-              <IconButton
-                size="small"
+    <div className="w-full">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Resume Upload */}
+        <div className="flex items-center w-full mb-6">
+          <label className="w-32 flex-shrink-0 text-2xs font-semibold text-[#6B6F7B]">
+            Upload CV
+          </label>
+          <div className="flex-1">
+            <div className="w-full">
+              <button
+                type="button"
+                className={`flex items-center justify-center px-10 py-1.5 text-2xs border border-dashed rounded-xl bg-[#F8F8F8] min-w-[300px] gap-x-2 h-[32px] ${
+                  !resumeFile && errors.candidate_cv
+                    ? "border-red-500"
+                    : "border-[#6B6F7B]"
+                }`}
+                onClick={() =>
+                  fileInputRef.current?.click()
+                }
                 disabled={isPending}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemoveFile();
-                }}
-                style={{ padding: 0 }}
               >
-                <Trash size="20" color="red" />
-              </IconButton>
-            ) : (
-              ""
-            )
-          }
-          variant="outlined"
-          loading={isPending}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {formData.candidate_cv ? formData.candidate_cv.name : "Upload here"}
-        </Button>
-        {errors.candidate_cv && (
-          <Typography fontSize={12} sx={{ mt: 0.5, ml: 1.5 }} color="error">
-            {errors.candidate_cv}
-          </Typography>
-        )}
-        <input
-          ref={fileInputRef}
-          type="file"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-          accept=".pdf,.doc,.docx"
-        />
-      </FieldWrapper>
-      {/* <Table
-        sx={{
-          border: "none",
-          mt: 4,
-          "& th": {
-            color: "black",
-            textTransform: "uppercase",
-            fontWeight: 600,
-            fontSize: 12,
-            border: "none",
-            padding: "12px 40px",
-          },
-          "& td": {
-            fontSize: 12,
-            border: "none",
-            padding: "12px 40px",
-            backgroundColor: "rgba(235, 235, 235, 0.5)",
-            height: 40,
-          },
-          "& tbody": {
-            borderRadius: 16,
-          },
-          "& td:first-child": {
-            borderRadius: "16px 0 0 16px",
-          },
-          "& td:last-child": {
-            borderRadius: "0 16px 16px 0",
-          },
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Mobile Number</TableCell>
-            <TableCell>Email ID</TableCell>
-            <TableCell>Company</TableCell>
-           
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow>
-            <TableCell>{formData.candidate_name}</TableCell>
-            <TableCell>{formData.candidate_phone}</TableCell>
-            <TableCell>{formData.candidate_email}</TableCell>
-            <TableCell>{formData.candidate_company}</TableCell> */}
-      {/* <TableCell>
-              <IconButton
-                sx={{
-                  borderRadius: "8px",
-                  backgroundColor: "rgba(236, 230, 240, 1) ",
-                  boxShadow: ` 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
+                {isPending ? (
+                  <Loader2 className="animate-spin text-[#979DA3]" />
+                ) : (
+                  <>
+                    <LogoutCurve
+                      className="rotate-90"
+                      color="#171717"
+                      size={20}
+                    />
+                    <span className="text-gray-600">
+                      {resumeFile
+                        ? resumeFile.name
+                        : "Upload here"}
+                    </span>
+                    {resumeFile && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveFile();
+                        }}
+                        disabled={isPending}
+                        className="p-0"
+                      >
+                        <Trash size={20} color="red" />
+                      </button>
+                    )}
+                  </>
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".pdf,.doc,.docx"
+              />
+            </div>
+          </div>
+        </div>
 
-
-`,
-                }}
-                size="small"
-              >
-                <EditOutlinedIcon />
-              </IconButton>
-            </TableCell> */}
-      {/* </TableRow>
-        </TableBody>
-      </Table> */}
-
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-          },
-          columnGap: "32px",
-          rowGap: "24px",
-          mt: 10,
-          width: "100%",
-          "& .MuiTextField-root": {
-            width: "100%",
-            maxWidth: "220px",
-          },
-        }}
-      >
-        <FieldWrapper label="Name">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+        {/* Candidate Information Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-6 mt-20 w-full">
+          {/* Candidate Name */}
+          <InputField
             name="candidate_name"
-            value={formData.candidate_name}
-            onChange={handleChange}
+            control={control}
+            rules={{ required: "Name is required" }}
+            label="Name"
             placeholder="Name"
-            variant="outlined"
-            required
-            error={Boolean(errors.candidate_name)}
-            helperText={errors.candidate_name}
+            disabled={isPending || !resumeFile}
           />
-        </FieldWrapper>
 
-        <FieldWrapper label="Phone Number">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+          {/* Phone Number */}
+          <InputField
             name="candidate_phone"
-            value={formData.candidate_phone}
-            onChange={handleChange}
-            placeholder="XXXXXXXXXX"
-            required
-            error={Boolean(errors.candidate_phone)}
-            helperText={errors.candidate_phone}
-            type="tel"
-            slotProps={{
-              input: {
-                startAdornment: <Typography fontSize={12}>+91</Typography>,
+            control={control}
+            rules={{
+              required: "Phone number is required",
+              pattern: {
+                value: MOBILE_REGEX,
+                message:
+                  "Please enter a valid phone number",
               },
             }}
+            label="Phone Number"
+            type="tel"
+            placeholder="XXXXXXXXXX"
+            disabled={isPending || !resumeFile}
+            prefix="+91"
           />
-        </FieldWrapper>
 
-        <FieldWrapper label="Email ID">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+          {/* Email */}
+          <InputField
             name="candidate_email"
-            value={formData.candidate_email}
-            onChange={handleChange}
+            control={control}
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value: EMAIL_REGEX,
+                message:
+                  "Please enter a valid email address",
+              },
+            }}
+            label="Email ID"
+            type="email"
             placeholder="abc@xyz.com"
-            required
-            error={Boolean(errors.candidate_email)}
-            helperText={errors.candidate_email}
+            disabled={isPending || !resumeFile}
           />
-        </FieldWrapper>
 
-        <FieldWrapper label="Company">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+          {/* Company */}
+          <InputField
             name="candidate_company"
-            value={formData.candidate_company}
-            onChange={handleChange}
+            control={control}
+            rules={{ required: "Company is required" }}
+            label="Company"
             placeholder="Company"
-            required
-            error={Boolean(errors.candidate_company)}
-            helperText={errors.candidate_company}
+            disabled={isPending || !resumeFile}
           />
-        </FieldWrapper>
 
-        <FieldWrapper label="Offered">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+          {/* Offered */}
+          <BooleanSelectField
             name="offered"
-            value={formData.offered ? 1 : 0}
-            onChange={(e) => {
-              handleChange({
-                target: {
-                  name: "offered",
-                  value: !!+e.target.value,
-                },
-              });
-            }}
-            select
-            SelectProps={{
-              native: true,
-            }}
-          >
-            <option value={1}>Yes</option>
-            <option value={0}>No</option>
-          </StyledTextField>
-        </FieldWrapper>
-
-        <FieldWrapper label="Offer Date">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StyledDatePicker
-              disabled={!formData.candidate_cv}
-              value={
-                formData.offer_date
-                  ? dayjs(formData.offer_date, "DD/MM/YYYY")
-                  : null
-              }
-              onChange={(newValue) => {
-                handleChange({
-                  target: {
-                    name: "offer_date",
-                    value: newValue ? newValue.format("DD/MM/YYYY") : null,
-                  },
-                });
-              }}
-              format="DD/MM/YYYY"
-              slots={{
-                openPickerIcon: () => <Calendar size={20} color="#171717" />,
-              }}
-              slotProps={{
-                textField: {
-                  error: Boolean(errors.offer_date),
-                  helperText: errors.offer_date,
-                },
-              }}
-            />
-          </LocalizationProvider>
-        </FieldWrapper>
-
-        <FieldWrapper label="Offer Accepeted">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
-            name="offer_accepted"
-            value={formData.offer_accepted ? 1 : 0}
-            onChange={(e) =>
-              handleChange({
-                target: {
-                  name: "offer_accepted",
-                  value: !!+e.target.value,
-                },
-              })
-            }
-            select
-            SelectProps={{
-              native: true,
-            }}
-          >
-            <option value={1}>Yes</option>
-            <option value={0}>No</option>
-          </StyledTextField>
-        </FieldWrapper>
-
-        <FieldWrapper label="Notice Period">
-          <Box sx={{ position: "relative" }}>
-            <StyledTextField
-              disabled={!formData.candidate_cv}
-              name="notice_period"
-              value={formData.notice_period}
-              onChange={handleChange}
-              placeholder="15-30 Days"
-              select
-              SelectProps={{
-                native: true,
-              }}
-              required
-              error={Boolean(errors.notice_period)}
-              helperText={errors.notice_period}
-              sx={
-                !formData.notice_period
-                  ? { "& select": { color: "#6B7280" } }
-                  : {}
-              }
-            >
-              <option value="">Select Days</option>
-              {NOTICE_PERIOD.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </StyledTextField>
-          </Box>
-        </FieldWrapper>
-      </Box>
-      <Divider sx={{ my: 4 }} />
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-          },
-          columnGap: "32px",
-          rowGap: "24px",
-
-          width: "100%",
-          "& .MuiTextField-root": {
-            width: "100%",
-            maxWidth: "220px",
-          },
-        }}
-      >
-        <FieldWrapper label="GTP Name">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
-            name="client_user_name"
-            value={formData.client_user_name}
-            placeholder="GTP Name"
-            onChange={handleChange}
-            required
-            error={Boolean(errors.client_user_name)}
-            helperText={errors.client_user_name}
-          ></StyledTextField>
-        </FieldWrapper>
-
-        <FieldWrapper label="GTP Email ID">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
-            name="client_user_email"
-            value={formData.client_user_email}
-            placeholder="abc@xyz.com"
-            required
-            onChange={handleChange}
-            error={Boolean(errors.client_user_email)}
-            helperText={errors.client_user_email}
+            control={control}
+            label="Offered"
+            disabled={isPending || !resumeFile}
           />
-        </FieldWrapper>
-      </Box>
-      <Divider sx={{ my: 4 }} />
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-          },
-          columnGap: "32px",
-          rowGap: "24px",
 
-          width: "100%",
-          "& .MuiTextField-root": {
-            width: "100%",
-            maxWidth: "220px",
-          },
-        }}
-      >
-        <FieldWrapper label="Other Offer">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+          {/* Offer Date */}
+          <DatePickerField
+            name="offer_date"
+            control={control}
+            rules={{
+              validate: (value) =>
+                !isOffered || value
+                  ? true
+                  : "Offer date is required",
+            }}
+            label="Offer Date"
+            disabled={isPending || !resumeFile}
+          />
+
+          {/* Offer Accepted */}
+          <BooleanSelectField
+            name="offer_accepted"
+            control={control}
+            label="Offer Accepted"
+            disabled={isPending || !resumeFile}
+          />
+
+          {/* Notice Period */}
+          <SelectField
+            name="notice_period"
+            control={control}
+            rules={{
+              required: "Notice period is required",
+            }}
+            label="Notice Period"
+            options={NOTICE_PERIOD}
+            placeholder="Select Days"
+            disabled={isPending || !resumeFile}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="w-full h-px bg-gray-200 my-8"></div>
+
+        {/* GTP Information Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 w-full">
+          {/* GTP Name */}
+          <InputField
+            name="client_user_name"
+            control={control}
+            rules={{ required: "GTP Name is required" }}
+            label="GTP Name"
+            placeholder="GTP Name"
+            disabled={isPending || !resumeFile}
+          />
+
+          {/* GTP Email */}
+          <InputField
+            name="client_user_email"
+            control={control}
+            rules={{
+              required: "GTP Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message:
+                  "Please enter a valid email address",
+              },
+            }}
+            label="GTP Email ID"
+            type="email"
+            placeholder="abc@xyz.com"
+            disabled={isPending || !resumeFile}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="w-full h-px bg-gray-200 my-8"></div>
+
+        {/* Additional Information Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 w-full">
+          {/* Other Offer */}
+          <BooleanSelectField
             name="other_offer"
-            value={formData.other_offer ? 1 : 0}
-            onChange={(e) => {
-              handleChange({
-                target: {
-                  name: "other_offer",
-                  value: !!+e.target.value,
-                },
-              });
-            }}
-            select
-            SelectProps={{
-              native: true,
-            }}
-          >
-            <option value={1}>Yes</option>
-            <option value={0}>No</option>
-          </StyledTextField>
-        </FieldWrapper>
+            control={control}
+            label="Other Offer"
+            disabled={isPending || !resumeFile}
+          />
 
-        <FieldWrapper label="Role Offer">
-          <StyledTextField
-            disabled={!formData.candidate_cv}
+          {/* Role Offer */}
+          <SelectField
             name="job_id"
-            value={formData.job_id}
-            onChange={handleChange}
-            select
-            required
-            error={Boolean(errors.job_id)}
-            helperText={errors.job_id}
-            SelectProps={{
-              native: true,
-            }}
-            sx={!formData.job_id ? { "& select": { color: "#6B7280" } } : {}}
-          >
-            <option value="">Select Role</option>
-            {jobs.map((job) => (
-              <option key={job.id} value={job.id}>
-                {job.name.split("_").join(" ")}
-              </option>
-            ))}
-          </StyledTextField>
-        </FieldWrapper>
-      </Box>
-      <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
-        <Button
-          sx={{
-            ...secondaryButtonStyles,
-            marginRight: 2,
-          }}
-          onClick={handleCancel}
-        >
-          Cancel
-        </Button>
-        <Button
-          disabled={!formData.candidate_cv}
-          sx={{
-            ...primaryButtonStyles,
-          }}
-          onClick={handleSubmit}
-          loading={isAddingEngagement}
-        >
-          Save
-        </Button>
-      </Box>
+            control={control}
+            rules={{ required: "Role is required" }}
+            label="Role Offer"
+            options={jobs.map((job) => ({
+              value: job.id,
+              label: job.name.split("_").join(" "),
+            }))}
+            placeholder="Select Role"
+            disabled={isPending || !resumeFile}
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-8 flex justify-end gap-2">
+          <CancelButton
+            label={"Cancel"}
+            onClick={handleCancel}
+          />
+          <SaveButton
+            label={
+              isAddingEngagement ? "Saving..." : "Save"
+            }
+            type="submit"
+            disabled={!resumeFile || isAddingEngagement}
+            onClick={() => {}}
+          />
+        </div>
+      </form>
     </div>
   );
+};
+
+EngagementForm.propTypes = {
+  setSelectedEngagement: PropTypes.func.isRequired,
+  engagement: PropTypes.object,
 };
 
 export default EngagementForm;
