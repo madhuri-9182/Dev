@@ -770,7 +770,7 @@ function Users() {
 
         {/* Table Headers */}
         <TableLoadingWrapper loading={loadingHdip} data={hdipUsers}>
-          <div className="mt-4 overflow-y-auto text-xs max-h-[240px] overflow-auto" ref={hdipScrollRef} onScroll={handleHdipScroll} >
+          <div className="mt-4 overflow-y-auto text-xs max-h-[240px] overflow-visible" ref={hdipScrollRef} onScroll={handleHdipScroll} >
             <div className="w-full grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] gap-2 font-semibold">
               <div className="pl-6 pr-4 p-2 w-full">NAME</div>
               <div className="px-4 p-2 w-full">ROLE</div>
