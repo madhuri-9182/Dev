@@ -28,6 +28,7 @@ function Users() {
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedInternalClient, setSelectedInternalClient] = useState({});
   const { auth } = useAuth();
+  const clientsRef = useRef();
 
   const { register, handleSubmit, reset, setError, clearErrors, getValues, formState: { errors } } = useForm();
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
@@ -130,8 +131,9 @@ function Users() {
     }
   }
 
-  const removeSkill = (ItemToRemove) => {
+  const removeClient = (ItemToRemove) => {
     const updatedItems = selectedClients.filter(item => item !== ItemToRemove);
+    clientsRef.current.updateState(ItemToRemove);
     setSelectedClients(updatedItems);
   }
 
@@ -717,6 +719,7 @@ function Users() {
                         changeValue={false}
                         selectedOptions={selectedClients}
                         showDropdownAbove={true}
+                        ref={clientsRef}
                       />
                       {errors.client && <span className="error-message">{errors.client.message}</span>}
                       {selectedClients.length > 0 &&
@@ -724,7 +727,7 @@ function Users() {
                           <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
                             onClick={(e) => {
                               e.preventDefault();
-                              removeSkill(item);
+                              removeClient(item);
                             }}
                             className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
@@ -874,6 +877,7 @@ function Users() {
                             changeValue={false}
                             selectedOptions={selectedClients}
                             showDropdownAbove={true}
+                            ref={clientsRef}
                           />
                           {errors.client && <span className="error-message">{errors.client.message}</span>}
                           {selectedClients.length > 0 &&
@@ -881,7 +885,7 @@ function Users() {
                               <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  removeSkill(item);
+                                  removeClient(item);
                                 }}
                                 className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />

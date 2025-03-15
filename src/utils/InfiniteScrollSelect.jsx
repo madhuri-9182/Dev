@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import axios from '../../src/api/axios';  // Import axios instance
 import { KeyboardArrowDown } from '@mui/icons-material';
 
-const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentItems = ()=>{}, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null, selectedOptions = [], showDropdownAbove = false, disabled = false }) => {
+const InfiniteScrollSelect = forwardRef(({ apiEndpoint, onSelect, optionLabel, setParentItems = () => { }, placeholder = "Select an option", className = "", dropdownClassName = "", maxId = 10, changeValue = true, defaultValue = null, selectedOptions = [], showDropdownAbove = false, disabled = false }, ref) => {
     const [items, setItems] = useState([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -14,12 +14,24 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
     const scrollRef = useRef(null);
     const mountedRef = useRef(false);
 
+    useImperativeHandle(ref, () => ({
+        updateState: (newState) => {
+            setItems(prevItems => {
+                if (prevItems?.some(item => item.id === newState.id)) {
+                    return [...prevItems]
+                }else{
+                    return [...prevItems, newState]
+                }
+            });
+        },
+    }));
+
     const loadMoreItems = useCallback(async (isMounted = true, currentPage = 1) => {
         if (loading || !hasMoreItems) return;
         setLoading(true);
         try {
             const response = await axios.get(apiEndpoint, {
-                params: { offset: (currentPage-1) * 10 }
+                params: { offset: (currentPage - 1) * 10 }
             });
             if (isMounted && mountedRef.current) {
                 const newItems = response.data.results;
@@ -108,15 +120,15 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center justify-between w-full p-2 text-left text-[rgb(0 0 0 / 87%)] border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${disabled ? "cursor-not-allowed" : ""} ${className}`}
             >
-                {selectedItem ? selectedItem.name : <span className='text-[#afb3b6]' >{placeholder}</span>} <KeyboardArrowDown fontSize='small'/>
+                {selectedItem ? selectedItem.name : <span className='text-[#afb3b6]' >{placeholder}</span>} <KeyboardArrowDown fontSize='small' />
             </button>
 
             {isOpen && (
-                <div 
+                <div
                     ref={scrollRef}
                     className={`absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropdownClassName} ${showDropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'}`}
                 >
-                    {items?.filter(item => !selectedOptions?.map(si=>si?.id || si)?.includes(item.id))?.map(item => (
+                    {items?.filter(item => !selectedOptions?.map(si => si?.id || si)?.includes(item.id))?.map(item => (
                         <div
                             key={item.id}
                             onClick={() => handleSelect(item)}
@@ -134,7 +146,9 @@ const InfiniteScrollSelect = ({ apiEndpoint, onSelect, optionLabel, setParentIte
             )}
         </div>
     );
-};
+});
+
+InfiniteScrollSelect.displayName = 'InfiniteScrollSelect';
 
 InfiniteScrollSelect.propTypes = {
     apiEndpoint: PropTypes.string.isRequired,
