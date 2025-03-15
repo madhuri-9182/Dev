@@ -473,7 +473,7 @@ function Users() {
 
         {/* Table Headers */}
         <TableLoadingWrapper loading={loadingClient} data={clientUsers}>
-          <div className="mt-4 overflow-y-auto text-xs">
+          <div className="mt-4 overflow-y-auto text-xs max-h-[240px] overflow-auto" ref={clientScrollRef} onScroll={handleClientScroll} >
             <div className="w-full grid grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_0.5fr] gap-2 font-semibold">
               <div className="pl-6 pr-4 p-2 w-full">CLIENT</div>
               <div className="px-4 p-2 w-full">USER</div>
@@ -485,150 +485,148 @@ function Users() {
             </div>
 
             {/* Mapping Dynamic Data */}
-            <div ref={clientScrollRef} onScroll={handleClientScroll} style={{ maxHeight: '195px', overflowY: 'auto' }}>
-              {clientUsers.map((item, index) => (
-                <form key={item.email || index} onSubmit={(e) => {
-                  e.index = index;
-                  e.item = item;
-                  clientHandleSubmit(onEditClientUser)(e);
-                  validateInternalClient();
-                }}>
-                  <div
-                    className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_0.5fr]  mt-1 rounded-full items-center justify-center max-h-max`}
-                  >
-                    <div className="pl-5 pr-3 py-1 w-auto">
-                      {editClientUser === index ?
-                        <>
-                          <InfiniteScrollSelect
-                            apiEndpoint={`/api/internal/internal-client/`}
-                            onSelect={(value) => {
-                              setSelectedInternalClient(value);
-                              hasInteracted.current = true; // Mark as interacted
-                            }}
-                            optionLabel='name'
-                            placeholder='Select Client'
-                            className="text-xs p-[4px]"
-                            dropdownClassName="text-xs"
-                            defaultValue={item?.client}
-                          />
-                          {clientErrors.internal_client && <span className="error-message">{clientErrors.internal_client.message}</span>}
-                        </> : item?.client?.name}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editClientUser === index ?
-                        <>
-                          <input
-                            defaultValue={item?.name}
-                            placeholder="Ashok Samal"
-                            className="w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            {...clientRegister('name', { required: 'Name is required', maxLength: { value: 100, message: 'Name must be 100 characters or less' } })}
-                          />
-                          {clientErrors.name && <span className="error-message">{clientErrors.name.message}</span>}
-                        </> : item?.name}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editClientUser === index ?
-                        <>
-                          <input
-                            defaultValue={item?.user?.email}
-                            placeholder="rober@xyz.com"
-                            className="w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            {...clientRegister('email', {
-                              required: 'Email is required',
-                              pattern: {
-                                value: EMAIL_REGEX,
-                                message: 'Please enter email with valid format'
-                              }
-                            })}
-                          />
-                          {clientErrors.email && <span className="error-message">{clientErrors.email.message}</span>}
-                        </>
-                        : item?.user?.email}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editClientUser === index ?
-                        <>
-                          <input
-                            defaultValue={item?.user?.phone?.slice(3)}
-                            placeholder="9876543210"
-                            className="w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            {...clientRegister('phone', {
-                              required: 'Phone number is required',
-                              pattern: {
-                                value: MOBILE_REGEX,
-                                message: 'Please enter valid phone number.'
-                              }
-                            })}
-                          />
-                          {clientErrors.phone && <span className="error-message">{clientErrors.phone.message}</span>}
-                        </>
-                        : item?.user?.phone?.slice(3)}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editClientUser === index ?
-                        <>
-                          <select
-                            defaultValue={item?.user?.role}
-                            className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black`}
-                            {...clientRegister("role", { required: "Please select role." })}
-                          >
-                            <option disabled value="">Select</option>
-                            <option value="client_user" className="text-black">Client User</option>
-                            <option value={"client_admin"} className="text-black">Client Admin</option>
-                          </select>
-                          {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
-                        </>
-                        : USER_TYPE[item?.user?.role]}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editClientUser === index ?
-                        <>
-                          <select
-                            defaultValue={item?.accessibility}
-                            className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black}`}
-                            {...clientRegister("accessibility", { required: "Please select access." })}
-                          >
-                            <option value="" disabled>Select Access</option>
-                            <option value="AJ" className="text-black">All Jobs</option>
-                            <option value="AGJ" className="text-black">Assigned Jobs</option>
-                          </select>
-                          {clientErrors.accessibility && <span className="error-message">{clientErrors.accessibility.message}</span>}
-                        </> : ACCESSIBILITY[item?.accessibility]}
-                    </div>
-                    <div className="px-4 py-1 w-full flex items-center justify-center">
-                      {editClientUser === index ?
-                        <div
-                          className='flex items-center justify-center gap-x-2'
-                        >
-                          <button
-                            className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
-                            type="submit"
-                          >Save</button>
-                          <button
-                            onClick={() => { toggleSaveClientUser() }}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
-                          </button>
-
-
-                        </div>
-
-                        :
-                        <button
-                          className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
-                          onClick={() => { toggleEditClientUser(index) }}
-                        >
-                          <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
-                          </svg>
-
-                        </button>
-                      }
-                    </div>
+            {clientUsers.map((item, index) => (
+              <form key={item.email || index} onSubmit={(e) => {
+                e.index = index;
+                e.item = item;
+                clientHandleSubmit(onEditClientUser)(e);
+                validateInternalClient();
+              }}>
+                <div
+                  className={`${editClientUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_0.5fr]  mt-1 rounded-full items-center justify-center max-h-max`}
+                >
+                  <div className="pl-5 pr-3 py-1 w-auto">
+                    {editClientUser === index ?
+                      <>
+                        <InfiniteScrollSelect
+                          apiEndpoint={`/api/internal/internal-client/`}
+                          onSelect={(value) => {
+                            setSelectedInternalClient(value);
+                            hasInteracted.current = true; // Mark as interacted
+                          }}
+                          optionLabel='name'
+                          placeholder='Select Client'
+                          className="text-xs p-[4px]"
+                          dropdownClassName="text-xs"
+                          defaultValue={item?.client}
+                        />
+                        {clientErrors.internal_client && <span className="error-message">{clientErrors.internal_client.message}</span>}
+                      </> : item?.client?.name}
                   </div>
-                </form>
-              ))}
-            </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editClientUser === index ?
+                      <>
+                        <input
+                          defaultValue={item?.name}
+                          placeholder="Ashok Samal"
+                          className="w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          {...clientRegister('name', { required: 'Name is required', maxLength: { value: 100, message: 'Name must be 100 characters or less' } })}
+                        />
+                        {clientErrors.name && <span className="error-message">{clientErrors.name.message}</span>}
+                      </> : item?.name}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editClientUser === index ?
+                      <>
+                        <input
+                          defaultValue={item?.user?.email}
+                          placeholder="rober@xyz.com"
+                          className="w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          {...clientRegister('email', {
+                            required: 'Email is required',
+                            pattern: {
+                              value: EMAIL_REGEX,
+                              message: 'Please enter email with valid format'
+                            }
+                          })}
+                        />
+                        {clientErrors.email && <span className="error-message">{clientErrors.email.message}</span>}
+                      </>
+                      : item?.user?.email}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editClientUser === index ?
+                      <>
+                        <input
+                          defaultValue={item?.user?.phone?.slice(3)}
+                          placeholder="9876543210"
+                          className="w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          {...clientRegister('phone', {
+                            required: 'Phone number is required',
+                            pattern: {
+                              value: MOBILE_REGEX,
+                              message: 'Please enter valid phone number.'
+                            }
+                          })}
+                        />
+                        {clientErrors.phone && <span className="error-message">{clientErrors.phone.message}</span>}
+                      </>
+                      : item?.user?.phone?.slice(3)}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editClientUser === index ?
+                      <>
+                        <select
+                          defaultValue={item?.user?.role}
+                          className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black`}
+                          {...clientRegister("role", { required: "Please select role." })}
+                        >
+                          <option disabled value="">Select</option>
+                          <option value="client_user" className="text-black">Client User</option>
+                          <option value={"client_admin"} className="text-black">Client Admin</option>
+                        </select>
+                        {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
+                      </>
+                      : USER_TYPE[item?.user?.role]}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editClientUser === index ?
+                      <>
+                        <select
+                          defaultValue={item?.accessibility}
+                          className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black}`}
+                          {...clientRegister("accessibility", { required: "Please select access." })}
+                        >
+                          <option value="" disabled>Select Access</option>
+                          <option value="AJ" className="text-black">All Jobs</option>
+                          <option value="AGJ" className="text-black">Assigned Jobs</option>
+                        </select>
+                        {clientErrors.accessibility && <span className="error-message">{clientErrors.accessibility.message}</span>}
+                      </> : ACCESSIBILITY[item?.accessibility]}
+                  </div>
+                  <div className="px-4 py-1 w-full flex items-center justify-center">
+                    {editClientUser === index ?
+                      <div
+                        className='flex items-center justify-center gap-x-2'
+                      >
+                        <button
+                          className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
+                          type="submit"
+                        >Save</button>
+                        <button
+                          onClick={() => { toggleSaveClientUser() }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+                        </button>
+
+
+                      </div>
+
+                      :
+                      <button
+                        className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
+                        onClick={() => { toggleEditClientUser(index) }}
+                      >
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
+                        </svg>
+
+                      </button>
+                    }
+                  </div>
+                </div>
+              </form>
+            ))}
           </div>
         </TableLoadingWrapper>
       </div>
@@ -772,7 +770,7 @@ function Users() {
 
         {/* Table Headers */}
         <TableLoadingWrapper loading={loadingHdip} data={hdipUsers}>
-          <div className="mt-4 overflow-y-auto text-xs">
+          <div className="mt-4 overflow-y-auto text-xs max-h-[240px] overflow-auto" ref={hdipScrollRef} onScroll={handleHdipScroll} >
             <div className="w-full grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] gap-2 font-semibold">
               <div className="pl-6 pr-4 p-2 w-full">NAME</div>
               <div className="px-4 p-2 w-full">ROLE</div>
@@ -783,152 +781,150 @@ function Users() {
             </div>
 
             {/* Mapping Dynamic Data */}
-            <div ref={hdipScrollRef} onScroll={handleHdipScroll} style={{ maxHeight: '195px', overflowY: 'auto' }}>
-              {hdipUsers.map((item, index) => (
-                <form key={item.email || index} onSubmit={(e) => {
-                  e.index = index;
-                  e.item = item;
-                  handleSubmit(onEditHdipUser)(e);
-                  validateClients();
-                }}>
-                  <div
-                    className={`${editHdipUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] mt-1 rounded-full items-center justify-center max-h-max min-h-[40px]`}
-                  >
-                    <div className="px-3 py-1 w-auto">
-                      {editHdipUser === index ? (
-                        <>
-                          <input
-                            defaultValue={item?.name}
-                            type="text"
-                            placeholder="John Doe"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            {...register('name', { required: 'Name is required', maxLength: { value: 255, message: 'Name must be 255 characters or less' } })}
-                          />
-                          {errors.name && <span className="error-message">{errors.name.message}</span>}
-                        </>
-                      ) : item?.name}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editHdipUser === index ? (
-                        <>
-                          <select
-                            {...register('access', { required: 'Access is required' })}
-                            className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${getValues("access") ? "text-black" : "text-gray-500"}`}
-                            defaultValue={item?.user?.role}
-                          >
-                            <option value="" disabled>Select Access</option>
-                            <option value="admin" className="text-black">Admin</option>
-                            <option value="moderator" className="text-black">Moderator</option>
-                          </select>
-                          {errors.access && <span className="error-message">{errors.access.message}</span>}
-                        </>
-                      ) : item?.user?.role?.charAt(0).toUpperCase() + item?.user?.role?.slice(1)}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editHdipUser === index ? (
-                        <>
-                          <input
-                            defaultValue={item?.user?.email}
-                            placeholder="rober@xyz.com"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            {...register('email', {
-                              required: 'Email is required',
-                              pattern: {
-                                value: EMAIL_REGEX,
-                                message: 'Please enter email with valid format'
-                              }
-                            })}
-                          />
-                          {errors.email && <span className="error-message">{errors.email.message}</span>}
-                        </>
-                      ) : item?.user?.email}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editHdipUser === index ? (
-                        <>
-                          <input
-                            defaultValue={item?.user?.phone?.slice(3)}
-                            placeholder="9876543210"
-                            className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            {...register('phone', {
-                              required: 'Phone number is required',
-                              pattern: {
-                                value: MOBILE_REGEX,
-                                message: 'Please enter valid phone number.'
-                              }
-                            })}
-                          />
-                          {errors.phone && <span className="error-message">{errors.phone.message}</span>}
-                        </>
-                      ) : item?.user?.phone}
-                    </div>
-                    <div className="px-3 py-1 w-auto">
-                      {editHdipUser === index ? (
-                        <>
-                          <InfiniteScrollSelect
-                            apiEndpoint={`/api/internal/organizations/`}
-                            onSelect={(value) => {
-                              handleClientSelection(value);
-                            }}
-                            optionLabel='name'
-                            placeholder='Select Client'
-                            className='h-[29.6px] text-xs'
-                            dropdownClassName='text-xs'
-                            changeValue={false}
-                            selectedOptions={selectedClients}
-                            showDropdownAbove={true}
-                            ref={clientsRef}
-                          />
-                          {errors.client && <span className="error-message">{errors.client.message}</span>}
-                          {selectedClients.length > 0 &&
-                            <div className=' mt-[8px] gap-x-4'>
-                              <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  removeClient(item);
-                                }}
-                                className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
-                                </svg>
-                              </button> </li>))} </ul>
-                            </div>}
-                        </>
-                      ) : item?.client?.map(client => client?.name)?.join(', ')}
-                    </div>
-
-                    <div className="px-4 py-1 w-full flex items-center justify-center">
-                      {editHdipUser === index ?
-                        <div
-                          className='flex items-center justify-center gap-x-2'
-                        >
-                          <button
-                            className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
-                            type="submit"
-                          >Save</button>
-                          <button
-                            onClick={() => { toggleSaveHdipUser() }}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
-                          </button>
-
-
-                        </div>
-
-                        : (auth?.role === "moderator" && auth?.email !== item?.user?.email) || (auth?.role === "admin" && auth?.email !== item?.user?.email && item?.user?.role === "admin") ? null : <button
-                          className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
-                          onClick={() => { toggleEditHdipUser(index) }}
-                        >
-                          <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
-                          </svg>
-
-                        </button>
-                      }
-                    </div>
+            {hdipUsers.map((item, index) => (
+              <form key={item.email || index} onSubmit={(e) => {
+                e.index = index;
+                e.item = item;
+                handleSubmit(onEditHdipUser)(e);
+                validateClients();
+              }}>
+                <div
+                  className={`${editHdipUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] mt-1 rounded-full items-center justify-center max-h-max min-h-[40px]`}
+                >
+                  <div className="px-3 py-1 w-auto">
+                    {editHdipUser === index ? (
+                      <>
+                        <input
+                          defaultValue={item?.name}
+                          type="text"
+                          placeholder="John Doe"
+                          className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          {...register('name', { required: 'Name is required', maxLength: { value: 255, message: 'Name must be 255 characters or less' } })}
+                        />
+                        {errors.name && <span className="error-message">{errors.name.message}</span>}
+                      </>
+                    ) : item?.name}
                   </div>
-                </form>
-              ))}
-            </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editHdipUser === index ? (
+                      <>
+                        <select
+                          {...register('access', { required: 'Access is required' })}
+                          className={`w-full p-1 text-sm border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${getValues("access") ? "text-black" : "text-gray-500"}`}
+                          defaultValue={item?.user?.role}
+                        >
+                          <option value="" disabled>Select Access</option>
+                          <option value="admin" className="text-black">Admin</option>
+                          <option value="moderator" className="text-black">Moderator</option>
+                        </select>
+                        {errors.access && <span className="error-message">{errors.access.message}</span>}
+                      </>
+                    ) : item?.user?.role?.charAt(0).toUpperCase() + item?.user?.role?.slice(1)}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editHdipUser === index ? (
+                      <>
+                        <input
+                          defaultValue={item?.user?.email}
+                          placeholder="rober@xyz.com"
+                          className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          {...register('email', {
+                            required: 'Email is required',
+                            pattern: {
+                              value: EMAIL_REGEX,
+                              message: 'Please enter email with valid format'
+                            }
+                          })}
+                        />
+                        {errors.email && <span className="error-message">{errors.email.message}</span>}
+                      </>
+                    ) : item?.user?.email}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editHdipUser === index ? (
+                      <>
+                        <input
+                          defaultValue={item?.user?.phone?.slice(3)}
+                          placeholder="9876543210"
+                          className="p-1 text-sm w-full border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          {...register('phone', {
+                            required: 'Phone number is required',
+                            pattern: {
+                              value: MOBILE_REGEX,
+                              message: 'Please enter valid phone number.'
+                            }
+                          })}
+                        />
+                        {errors.phone && <span className="error-message">{errors.phone.message}</span>}
+                      </>
+                    ) : item?.user?.phone}
+                  </div>
+                  <div className="px-3 py-1 w-auto">
+                    {editHdipUser === index ? (
+                      <>
+                        <InfiniteScrollSelect
+                          apiEndpoint={`/api/internal/organizations/`}
+                          onSelect={(value) => {
+                            handleClientSelection(value);
+                          }}
+                          optionLabel='name'
+                          placeholder='Select Client'
+                          className='h-[29.6px] text-xs'
+                          dropdownClassName='text-xs'
+                          changeValue={false}
+                          selectedOptions={selectedClients}
+                          showDropdownAbove={true}
+                          ref={clientsRef}
+                        />
+                        {errors.client && <span className="error-message">{errors.client.message}</span>}
+                        {selectedClients.length > 0 &&
+                          <div className=' mt-[8px] gap-x-4'>
+                            <ul className='flex flex-wrap justify-start gap-2 items-center text-xs' > {selectedClients.map((item, index) => (<li key={index} className=" flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg  text-[#49454F]  "> {item?.name} <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                removeClient(item);
+                              }}
+                              className='pl-2' ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z" fill="#49454F" />
+                              </svg>
+                            </button> </li>))} </ul>
+                          </div>}
+                      </>
+                    ) : item?.client?.map(client => client?.name)?.join(', ')}
+                  </div>
+
+                  <div className="px-4 py-1 w-full flex items-center justify-center">
+                    {editHdipUser === index ?
+                      <div
+                        className='flex items-center justify-center gap-x-2'
+                      >
+                        <button
+                          className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
+                          type="submit"
+                        >Save</button>
+                        <button
+                          onClick={() => { toggleSaveHdipUser() }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+                        </button>
+
+
+                      </div>
+
+                      : (auth?.role === "moderator" && auth?.email !== item?.user?.email) || (auth?.role === "admin" && auth?.email !== item?.user?.email && item?.user?.role === "admin") ? null : <button
+                        className="p-1 bg-gray-200 shadow-md hover:bg-gray-300 rounded-lg"
+                        onClick={() => { toggleEditHdipUser(index) }}
+                      >
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M7 21H8.425L18.2 11.225L16.775 9.8L7 19.575V21ZM5 23V18.75L18.2 5.575C18.4 5.39167 18.6208 5.25 18.8625 5.15C19.1042 5.05 19.3583 5 19.625 5C19.8917 5 20.15 5.05 20.4 5.15C20.65 5.25 20.8667 5.4 21.05 5.6L22.425 7C22.625 7.18333 22.7708 7.4 22.8625 7.65C22.9542 7.9 23 8.15 23 8.4C23 8.66667 22.9542 8.92083 22.8625 9.1625C22.7708 9.40417 22.625 9.625 22.425 9.825L9.25 23H5ZM17.475 10.525L16.775 9.8L18.2 11.225L17.475 10.525Z" fill="#65558F" />
+                        </svg>
+
+                      </button>
+                    }
+                  </div>
+                </div>
+              </form>
+            ))}
           </div>
         </TableLoadingWrapper>
       </div>
