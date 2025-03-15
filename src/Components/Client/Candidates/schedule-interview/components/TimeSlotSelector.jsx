@@ -52,11 +52,11 @@ function TimeSlotSelector({
             <Loader2 className="animate-spin" />
           </p>
         ) : isError ? (
-          <div className="flex justify-start items-center gap-4">
+          <div className="flex flex-wrap justify-start items-center gap-4">
             {hourlySlots.map((slot, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-center py-1 px-3 h-8 rounded-[4px] text-xs max-w-max bg-[#C7C7C7] text-[#6B6F7B] cursor-not-allowed`}
+                className={`flex items-center justify-center py-1 px-3 h-8 rounded-[4px] text-xs w-16 bg-[#C7C7C7] text-[#6B6F7B] cursor-not-allowed`}
               >
                 {slot.time}
               </div>
