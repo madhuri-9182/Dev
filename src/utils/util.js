@@ -1,5 +1,8 @@
 import pdfToText from "react-pdftotext";
-import { JOB_NAMES } from "../Components/Constants/constants";
+import {
+  JOB_NAMES,
+  SPECIALIZATIONS,
+} from "../Components/Constants/constants";
 import axios, { axiosFile } from "../api/axios";
 
 export const formatDate = (dateString) => {
@@ -26,6 +29,13 @@ export const revertDateFormat = (dateString) => {
 export const getJobLabel = (key) => {
   const job = JOB_NAMES.find((job) => job.id === key);
   return job ? job.name : key;
+};
+
+export const getSpecialization = (key) => {
+  const spec = SPECIALIZATIONS.find(
+    (spec) => spec.id === key
+  );
+  return spec ? spec.name : key;
 };
 
 export const handleTxtAndDocxFile = (

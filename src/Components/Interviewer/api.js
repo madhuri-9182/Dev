@@ -19,3 +19,44 @@ export const interviewAcceptOrReject = async (param) => {
   );
   return response.data;
 };
+
+export const getAcceptedInterviews = async (page) => {
+  const response = await axios.get(
+    "/api/interviewer/accepted-interviews/",
+    {
+      params: {
+        limit: 10,
+        offset: (page - 1) * 10,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const getPendingFeedbackInterviews = async (
+  page
+) => {
+  const response = await axios.get(
+    "/api/interviewer/pending-feedback/",
+    {
+      params: {
+        limit: 10,
+        offset: (page - 1) * 10,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const getInterviewHistory = async (page) => {
+  const response = await axios.get(
+    "/api/interviewer/interview-history/",
+    {
+      params: {
+        limit: 10,
+        offset: (page - 1) * 10,
+      },
+    }
+  );
+  return response.data;
+};

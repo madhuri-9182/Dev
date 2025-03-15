@@ -43,7 +43,7 @@ import { InternalMessages } from "./Internal/Messages";
 // Interviewer Imports
 import Layout from "./Interviewer/Layout";
 import CalendarComponent from "./Interviewer/Calendar";
-import InterviewRecord from "./Interviewer/InterviewRecord";
+import InterviewRecord from "./Interviewer/Dashboard/InterviewRecord";
 import Payments from "./Interviewer/Payments";
 import { Feedback } from "./Interviewer/Feedback";
 

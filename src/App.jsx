@@ -74,7 +74,7 @@ import { JobProvider } from "./context/JobContext";
 import AddJob from "./Components/Client/Jobs/AddJob";
 import JobDetails from "./Components/Client/Jobs/JobDetails";
 import EmailVerification from "./Components/Authentication/EmailVerification";
-import InterviewerConfirmation from "./Components/Interviewer/confirmation/InterviewConfirmation";
+import InterviewerConfirmation from "./Components/Interviewer/Confirmation/InterviewConfirmation";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
