@@ -93,7 +93,10 @@ function TimeSlotSelector({
 export default TimeSlotSelector;
 
 TimeSlotSelector.propTypes = {
-  selectedDate: PropTypes.instanceOf(Date),
+  selectedDate: PropTypes.oneOfType([
+    PropTypes.instanceOf(Date),
+    PropTypes.object,
+  ]),
   setSelectedDate: PropTypes.func,
   availableHourlySlots: PropTypes.array,
   selectedTimeSlot: PropTypes.string,
