@@ -63,14 +63,14 @@ function TimeSlotSelector({
             ))}
           </div>
         ) : (
-          <div className="flex justify-start items-center gap-4">
+          <div className="flex flex-wrap justify-start items-center gap-4">
             {availableHourlySlots.map((slot, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-center py-1 px-3 h-8 rounded-[4px] text-xs max-w-max ${
+                className={`flex items-center justify-center py-1 px-3 h-8 rounded-[4px] text-xs w-16 ${
                   slot.available
                     ? selectedTimeSlot === slot.time
-                      ? "border-2 border-black bg-[#59B568] text-white cursor-pointer"
+                      ? "border border-black bg-[#59B568] text-white cursor-pointer"
                       : "bg-[#59B568] text-white cursor-pointer hover:bg-[#4da75c]"
                     : "bg-[#C7C7C7] text-[#6B6F7B] cursor-not-allowed"
                 }`}
