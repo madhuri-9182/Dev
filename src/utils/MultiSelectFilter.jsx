@@ -32,16 +32,14 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const listboxRef = useRef(null);
-  const hasFetched = useRef(false);
 
   useEffect(() => {
     const fetchOptions = async () => {
-      if (apiEndpoint && !hasFetched.current) {
-        hasFetched.current = true;
+      if (apiEndpoint) {
         setLoading(true);
         try {
           const response = await axios.get(`${apiEndpoint}?offset=${(page - 1) * 10}`);
-          setFetchedOptions(prev => Array.isArray(prev) ? [...prev, ...response.data.results] : [...response.data.results]);
+          setFetchedOptions(prev => !Array.isArray(prev) || page === 1 ? [...response.data.results] : [...prev, ...response.data.results]);
           setHasMore(response?.data?.next !== null);
         } catch (error) {
           console.error('Error fetching options:', error);
