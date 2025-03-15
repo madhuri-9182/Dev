@@ -74,6 +74,7 @@ import { JobProvider } from "./context/JobContext";
 import AddJob from "./Components/Client/Jobs/AddJob";
 import JobDetails from "./Components/Client/Jobs/JobDetails";
 import EmailVerification from "./Components/Authentication/EmailVerification";
+import InterviewerConfirmation from "./Components/Interviewer/confirmation/InterviewConfirmation";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -294,6 +295,10 @@ const router = createBrowserRouter(
           element={<Unauthorized />}
         />
         <Route path="*" element={<NotFound />} />
+        <Route
+          path="/confirmation/:id"
+          element={<InterviewerConfirmation />}
+        />
       </Route>
     </Route>
   )
