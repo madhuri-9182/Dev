@@ -27,20 +27,21 @@ const StyledTextField = styled(TextField)({
 });
 
 function MultiSelectFilter({ label, options, filter_state_name, current_value, handleChipClick, apiEndpoint }) {
-  const [fetchedOptions, setFetchedOptions] = useState(options || []);
+  const [fetchedOptions, setFetchedOptions] = useState(Array.isArray(options) ? options : []);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const fullyMounted = useRef(false);
   const listboxRef = useRef(null);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
     const fetchOptions = async () => {
-      if (apiEndpoint) {
+      if (apiEndpoint && !hasFetched.current) {
+        hasFetched.current = true;
         setLoading(true);
         try {
-          const response = await axios.get(`${apiEndpoint}?offset=${(page-1)*10}`);
-          setFetchedOptions(prev => [...prev, ...response.data.results]);
+          const response = await axios.get(`${apiEndpoint}?offset=${(page - 1) * 10}`);
+          setFetchedOptions(prev => Array.isArray(prev) ? [...prev, ...response.data.results] : [...response.data.results]);
           setHasMore(response?.data?.next !== null);
         } catch (error) {
           console.error('Error fetching options:', error);
@@ -52,11 +53,7 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
       }
     };
 
-    if (fullyMounted.current) {
-      fetchOptions();
-    }else{
-      fullyMounted.current = true;
-    }
+    fetchOptions();
   }, [apiEndpoint, options, page]);
 
   const handleScroll = () => {
@@ -72,12 +69,12 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
   return (<div className="flex items-center font-medium space-x-1">
     <span className="font-bold mr-2 text-xs">{label}</span>
     <Autocomplete
-      isOptionEqualToValue={(option, value) =>  (apiEndpoint ? option.id : option.value) === value.value}
+      isOptionEqualToValue={(option, value) => (apiEndpoint ? option.id : option.value) === value.value}
       disableCloseOnSelect
       multiple
-      options={fetchedOptions}
+      options={Array.isArray(fetchedOptions) ? fetchedOptions : []}
       getOptionLabel={(option) => {
-        return apiEndpoint ? option.domain: option.label;
+        return apiEndpoint ? option.domain : option.label;
       }}
       filterSelectedOptions
       renderInput={(params) => (
@@ -105,6 +102,11 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
           ref: listboxRef,
         },
       }}
+      renderOption={(props, option) => (
+        <li {...props} key={option.id || option.label}>
+          {apiEndpoint ? option.domain : option.label}
+        </li>
+      )}
     />
   </div>);
 }
