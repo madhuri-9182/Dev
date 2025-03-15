@@ -22,7 +22,6 @@ const BasicDatePicker = ({
 
   // Handle date change
   const handleDateChange = (newDate) => {
-    console.log("Selected date: ", newDate);
     setSelectedDate(newDate);
   };
 

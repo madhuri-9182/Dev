@@ -451,8 +451,8 @@ const CalendarComponent = () => {
             minute: "2-digit",
             meridiem: "short",
           }}
-          slotMinTime={"09:00:00"}
-          slotMaxTime={"22:00:00"}
+          slotMinTime={"10:00:00"}
+          slotMaxTime={"21:00:00"}
           allDaySlot={false}
           select={handleSelect}
           events={getFormattedEvents(
