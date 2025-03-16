@@ -39,7 +39,7 @@ function Clients() {
     try {
       setIsLoading(true);
       const response = await axios.get('/api/internal/internal-client/', {
-        params: { q: searchValue, offset: offset, domain: filters?.domain?.map(item => item.id)?.join(','), status: filters?.status?.map(item => item.value)?.join(',') },
+        params: { q: searchValue, offset: offset, domain: filters?.domain?.map(item => item.domain)?.join(','), status: filters?.status?.map(item => item.value)?.join(',') },
       });
       setClients((prev) => offset === 0 ? response.data.results : [...prev, ...response.data.results]);
       setHasMore(response?.data?.next !== null);
