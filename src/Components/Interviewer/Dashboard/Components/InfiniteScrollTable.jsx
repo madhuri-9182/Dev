@@ -20,6 +20,7 @@ import {
   formatTime,
   formatExperience,
 } from "../utils/formatters";
+import { LoadingState } from "../../../shared/loading-error-state";
 
 /**
  * Action buttons component for table rows
@@ -192,14 +193,9 @@ const InfiniteScrollTable = ({
       {/* Loader element - this is what triggers loading more data */}
       <div
         ref={loaderRef}
-        className="h-10 w-full flex items-center justify-center"
+        className=" w-full flex items-center justify-center"
       >
-        {isLoading && (
-          <div className="text-center py-2 flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
-            <span>Loading more...</span>
-          </div>
-        )}
+        {isLoading && <LoadingState />}
       </div>
     </div>
   );
