@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 import { Tooltip, tooltipClasses } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -14,6 +15,7 @@ import {
   createFileFromUrl,
   handleFileDownload,
 } from "../../../../utils/util";
+import ViewModal from "./ViewModal";
 
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip
@@ -57,7 +59,7 @@ const Button = ({ Icon, onClick, disabled, title }) => (
 );
 
 Button.propTypes = {
-  Icon: PropTypes.func,
+  Icon: PropTypes.object,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   title: PropTypes.string,
@@ -72,6 +74,8 @@ export const ActionButtons = ({
   title,
   meet_link,
 }) => {
+  const [isDetailsModalOpen, setIsDetailsModalOpen] =
+    useState(false);
   const isPendingFeedback = title === "Pending Feedback";
   const isInterviewHistory = title === "Interview History";
   const isAcceptedInterviews =
@@ -97,7 +101,9 @@ export const ActionButtons = ({
       />
       <Button
         Icon={Eye}
-        onClick={() => {}}
+        onClick={() => {
+          setIsDetailsModalOpen(true);
+        }}
         disabled={false}
         title="View"
       />
@@ -131,6 +137,13 @@ export const ActionButtons = ({
           title="Start"
         />
       )}
+      {isDetailsModalOpen && (
+        <ViewModal
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          details={candidate?.designation?.other_details}
+        />
+      )}
     </>
   );
 };
@@ -140,4 +153,5 @@ ActionButtons.propTypes = {
   candidate: PropTypes.object,
   title: PropTypes.string,
   meet_link: PropTypes.string,
+  setIsDetailsModalOpen: PropTypes.func,
 };
