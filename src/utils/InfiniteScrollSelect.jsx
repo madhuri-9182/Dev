@@ -10,7 +10,9 @@ const InfiniteScrollSelect = forwardRef(({ apiEndpoint, onSelect, optionLabel, s
     const [page, setPage] = useState(1);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(defaultValue);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const dropdownRef = useRef(null);
+    const buttonRef = useRef(null);
     const scrollRef = useRef(null);
     const mountedRef = useRef(false);
 
@@ -88,10 +90,40 @@ const InfiniteScrollSelect = forwardRef(({ apiEndpoint, onSelect, optionLabel, s
         }
     }, [hasMoreItems, isOpen]);
 
+    // Filter out already selected items
+    const filteredItems = items?.filter(item => 
+        !selectedOptions?.map(si => si?.id || si)?.includes(item.id)
+    );
+
+    // Update dropdown position when opened
+    useEffect(() => {
+        if (isOpen && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            
+            // Calculate estimated height of dropdown (approximate height per item)
+            const itemHeight = 40; // Estimated height per item in pixels
+            const paddingHeight = 16; // Extra padding
+            
+            // Ensure we always have at least one item's height (for "No options available")
+            const estimatedHeight = Math.min(
+                Math.max((filteredItems.length || 1) * itemHeight + paddingHeight, 50),
+                240 // Max height as set in max-h-60 (60*4=240px)
+            );
+            
+            setDropdownPosition({
+                top: showDropdownAbove ? rect.top - estimatedHeight : rect.bottom,
+                left: rect.left,
+                width: rect.width
+            });
+        }
+    }, [isOpen, showDropdownAbove, filteredItems.length]);
+
     // Click outside handler
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target) && mountedRef.current) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
+                scrollRef.current && !scrollRef.current.contains(event.target) &&
+                mountedRef.current) {
                 setIsOpen(false);
             }
         };
@@ -117,26 +149,40 @@ const InfiniteScrollSelect = forwardRef(({ apiEndpoint, onSelect, optionLabel, s
             <button
                 disabled={disabled}
                 type="button"
+                ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center justify-between w-full p-2 text-left text-[rgb(0 0 0 / 87%)] border border-[#CAC4D0] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${disabled ? "cursor-not-allowed" : ""} ${className}`}
             >
-                {selectedItem ? selectedItem.name : <span className='text-[#afb3b6]' >{placeholder}</span>} <KeyboardArrowDown fontSize='small' />
+                {selectedItem ? selectedItem.name : <span className='text-[#afb3b6]'>{placeholder}</span>} <KeyboardArrowDown fontSize='small' />
             </button>
 
             {isOpen && (
                 <div
                     ref={scrollRef}
-                    className={`absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropdownClassName} ${showDropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+                    style={{
+                        position: 'fixed',
+                        top: `${dropdownPosition.top}px`,
+                        left: `${dropdownPosition.left}px`,
+                        width: `${dropdownPosition.width}px`,
+                        zIndex: 9999
+                    }}
+                    className={`bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropdownClassName}`}
                 >
-                    {items?.filter(item => !selectedOptions?.map(si => si?.id || si)?.includes(item.id))?.map(item => (
-                        <div
-                            key={item.id}
-                            onClick={() => handleSelect(item)}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        >
-                            {item[optionLabel]}
+                    {filteredItems.length > 0 ? (
+                        filteredItems.map(item => (
+                            <div
+                                key={item.id}
+                                onClick={() => handleSelect(item)}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            >
+                                {item[optionLabel]}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="px-4 py-2 text-center text-gray-500">
+                            No options available
                         </div>
-                    ))}
+                    )}
                     {loading && (
                         <div className="px-4 py-2 text-center text-gray-500">
                             Loading more options...
