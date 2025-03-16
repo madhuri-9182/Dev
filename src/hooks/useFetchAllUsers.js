@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "../api/axios";
+import useAuth from "./useAuth";
 
 const fetchAllUsers = async () => {
   let allUsers = [];
@@ -20,8 +21,9 @@ const fetchAllUsers = async () => {
 };
 
 const useAllUsers = () => {
+  const { auth } = useAuth();
   return useQuery({
-    queryKey: ["all-users"],
+    queryKey: ["all-users", auth],
     queryFn: fetchAllUsers,
     staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
     refetchOnWindowFocus: false, // Prevent refetching on window focus

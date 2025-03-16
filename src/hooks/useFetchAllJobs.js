@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "../api/axios";
+import useAuth from "./useAuth";
 
 const fetchAllJobs = async () => {
   let allJobs = [];
@@ -30,8 +31,9 @@ const fetchAllJobs = async () => {
 };
 
 const useAllJobs = () => {
+  const { auth } = useAuth();
   return useQuery({
-    queryKey: ["all-jobs"],
+    queryKey: ["all-jobs", auth],
     queryFn: fetchAllJobs,
     staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
     refetchOnWindowFocus: false, // Prevent refetching on window focus

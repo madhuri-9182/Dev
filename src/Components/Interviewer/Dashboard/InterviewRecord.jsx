@@ -15,6 +15,7 @@ import {
   getInterviewHistory,
   getPendingFeedbackInterviews,
 } from "../api";
+import useAuth from "../../../hooks/useAuth";
 
 // Component imports
 import Heading from "./Components/Heading";
@@ -25,6 +26,7 @@ import Sidebar from "./Components/Sidebar";
 const QUERY_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 
 function InterviewRecord() {
+  const { auth } = useAuth();
   const navigate = useNavigate();
 
   // Create InView hooks for each table
@@ -52,7 +54,7 @@ function InterviewRecord() {
 
   // Infinite query for accepted interviews
   const acceptedInterviewsQuery = useInfiniteQuery({
-    queryKey: ["acceptedInterviews"],
+    queryKey: ["acceptedInterviews", auth],
     queryFn: ({ pageParam = 1 }) =>
       getAcceptedInterviews(pageParam),
     getNextPageParam: (lastPage) =>
@@ -62,7 +64,7 @@ function InterviewRecord() {
 
   // Infinite query for pending feedback
   const pendingFeedbackQuery = useInfiniteQuery({
-    queryKey: ["pendingFeedback"],
+    queryKey: ["pendingFeedback", auth],
     queryFn: ({ pageParam = 1 }) =>
       getPendingFeedbackInterviews(pageParam),
     getNextPageParam: (lastPage) =>
@@ -72,7 +74,7 @@ function InterviewRecord() {
 
   // Infinite query for interview history
   const interviewHistoryQuery = useInfiniteQuery({
-    queryKey: ["interviewHistory"],
+    queryKey: ["interviewHistory", auth],
     queryFn: ({ pageParam = 1 }) =>
       getInterviewHistory(pageParam),
     getNextPageParam: (lastPage) =>
@@ -192,6 +194,7 @@ function InterviewRecord() {
                 acceptedInterviewsQuery.isFetchingNextPage
               }
               loaderRef={acceptedRef}
+              title={"Accepted Interviews"}
             />
           )}
         </div>
@@ -217,6 +220,7 @@ function InterviewRecord() {
                 pendingFeedbackQuery.isFetchingNextPage
               }
               loaderRef={pendingRef}
+              title={"Pending Feedback"}
             />
           )}
         </div>
@@ -242,6 +246,7 @@ function InterviewRecord() {
                 interviewHistoryQuery.isFetchingNextPage
               }
               loaderRef={historyRef}
+              title={"Interview History"}
             />
           )}
         </div>

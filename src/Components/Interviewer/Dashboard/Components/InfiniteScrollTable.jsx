@@ -1,17 +1,9 @@
 // src/components/interviewer/components/InfiniteScrollTable.jsx
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowSquareRight,
-  Eye,
-  MessageText1,
-  ReceiveSquare,
-  TickSquare,
-} from "iconsax-react";
 
 // Utilities
 import {
-  createFileFromUrl,
   getJobLabel,
   getSpecialization,
 } from "../../../../utils/util";
@@ -20,53 +12,8 @@ import {
   formatTime,
   formatExperience,
 } from "../utils/formatters";
-
-/**
- * Action buttons component for table rows
- */
-const ActionButtons = ({ navigate, candidate }) => {
-  return (
-    <>
-      <ReceiveSquare
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-        onClick={async () => {
-          const file = await createFileFromUrl(
-            candidate.cv
-          );
-          window.open(URL.createObjectURL(file));
-        }}
-      />
-      <Eye
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-      />
-      <TickSquare
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-      />
-      <MessageText1
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-        onClick={() => navigate("/interviewer/feedback")}
-      />
-      <ArrowSquareRight
-        className="cursor-pointer"
-        size={16}
-        color="#171717"
-      />
-    </>
-  );
-};
-
-ActionButtons.propTypes = {
-  navigate: PropTypes.func.isRequired,
-  candidate: PropTypes.object,
-};
+import { LoadingState } from "../../../shared/loading-error-state";
+import { ActionButtons } from "./ActionButtons";
 
 /**
  * Table component with infinite scroll capability
@@ -75,6 +22,7 @@ const InfiniteScrollTable = ({
   data,
   isLoading,
   loaderRef,
+  title,
 }) => {
   const navigate = useNavigate();
   const tableHeadingAndBodyClassName =
@@ -89,7 +37,7 @@ const InfiniteScrollTable = ({
       ) : (
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
-            <tr className="text-black text-xs font-semibold uppercase grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_2fr] items-center">
+            <tr className="text-black text-xs font-semibold uppercase grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr] items-center">
               <th className={tableHeadingAndBodyClassName}>
                 Name
               </th>
@@ -118,7 +66,7 @@ const InfiniteScrollTable = ({
             {data.map((item) => (
               <tr key={item.id}>
                 <td colSpan={8} className="p-0">
-                  <div className="bg-[#EBEBEB80] text-2xs rounded-2xl font-normal grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_2fr] items-center py-3">
+                  <div className="bg-[#EBEBEB80] text-2xs rounded-2xl font-normal grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr] items-center py-3">
                     <span
                       className={
                         tableHeadingAndBodyClassName
@@ -179,6 +127,8 @@ const InfiniteScrollTable = ({
                       <ActionButtons
                         navigate={navigate}
                         candidate={item.candidate}
+                        meet_link={item.meet_link}
+                        title={title}
                       />
                     </span>
                   </div>
@@ -192,14 +142,9 @@ const InfiniteScrollTable = ({
       {/* Loader element - this is what triggers loading more data */}
       <div
         ref={loaderRef}
-        className="h-10 w-full flex items-center justify-center"
+        className=" w-full flex items-center justify-center"
       >
-        {isLoading && (
-          <div className="text-center py-2 flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
-            <span>Loading more...</span>
-          </div>
-        )}
+        {isLoading && <LoadingState />}
       </div>
     </div>
   );
@@ -209,6 +154,7 @@ InfiniteScrollTable.propTypes = {
   data: PropTypes.array,
   isLoading: PropTypes.bool,
   loaderRef: PropTypes.func,
+  title: PropTypes.string,
 };
 
 export default InfiniteScrollTable;

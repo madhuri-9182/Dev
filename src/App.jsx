@@ -285,7 +285,10 @@ const router = createBrowserRouter(
               element={<CalendarComponent />}
             />
             <Route path="payments" element={<Payments />} />
-            <Route path="feedback" element={<Feedback />} />
+            <Route
+              path="feedback/:id"
+              element={<Feedback />}
+            />
           </Route>
         </Route>
       </Route>

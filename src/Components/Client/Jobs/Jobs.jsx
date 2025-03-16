@@ -6,8 +6,10 @@ import {
   ErrorState,
   LoadingState,
 } from "../../shared/loading-error-state";
+import useAuth from "../../../hooks/useAuth";
 
 const Jobs = () => {
+  const { auth } = useAuth();
   const { currentPage, filters } = useJobContext();
 
   const queryFilters = {
@@ -20,7 +22,7 @@ const Jobs = () => {
   };
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["jobs", queryFilters],
+    queryKey: ["jobs", queryFilters, auth],
     queryFn: fetchJobs,
     keepPreviousData: true,
     refetchOnWindowFocus: false,

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { formatExperience } from "../../../../../utils/util";
 import { CANDIDATE_SOURCE } from "../../../../Constants/constants";
+import { handleFileDownload } from "../../../../../utils/util";
 
 /**
  * Sidebar component showing candidate details and remarks
@@ -12,18 +13,6 @@ function CandidateSidebar({
   errors,
 }) {
   // Handle file download
-  const handleDownload = () => {
-    if (file) {
-      const url = window.URL.createObjectURL(file);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = file.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }
-  };
 
   // Sidebar content items
   const SIDEBAR_CONTENT = [
@@ -84,7 +73,7 @@ function CandidateSidebar({
           </label>
           <span
             className="text-xs font-bold text-[#6B6F7B] hover:text-[#007AFF] cursor-pointer"
-            onClick={handleDownload}
+            onClick={() => handleFileDownload(file)}
           >
             Download
           </span>
