@@ -21,8 +21,16 @@ const CandidateRow = ({
         {/* Name and Status */}
         <div className="flex flex-col justify-start items-start gap-2">
           <div
-            className="text-xs font-bold text-[#056DDC] uppercase cursor-pointer"
-            onClick={() => onViewCandidate(candidate)}
+            className={`text-xs font-bold text-[#056DDC] uppercase  ${
+              candidate?.status === "NSCH"
+                ? "hover:underline cursor-pointer"
+                : ""
+            }`}
+            onClick={() => {
+              if (candidate?.status === "NSCH") {
+                onViewCandidate(candidate);
+              }
+            }}
           >
             {candidate.name}
           </div>
