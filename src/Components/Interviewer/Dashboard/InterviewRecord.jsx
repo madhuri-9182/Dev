@@ -194,6 +194,7 @@ function InterviewRecord() {
                 acceptedInterviewsQuery.isFetchingNextPage
               }
               loaderRef={acceptedRef}
+              title={"Accepted Interviews"}
             />
           )}
         </div>
@@ -219,6 +220,7 @@ function InterviewRecord() {
                 pendingFeedbackQuery.isFetchingNextPage
               }
               loaderRef={pendingRef}
+              title={"Pending Feedback"}
             />
           )}
         </div>
@@ -244,6 +246,7 @@ function InterviewRecord() {
                 interviewHistoryQuery.isFetchingNextPage
               }
               loaderRef={historyRef}
+              title={"Interview History"}
             />
           )}
         </div>

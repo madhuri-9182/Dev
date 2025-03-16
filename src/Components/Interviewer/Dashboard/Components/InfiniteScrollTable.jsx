@@ -14,6 +14,7 @@ import {
   createFileFromUrl,
   getJobLabel,
   getSpecialization,
+  handleFileDownload,
 } from "../../../../utils/util";
 import {
   formatDate,
@@ -25,7 +26,21 @@ import { LoadingState } from "../../../shared/loading-error-state";
 /**
  * Action buttons component for table rows
  */
-const ActionButtons = ({ navigate, candidate }) => {
+const ActionButtons = ({
+  navigate,
+  candidate,
+  title,
+  meet_link,
+}) => {
+  const isPendingFeedback = title === "Pending Feedback";
+  const isInterviewHistory = title === "Interview History";
+  const isAcceptedInterviews =
+    title === "Accepted Interviews";
+
+  if (isInterviewHistory) {
+    return null;
+  }
+
   return (
     <>
       <ReceiveSquare
@@ -36,7 +51,8 @@ const ActionButtons = ({ navigate, candidate }) => {
           const file = await createFileFromUrl(
             candidate.cv
           );
-          window.open(URL.createObjectURL(file));
+          // download the file
+          handleFileDownload(file);
         }}
       />
       <Eye
@@ -44,22 +60,40 @@ const ActionButtons = ({ navigate, candidate }) => {
         color="#171717"
         className="cursor-pointer"
       />
-      <TickSquare
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-      />
-      <MessageText1
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-        onClick={() => navigate("/interviewer/feedback")}
-      />
-      <ArrowSquareRight
-        className="cursor-pointer"
-        size={16}
-        color="#171717"
-      />
+      {isAcceptedInterviews && (
+        <button
+          disabled
+          className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <TickSquare size={16} color="#171717" />
+        </button>
+      )}
+      <button
+        disabled={isAcceptedInterviews}
+        className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <MessageText1
+          size={16}
+          color="#171717"
+          onClick={() => {
+            if (isPendingFeedback) {
+              navigate(
+                `/interviewer/feedback/${candidate.id}`
+              );
+            }
+          }}
+        />
+      </button>
+      {isAcceptedInterviews && (
+        <ArrowSquareRight
+          className="cursor-pointer"
+          size={16}
+          color="#171717"
+          onClick={() => {
+            window.open(meet_link, "_blank");
+          }}
+        />
+      )}
     </>
   );
 };
@@ -67,6 +101,8 @@ const ActionButtons = ({ navigate, candidate }) => {
 ActionButtons.propTypes = {
   navigate: PropTypes.func.isRequired,
   candidate: PropTypes.object,
+  title: PropTypes.string,
+  meet_link: PropTypes.string,
 };
 
 /**
@@ -76,6 +112,7 @@ const InfiniteScrollTable = ({
   data,
   isLoading,
   loaderRef,
+  title,
 }) => {
   const navigate = useNavigate();
   const tableHeadingAndBodyClassName =
@@ -90,7 +127,7 @@ const InfiniteScrollTable = ({
       ) : (
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
-            <tr className="text-black text-xs font-semibold uppercase grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_2fr] items-center">
+            <tr className="text-black text-xs font-semibold uppercase grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr] items-center">
               <th className={tableHeadingAndBodyClassName}>
                 Name
               </th>
@@ -119,7 +156,7 @@ const InfiniteScrollTable = ({
             {data.map((item) => (
               <tr key={item.id}>
                 <td colSpan={8} className="p-0">
-                  <div className="bg-[#EBEBEB80] text-2xs rounded-2xl font-normal grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_2fr] items-center py-3">
+                  <div className="bg-[#EBEBEB80] text-2xs rounded-2xl font-normal grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr] items-center py-3">
                     <span
                       className={
                         tableHeadingAndBodyClassName
@@ -180,6 +217,8 @@ const InfiniteScrollTable = ({
                       <ActionButtons
                         navigate={navigate}
                         candidate={item.candidate}
+                        meet_link={item.meet_link}
+                        title={title}
                       />
                     </span>
                   </div>
@@ -205,6 +244,7 @@ InfiniteScrollTable.propTypes = {
   data: PropTypes.array,
   isLoading: PropTypes.bool,
   loaderRef: PropTypes.func,
+  title: PropTypes.string,
 };
 
 export default InfiniteScrollTable;
