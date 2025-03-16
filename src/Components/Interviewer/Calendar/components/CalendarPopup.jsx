@@ -49,8 +49,9 @@ const CalendarPopup = ({
     setNewEvent({
       ...newEvent,
       recurrence: recurrence,
+      showRecurrenceOptions: showRecurrenceOptions, // Pass this state up to parent
     });
-  }, [recurrence]);
+  }, [recurrence, showRecurrenceOptions]);
 
   // Frequency options from the image
   const frequencyOptions = [

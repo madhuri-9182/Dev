@@ -53,6 +53,7 @@ const CalendarComponent = () => {
     end_time: "",
     recurring: "none",
     formattedTime: "",
+    showRecurrenceOptions: false, // Add this line
     recurrence: {
       frequency: "WEEKLY",
       interval: 1,
@@ -342,8 +343,13 @@ const CalendarComponent = () => {
       blockData.notes = newEvent.description;
     }
 
-    // Check if this is a recurring event - either by recurring flag or by recurrence data
+    // New check - only include recurrence if showRecurrenceOptions is true
+    const showRecurrenceOptions =
+      newEvent.showRecurrenceOptions || false;
+
+    // Check if this is a recurring event and options are visible
     const hasRecurrenceData =
+      showRecurrenceOptions &&
       newEvent.recurrence &&
       ((newEvent.recurrence.days &&
         newEvent.recurrence.days.length > 0) ||
@@ -351,8 +357,8 @@ const CalendarComponent = () => {
         newEvent.recurrence.until);
 
     if (
-      newEvent.recurring !== "none" ||
-      hasRecurrenceData
+      showRecurrenceOptions &&
+      (newEvent.recurring !== "none" || hasRecurrenceData)
     ) {
       blockData.recurrence = {
         frequency: newEvent.recurrence.frequency,
