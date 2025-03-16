@@ -7,10 +7,12 @@ import {
 } from "../../shared/loading-error-state";
 import { getJobLabel } from "../../../utils/util";
 import { ALL_TASKS, ANALYTICS, MY_JOBS } from "./constants";
+import useAuth from "../../../hooks/useAuth";
 
 const Dashboard = () => {
+  const { auth } = useAuth();
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["dashboard"],
+    queryKey: ["dashboard", auth],
     queryFn: fetchDashboardApi,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // 5 minutes

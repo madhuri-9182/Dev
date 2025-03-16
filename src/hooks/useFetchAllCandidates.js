@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "../api/axios";
+import useAuth from "./useAuth";
 
 const fetchAllCandidates = async () => {
   let allCandidates = [];
@@ -16,8 +17,9 @@ const fetchAllCandidates = async () => {
 };
 
 const useAllCandidates = () => {
+  const { auth } = useAuth();
   return useQuery({
-    queryKey: ["all-candidates"],
+    queryKey: ["all-candidates", auth],
     queryFn: fetchAllCandidates,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,

@@ -27,7 +27,7 @@ function Settings() {
   const [deleteModalOpen, setDeleteModalOpen] =
     useState(false);
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["users", currentPage, auth.role],
+    queryKey: ["users", currentPage, auth],
     queryFn: () => fetchUsers(currentPage),
     keepPreviousData: true,
     refetchOnWindowFocus: false,
