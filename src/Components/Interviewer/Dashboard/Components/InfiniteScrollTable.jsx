@@ -1,20 +1,11 @@
 // src/components/interviewer/components/InfiniteScrollTable.jsx
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowSquareRight,
-  Eye,
-  MessageText1,
-  ReceiveSquare,
-  TickSquare,
-} from "iconsax-react";
 
 // Utilities
 import {
-  createFileFromUrl,
   getJobLabel,
   getSpecialization,
-  handleFileDownload,
 } from "../../../../utils/util";
 import {
   formatDate,
@@ -22,88 +13,7 @@ import {
   formatExperience,
 } from "../utils/formatters";
 import { LoadingState } from "../../../shared/loading-error-state";
-
-/**
- * Action buttons component for table rows
- */
-const ActionButtons = ({
-  navigate,
-  candidate,
-  title,
-  meet_link,
-}) => {
-  const isPendingFeedback = title === "Pending Feedback";
-  const isInterviewHistory = title === "Interview History";
-  const isAcceptedInterviews =
-    title === "Accepted Interviews";
-
-  if (isInterviewHistory) {
-    return null;
-  }
-
-  return (
-    <>
-      <ReceiveSquare
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-        onClick={async () => {
-          const file = await createFileFromUrl(
-            candidate.cv
-          );
-          // download the file
-          handleFileDownload(file);
-        }}
-      />
-      <Eye
-        size={16}
-        color="#171717"
-        className="cursor-pointer"
-      />
-      {isAcceptedInterviews && (
-        <button
-          disabled
-          className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <TickSquare size={16} color="#171717" />
-        </button>
-      )}
-      <button
-        disabled={isAcceptedInterviews}
-        className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <MessageText1
-          size={16}
-          color="#171717"
-          onClick={() => {
-            if (isPendingFeedback) {
-              navigate(
-                `/interviewer/feedback/${candidate.id}`
-              );
-            }
-          }}
-        />
-      </button>
-      {isAcceptedInterviews && (
-        <ArrowSquareRight
-          className="cursor-pointer"
-          size={16}
-          color="#171717"
-          onClick={() => {
-            window.open(meet_link, "_blank");
-          }}
-        />
-      )}
-    </>
-  );
-};
-
-ActionButtons.propTypes = {
-  navigate: PropTypes.func.isRequired,
-  candidate: PropTypes.object,
-  title: PropTypes.string,
-  meet_link: PropTypes.string,
-};
+import { ActionButtons } from "./ActionButtons";
 
 /**
  * Table component with infinite scroll capability
