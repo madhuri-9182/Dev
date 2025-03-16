@@ -20,8 +20,6 @@ export const getFormattedEvents = (
         title: event.summary || "Google Calendar Event",
         start: event.start,
         end: event.end,
-        backgroundColor: "#e67c73",
-        borderColor: "#e67c73",
         classNames: "google-cal-google-event",
         eventKey,
       });
@@ -47,6 +45,9 @@ export const getFormattedEvents = (
       const isoStartTime = `${formattedDate}T${block.start_time}${timezoneOffset}`;
       const isoEndTime = `${formattedDate}T${block.end_time}${timezoneOffset}`;
       const eventKey = `${isoStartTime}-${isoEndTime}`;
+      const className = block?.is_booked
+        ? "google-cal-blocked-booked-time"
+        : "google-cal-blocked-time";
 
       // Check if there's already a Google event at this time
       if (eventTimeMap.has(eventKey)) {
@@ -56,9 +57,7 @@ export const getFormattedEvents = (
           title: "Interview Available Time",
           start: isoStartTime,
           end: isoEndTime,
-          backgroundColor: "#049be5",
-          borderColor: "#049be5",
-          classNames: "google-cal-blocked-time",
+          classNames: className,
           eventKey,
           extendedProps: {
             type: "blocked",
@@ -74,9 +73,7 @@ export const getFormattedEvents = (
           title: "Interview Available Time",
           start: isoStartTime,
           end: isoEndTime,
-          backgroundColor: "#049be5",
-          borderColor: "#049be5",
-          classNames: "google-cal-blocked-time",
+          classNames: className,
           eventKey,
           extendedProps: {
             type: "blocked",

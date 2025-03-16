@@ -150,6 +150,13 @@
   color: white !important;
 }
 
+.google-cal-blocked-booked-time,
+.fc-daygrid-event.google-cal-blocked-booked-time {
+  background-color: #59b568 !important;
+  border-color: #59b568 !important;
+  color: white !important;
+}
+
 .google-cal-blocked-time,
 .fc-daygrid-event.google-cal-blocked-time {
   background-color: #049be5 !important;
