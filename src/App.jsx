@@ -266,6 +266,10 @@ const router = createBrowserRouter(
               element={<InternalEngagement />}
             />
             <Route
+              path="engagement/*"
+              element={<Engagement />}
+            />
+            <Route
               path="message"
               element={<InternalMessages />}
             />

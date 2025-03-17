@@ -55,6 +55,7 @@ const CandidateTimeline = ({
   onStatusChange,
   isUpdating,
   onEngagementClick = () => {},
+  org_id,
 }) => {
   const steps = useMemo(
     () => findAllSteps(engagement?.engagementoperations),
@@ -89,14 +90,14 @@ const CandidateTimeline = ({
         <GreenStepper steps={steps} />
       </Box>
 
-      <CustomMenu
+      {org_id ? engagementStatus?.label : <CustomMenu
         options={ENAGAGEMENT_STATUS}
         selectedOption={engagementStatus}
         setSelectedOption={(opt) => {
           onStatusChange(opt.value);
         }}
         isUpdating={isUpdating}
-      />
+      />}
     </TimelineContainer>
   );
 };

@@ -23,7 +23,7 @@ const successToaster = (message) => {
 };
 
 // Fetch all candidates with optional search
-export const useEngagements = (filters) => {
+export const useEngagements = (filters, org_id) => {
   return useQuery({
     queryKey: ["engagements", filters],
     queryFn: async () => {
@@ -41,7 +41,9 @@ export const useEngagements = (filters) => {
         if (filters?.notice && filters.notice.length > 0)
           params.nps = filters.notice.map((notice) => notice.value).join(",");
 
-        const { data } = await axios.get(`${BASE_URL}/engagements`, { params });
+        if (org_id) params.organization_id = org_id
+
+        const { data } = await axios.get(`${BASE_URL}/engagements/`, { params });
         return data;
       } catch (error) {
         errorToaster(error);
@@ -51,12 +53,14 @@ export const useEngagements = (filters) => {
   });
 };
 
-export const useJobs = () => {
+export const useJobs = (org_id) => {
   return useQuery({
     queryKey: ["jobs"],
     queryFn: async () => {
       try {
-        const { data } = await axios.get("/api/client/jobs/");
+        const params = {};
+        if (org_id) params.organization_id = org_id
+        const { data } = await axios.get("/api/client/jobs/", { params });
         return data;
       } catch (error) {
         errorToaster(error);

@@ -7,14 +7,20 @@ import {
   Route,
   Routes,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import { useEffect } from "react";
 
 const RedirectToDashboard = () => {
   const navigate = useNavigate();
+  const { "*":org_id } = useParams();
 
   useEffect(() => {
-    navigate("/client/engagement/dashboard");
+    if (org_id){
+      navigate("/internal/engagement/dashboard/", { state: {org_id: org_id} });
+    }else{
+      navigate("/client/engagement/dashboard");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

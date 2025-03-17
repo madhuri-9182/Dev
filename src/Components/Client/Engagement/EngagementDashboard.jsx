@@ -9,7 +9,7 @@ import {
   useJobs,
   useUpdateEngagementStatus,
 } from "./api";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AddButton from "../../shared/AddButton";
 import SearchInput from "../../shared/SearchInput";
 import CandidateStats from "../Candidates/view-candidate/CandidateStats";
@@ -29,6 +29,8 @@ function EngagementDashboard({ setSelectedEngagement }) {
     search: "",
   });
 
+  const { state } = useLocation();
+
   const updateDebouncedFilters = useCallback(
     debounce((filters, searchQuery) => {
       setDebouncedFilters({
@@ -38,9 +40,9 @@ function EngagementDashboard({ setSelectedEngagement }) {
     }, 500),
     []
   );
-  const { data: jobsData } = useJobs();
+  const { data: jobsData } = useJobs(state?.org_id);
   const { data, isLoading, isError, error } =
-    useEngagements(debouncedFilters);
+    useEngagements(debouncedFilters, state?.org_id);
   const [updatingEngagementId, setUpdatingEngagementId] =
     useState(null);
   const { mutate } = useUpdateEngagementStatus({
@@ -124,13 +126,13 @@ function EngagementDashboard({ setSelectedEngagement }) {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        <AddButton
+        {!state.org_id && <AddButton
           label="+ Add Candidate"
           onClick={() =>
             navigate("/client/engagement/form")
           }
           className={"w-40"}
-        />
+        />}
       </div>
 
       <CandidateStats stats={stats} title={"engagement"} />
@@ -152,6 +154,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
           onEngagementClick={() =>
             onEngagementClick(engagement)
           }
+          org_id={state?.org_id}
         />
       ))}
     </div>
