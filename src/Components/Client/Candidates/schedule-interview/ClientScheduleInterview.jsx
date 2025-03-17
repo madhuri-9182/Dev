@@ -304,6 +304,8 @@ function ClientScheduleInterview() {
       if (window.opener) {
         window.opener.removeCandidateFromData(key);
         window.close();
+      } else {
+        navigate("/client/candidates");
       }
     }
   };
