@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import axios from "../../../api/axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -32,13 +33,13 @@ export const useEngagements = (filters) => {
 
         if (filters?.search) params.q = filters.search;
         if (filters?.role && filters.role.length > 0)
-          params.role_id = filters.role.map((role) => role.value).join(",");
+          params.role_ids = filters.role.map((role) => role.value).join(",");
         if (filters?.function && filters.function.length > 0)
-          params.specialization = filters.function
+          params.specializations = filters.function
             .map((func) => func.value)
             .join(",");
         if (filters?.notice && filters.notice.length > 0)
-          params.np = filters.notice.map((notice) => notice.value).join(",");
+          params.nps = filters.notice.map((notice) => notice.value).join(",");
 
         const { data } = await axios.get(`${BASE_URL}/engagements`, { params });
         return data;
