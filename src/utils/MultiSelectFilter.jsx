@@ -67,35 +67,30 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
   return (<div className="flex items-center font-medium space-x-1">
     <span className="font-bold mr-2 text-xs">{label}</span>
     <Autocomplete
-      isOptionEqualToValue={(option, value) => (apiEndpoint ? option.id : option.value) === value.value}
+      isOptionEqualToValue={(option, value) =>
+        apiEndpoint ? option.id === value.id : option.value === value.value
+      }
       disableCloseOnSelect
       multiple
       options={Array.isArray(fetchedOptions) ? fetchedOptions : []}
-      getOptionLabel={(option) => {
-        return apiEndpoint ? option.domain : option.label;
-      }}
+      getOptionLabel={(option) => (apiEndpoint ? option.domain : option.label)}
       filterSelectedOptions
-      renderInput={(params) => (
-        <StyledTextField
-          {...params}
-          placeholder={current_value?.length === 0 ? "All" : ""}
-        />
-      )}
       value={current_value}
       onChange={(event, newValue) => {
-        handleChipClick(filter_state_name, newValue);
+        // Ensure each option is selected only once
+        const uniqueValues = newValue.filter(
+          (item, index, self) =>
+            index === self.findIndex((v) => (apiEndpoint ? v.id === item.id : v.value === item.value))
+        );
+        handleChipClick(filter_state_name, uniqueValues);
       }}
+      renderInput={(params) => (
+        <StyledTextField {...params} placeholder={current_value?.length === 0 ? "All" : ""} />
+      )}
       slotProps={{
-        paper: {
-          sx: {
-            fontSize: 12,
-          },
-        },
+        paper: { sx: { fontSize: 12 } },
         listbox: {
-          sx: {
-            maxHeight: '200px',
-            overflowY: 'auto',
-          },
+          sx: { maxHeight: '200px', overflowY: 'auto' },
           onScroll: handleScroll,
           ref: listboxRef,
         },

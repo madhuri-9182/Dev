@@ -239,14 +239,16 @@ const router = createBrowserRouter(
                 element={<InternalAddClient />}
               />
             </Route>
-            <Route
-              path="interviewer"
-              element={<InternalInterviewer />}
-            />
-            <Route
-              path="addinterviewer"
-              element={<InternalAddInterviewer />}
-            />
+            <Route path="interviewer">
+              <Route
+                path=""
+                element={<InternalInterviewer />}
+              />
+              <Route
+                path="addinterviewer"
+                element={<InternalAddInterviewer />}
+              />
+            </Route>
             <Route
               path="users"
               element={<InternalUsers />}

@@ -32,7 +32,11 @@ function Clients() {
   ];
 
   const handleChipClick = (type, value) => {
-    setFilters((prev) => ({ ...prev, [type]: value }));
+    if (type === 'status') {
+      setFilters((prev) => ({ ...prev, status: value.slice(-1) }));
+    } else {
+      setFilters((prev) => ({ ...prev, [type]: value }));
+    }
   };
 
   const fetchClients = async () => {

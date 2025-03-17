@@ -256,7 +256,7 @@ function Interviewer() {
             />
             <IoSearchSharp className="text-[#49454F]" />
           </div>
-          <button className='primary-button h-[32px]' onClick={() => navigate("/internal/addinterviewer")}>+ Add Interviewers</button>
+          <button className='primary-button h-[32px]' onClick={() => navigate("/internal/interviewer/addinterviewer")}>+ Add Interviewers</button>
         </div>
         <div className='w-full h-[104px] grid grid-cols-[1fr_1fr_1fr_1fr_1fr] 2xl:gap-x-7 gap-x-4 justify-between items-center p-2'>
           <div className='flex flex-col justify-center items-start p-4 pl-[15%] bg-[#E5ECF6] rounded-[16px]'>
