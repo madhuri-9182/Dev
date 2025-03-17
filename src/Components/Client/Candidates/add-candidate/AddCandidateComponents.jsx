@@ -39,9 +39,9 @@ export const ResumeTable = ({
         </tr>
       </thead>
       <tbody>
-        {data.map((item, idx) => (
+        {data.map((item) => (
           <ResumeTableRow
-            key={idx}
+            key={item.id}
             item={item}
             data={data}
             setData={setData}
@@ -88,11 +88,18 @@ const ResumeTableRow = ({
   });
   const [errors, setErrors] = useState({});
 
-  // Validate fields immediately when component mounts
+  // Reset editedData whenever item changes - THIS IS THE KEY FIX
   useEffect(() => {
+    setEditedData({
+      ...item,
+      phone_number: item.phone_number.startsWith("+91")
+        ? item.phone_number.slice(3)
+        : item.phone_number,
+      gender: item.gender ? item.gender : "",
+    });
     validateFields();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [item.id]); // Add item.id as dependency to reset state when item changes
 
   const handleChange = (e, field, subField = null) => {
     const value = e.target.value;
@@ -198,9 +205,14 @@ const ResumeTableRow = ({
 
     const uniqueKey = `candidateData-${selectedIData.id}`;
 
-    localStorage.clear();
+    // Clear only candidateData entries before setting new one
+    Object.keys(localStorage).forEach((key) => {
+      if (key.includes("candidateData-")) {
+        localStorage.removeItem(key);
+      }
+    });
 
-    // Store the encoded data in localStorage (or sessionStorage)
+    // Store the encoded data in localStorage
     localStorage.setItem(
       uniqueKey,
       JSON.stringify(encodedData)
@@ -234,6 +246,12 @@ const ResumeTableRow = ({
     const updatedData = data.filter((row) => {
       return row.id !== updatedKey;
     });
+
+    // Reset editing state if we're editing the removed candidate
+    if (editingRowId === updatedKey) {
+      setEditingRowId(null);
+    }
+
     setData(updatedData);
   };
 
@@ -456,7 +474,7 @@ const Input = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`border rounded px-2 py-1 ${className}`}
+      className={`border rounded px-1 py-1 ${className}`}
     />
   );
 };
