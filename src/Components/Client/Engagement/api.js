@@ -22,10 +22,10 @@ const successToaster = (message) => {
   toast.success(message, { position: "top-right" });
 };
 
-// Fetch all candidates with optional search
+// Fetch all candidates with optional search and pagination
 export const useEngagements = (filters, org_id) => {
   return useQuery({
-    queryKey: ["engagements", filters],
+    queryKey: ["engagements", filters, filters.offset],
     queryFn: async () => {
       try {
         // Create params object excluding 'all' values and empty values
@@ -33,15 +33,18 @@ export const useEngagements = (filters, org_id) => {
 
         if (filters?.search) params.q = filters.search;
         if (filters?.role && filters.role.length > 0)
-          params.role_ids = filters.role.map((role) => role.value).join(",");
+          params.job_ids = filters.role.map((role) => role.value).join(",");
         if (filters?.function && filters.function.length > 0)
           params.specializations = filters.function
             .map((func) => func.value)
             .join(",");
         if (filters?.notice && filters.notice.length > 0)
           params.nps = filters.notice.map((notice) => notice.value).join(",");
+        
+        // Add pagination parameters
+        params.offset = filters.offset || 0;
 
-        if (org_id) params.organization_id = org_id
+        if (org_id) params.organization_id = org_id;
 
         const { data } = await axios.get(`${BASE_URL}/engagements/`, { params });
         return data;
@@ -50,6 +53,8 @@ export const useEngagements = (filters, org_id) => {
         throw error;
       }
     },
+    // Keep previous data while loading new data
+    keepPreviousData: true,
   });
 };
 

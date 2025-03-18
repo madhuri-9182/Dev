@@ -54,7 +54,7 @@ const CandidateTimeline = ({
   engagement,
   onStatusChange,
   isUpdating,
-  onEngagementClick = () => {},
+  onEngagementClick = () => { },
   org_id,
 }) => {
   const steps = useMemo(
@@ -72,8 +72,8 @@ const CandidateTimeline = ({
   return (
     <TimelineContainer>
       <CandidateInfo
-        onClick={() => onEngagementClick && onEngagementClick(engagement)}
-        className={onEngagementClick ? "cursor-pointer" : ""}
+        onClick={() => (onEngagementClick && !org_id) && onEngagementClick(engagement)}
+        className={(onEngagementClick && !org_id) ? "cursor-pointer" : ""}
       >
         <Typography className="candidate-initials">
           {engagement?.candidate_name}
@@ -90,14 +90,20 @@ const CandidateTimeline = ({
         <GreenStepper steps={steps} />
       </Box>
 
-      {org_id ? engagementStatus?.label : <CustomMenu
-        options={ENAGAGEMENT_STATUS}
-        selectedOption={engagementStatus}
-        setSelectedOption={(opt) => {
-          onStatusChange(opt.value);
-        }}
-        isUpdating={isUpdating}
-      />}
+      {org_id ?
+        <button 
+        className={`cursor-default px-4 py-2 rounded-[100px] border text-xs font-semibold`} 
+        style={{ color: engagementStatus?.color || "#65558F", borderColor: engagementStatus?.color || "#79747E" }}
+        >
+          {engagementStatus?.label}
+        </button> : <CustomMenu
+          options={ENAGAGEMENT_STATUS}
+          selectedOption={engagementStatus}
+          setSelectedOption={(opt) => {
+            onStatusChange(opt.value);
+          }}
+          isUpdating={isUpdating}
+        />}
     </TimelineContainer>
   );
 };
