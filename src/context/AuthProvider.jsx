@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import axios from "../api/axios";
 import { toast } from "react-hot-toast";
@@ -19,11 +19,24 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 205) {
         toast.success("Logged out successfully");
         setAuth({});
+        // Send a message to all other tabs to log out
+        const channel = new BroadcastChannel("auth");
+        channel.postMessage("logout");
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const channel = new BroadcastChannel("auth");
+    channel.onmessage = (event) => {
+      if (event.data === "logout") {
+        // Log out the current user
+        setAuth({});
+      }
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth, logout }}>
