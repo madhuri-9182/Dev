@@ -32,6 +32,7 @@ function Clients() {
   ];
 
   const handleChipClick = (type, value) => {
+    setOffset(0);
     if (type === 'status') {
       setFilters((prev) => ({ ...prev, status: value.slice(-1) }));
     } else {

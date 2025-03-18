@@ -48,7 +48,7 @@ function Interviewer() {
           setSummary(prev => ({
             ...prev,
             ...res.data,
-            results: res?.data?.results?.length > 0 ? [...prev.results, ...res.data.results] : [],
+            results: page === 1 ? res.data.results : [...prev.results, ...res.data.results],
           }));
           setLoading(false);
         }
