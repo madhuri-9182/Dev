@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AddButton from "../../shared/AddButton";
 import SearchInput from "../../shared/SearchInput";
 import CandidateStats from "../Candidates/view-candidate/CandidateStats";
+import Empty from "../../shared/Empty";
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
@@ -51,9 +52,9 @@ function EngagementDashboard({ setSelectedEngagement }) {
     }, 500),
     []
   );
-  
+
   const { data: jobsData } = useJobs(state?.org_id);
-  const { data, isLoading, isError, error } = useEngagements({...debouncedFilters, offset}, state?.org_id);
+  const { data, isLoading, isError, error } = useEngagements({ ...debouncedFilters, offset }, state?.org_id);
   const [updatingEngagementId, setUpdatingEngagementId] = useState(null);
   const { mutate } = useUpdateEngagementStatus({
     ...filters,
@@ -64,7 +65,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
   useEffect(() => {
     updateDebouncedFilters(filters, searchQuery);
   }, [filters, searchQuery, updateDebouncedFilters]);
-  
+
   useEffect(() => {
     // Reset offset and engagements when filters or search query changes
     if (searchQuery || filters.role.length > 0 || filters.function.length > 0 || filters.notice.length > 0) {
@@ -83,7 +84,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
         setEngagementsList(prev => [...prev, ...(data?.results || [])]);
       }
       setHasMore(data?.next !== null);
-      
+
       // Update stats
       setStats([
         { label: "Total Candidates", value: data?.total_candidates },
@@ -110,11 +111,11 @@ function EngagementDashboard({ setSelectedEngagement }) {
       { onSettled: () => setUpdatingEngagementId(null) }
     );
   };
-  
+
   const handleChipClick = (type, value) => {
     setFilters((prev) => ({ ...prev, [type]: value }));
   };
-  
+
   const onEngagementClick = (engagement) => {
     setSelectedEngagement(engagement);
     navigate("/client/engagement/event-schedular");
@@ -154,7 +155,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
         onChipClick={handleChipClick}
       />
 
-      <div 
+      <div
         ref={containerRef}
         className="overflow-y-auto max-h-[400px] flex flex-col gap-y-4"
         onScroll={handleScroll}
@@ -177,17 +178,15 @@ function EngagementDashboard({ setSelectedEngagement }) {
             />
           ))
         )}
-        
+
         {isLoading && offset > 0 && (
           <div className="flex justify-center p-4">
             Loading more engagements...
           </div>
         )}
-        
+
         {!isLoading && engagementsList.length === 0 && (
-          <div className="flex justify-center p-4">
-            No engagements found.
-          </div>
+          <Empty description="No data found" />
         )}
       </div>
     </div>
