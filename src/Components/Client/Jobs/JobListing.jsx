@@ -23,6 +23,7 @@ import {
 } from "../../../utils/util";
 import useAuth from "../../../hooks/useAuth";
 import { JOB_STATUS } from "../../Constants/constants";
+import Empty from "../../shared/Empty";
 
 // Sub-components
 
@@ -268,33 +269,31 @@ const JobListing = ({ data }) => {
 
       {/* Job List */}
       {count ? (
-        <>
-          <div className="w-full flex flex-col gap-2">
-            {results.map((job, index) => (
-              <JobCard
-                key={job.id || index}
-                job={job}
-                onView={handleShowJobDetails}
-                onEdit={handleAddJobClick}
-                onArchive={handleArchiveModalOpen}
-                onAddCandidate={handleAddCandidateClick}
-              />
-            ))}
-          </div>
-
-          <Pagination
-            count={Math.ceil(count / 10)}
-            className="mt-4 flex justify-end"
-            onChange={(e, page) => handleChangePage(page)}
-            variant="outlined"
-            size="small"
-            shape="rounded"
-          />
-        </>
+         <>
+         <div className="w-full flex flex-col gap-2">
+           {results.map((job, index) => (
+             <JobCard
+               key={job.id || index}
+               job={job}
+               onView={handleShowJobDetails}
+               onEdit={handleAddJobClick}
+               onArchive={handleArchiveModalOpen}
+               onAddCandidate={handleAddCandidateClick}
+             />
+           ))}
+         </div>
+ 
+         <Pagination
+           count={Math.ceil(count / 10)}
+           className="mt-4 flex justify-end"
+           onChange={(e, page) => handleChangePage(page)}
+           variant="outlined"
+           size="small"
+           shape="rounded"
+         />
+       </>  
       ) : (
-        <p className="text-default font-semibold uppercase text-center text-[#6B6F7B]">
-          No Jobs Found
-        </p>
+        <Empty description="No Jobs Found" />
       )}
 
       {/* Archive Modal */}

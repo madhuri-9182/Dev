@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import CandidateRow from "./CandidateRow";
+import Empty from "../../../shared/Empty";
 
 const CandidateList = ({
   candidates,
@@ -8,7 +9,9 @@ const CandidateList = ({
   onViewCandidate,
 }) => {
   if (!candidates.length) {
-    return <div className="text-center">No data found</div>;
+    return (
+      <Empty description="No candidates found" />
+    );
   }
 
   return (

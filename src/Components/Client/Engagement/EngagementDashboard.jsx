@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AddButton from "../../shared/AddButton";
 import SearchInput from "../../shared/SearchInput";
 import CandidateStats from "../Candidates/view-candidate/CandidateStats";
+import Empty from "../../shared/Empty";
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
@@ -143,20 +144,24 @@ function EngagementDashboard({ setSelectedEngagement }) {
         onChipClick={handleChipClick}
       />
 
-      {engagements.map((engagement) => (
-        <CandidateTimeline
-          key={engagement.id}
-          onStatusChange={(status) =>
-            onEngagementStatusChange(status, engagement)
-          }
-          engagement={engagement}
-          isUpdating={updatingEngagementId == engagement.id}
-          onEngagementClick={() =>
-            onEngagementClick(engagement)
-          }
-          org_id={state?.org_id}
-        />
-      ))}
+      {engagements.length > 0 ? (
+        engagements.map((engagement) => (
+          <CandidateTimeline
+            key={engagement.id}
+            onStatusChange={(status) =>
+              onEngagementStatusChange(status, engagement)
+            }
+            engagement={engagement}
+            isUpdating={updatingEngagementId == engagement.id}
+            onEngagementClick={() =>
+              onEngagementClick(engagement)
+            }
+            org_id={state?.org_id}
+          />
+        ))
+      ): (
+        <Empty description="No data found" />
+      )}
     </div>
   );
 }

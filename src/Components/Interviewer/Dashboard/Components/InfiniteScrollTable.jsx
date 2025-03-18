@@ -14,6 +14,7 @@ import {
 } from "../utils/formatters";
 import { LoadingState } from "../../../shared/loading-error-state";
 import { ActionButtons } from "./ActionButtons";
+import Empty from '../../../shared/Empty'
 
 /**
  * Table component with infinite scroll capability
@@ -29,11 +30,9 @@ const InfiniteScrollTable = ({
     "px-4 text-left text-wrap";
 
   return (
-    <div className="px-3 max-h-60 overflow-y-auto">
+    <div className="px-3 h-60 overflow-y-auto">
       {data.length === 0 ? (
-        <p className="text-center text-sm">
-          No records found
-        </p>
+        <Empty description="No interviews found" />
       ) : (
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
