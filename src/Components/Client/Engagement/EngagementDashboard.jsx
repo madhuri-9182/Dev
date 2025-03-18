@@ -126,7 +126,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        {!state.org_id && <AddButton
+        {!state?.org_id && <AddButton
           label="+ Add Candidate"
           onClick={() =>
             navigate("/client/engagement/form")
