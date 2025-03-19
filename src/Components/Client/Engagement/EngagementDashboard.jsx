@@ -6,7 +6,6 @@ import CandidateTimeline from "./components/CandidateTimeline";
 import { debounce } from "@mui/material";
 import {
   useEngagements,
-  useJobs,
   useUpdateEngagementStatus,
 } from "./api";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +14,7 @@ import SearchInput from "../../shared/SearchInput";
 import CandidateStats from "../Candidates/view-candidate/CandidateStats";
 import Empty from "../../shared/Empty";
 import { LoadingState } from "../../shared/loading-error-state";
+import useAllEngagements from "../../../hooks/useFetchAllEngagements";
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
@@ -53,15 +53,25 @@ function EngagementDashboard({ setSelectedEngagement }) {
     }, 500),
     []
   );
-
-  const { data: jobsData } = useJobs(state?.org_id);
+  const {data: allEngagements} = useAllEngagements();
   const { data, isLoading, isError, error } = useEngagements({ ...debouncedFilters, offset }, state?.org_id);
   const [updatingEngagementId, setUpdatingEngagementId] = useState(null);
   const { mutate } = useUpdateEngagementStatus({
     ...filters,
     search: searchQuery,
   });
-  const jobs = jobsData?.results || [];
+  const roles = allEngagements
+    ? [
+        ...new Set(
+          allEngagements.map((candidate) =>
+            JSON.stringify({
+              id: candidate.job.id,
+              name: candidate.job.name,
+            })
+          )
+        ),
+      ].map((str) => JSON.parse(str))
+    : [];
 
   useEffect(() => {
     updateDebouncedFilters(filters, searchQuery);
@@ -151,7 +161,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
       <CandidateStats stats={stats} title={"engagement"} />
 
       <Filters
-        jobs={jobs}
+        jobs={roles}
         filters={filters}
         onChipClick={handleChipClick}
       />

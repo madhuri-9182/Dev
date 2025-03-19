@@ -2,6 +2,7 @@ import { Autocomplete, Box, TextField, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { NOTICE_PERIOD, SPECIALIZATION_CHOICES } from "../constants";
 import { styled } from "@mui/material/styles";
+import { getJobLabel } from "../../../../utils/util";
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-root": {
@@ -69,7 +70,7 @@ const Filters = ({ filters, onChipClick, jobs }) => {
             label: job.name,
           }))}
           getOptionLabel={(option) => {
-            return option.label.split("_").join(" ");
+            return getJobLabel(option.label);
           }}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           renderInput={(params) => (
