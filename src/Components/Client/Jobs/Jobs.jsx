@@ -38,7 +38,7 @@ const Jobs = () => {
         return acc;
       }, {});
     }, [allJobs]);
-  const jobStatus = groupedJobs?.[state?.job_role] || [];
+  const jobStatus = groupedJobs?.[state?.job_role] ? [groupedJobs?.[state?.job_role]]: [];
   const [filters, setFilters] = useState({
     post_job_date: "",
     job_ids: jobStatus,
