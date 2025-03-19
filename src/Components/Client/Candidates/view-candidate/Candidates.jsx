@@ -98,6 +98,7 @@ function Candidates() {
         id: person.id,
         status: person.status,
         remark: person.remark,
+        last_scheduled_initiate_time: person.last_scheduled_initiate_time,
       };
 
       // Process CV file

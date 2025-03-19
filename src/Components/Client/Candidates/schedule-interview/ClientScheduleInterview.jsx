@@ -30,6 +30,7 @@ import CandidateForm from "./components/CandidateForm";
 import TimeSlotSelector from "./components/TimeSlotSelector";
 import TimeWindowSelector from "./components/TimeWindowSelector";
 import DropCandidateModal from "../components/DropCandidateModal";
+import TimeRemainingComponent from "./components/TimeRemainingComponent";
 
 /**
  * Main component for scheduling interviews with candidates
@@ -40,6 +41,8 @@ function ClientScheduleInterview() {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] =
+    useState(false);
+  const [isTimerCompleted, setIsTimerCompleted] =
     useState(false);
 
   // Parse query parameters to get candidate data
@@ -310,6 +313,34 @@ function ClientScheduleInterview() {
     }
   };
 
+  const isConfirmButtonDisabled = () => {
+    if (isTimerCompleted) {
+      return false;
+    }
+
+    // If there's no last_scheduled_initiate_time, button should not be disabled
+    if (!item?.last_scheduled_initiate_time) {
+      return false;
+    }
+
+    // Parse the timestamp (handling ISO format with timezone)
+    const lastScheduledTime = new Date(
+      item.last_scheduled_initiate_time
+    );
+    const currentTime = new Date();
+
+    // Calculate difference in minutes
+    const diffInMs = currentTime - lastScheduledTime;
+    const diffInMinutes = diffInMs / (1000 * 60);
+
+    // Return true if less than 70 minutes have passed (button should be disabled)
+    return diffInMinutes < 70;
+  };
+
+  const handleTimerComplete = () => {
+    setIsTimerCompleted(true);
+  };
+
   // If no item data is available, show an error message
   if (!item) {
     return (
@@ -392,10 +423,14 @@ function ClientScheduleInterview() {
 
               <button
                 type="button"
-                disabled={!selectedWindow}
-                className={`px-6 py-2 border rounded-[100px] text-white font-medium cursor-pointer w-32 flex items-center justify-center uppercase text-xs ${
-                  selectedWindow
-                    ? "bg-[#007AFF] border-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
+                disabled={
+                  !selectedWindow ||
+                  isConfirmButtonDisabled()
+                }
+                className={`px-6 py-2 border rounded-[100px] text-white font-medium w-32 flex items-center justify-center uppercase text-xs ${
+                  selectedWindow &&
+                  !isConfirmButtonDisabled()
+                    ? "bg-[#007AFF] border-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
                     : "bg-[#A0CFFF] border-[#A0CFFF] cursor-not-allowed"
                 }`}
                 onClick={() => {
@@ -430,6 +465,10 @@ function ClientScheduleInterview() {
                 )}
               </button>
             </div>
+            <TimeRemainingComponent
+              time={item?.last_scheduled_initiate_time}
+              onTimerComplete={handleTimerComplete}
+            />
           </form>
         </div>
       </div>
