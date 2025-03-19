@@ -11,11 +11,9 @@ import {
   JobCard,
   FilterListbox,
 } from "./JobListingComponents";
-import { extractUniquePersonnel } from "./util";
 
 // Hooks & Utils
 import { useJobContext } from "../../../context/JobContext";
-import useAllJobs from "../../../hooks/useFetchAllJobs";
 import {
   formatDate,
   revertDateFormat,
@@ -28,7 +26,7 @@ import Empty from "../../shared/Empty";
 // Sub-components
 
 // Main component
-const JobListing = ({ data }) => {
+const JobListing = ({ data, groupedJobs, hiringManagers, recruiters, filters, setFilters }) => {
   const { auth } = useAuth();
   const { count, results } = data;
   const navigate = useNavigate();
@@ -37,33 +35,10 @@ const JobListing = ({ data }) => {
     handleShowJobDetails,
     handleArchiveModalOpen,
     handleChangePage,
-    setFilters,
-    filters,
     isArchiveModalOpen,
     setIsArchiveModalOpen,
     archiveId,
   } = useJobContext();
-  const { data: allJobs } = useAllJobs();
-
-  // Memoize derived data to prevent unnecessary recalculations
-  const { hiringManagers, recruiters } = useMemo(
-    () => extractUniquePersonnel(allJobs),
-    [allJobs]
-  );
-
-  const groupedJobs = useMemo(() => {
-    if (!allJobs) return {};
-
-    return allJobs.reduce((acc, job) => {
-      if (job && job.name) {
-        if (!acc[job.name]) {
-          acc[job.name] = [];
-        }
-        acc[job.name].push(job.id);
-      }
-      return acc;
-    }, {});
-  }, [allJobs]);
 
   const handleArchiveModalClose = () =>
     setIsArchiveModalOpen(false);
@@ -311,6 +286,11 @@ const JobListing = ({ data }) => {
 
 JobListing.propTypes = {
   data: PropTypes.object.isRequired,
+  groupedJobs: PropTypes.object.isRequired,
+  recruiters: PropTypes.array.isRequired,
+  hiringManagers: PropTypes.array.isRequired,
+  setFilters: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired,
 };
 
 export default JobListing;

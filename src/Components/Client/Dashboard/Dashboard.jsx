@@ -30,6 +30,9 @@ const Dashboard = () => {
     dashboardData?.job_role_aggregates?.map((job_role) => ({
       label: getJobLabel(job_role.name),
       value: job_role.count,
+      onClick: ()=> {
+        navigate('/client/jobs', {state: {job_role: job_role.name}});
+      }
     })) || [];
 
   const allTasksItems = ALL_TASKS.map((task) => ({

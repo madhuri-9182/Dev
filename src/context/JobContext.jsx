@@ -44,13 +44,6 @@ export const JobProvider = () => {
     useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [archiveId, setArchiveId] = useState(null);
-  const [filters, setFilters] = useState({
-    post_job_date: "",
-    job_ids: [],
-    hiring_manager_ids: [],
-    recruiter_ids: [],
-    status: "active",
-  });
   const [isArchiveModalOpen, setIsArchiveModalOpen] =
     useState(false);
 
@@ -175,8 +168,6 @@ export const JobProvider = () => {
         setCurrentPage,
         archiveId,
         setArchiveId,
-        filters,
-        setFilters,
         isArchiveModalOpen,
         setIsArchiveModalOpen,
         handleShowJobDetails,

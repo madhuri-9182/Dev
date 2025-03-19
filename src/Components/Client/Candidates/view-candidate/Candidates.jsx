@@ -32,8 +32,7 @@ import { CandidateFilters } from "./CandidateFilters";
 import AddButton from "../../../shared/AddButton";
 
 function Candidates() {
-  const location = useLocation();
-  const state = location?.state;
+  const {state} = useLocation();
 
   const navigate = useNavigate();
   const { data: candidates } = useAllCandidates();

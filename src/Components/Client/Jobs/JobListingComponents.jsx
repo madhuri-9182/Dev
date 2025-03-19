@@ -189,8 +189,9 @@ export const FilterTags = ({
   if (!hasFilters) return null;
 
   const getJobName = (jobId) => {
+
     for (const [name, ids] of Object.entries(groupedJobs)) {
-      if (ids.includes(jobId[0])) {
+      if (ids.includes(jobId) || ids.includes(jobId[0])) {
         return getJobLabel(name);
       }
     }

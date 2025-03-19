@@ -7,19 +7,56 @@ import {
   LoadingState,
 } from "../../shared/loading-error-state";
 import useAuth from "../../../hooks/useAuth";
+import { useMemo, useState } from "react";
+import useAllJobs from "../../../hooks/useFetchAllJobs";
+import { extractUniquePersonnel } from "./util";
+import { useLocation } from "react-router-dom";
 
 const Jobs = () => {
   const { auth } = useAuth();
-  const { currentPage, filters } = useJobContext();
+  const {state} = useLocation();
+  const { currentPage } = useJobContext();
 
-  const queryFilters = {
-    page: currentPage,
-    job_ids: filters.job_ids,
-    hiring_manager_ids: filters.hiring_manager_ids,
-    recruiter_ids: filters.recruiter_ids,
-    post_job_date: filters.post_job_date,
-    status: filters.status,
-  };
+  const { data: allJobs } = useAllJobs();
+
+  // Memoize derived data to prevent unnecessary recalculations
+  const { hiringManagers, recruiters } = useMemo(
+    () => extractUniquePersonnel(allJobs),
+    [allJobs]
+  );
+
+   const groupedJobs = useMemo(() => {
+      if (!allJobs) return {};
+  
+      return allJobs.reduce((acc, job) => {
+        if (job && job.name) {
+          if (!acc[job.name]) {
+            acc[job.name] = [];
+          }
+          acc[job.name].push(job.id);
+        }
+        return acc;
+      }, {});
+    }, [allJobs]);
+  const jobStatus = groupedJobs?.[state?.job_role] || [];
+  const [filters, setFilters] = useState({
+    post_job_date: "",
+    job_ids: jobStatus,
+    hiring_manager_ids: [],
+    recruiter_ids: [],
+    status: "active",
+  });
+
+  const queryFilters = useMemo(() => {
+    return {
+      page: currentPage,
+      job_ids: filters.job_ids,
+      hiring_manager_ids: filters.hiring_manager_ids,
+      recruiter_ids: filters.recruiter_ids,
+      post_job_date: filters.post_job_date,
+      status: filters.status,
+    };
+  }, [currentPage, filters]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["jobs", queryFilters, auth],
@@ -34,7 +71,7 @@ const Jobs = () => {
 
   return (
     <div className="m-0 px-3">
-      <JobListing data={data} />
+      <JobListing data={data} groupedJobs={groupedJobs} hiringManagers={hiringManagers} recruiters={recruiters} filters={filters} setFilters={setFilters} />
     </div>
   );
 };
