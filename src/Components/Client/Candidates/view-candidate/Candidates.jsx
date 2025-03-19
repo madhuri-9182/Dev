@@ -33,6 +33,8 @@ import AddButton from "../../../shared/AddButton";
 
 function Candidates() {
   const location = useLocation();
+  const state = location?.state;
+
   const navigate = useNavigate();
   const { data: candidates } = useAllCandidates();
   const roles = candidates
@@ -48,11 +50,13 @@ function Candidates() {
       ].map((str) => JSON.parse(str))
     : [];
 
+    const status = state?.status || "All";
+
   // State management
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedStatus, setSelectedStatus] =
-    useState("All");
+    useState(status);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Debounce search query to prevent excessive API calls

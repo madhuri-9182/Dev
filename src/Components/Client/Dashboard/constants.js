@@ -29,18 +29,28 @@ export const MY_JOBS = [
   {
     label: "My Jobs",
     key: "total_jobs",
+    path: "/client/jobs"
   },
   {
     label: "Total Candidates",
     key: "total_candidates",
+    path: "/client/candidates"
   },
   {
     label: "Selected Candidates",
     key: "selects",
+    path: "/client/candidates",
+    state: {
+      status: 'REC'
+    }
   },
   {
     label: "Rejected Candidates",
     key: "rejects",
+    path: "/client/candidates",
+    state: {
+      status: 'NREC'
+    }
   },
 ];
 

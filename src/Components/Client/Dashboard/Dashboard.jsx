@@ -8,9 +8,11 @@ import {
 import { getJobLabel } from "../../../utils/util";
 import { ALL_TASKS, ANALYTICS, MY_JOBS } from "./constants";
 import useAuth from "../../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { auth } = useAuth();
+  const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard", auth],
     queryFn: fetchDashboardApi,
@@ -40,6 +42,14 @@ const Dashboard = () => {
   const myJobsItems = MY_JOBS.map((job) => ({
     label: job.label,
     value: dashboardData?.job_aggregates[job.key] || 0,
+    onClick: ()=> {
+      if(job?.state){
+        navigate(job.path, {state: job.state});
+      } else {
+        navigate(job.path);
+      }
+    }
+
   }));
 
   const analyticsItems = ANALYTICS.map((analytics) => ({
@@ -152,7 +162,8 @@ const CardItems = ({
       {items.map((item, idx) => (
         <div
           key={idx}
-          className={`flex flex-col gap-1 ${textColor}`}
+          className={`flex flex-col gap-1 ${textColor} cursor-pointer`}
+          onClick={item.onClick}
         >
           <p className="text-2xs font-medium">
             {item.label}
