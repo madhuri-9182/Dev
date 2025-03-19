@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import PropTypes from "prop-types";
 import Button, { primaryButtonStyles } from "./Button";
 import EventCard from "./EventCard";
 
@@ -20,6 +21,7 @@ export const AddTemplateButton = ({
         id: -1,
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAddingNew]);
 
   if (isAddingNew) {
@@ -54,3 +56,12 @@ export const AddTemplateButton = ({
     </Button>
   );
 };
+
+AddTemplateButton.propTypes = {
+  isAddingNew: PropTypes.bool,
+  setIsAddingNew: PropTypes.func,
+  editorState: PropTypes.object,
+  hasChanges: PropTypes.bool,
+  selectTemplate: PropTypes.func,
+  handleTemplateNameChange: PropTypes.func,
+}

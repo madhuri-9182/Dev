@@ -14,6 +14,7 @@ import AddButton from "../../shared/AddButton";
 import SearchInput from "../../shared/SearchInput";
 import CandidateStats from "../Candidates/view-candidate/CandidateStats";
 import Empty from "../../shared/Empty";
+import { LoadingState } from "../../shared/loading-error-state";
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
@@ -157,13 +158,11 @@ function EngagementDashboard({ setSelectedEngagement }) {
 
       <div
         ref={containerRef}
-        className="overflow-y-auto max-h-[400px] flex flex-col gap-y-4"
+        className="overflow-y-auto max-h-[400px] flex flex-col"
         onScroll={handleScroll}
       >
         {isLoading && offset === 0 ? (
-          <div className="flex justify-center p-4">
-            Loading engagements...
-          </div>
+          <LoadingState />
         ) : (
           engagementsList.map((engagement) => (
             <CandidateTimeline

@@ -1,10 +1,11 @@
+import PropTypes from "prop-types";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import GreenStepper from "./GreenStepper";
 import CustomMenu from "./CustomMenu";
-import { ENAGAGEMENT_STATUS, NOTICE_PERIOD } from "../constants";
+import { ENAGAGEMENT_STATUS } from "../constants";
 
 import { findAllSteps } from "../utils";
 
@@ -12,7 +13,7 @@ const TimelineContainer = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "8px",
-  padding: "24px 5px",
+  padding: "8px 5px",
   backgroundColor: "white",
 
   borderTop: "1px solid #E5E7EB",
@@ -25,10 +26,10 @@ const CandidateInfo = styled(Box)({
   display: "flex",
   flexDirection: "column",
   minWidth: "200px",
-  gap: "10px",
+  gap: "6px",
   textTransform: "uppercase",
   "& .candidate-initials": {
-    fontSize: "14px",
+    fontSize: "12px",
     fontWeight: 600,
     color: "#056DDC",
     lineHeight: 1,
@@ -39,12 +40,12 @@ const CandidateInfo = styled(Box)({
     alignItems: "center",
 
     "& .role": {
-      fontSize: "12px",
+      fontSize: "11px",
       color: "#000000",
       marginRight: "8px",
     },
     "& .type": {
-      fontSize: "12px",
+      fontSize: "11px",
       color: "#000000",
     },
   },
@@ -109,3 +110,11 @@ const CandidateTimeline = ({
 };
 
 export default CandidateTimeline;
+
+CandidateTimeline.propTypes = {
+  engagement: PropTypes.object,
+  onStatusChange: PropTypes.func,
+  isUpdating: PropTypes.bool,
+  onEngagementClick: PropTypes.func,
+  org_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};

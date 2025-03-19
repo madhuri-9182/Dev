@@ -1,6 +1,6 @@
 import { Card, CardActionArea, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ItemTypes } from "../EventSchedular";
+import { ItemTypes } from "../constants";
 import { useDrag } from "react-dnd";
 import { Edit, EditOutlined } from "@mui/icons-material";
 import React, { useState } from "react";
@@ -94,7 +94,7 @@ const EventCard = React.memo(
             />
           ) : (
             <Typography
-              fontSize={13}
+              fontSize={12}
               sx={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,

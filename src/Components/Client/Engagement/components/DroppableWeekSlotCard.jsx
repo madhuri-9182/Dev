@@ -1,6 +1,6 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 import { useDrop } from "react-dnd";
-import { ItemTypes } from "../EventSchedular";
+import { ItemTypes } from "../constants";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import {
   Box,
@@ -18,9 +18,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import moment from "moment";
-import { Close, Delete } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({
   borderRadius: "16px",
   boxShadow: "none",
   padding: "0",
@@ -31,7 +31,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   border: "1px solid #79747E",
 }));
 
-const StyledCardActionArea = styled(CardActionArea)(({ theme }) => ({
+const StyledCardActionArea = styled(CardActionArea)(() => ({
   width: "250px",
   height: "64px",
   padding: "12px",
@@ -84,7 +84,7 @@ const EmptySlotCard = ({ isOver, dropRef }) => (
   >
     <StyledCardActionArea>
       <AddCircleOutlineOutlinedIcon fontSize={"small"} sx={{ mr: 1 }} />
-      <Typography fontSize={13}>Drag and Drop an Item Here</Typography>
+      <Typography fontSize={12}>Drag and Drop an Item Here</Typography>
     </StyledCardActionArea>
   </StyledCard>
 );

@@ -1,12 +1,11 @@
 import { Autocomplete, Box, TextField, Typography } from "@mui/material";
-import React from "react";
+import PropTypes from "prop-types";
 import { NOTICE_PERIOD, SPECIALIZATION_CHOICES } from "../constants";
-import { StyledMenuItem, StyledSelect } from "./StyledSelect";
 import { styled } from "@mui/material/styles";
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-root": {
-    height: "40px",
+    height: "34px",
     borderRadius: "8px",
     fontSize: "12px",
     paddingBlock: "4px",
@@ -17,9 +16,9 @@ const StyledTextField = styled(TextField)({
     },
   },
   "& .MuiChip-root": {
-    height: "24px",
+    height: "20px",
 
-    fontSize: "12px",
+    fontSize: "11px",
     "& .MuiChip-deleteIcon": {
       fontSize: "14px",
     },
@@ -59,7 +58,7 @@ const Filters = ({ filters, onChipClick, jobs }) => {
           slotProps={{
             paper: {
               sx: {
-                fontSize: 12,
+                fontSize: 11,
               },
             },
           }}
@@ -97,7 +96,7 @@ const Filters = ({ filters, onChipClick, jobs }) => {
           slotProps={{
             paper: {
               sx: {
-                fontSize: 12,
+                fontSize: 11,
               },
             },
           }}
@@ -131,7 +130,7 @@ const Filters = ({ filters, onChipClick, jobs }) => {
           slotProps={{
             paper: {
               sx: {
-                fontSize: 12,
+                fontSize: 11,
               },
             },
           }}
@@ -158,3 +157,9 @@ const Filters = ({ filters, onChipClick, jobs }) => {
 };
 
 export default Filters;
+
+Filters.propTypes = {
+  filters: PropTypes.object,
+  onChipClick: PropTypes.func,
+  jobs: PropTypes.array,
+};

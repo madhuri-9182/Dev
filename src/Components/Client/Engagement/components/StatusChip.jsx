@@ -1,6 +1,6 @@
 import { Chip } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
-import React from "react";
+import PropTypes from "prop-types";
 
 const StatusChip = ({ label, checked, sx = {}, onClick = () => {} }) => {
   const chipStyles = {
@@ -19,7 +19,7 @@ const StatusChip = ({ label, checked, sx = {}, onClick = () => {} }) => {
       variant="outlined"
       label={label}
       color="secondary"
-      icon={checked ? <DoneIcon style={{ fontSize: 16 }} /> : null}
+      icon={checked ? <DoneIcon style={{ fontSize: 14 }} /> : null}
       sx={{
         ...chipStyles,
         ...sx,
@@ -30,3 +30,10 @@ const StatusChip = ({ label, checked, sx = {}, onClick = () => {} }) => {
 };
 
 export default StatusChip;
+
+StatusChip.propTypes = {
+  label: PropTypes.string,
+  checked: PropTypes.bool,
+  sx: PropTypes.object,
+  onClick: PropTypes.func,
+};

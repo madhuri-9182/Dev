@@ -1,10 +1,10 @@
-import React, { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
+import PropTypes from "prop-types";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.bubble.css";
 import Button from "./Button";
-import { AttachFile, Delete } from "@mui/icons-material";
+import { AttachFile } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import RemoveCircleOutlineOutlinedIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
 import { joinContentAndSubject } from "../utils";
 import { Trash } from "iconsax-react";
 
@@ -37,7 +37,7 @@ const modules = {
       ["clean"],
     ],
     handlers: {
-      divider: function (value) {
+      divider: function () {
         if (this.quill) {
           const range = this.quill.getSelection();
           if (range) {
@@ -111,6 +111,7 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
             ref={innerRef}
           />
         ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [editorState]
       )}
 
@@ -159,3 +160,10 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
 };
 
 export default Editor;
+
+Editor.propTypes = {
+  editorState: PropTypes.object,
+  setEditorState: PropTypes.func,
+  onChange: PropTypes.func,
+  innerRef: PropTypes.any,
+}

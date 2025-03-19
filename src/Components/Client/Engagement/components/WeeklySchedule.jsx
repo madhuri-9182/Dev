@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Typography } from "@mui/material";
 import DroppableWeekSlotCard from "./DroppableWeekSlotCard";
 
@@ -49,4 +49,12 @@ export const WeeklySchedule = ({
       ))}
     </div>
   );
+};
+
+WeeklySchedule.propTypes = {
+  scheduledEventsPerWeek: PropTypes.array,
+  handleDrop: PropTypes.func,
+  handleUnSchedule: PropTypes.func,
+  onChangeDate: PropTypes.func,
+  markDoneUnDone: PropTypes.func,
 };

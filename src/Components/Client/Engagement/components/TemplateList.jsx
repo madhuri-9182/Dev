@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import Button from "./Button";
 import { DraggableEventCard } from "./EventCard";
 import { useNavigate } from "react-router-dom";
@@ -33,4 +33,8 @@ export const TemplateList = ({ templates }) => {
       </Button>
     </div>
   );
+};
+
+TemplateList.propTypes = {
+  templates: PropTypes.array,
 };

@@ -1,18 +1,19 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Box } from "@mui/material";
 import { Button, Menu, MenuItem } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { styled } from "@mui/material/styles";
-import { ENAGAGEMENT_STATUS } from "../constants";
 
 const StyledButton = styled(Button)({
   textTransform: "none",
   color: "#374151",
   backgroundColor: "#fff",
   border: "1px solid #979DA3",
+  fontSize: "12px",
   borderRadius: "8px",
-  padding: "6px 12px",
-  minWidth: "150px",
+  padding: "4px 8px",
+  minWidth: "130px",
   "&:hover": {
     backgroundColor: "#F9FAFB",
     borderColor: "initial",
@@ -25,13 +26,13 @@ const StyledMenu = styled(Menu)({
     boxShadow: "none",
     marginTop: "4px",
     border: "1px solid #979DA3",
-    minWidth: "150px",
+    minWidth: "130px",
     "& .MuiList-root": {
       padding: "0",
     },
     "& .MuiMenuItem-root": {
       padding: "6px 16px",
-      fontSize: "14px",
+      fontSize: "12px",
       color: "#374151",
       textAlign: "center",
       display: "block",
@@ -77,7 +78,6 @@ function CustomMenu({
         endIcon={<KeyboardArrowDownIcon />}
         sx={{
           color: selectedOption.color,
-          borderColor: selectedOption.color,
         }}
       >
         {selectedOption.label}
@@ -105,3 +105,10 @@ function CustomMenu({
 }
 
 export default CustomMenu;
+
+CustomMenu.propTypes = {
+  options: PropTypes.array,
+  selectedOption: PropTypes.object,
+  setSelectedOption: PropTypes.func,
+  isUpdating: PropTypes.bool,
+};

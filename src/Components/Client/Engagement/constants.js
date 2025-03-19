@@ -34,3 +34,7 @@ export const SPECIALIZATION_CHOICES = [
   { label: "iOS", value: "ios" },
   { label: "Mobile (Android + iOS)", value: "mobile" },
 ];
+
+export const ItemTypes = {
+  EVENT_CARD: "eventCard",
+};

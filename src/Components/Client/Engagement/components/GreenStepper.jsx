@@ -1,7 +1,6 @@
 import { Stepper, Step, StepLabel } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import React from "react";
+import PropTypes from "prop-types";
 
 const StyledStepper = styled(Stepper)({
   flex: 1,
@@ -28,7 +27,7 @@ const GreenStepper = ({ steps }) => {
     <StyledStepper alternativeLabel>
       {steps.map((step, i) => {
         return (
-          <Step completed={step.operation_complete_status === "SUC"} index={i}>
+          <Step completed={step.operation_complete_status === "SUC"} key={i}>
             <StepLabel></StepLabel>
           </Step>
         );
@@ -38,3 +37,7 @@ const GreenStepper = ({ steps }) => {
 };
 
 export default GreenStepper;
+
+GreenStepper.propTypes = {
+  steps: PropTypes.array,
+};

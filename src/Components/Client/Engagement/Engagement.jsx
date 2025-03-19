@@ -1,7 +1,7 @@
 import { useState } from "react";
 import EngagementDashboard from "./EngagementDashboard";
 import EmailTemplates from "./EmailTemplates";
-import EventSchedular from "./EventSchedular";
+import EventScheduler from "./EventSchedular";
 import EngagementForm from "./EngagementForm";
 import {
   Route,
@@ -63,7 +63,7 @@ function Engagement() {
             <Route
               path="/event-schedular"
               element={
-                <EventSchedular
+                <EventScheduler
                   setSelectedEngagement={
                     setSelectedEngagement
                   }

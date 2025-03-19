@@ -2,7 +2,7 @@ import { styled } from "@mui/material/styles";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-export const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
+export const StyledDatePicker = styled(DatePicker)(() => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "8px",
     height: "30px",
@@ -16,7 +16,7 @@ export const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
   },
 }));
 
-export const StyledDateTimePicker = styled(DateTimePicker)(({ theme }) => ({
+export const StyledDateTimePicker = styled(DateTimePicker)(() => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "8px",
     height: "30px",

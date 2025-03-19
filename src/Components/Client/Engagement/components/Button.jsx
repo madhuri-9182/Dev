@@ -1,6 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Button as MuiButton, styled } from "@mui/material";
 
-const Button = styled(MuiButton)(({ theme }) => ({
+const Button = styled(MuiButton)(() => ({
   borderRadius: "100px",
   textTransform: "none",
   padding: "6px 12px",

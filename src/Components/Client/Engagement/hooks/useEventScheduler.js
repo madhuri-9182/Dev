@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react";
 import {
   useEngagementTemplates,
@@ -5,7 +6,6 @@ import {
   useUpdateEngagementStatus,
 } from "../api";
 import moment from "moment/moment";
-import { NOTICE_PERIOD } from "../constants";
 import {
   getScheduledEventsPerWeekInitialValue,
   prepareOperationsPayload,

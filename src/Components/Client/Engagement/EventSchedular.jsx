@@ -1,23 +1,17 @@
-import React from "react";
+import PropTypes from "prop-types";
 import Button, {
   primaryButtonStyles,
   secondaryButtonStyles,
   tertiaryButtonStyles,
 } from "./components/Button";
-import { DraggableEventCard } from "./components/EventCard";
 import CandidateTimeline from "./components/CandidateTimeline";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import DroppableWeekSlotCard from "./components/DroppableWeekSlotCard";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useEventScheduler } from "./hooks/useEventScheduler";
 import { TemplateList } from "./components/TemplateList";
 import { WeeklySchedule } from "./components/WeeklySchedule";
 import { useNavigate } from "react-router-dom";
-
-export const ItemTypes = {
-  EVENT_CARD: "eventCard",
-};
 
 function EventScheduler({ engagement, setSelectedEngagement }) {
   const navigate = useNavigate();
@@ -30,11 +24,9 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
     updateEngagement,
     handleDateChange,
     hasChanges,
-    isLoadingtemplates,
     resetChanges,
     updateEngagementSchedule,
     isUpdatingSchedule,
-    isFetchingtemplates,
     markDoneUnDone,
   } = useEventScheduler({
     engagement,
@@ -111,3 +103,8 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
 }
 
 export default EventScheduler;
+
+EventScheduler.propTypes = {
+  engagement: PropTypes.object,
+  setSelectedEngagement: PropTypes.func,
+};
