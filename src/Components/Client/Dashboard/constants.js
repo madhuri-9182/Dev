@@ -2,14 +2,26 @@ export const ALL_TASKS = [
   {
     label: "Total Interviews",
     key: "total_candidates",
+    path: "/client/candidates",
+    state: {
+      status: 'SCH'
+    }
   },
   {
     label: "Pending Schedule",
     key: "pending_schedule",
+    path: "/client/candidates",
+    state: {
+      status: 'NSCH'
+    }
   },
   {
     label: "Selects",
     key: "selects",
+    path: "/client/candidates",
+    state: {
+      status: 'REC'
+    }
   },
   {
     label: "Joined",

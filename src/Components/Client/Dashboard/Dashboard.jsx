@@ -40,6 +40,15 @@ const Dashboard = () => {
     value: task.key
       ? dashboardData?.candidates[task.key] || 0
       : "",
+      onClick: ()=> {
+        if(task.path){
+          if(task?.state){
+            navigate(task.path, {state: task.state});
+          } else {
+            navigate(task.path);
+          }
+        }
+      }
   }));
 
   const myJobsItems = MY_JOBS.map((job) => ({
