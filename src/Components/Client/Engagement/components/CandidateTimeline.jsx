@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useMemo } from "react";
-
+import {getJobLabel} from '../../../../utils/util'
 import GreenStepper from "./GreenStepper";
 import CustomMenu from "./CustomMenu";
 import { ENAGAGEMENT_STATUS } from "../constants";
@@ -81,7 +81,7 @@ const CandidateTimeline = ({
         </Typography>
         <Box className="candidate-details">
           <Typography className="role">
-            {engagement?.job?.name?.replace("_", " ")}
+            {getJobLabel(engagement?.job?.name)}
           </Typography>
           <Typography className="type">internal</Typography>
         </Box>
