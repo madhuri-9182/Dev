@@ -1,9 +1,9 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useMemo } from "react";
+import PropTypes from "prop-types";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 // Import utility functions
@@ -33,6 +33,57 @@ import DropCandidateModal from "../components/DropCandidateModal";
 import TimeRemainingComponent from "./components/TimeRemainingComponent";
 
 /**
+ * Error modal component for scheduling errors
+ */
+const SchedulingErrorModal = ({
+  error,
+  onTryAgain,
+  onSaveWithoutScheduling,
+  onClose,
+}) => (
+  <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[99999]">
+    <div className="absolute bg-white p-6 rounded-lg max-w-md w-full shadow-xl top-[20%] left-[55%] transform -translate-x-1/2 ">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center">
+          <AlertTriangle className="text-red-500 h-5 w-5 mr-2" />
+          <h3 className="text-base font-medium text-red-600">
+            Scheduling Error
+          </h3>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+      <p className="text-xs text-gray-700 mb-6">{error}</p>
+      <div className="flex justify-end space-x-3">
+        <button
+          onClick={onSaveWithoutScheduling}
+          className="py-2 bg-[#E8DEF8] border border-[#E8DEF8] text-[#4A4459] text-xs rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer px-4"
+        >
+          Save Without Scheduling
+        </button>
+        <button
+          onClick={onTryAgain}
+          className="px-4 py-2 bg-[#007AFF] border border-[#007AFF] rounded-[100px] text-white font-medium text-xs hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] transition-all duration-300 ease-in-out"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+SchedulingErrorModal.propTypes = {
+  error: PropTypes.string,
+  onTryAgain: PropTypes.func,
+  onSaveWithoutScheduling: PropTypes.func,
+  onClose: PropTypes.func,
+};
+
+/**
  * Main component for scheduling interviews with candidates
  */
 function ClientScheduleInterview() {
@@ -44,6 +95,11 @@ function ClientScheduleInterview() {
     useState(false);
   const [isTimerCompleted, setIsTimerCompleted] =
     useState(false);
+  const [
+    showSchedulingErrorModal,
+    setShowSchedulingErrorModal,
+  ] = useState(false);
+  const [candidateId, setCandidateId] = useState(null); // Track candidate ID for retry scenarios
 
   // Parse query parameters to get candidate data
   const queryParams = new URLSearchParams(location.search);
@@ -58,7 +114,7 @@ function ClientScheduleInterview() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm({
     defaultValues: {
       remark: item?.remark || "",
@@ -83,6 +139,13 @@ function ClientScheduleInterview() {
     }
     return true; // For new candidates, always consider as changed
   }, [item?.id, remark, originalData.remark]);
+
+  // Initialize candidateId from item if exists
+  useEffect(() => {
+    if (item?.id) {
+      setCandidateId(item.id);
+    }
+  }, [item?.id]);
 
   // Load file from base64 data when component mounts
   useEffect(() => {
@@ -146,6 +209,49 @@ function ClientScheduleInterview() {
     getInterviewAvailability
   );
 
+  // API mutation for scheduling interview (improved error handling)
+  const scheduleInterviewMutation = useMutation({
+    mutationFn: scheduleInterview,
+    onSuccess: () => {
+      toast.success("Interviewers notified successfully");
+      navigate("/client/candidates");
+    },
+    onError: (error) => {
+      let errorToShow = "Failed to schedule interview";
+      if (error.response?.data?.errors) {
+        // Check if errors is a string or an object
+        if (
+          typeof error.response.data.errors === "string"
+        ) {
+          errorToShow = error.response.data.errors;
+          // If it's a string, show that directly
+          toast.error(error.response.data.errors);
+        } else {
+          // If it's an object, use the existing logic
+          const errorMessage = Object.values(
+            error.response.data.errors
+          ).flat();
+          if (errorMessage.length > 0) {
+            errorToShow = errorMessage[0];
+            toast.error(errorMessage[0]);
+          }
+        }
+      } else {
+        errorToShow =
+          error.response?.data?.message ||
+          "Failed to schedule interview";
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to process user data"
+        );
+      }
+
+      // Set error and show modal instead of navigating away
+      setSchedulingError(errorToShow);
+      setShowSchedulingErrorModal(true);
+    },
+  });
+
   // API mutations for candidate creation/update
   const candidateMutation = useMutation({
     mutationFn: ({ id, data }) =>
@@ -158,6 +264,13 @@ function ClientScheduleInterview() {
           ? "Candidate updated successfully"
           : "Candidate added successfully"
       );
+
+      // Store candidate ID for potential retry scenarios
+      const newCandidateId =
+        variables.id || response?.data?.id;
+      if (newCandidateId) {
+        setCandidateId(newCandidateId);
+      }
 
       // Only proceed with scheduling if scheduleAfterUpdate is true
       if (
@@ -181,7 +294,10 @@ function ClientScheduleInterview() {
           toast.error(
             "Could not get candidate ID for scheduling"
           );
-          navigate("/client/candidates");
+          setSchedulingError(
+            "Could not get candidate ID for scheduling"
+          );
+          setShowSchedulingErrorModal(true);
         }
       } else {
         navigate("/client/candidates");
@@ -193,37 +309,46 @@ function ClientScheduleInterview() {
         "Failed to save candidate data";
       toast.error(errorMessage);
       setSchedulingError(errorMessage);
+      setShowSchedulingErrorModal(true);
     },
   });
 
-  // API mutation for scheduling interview
-  const scheduleInterviewMutation = useMutation({
-    mutationFn: scheduleInterview,
-    onSuccess: () => {
-      toast.success(
-        "Interviewers notified successfully progress."
+  // Handle retry scheduling action
+  const handleRetryScheduling = () => {
+    setShowSchedulingErrorModal(false);
+    setSchedulingError(null);
+
+    // Use the candidate ID we've stored
+    const idToUse = candidateId || item?.id;
+
+    if (!idToUse) {
+      toast.error(
+        "Cannot retry - no valid candidate ID found"
       );
-      navigate("/client/candidates");
-    },
-    onError: (error) => {
-      const errorMessage =
-        error?.response?.data?.message ||
-        "Failed to schedule interview";
+      return;
+    }
 
-      // Always show error message and navigate to candidates
-      toast.error(errorMessage, {
-        duration: 5000, // Show for longer
-      });
+    scheduleInterviewMutation.mutate({
+      candidate_id: idToUse,
+      date: formatDateToDDMMYYYY(selectedDate),
+      time: getTimeFromWindow(selectedWindow),
+      interviewer_ids: selectedSlotIds,
+    });
+  };
 
-      // Navigate to candidates list regardless of whether this was a new or existing candidate
-      navigate("/client/candidates");
-    },
-  });
+  // Handle save without scheduling action
+  const handleSaveWithoutScheduling = () => {
+    setShowSchedulingErrorModal(false);
+    setSchedulingError(null);
+    toast.success("Candidate saved successfully");
+    navigate("/client/candidates");
+  };
 
   // Handle form submission
   const onSubmit = (data, scheduleNow = true) => {
     // Clear any previous error
     setSchedulingError(null);
+    setShowSchedulingErrorModal(false);
 
     // Skip API call if no changes for existing candidate
     if (item?.id && !hasChanges && !scheduleNow) {
@@ -387,6 +512,17 @@ function ClientScheduleInterview() {
               handleWindowSelect={handleWindowSelect}
             />
 
+            {/* Show calendar (interview availability) error if any */}
+            {schedulingError &&
+              !showSchedulingErrorModal && (
+                <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md flex items-start">
+                  <AlertTriangle className="text-red-500 h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm">
+                    {schedulingError}
+                  </p>
+                </div>
+              )}
+
             {/* Action Buttons */}
             <div className="mt-20 flex items-center justify-end gap-x-3">
               <button
@@ -473,11 +609,16 @@ function ClientScheduleInterview() {
         </div>
       </div>
 
-      {/* Show scheduling error if any */}
-      {schedulingError && (
-        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
-          <p className="text-sm">{schedulingError}</p>
-        </div>
+      {/* Scheduling Error Modal with retry options */}
+      {showSchedulingErrorModal && (
+        <SchedulingErrorModal
+          error={schedulingError}
+          onTryAgain={handleRetryScheduling}
+          onSaveWithoutScheduling={
+            handleSaveWithoutScheduling
+          }
+          onClose={() => setShowSchedulingErrorModal(false)}
+        />
       )}
 
       {/* Delete Modal */}
