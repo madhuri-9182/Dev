@@ -1,6 +1,15 @@
-import { Autocomplete, Box, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  TextField,
+  Typography,
+} from "@mui/material";
 import PropTypes from "prop-types";
-import { NOTICE_PERIOD, SPECIALIZATION_CHOICES } from "../constants";
+import {
+  NOTICE_PERIOD,
+  SPECIALIZATION_CHOICES,
+  STATUS,
+} from "../constants";
 import { styled } from "@mui/material/styles";
 import { getJobLabel } from "../../../../utils/util";
 
@@ -72,11 +81,15 @@ const Filters = ({ filters, onChipClick, jobs }) => {
           getOptionLabel={(option) => {
             return getJobLabel(option.label);
           }}
-          isOptionEqualToValue={(option, value) => option.value === value.value}
+          isOptionEqualToValue={(option, value) =>
+            option.value === value.value
+          }
           renderInput={(params) => (
             <StyledTextField
               {...params}
-              placeholder={filters.role.length === 0 ? "All" : ""}
+              placeholder={
+                filters.role.length === 0 ? "All" : ""
+              }
             />
           )}
           loading={jobs.length === 0}
@@ -88,11 +101,17 @@ const Filters = ({ filters, onChipClick, jobs }) => {
       </Box>
 
       <Box>
-        <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
+        <Typography
+          sx={{ marginLeft: 2 }}
+          fontWeight={600}
+          fontSize={12}
+        >
           Function
         </Typography>
         <Autocomplete
-          isOptionEqualToValue={(option, value) => option.value === value.value}
+          isOptionEqualToValue={(option, value) =>
+            option.value === value.value
+          }
           disableCloseOnSelect
           slotProps={{
             paper: {
@@ -110,7 +129,9 @@ const Filters = ({ filters, onChipClick, jobs }) => {
           renderInput={(params) => (
             <StyledTextField
               {...params}
-              placeholder={filters.function.length === 0 ? "All" : ""}
+              placeholder={
+                filters.function.length === 0 ? "All" : ""
+              }
             />
           )}
           value={filters.function}
@@ -121,12 +142,18 @@ const Filters = ({ filters, onChipClick, jobs }) => {
       </Box>
 
       <Box>
-        <Typography sx={{ marginLeft: 2 }} fontWeight={600} fontSize={12}>
+        <Typography
+          sx={{ marginLeft: 2 }}
+          fontWeight={600}
+          fontSize={12}
+        >
           Notice Period
         </Typography>
 
         <Autocomplete
-          isOptionEqualToValue={(option, value) => option.value === value.value}
+          isOptionEqualToValue={(option, value) =>
+            option.value === value.value
+          }
           disableCloseOnSelect
           slotProps={{
             paper: {
@@ -144,12 +171,55 @@ const Filters = ({ filters, onChipClick, jobs }) => {
           renderInput={(params) => (
             <StyledTextField
               {...params}
-              placeholder={filters.notice.length === 0 ? "All" : ""}
+              placeholder={
+                filters.notice.length === 0 ? "All" : ""
+              }
             />
           )}
           value={filters.notice}
           onChange={(event, newValue) => {
             handleChipClick("notice", newValue);
+          }}
+        />
+      </Box>
+      <Box>
+        <Typography
+          sx={{ marginLeft: 2 }}
+          fontWeight={600}
+          fontSize={12}
+        >
+          Status
+        </Typography>
+
+        <Autocomplete
+          isOptionEqualToValue={(option, value) =>
+            option.value === value.value
+          }
+          disableCloseOnSelect
+          slotProps={{
+            paper: {
+              sx: {
+                fontSize: 11,
+              },
+            },
+          }}
+          multiple
+          options={STATUS}
+          getOptionLabel={(option) => {
+            return option.label;
+          }}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <StyledTextField
+              {...params}
+              placeholder={
+                filters.status.length === 0 ? "All" : ""
+              }
+            />
+          )}
+          value={filters.status}
+          onChange={(event, newValue) => {
+            handleChipClick("status", newValue);
           }}
         />
       </Box>

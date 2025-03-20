@@ -1,6 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import PropTypes from "prop-types";
-import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import Filters from "./components/Filters";
 import CandidateTimeline from "./components/CandidateTimeline";
 import { debounce } from "@mui/material";
@@ -21,10 +26,13 @@ function EngagementDashboard({ setSelectedEngagement }) {
     role: [],
     function: [],
     notice: [],
+    status: [],
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState(0);
-  const [engagementsList, setEngagementsList] = useState([]);
+  const [engagementsList, setEngagementsList] = useState(
+    []
+  );
   const [hasMore, setHasMore] = useState(true);
   const containerRef = useRef(null);
   const [stats, setStats] = useState([
@@ -38,6 +46,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
     role: [],
     function: [],
     notice: [],
+    status: [],
     search: "",
   });
 
@@ -53,9 +62,14 @@ function EngagementDashboard({ setSelectedEngagement }) {
     }, 500),
     []
   );
-  const {data: allEngagements} = useAllEngagements();
-  const { data, isLoading, isError, error } = useEngagements({ ...debouncedFilters, offset }, state?.org_id);
-  const [updatingEngagementId, setUpdatingEngagementId] = useState(null);
+  const { data: allEngagements } = useAllEngagements();
+  const { data, isLoading, isError, error } =
+    useEngagements(
+      { ...debouncedFilters, offset },
+      state?.org_id
+    );
+  const [updatingEngagementId, setUpdatingEngagementId] =
+    useState(null);
   const { mutate } = useUpdateEngagementStatus({
     ...filters,
     search: searchQuery,
@@ -79,7 +93,13 @@ function EngagementDashboard({ setSelectedEngagement }) {
 
   useEffect(() => {
     // Reset offset and engagements when filters or search query changes
-    if (searchQuery || filters.role.length > 0 || filters.function.length > 0 || filters.notice.length > 0) {
+    if (
+      searchQuery ||
+      filters.role.length > 0 ||
+      filters.function.length > 0 ||
+      filters.notice.length > 0 ||
+      filters.status.length > 0
+    ) {
       setOffset(0);
       setEngagementsList([]);
       setHasMore(true);
@@ -92,13 +112,19 @@ function EngagementDashboard({ setSelectedEngagement }) {
       if (offset === 0) {
         setEngagementsList(data?.results || []);
       } else {
-        setEngagementsList(prev => [...prev, ...(data?.results || [])]);
+        setEngagementsList((prev) => [
+          ...prev,
+          ...(data?.results || []),
+        ]);
       }
       setHasMore(data?.next !== null);
 
       // Update stats
       setStats([
-        { label: "Total Candidates", value: data?.total_candidates },
+        {
+          label: "Total Candidates",
+          value: data?.total_candidates,
+        },
         { label: "Joined", value: data?.joined },
         { label: "Declined", value: data?.declined },
         { label: "Pending", value: data?.pending },
@@ -108,9 +134,14 @@ function EngagementDashboard({ setSelectedEngagement }) {
 
   const handleScroll = useCallback(() => {
     if (containerRef.current) {
-      const { scrollTop, clientHeight, scrollHeight } = containerRef.current;
-      if (scrollHeight - scrollTop <= clientHeight + 20 && !isLoading && hasMore) {
-        setOffset(prev => prev + 10);
+      const { scrollTop, clientHeight, scrollHeight } =
+        containerRef.current;
+      if (
+        scrollHeight - scrollTop <= clientHeight + 20 &&
+        !isLoading &&
+        hasMore
+      ) {
+        setOffset((prev) => prev + 10);
       }
     }
   }, [isLoading, hasMore]);
@@ -151,11 +182,15 @@ function EngagementDashboard({ setSelectedEngagement }) {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        {!state?.org_id && <AddButton
-          label="+ Add Candidate"
-          onClick={() => navigate("/client/engagement/form")}
-          className={"w-40"}
-        />}
+        {!state?.org_id && (
+          <AddButton
+            label="+ Add Candidate"
+            onClick={() =>
+              navigate("/client/engagement/form")
+            }
+            className={"w-40"}
+          />
+        )}
       </div>
 
       <CandidateStats stats={stats} title={"engagement"} />
@@ -181,8 +216,12 @@ function EngagementDashboard({ setSelectedEngagement }) {
                 onEngagementStatusChange(status, engagement)
               }
               engagement={engagement}
-              isUpdating={updatingEngagementId === engagement.id}
-              onEngagementClick={() => onEngagementClick(engagement)}
+              isUpdating={
+                updatingEngagementId === engagement.id
+              }
+              onEngagementClick={() =>
+                onEngagementClick(engagement)
+              }
               org_id={state?.org_id}
             />
           ))

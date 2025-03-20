@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-vars */
 import axios from "../../../api/axios";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { extractErrors } from "./utils";
 
@@ -33,20 +37,34 @@ export const useEngagements = (filters, org_id) => {
 
         if (filters?.search) params.q = filters.search;
         if (filters?.role && filters.role.length > 0)
-          params.job_ids = filters.role.map((role) => role.value).join(",");
-        if (filters?.function && filters.function.length > 0)
+          params.job_ids = filters.role
+            .map((role) => role.value)
+            .join(",");
+        if (
+          filters?.function &&
+          filters.function.length > 0
+        )
           params.specializations = filters.function
             .map((func) => func.value)
             .join(",");
         if (filters?.notice && filters.notice.length > 0)
-          params.nps = filters.notice.map((notice) => notice.value).join(",");
-        
+          params.nps = filters.notice
+            .map((notice) => notice.value)
+            .join(",");
+        if (filters?.status && filters.status.length > 0)
+          params.status = filters.status
+            .map((status) => status.value)
+            .join(",");
+
         // Add pagination parameters
         params.offset = filters.offset || 0;
 
         if (org_id) params.organization_id = org_id;
 
-        const { data } = await axios.get(`${BASE_URL}/engagements/`, { params });
+        const { data } = await axios.get(
+          `${BASE_URL}/engagements/`,
+          { params }
+        );
         return data;
       } catch (error) {
         errorToaster(error);
@@ -64,8 +82,11 @@ export const useJobs = (org_id) => {
     queryFn: async () => {
       try {
         const params = {};
-        if (org_id) params.organization_id = org_id
-        const { data } = await axios.get("/api/client/jobs/", { params });
+        if (org_id) params.organization_id = org_id;
+        const { data } = await axios.get(
+          "/api/client/jobs/",
+          { params }
+        );
         return data;
       } catch (error) {
         errorToaster(error);
@@ -107,10 +128,16 @@ export const useAddEngagementTemplate = () => {
           "template_html_content",
           templateData.template_html_content
         );
-        formData.append("template_name", templateData.template_name);
+        formData.append(
+          "template_name",
+          templateData.template_name
+        );
 
         if (templateData.attachment instanceof File) {
-          formData.append("attachment", templateData.attachment);
+          formData.append(
+            "attachment",
+            templateData.attachment
+          );
         }
         const { data } = await axios.post(
           `${BASE_URL}/engagement-templates/`,
@@ -124,7 +151,9 @@ export const useAddEngagementTemplate = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["engagementTemplates"] });
+      queryClient.invalidateQueries({
+        queryKey: ["engagementTemplates"],
+      });
       successToaster("Template added successfully");
     },
   });
@@ -143,7 +172,10 @@ export const useUpdateEngagementTemplate = () => {
           "template_html_content",
           templateData.template_html_content
         );
-        formData.append("template_name", templateData.template_name);
+        formData.append(
+          "template_name",
+          templateData.template_name
+        );
 
         if (
           templateData.attachment instanceof File ||
@@ -151,14 +183,20 @@ export const useUpdateEngagementTemplate = () => {
         ) {
           formData.append(
             "attachment",
-            templateData.attachment === null ? "" : templateData.attachment
+            templateData.attachment === null
+              ? ""
+              : templateData.attachment
           );
         }
 
         const { data } = await axios.patch(
           `${BASE_URL}/engagement-template/${templateData.id}/`,
           formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
         return data;
       } catch (error) {
@@ -167,7 +205,9 @@ export const useUpdateEngagementTemplate = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["engagementTemplates"] });
+      queryClient.invalidateQueries({
+        queryKey: ["engagementTemplates"],
+      });
       successToaster("Template updated successfully");
     },
   });
@@ -179,7 +219,9 @@ export const useEngagementStats = () => {
     queryKey: ["engagementStats"],
     queryFn: async () => {
       try {
-        const { data } = await axios.get(`${BASE_URL}/stats`);
+        const { data } = await axios.get(
+          `${BASE_URL}/stats`
+        );
         return data;
       } catch (error) {
         errorToaster(error);
@@ -206,7 +248,9 @@ export const useAddEngagement = () => {
           `${BASE_URL}/engagements/`,
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
         return data;
@@ -216,7 +260,9 @@ export const useAddEngagement = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["engagements"] });
+      queryClient.invalidateQueries({
+        queryKey: ["engagements"],
+      });
 
       successToaster("Engagement added successfully");
     },
@@ -242,7 +288,10 @@ export const useUpdateEngagementStatus = (filters) => {
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(["engagements", filters]);
+      queryClient.invalidateQueries([
+        "engagements",
+        filters,
+      ]);
 
       successToaster(`Engagement status updated`);
     },
@@ -275,13 +324,18 @@ export const useUpdateCandidateWeek = () => {
 
   return useMutation({
     mutationFn: async ({ candidateId, week }) => {
-      const { data } = await axios.patch(`${BASE_URL}/${candidateId}/week`, {
-        week,
-      });
+      const { data } = await axios.patch(
+        `${BASE_URL}/${candidateId}/week`,
+        {
+          week,
+        }
+      );
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      queryClient.invalidateQueries({
+        queryKey: ["candidates"],
+      });
     },
   });
 };
@@ -292,13 +346,19 @@ export const useDeleteCandidate = () => {
 
   return useMutation({
     mutationFn: async (candidateId) => {
-      const { data } = await axios.delete(`${BASE_URL}/${candidateId}`);
+      const { data } = await axios.delete(
+        `${BASE_URL}/${candidateId}`
+      );
       return data;
     },
     onSuccess: () => {
       // Invalidate and refetch candidates and stats
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      queryClient.invalidateQueries({ queryKey: ["engagementStats"] });
+      queryClient.invalidateQueries({
+        queryKey: ["candidates"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["engagementStats"],
+      });
     },
   });
 };
@@ -314,7 +374,9 @@ export const useResumeParser = () => {
           `${BASE_URL}/parse-resume/`,
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
 
@@ -335,7 +397,9 @@ export const useClientUser = () => {
     queryKey: ["clientUser"],
     queryFn: async () => {
       try {
-        const { data } = await axios.get(`${BASE_URL}/client-user/`);
+        const { data } = await axios.get(
+          `${BASE_URL}/client-user/`
+        );
         return data;
       } catch (error) {
         errorToaster(error);

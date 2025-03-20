@@ -38,3 +38,11 @@ export const SPECIALIZATION_CHOICES = [
 export const ItemTypes = {
   EVENT_CARD: "eventCard",
 };
+
+export const STATUS = [
+  { label: "Yet to Join", value: "YTJ" },
+  { label: "Doubtful", value: "DBT" },
+  { label: "Joined", value: "JND" },
+  { label: "Declined", value: "DCL" },
+  { label: "On Hold", value: "OHD" },
+];
