@@ -226,6 +226,14 @@ export const CANDIDATE_STATUS = [
     id: "NSCH",
     name: "Not Scheduled",
   },
+  {
+    id: "SLD",
+    name: "Selected",
+  },
+  {
+    id: "RJD",
+    name: "Rejected",
+  },
 ];
 
 export const JOB_STATUS = [

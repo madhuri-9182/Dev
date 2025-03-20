@@ -1,27 +1,27 @@
 export const ALL_TASKS = [
   {
     label: "Total Interviews",
-    key: "total_candidates",
+    key: "total_interviews",
     path: "/client/candidates",
     state: {
-      status: 'SCH'
-    }
+      status: "SCH",
+    },
   },
   {
     label: "Pending Schedule",
     key: "pending_schedule",
     path: "/client/candidates",
     state: {
-      status: 'NSCH'
-    }
+      status: "NSCH",
+    },
   },
   {
     label: "Selects",
     key: "selects",
     path: "/client/candidates",
     state: {
-      status: 'REC'
-    }
+      status: "REC",
+    },
   },
   {
     label: "Joined",
@@ -41,28 +41,28 @@ export const MY_JOBS = [
   {
     label: "My Jobs",
     key: "total_jobs",
-    path: "/client/jobs"
+    path: "/client/jobs",
   },
   {
     label: "Total Candidates",
     key: "total_candidates",
-    path: "/client/candidates"
+    path: "/client/candidates",
   },
   {
     label: "Selected Candidates",
     key: "selects",
     path: "/client/candidates",
     state: {
-      status: 'REC'
-    }
+      status: "REC",
+    },
   },
   {
     label: "Rejected Candidates",
     key: "rejects",
     path: "/client/candidates",
     state: {
-      status: 'NREC'
-    }
+      status: "NREC",
+    },
   },
 ];
 

@@ -30,9 +30,11 @@ const Dashboard = () => {
     dashboardData?.job_role_aggregates?.map((job_role) => ({
       label: getJobLabel(job_role.name),
       value: job_role.count,
-      onClick: ()=> {
-        navigate('/client/jobs', {state: {job_role: job_role.name}});
-      }
+      onClick: () => {
+        navigate("/client/jobs", {
+          state: { job_role: job_role.name },
+        });
+      },
     })) || [];
 
   const allTasksItems = ALL_TASKS.map((task) => ({
@@ -40,28 +42,27 @@ const Dashboard = () => {
     value: task.key
       ? dashboardData?.candidates[task.key] || 0
       : "",
-      onClick: ()=> {
-        if(task.path){
-          if(task?.state){
-            navigate(task.path, {state: task.state});
-          } else {
-            navigate(task.path);
-          }
+    onClick: () => {
+      if (task.path) {
+        if (task?.state) {
+          navigate(task.path, { state: task.state });
+        } else {
+          navigate(task.path);
         }
       }
+    },
   }));
 
   const myJobsItems = MY_JOBS.map((job) => ({
     label: job.label,
     value: dashboardData?.job_aggregates[job.key] || 0,
-    onClick: ()=> {
-      if(job?.state){
-        navigate(job.path, {state: job.state});
+    onClick: () => {
+      if (job?.state) {
+        navigate(job.path, { state: job.state });
       } else {
         navigate(job.path);
       }
-    }
-
+    },
   }));
 
   const analyticsItems = ANALYTICS.map((analytics) => ({
@@ -82,6 +83,15 @@ const Dashboard = () => {
     ? allTasksItems.slice(0, 4)
     : allTasksItems;
 
+  const pendingTasksCount = pendingTasksItems.reduce(
+    (acc, item) => acc + item.value,
+    0
+  );
+  const allTasksCount = allTasksItems.reduce(
+    (acc, item) => acc + item.value,
+    0
+  );
+
   return (
     <div className="px-20 py-10">
       <div className="grid grid-cols-2 gap-x-24 xl:gap-x-36 gap-y-12 xl:gap-y-16 h-">
@@ -89,7 +99,7 @@ const Dashboard = () => {
         <div className="w-full flex flex-col gap-y-6">
           <CardHeader
             title="Pending Tasks"
-            count={dashboardData.pending_task || 0}
+            count={pendingTasksCount || 0}
           />
           <CardItems
             items={pendingTasksItems}
@@ -103,7 +113,7 @@ const Dashboard = () => {
         <div className="w-full flex flex-col gap-y-6">
           <CardHeader
             title="All Tasks"
-            count={dashboardData.all_task || 0}
+            count={allTasksCount || 0}
           />
           <CardItems
             items={filteredAllTaskItems}

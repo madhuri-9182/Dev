@@ -14,7 +14,7 @@ import {
 } from "../utils/formatters";
 import { LoadingState } from "../../../shared/loading-error-state";
 import { ActionButtons } from "./ActionButtons";
-import Empty from '../../../shared/Empty'
+import Empty from "../../../shared/Empty";
 
 /**
  * Table component with infinite scroll capability
@@ -122,7 +122,7 @@ const InfiniteScrollTable = ({
                     >
                       {item.candidate.company || "N/A"}
                     </span>
-                    <span className="px-4 flex gap-x-3 items-center justify-center">
+                    <span className="px-2 flex gap-x-1 items-center justify-center">
                       <ActionButtons
                         navigate={navigate}
                         candidate={item.candidate}
