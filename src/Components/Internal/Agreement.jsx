@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { IoSearchSharp } from 'react-icons/io5';
 import axios from '../../api/axios';
 import TableLoadingWrapper from '../../utils/TableLoadingWrapper';
@@ -14,9 +14,14 @@ function Agreement() {
   const [loading, setLoading] = useState(false);
   const [editClientUser, setEditClientUser] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const containerRef = useRef(null);
+  const initialRenderRef = useRef(true);
 
   const fetchAgreements = async (query = "") => {
+    if (loading) return;
+    
     setLoading(true);
     try {
       const response = await axios.get(`/api/internal/agreements/`, {
@@ -35,18 +40,27 @@ function Agreement() {
   };
 
   const debouncedSearch = debounce((value) => {
+    setSearchQuery(value);
     setData([]); // Clear data when search value changes
     setPage(1); // Reset to first page
-    fetchAgreements(value); // Fetch with the new search value
   }, 1000);
 
   useEffect(() => {
-    fetchAgreements();
-  }, [page]);
+    // Only fetch data when the component is fully mounted (skip initial render in strict mode)
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+      return;
+    }
+    
+    fetchAgreements(searchQuery);
+  }, [page, searchQuery]);
 
-  const handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollTop + clientHeight >= scrollHeight - 5 && !loading && hasMore) {
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    
+    if (scrollTop + clientHeight >= scrollHeight - 20 && !loading && hasMore) {
       setPage(prev => prev + 1);
     }
   };
@@ -95,7 +109,7 @@ function Agreement() {
   }
 
   return (
-    <div className='text-[12px]' onScroll={handleScroll}>
+    <div className='text-[12px]'>
       <div className='w-full h-full flex justify-between items-center px-5 mb-8 ' >
         <div className='font-semibold text-sm' >Years of Experience & Agreed Rates</div>
         <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80 border focus-within:border-blue-700">
@@ -109,10 +123,14 @@ function Agreement() {
         </div>
       </div>
 
-      <div className="transition-all duration-1000 ease-in-out text-2xs max-h-[75vh] overflow-auto">
+      <div 
+        ref={containerRef} 
+        className="transition-all duration-1000 ease-in-out text-2xs max-h-[75vh] overflow-auto"
+        onScroll={handleScroll}
+      >
         <TableLoadingWrapper loading={loading} data={data}>
           {data?.map((item, index) => (
-            <form key={item.email || index} onSubmit={(e) => {
+            <form key={item.id || index} onSubmit={(e) => {
               e.index = index;
               e.item = item;
               handleSubmit(onSubmit)(e);
