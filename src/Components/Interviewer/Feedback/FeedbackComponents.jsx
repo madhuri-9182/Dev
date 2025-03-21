@@ -81,7 +81,7 @@ export const Input = React.forwardRef(
       <FormField label={label}>
         <input
           ref={ref}
-          className="w-full px-3 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none disabled:cursor-not-allowed disabled:bg-[#b0b0b03a]"
+          className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none disabled:cursor-not-allowed disabled:bg-[#b0b0b03a] disabled:opacity-50"
           placeholder={placeholder}
           {...props}
         />
@@ -107,7 +107,7 @@ export const TextArea = React.forwardRef(
       <FormField label={label}>
         <textarea
           ref={ref}
-          className="w-full px-3 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+          className="w-full px-3 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
           placeholder={placeholder}
           rows={4}
           {...props}
@@ -136,7 +136,7 @@ export const Select = React.forwardRef(
           <div className="relative">
             <Listbox.Button
               ref={ref}
-              className="w-full px-3 py-2 text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
             >
               <span className="block truncate">
                 {selected.name}
@@ -161,7 +161,7 @@ export const Select = React.forwardRef(
                       `${
                         active
                           ? "text-white bg-blue-600"
-                          : "text-gray-900"
+                          : "text-[#49454F]"
                       }
                       cursor-default select-none relative py-2 px-4`
                     }

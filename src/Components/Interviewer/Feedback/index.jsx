@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useForm,
   useFieldArray,
@@ -29,9 +29,39 @@ import {
   EMAIL_REGEX,
   MOBILE_REGEX,
 } from "../../Constants/constants";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  getCandidateFeedback,
+  updateCandidateFeedback,
+} from "../api";
+import {
+  ErrorState,
+  LoadingState,
+} from "../../shared/loading-error-state";
+import { formatExperience } from "../Dashboard/utils/formatters";
+import { getJobLabel } from "../../../utils/util";
+import toast from "react-hot-toast";
 
 // Main Form Component
 const Feedback = () => {
+  const queryClient = useQueryClient();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const interviewId = location.pathname.split("/")[3];
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["getFeedback", interviewId],
+    queryFn: () => getCandidateFeedback(interviewId),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: 1,
+  });
+
   const {
     register,
     control,
@@ -39,6 +69,7 @@ const Feedback = () => {
     formState: { errors },
     setValue,
     getValues,
+    reset,
     // watch,
   } = useForm({
     defaultValues: {
@@ -59,10 +90,7 @@ const Feedback = () => {
         {
           skillName: "",
           score: 60,
-          questions: [
-            { question: "", answer: "" },
-            { question: "", answer: "" },
-          ],
+          questions: [{ question: "", answer: "" }],
           summary: "",
         },
       ],
@@ -74,14 +102,10 @@ const Feedback = () => {
       strength: "",
       improvementPoints: "",
       overallRemark: "",
+      score: 0,
     },
     mode: "onSubmit",
   });
-
-  // Watch for communication and attitude values
-  // const communicationValue = watch("skillEvaluation.communication");
-  // const attitudeValue = watch("skillEvaluation.attitude");
-  // const overallRemarkValue = watch("overallRemark");
 
   // Skills field array
   const {
@@ -89,6 +113,7 @@ const Feedback = () => {
     append: appendSkill,
     remove: removeSkill,
     update: updateSkill,
+    // replace: replaceSkills,
   } = useFieldArray({
     control,
     name: "skills",
@@ -105,6 +130,101 @@ const Feedback = () => {
   const [communicationRating, setCommunicationRating] =
     useState("");
   const [attitudeRating, setAttitudeRating] = useState("");
+
+  // Transform skill_based_performance to skills array format
+  const transformSkillsData = (skillsData) => {
+    if (!skillsData) return [];
+
+    return Object.entries(skillsData).map(
+      ([skillName, skillData]) => {
+        // Transform questions array to match the expected format
+        const questions = skillData.questions.map((q) => ({
+          question: q.que || "",
+          answer: q.ans || "",
+        }));
+
+        // No need to add a second empty question - only one is required now
+
+        return {
+          skillName,
+          score: parseInt(skillData.score, 10) || 60, // Default to 60 if parsing fails
+          questions,
+          summary: skillData.summary || "",
+        };
+      }
+    );
+  };
+
+  // update form values when data loads
+  useEffect(() => {
+    if (data && Object.keys(data?.data).length > 0) {
+      const responseData = data?.data;
+      const candidate = responseData?.candidate;
+      const interviewer = responseData?.interviewer;
+
+      // Transform skills data
+      const transformedSkills = transformSkillsData(
+        responseData?.skill_based_performance
+      );
+
+      // Get communication and attitude values (capitalize first letter to match the buttons)
+      const communicationValue =
+        responseData?.skill_evaluation?.Communication || "";
+      const attitudeValue =
+        responseData?.skill_evaluation?.Attitude || "";
+
+      // Set the state for UI buttons
+      setCommunicationRating(
+        communicationValue.charAt(0).toUpperCase() +
+          communicationValue.slice(1)
+      );
+      setAttitudeRating(
+        attitudeValue.charAt(0).toUpperCase() +
+          attitudeValue.slice(1)
+      );
+
+      // Reset the form with all values
+      reset({
+        candidateDetails: {
+          name: candidate.name,
+          email: candidate.email,
+          phone: candidate.phone.split("+91")[1],
+          yearsOfExperience: formatExperience(
+            candidate.year,
+            candidate.month
+          ),
+          role: getJobLabel(candidate.role),
+          company: candidate.company,
+        },
+        interviewerDetails: {
+          yearsOfExperience: formatExperience(
+            interviewer.total_experience_years,
+            interviewer.total_experience_months
+          ),
+          company: interviewer.current_company,
+          interviewDate:
+            responseData?.interview_date.split(" ")[0],
+        },
+        skills:
+          transformedSkills.length > 0
+            ? transformedSkills
+            : getValues("skills"),
+        skillEvaluation: {
+          communication:
+            communicationValue.charAt(0).toUpperCase() +
+            communicationValue.slice(1),
+          attitude:
+            attitudeValue.charAt(0).toUpperCase() +
+            attitudeValue.slice(1),
+        },
+        strength: responseData?.strength || "",
+        improvementPoints:
+          responseData?.improvement_points || "",
+        overallRemark: responseData?.overall_remark || "",
+        score: responseData?.overall_score || 0,
+      });
+    }
+  }, [data, reset, getValues]);
 
   // Function to add a new question to a skill
   const addQuestion = (skillIndex) => {
@@ -143,10 +263,72 @@ const Feedback = () => {
     updateSkill(skillIndex, updatedSkill);
   };
 
+  const transformFormData = (formData) => {
+    const skill_based_performance = {};
+
+    formData.skills.forEach((skill) => {
+      if (skill.skillName) {
+        // Transform questions to match API format
+        const apiQuestions = skill.questions.map((q) => ({
+          que: q.question,
+          ans: q.answer,
+        }));
+
+        skill_based_performance[skill.skillName] = {
+          score: String(skill.score),
+          summary: skill.summary,
+          questions: apiQuestions,
+        };
+      }
+    });
+
+    return {
+      interview_id: Number(interviewId),
+      skill_based_performance,
+      skill_evaluation: {
+        Communication:
+          formData.skillEvaluation.communication.toLowerCase(),
+        Attitude:
+          formData.skillEvaluation.attitude.toLowerCase(),
+      },
+      strength: formData.strength,
+      improvement_points: formData.improvementPoints,
+      overall_remark: formData.overallRemark,
+      overall_score: Number(formData.score),
+    };
+  };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: updateCandidateFeedback,
+    onSuccess: () => {
+      toast.success("Feedback submitted successfully!");
+      queryClient.invalidateQueries("getFeedback");
+      reset();
+      navigate("/interviewer/dashboard");
+    },
+    onError: (error) => {
+      toast.error(
+        `Error submitting feedback: ${
+          error.message || "Please try again"
+        }`
+      );
+    },
+  });
+
   const onSubmit = (data) => {
-    console.log(data);
+    const transformedData = transformFormData(data);
+    console.log(transformedData, "transformedData");
+    mutate({ id: interviewId, data: transformedData });
     // Handle form submission here
   };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (isError) {
+    return <ErrorState />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-6 my-14">
@@ -179,6 +361,7 @@ const Feedback = () => {
                 },
               })}
               error={errors.candidateDetails?.email}
+              disabled
             />
           </FormRow>
           <FormRow>
@@ -194,11 +377,12 @@ const Feedback = () => {
                 },
               })}
               error={errors.candidateDetails?.phone}
+              disabled
             />
             <Input
               label="Candidate Year of Experience"
               placeholder="Enter Year"
-              type="number"
+              type="text"
               {...register(
                 "candidateDetails.yearsOfExperience",
                 {
@@ -244,7 +428,7 @@ const Feedback = () => {
             <Input
               label="Interviewer Year of Experience"
               placeholder="Enter Year"
-              type="number"
+              type="text"
               {...register(
                 "interviewerDetails.yearsOfExperience",
                 {
@@ -255,6 +439,7 @@ const Feedback = () => {
               error={
                 errors.interviewerDetails?.yearsOfExperience
               }
+              disabled
             />
             <Input
               label="Current Company"
@@ -263,13 +448,14 @@ const Feedback = () => {
                 required: "Company is required",
               })}
               error={errors.interviewerDetails?.company}
+              disabled
             />
           </FormRow>
           <FormRow>
             <Input
               label="Interview Date"
-              placeholder="DD-MM-YY"
-              type="date"
+              placeholder="DD/MM/YYYY"
+              type="text"
               {...register(
                 "interviewerDetails.interviewDate",
                 {
@@ -299,7 +485,7 @@ const Feedback = () => {
                 <div className="flex justify-between items-center mb-4">
                   <div className="w-1/3">
                     <input
-                      className="w-full px-3 py-2 text-xs rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      className="w-full px-3 py-2 text-xs text-[#49454F] rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       placeholder="Skill Name"
                       {...register(
                         `skills.${skillIndex}.skillName`,
@@ -388,80 +574,81 @@ const Feedback = () => {
                 </div>
 
                 {/* Questions for this skill */}
-                {skillField.questions.map(
-                  (question, questionIndex) => (
-                    <div
-                      key={`${skillField.id}-q-${questionIndex}`}
-                      className="mb-5"
-                    >
-                      <div className="flex items-center">
-                        <span className=" font-medium mr-4 text-default">
-                          {questionIndex + 1}.
-                        </span>
-                        <input
-                          className="w-full px-4 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none"
-                          placeholder="Question"
-                          {...register(
-                            `skills.${skillIndex}.questions.${questionIndex}.question`,
-                            {
-                              required:
-                                "Question is required",
-                            }
+                {skillField.questions &&
+                  skillField.questions.map(
+                    (question, questionIndex) => (
+                      <div
+                        key={`${skillField.id}-q-${questionIndex}`}
+                        className="mb-5"
+                      >
+                        <div className="flex items-center">
+                          <span className=" font-medium mr-4 text-default">
+                            {questionIndex + 1}.
+                          </span>
+                          <input
+                            className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+                            placeholder="Question"
+                            {...register(
+                              `skills.${skillIndex}.questions.${questionIndex}.question`,
+                              {
+                                required:
+                                  "Question is required",
+                              }
+                            )}
+                          />
+                          {questionIndex > 0 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeQuestion(
+                                  skillIndex,
+                                  questionIndex
+                                )
+                              }
+                              className="ml-2 text-gray-500 hover:text-[#B10E0EE5]"
+                            >
+                              <XCircleIcon className="w-5 h-5" />
+                            </button>
                           )}
-                        />
-                        {questionIndex > 1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeQuestion(
-                                skillIndex,
-                                questionIndex
-                              )
-                            }
-                            className="ml-2 text-gray-500 hover:text-[#B10E0EE5]"
-                          >
-                            <XCircleIcon className="w-5 h-5" />
-                          </button>
-                        )}
-                      </div>
-                      {errors.skills?.[skillIndex]
-                        ?.questions?.[questionIndex]
-                        ?.question && (
-                        <div className="ml-[27px] mb-2 mt-1 text-[#B10E0EE5] text-2xs">
-                          {
-                            errors.skills[skillIndex]
-                              .questions[questionIndex]
-                              .question.message
-                          }
                         </div>
-                      )}
-                      <div className="ml-[27px] mt-4">
-                        <input
-                          className="w-full px-4 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none"
-                          placeholder="Answer"
-                          {...register(
-                            `skills.${skillIndex}.questions.${questionIndex}.answer`,
-                            {
-                              required:
-                                "Answer is required",
-                            }
-                          )}
-                        />
                         {errors.skills?.[skillIndex]
                           ?.questions?.[questionIndex]
-                          ?.answer && (
-                          <div className="mb-2 text-[#B10E0EE5] text-2xs mt-1">
+                          ?.question && (
+                          <div className="ml-[27px] mb-2 mt-1 text-[#B10E0EE5] text-2xs">
                             {
                               errors.skills[skillIndex]
                                 .questions[questionIndex]
-                                .answer.message
+                                .question.message
                             }
                           </div>
                         )}
+                        <div className="ml-[27px] mt-4">
+                          <input
+                            className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+                            placeholder="Answer"
+                            {...register(
+                              `skills.${skillIndex}.questions.${questionIndex}.answer`,
+                              {
+                                required:
+                                  "Answer is required",
+                              }
+                            )}
+                          />
+                          {errors.skills?.[skillIndex]
+                            ?.questions?.[questionIndex]
+                            ?.answer && (
+                            <div className="mb-2 text-[#B10E0EE5] text-2xs mt-1">
+                              {
+                                errors.skills[skillIndex]
+                                  .questions[questionIndex]
+                                  .answer.message
+                              }
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )
-                )}
+                    )
+                  )}
 
                 <div className="flex justify-end mb-4">
                   <button
@@ -478,7 +665,7 @@ const Feedback = () => {
                     Summary :
                   </label>
                   <textarea
-                    className="w-full px-3 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+                    className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
                     placeholder="Add Summary"
                     rows={4}
                     {...register(
@@ -509,10 +696,7 @@ const Feedback = () => {
                 appendSkill({
                   skillName: "",
                   score: 60,
-                  questions: [
-                    { question: "", answer: "" },
-                    { question: "", answer: "" },
-                  ],
+                  questions: [{ question: "", answer: "" }],
                   summary: "",
                 })
               }
@@ -673,29 +857,14 @@ const Feedback = () => {
             </div>
             <div className="mb-6">
               <label className="block mb-1 font-medium text-default">
-                Overall Score (auto-Calculated)
+                Overall Score
               </label>
               <input
-                className="w-full px-4 py-2 text-default rounded-md border border-gray-300 bg-[#b0b0b03a] outline-none cursor-not-allowed"
-                readOnly
-                value={
-                  communicationRating && attitudeRating
-                    ? {
-                        Poor: 25,
-                        Average: 50,
-                        Good: 75,
-                        Excellent: 100,
-                      }[communicationRating] /
-                        2 +
-                      {
-                        Poor: 25,
-                        Average: 50,
-                        Good: 75,
-                        Excellent: 100,
-                      }[attitudeRating] /
-                        2
-                    : ""
-                }
+                type="number"
+                className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 outline-none"
+                {...register("score", {
+                  required: "Score is required",
+                })}
               />
             </div>
           </FormRow>
@@ -703,9 +872,15 @@ const Feedback = () => {
           <div className="flex justify-end mt-6 ">
             <button
               type="submit"
-              className="px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg"
+              className={`px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg ${
+                isPending
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             >
-              Submit Feedback
+              {isPending
+                ? "Submitting..."
+                : "Submit Feedback"}
             </button>
           </div>
         </FormSection>

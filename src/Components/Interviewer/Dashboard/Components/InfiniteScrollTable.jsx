@@ -128,6 +128,7 @@ const InfiniteScrollTable = ({
                         candidate={item.candidate}
                         meet_link={item.meeting_link}
                         title={title}
+                        id={item.id}
                         scheduled_time={item.scheduled_time}
                       />
                     </span>

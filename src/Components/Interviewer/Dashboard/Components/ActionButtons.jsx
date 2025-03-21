@@ -110,6 +110,7 @@ Button.propTypes = {
 export const ActionButtons = ({
   navigate,
   candidate,
+  id,
   title,
   meet_link,
   scheduled_time,
@@ -172,9 +173,7 @@ export const ActionButtons = ({
         Icon={MessageText1}
         onClick={() => {
           if (isPendingFeedback) {
-            navigate(
-              `/interviewer/feedback/${candidate.id}`
-            );
+            navigate(`/interviewer/feedback/${id}`);
           }
         }}
         title="Feedback"
@@ -207,4 +206,8 @@ ActionButtons.propTypes = {
   meet_link: PropTypes.string,
   setIsDetailsModalOpen: PropTypes.func,
   scheduled_time: PropTypes.string,
+  id: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
 };

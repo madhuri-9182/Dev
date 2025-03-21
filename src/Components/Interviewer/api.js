@@ -60,3 +60,21 @@ export const getInterviewHistory = async (page) => {
   );
   return response.data;
 };
+
+export const getCandidateFeedback = async (id) => {
+  const response = await axios.get(
+    `/api/interviewer/interview-feedback/${id}/`
+  );
+  return response.data;
+};
+
+export const updateCandidateFeedback = async ({
+  id,
+  data,
+}) => {
+  const response = await axios.patch(
+    `/api/interviewer/interview-feedback/${id}/`,
+    data
+  );
+  return response.data;
+};
