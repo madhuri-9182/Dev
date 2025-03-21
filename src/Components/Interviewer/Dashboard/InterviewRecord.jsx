@@ -19,8 +19,8 @@ import useAuth from "../../../hooks/useAuth";
 
 // Component imports
 import Heading from "./Components/Heading";
-import InfiniteScrollTable from "./Components/InfiniteScrollTable";
 import Sidebar from "./Components/Sidebar";
+import Table from "./Components/Table";
 
 // Constants
 const QUERY_STALE_TIME = 5 * 60 * 1000; // 5 minutes
@@ -178,25 +178,12 @@ function InterviewRecord() {
             title={"Accepted Interviews"}
             count={acceptedCount}
           />
-          {acceptedInterviewsQuery.isLoading ? (
-            <div className="text-center py-4">
-              Loading accepted interviews...
-            </div>
-          ) : acceptedInterviewsQuery.isError ? (
-            <div className="text-center py-4 text-red-500">
-              Error loading accepted interviews:{" "}
-              {acceptedInterviewsQuery.error.message}
-            </div>
-          ) : (
-            <InfiniteScrollTable
-              data={acceptedInterviews}
-              isLoading={
-                acceptedInterviewsQuery.isFetchingNextPage
-              }
-              loaderRef={acceptedRef}
-              title={"Accepted Interviews"}
-            />
-          )}
+          <Table
+            query={acceptedInterviewsQuery}
+            data={acceptedInterviews}
+            loaderRef={acceptedRef}
+            title={"Accepted Interviews"}
+          />
         </div>
 
         <div className="flex flex-col gap-y-3">
@@ -204,25 +191,12 @@ function InterviewRecord() {
             title={"Pending Feedback"}
             count={pendingCount}
           />
-          {pendingFeedbackQuery.isLoading ? (
-            <div className="text-center py-4">
-              Loading pending feedback...
-            </div>
-          ) : pendingFeedbackQuery.isError ? (
-            <div className="text-center py-4 text-red-500">
-              Error loading pending feedback:{" "}
-              {pendingFeedbackQuery.error.message}
-            </div>
-          ) : (
-            <InfiniteScrollTable
-              data={pendingFeedback}
-              isLoading={
-                pendingFeedbackQuery.isFetchingNextPage
-              }
-              loaderRef={pendingRef}
-              title={"Pending Feedback"}
-            />
-          )}
+          <Table
+            query={pendingFeedbackQuery}
+            data={pendingFeedback}
+            loaderRef={pendingRef}
+            title={"Pending Feedback"}
+          />
         </div>
 
         <div className="flex flex-col gap-y-3">
@@ -230,25 +204,12 @@ function InterviewRecord() {
             title={"Interview History"}
             count={historyCount}
           />
-          {interviewHistoryQuery.isLoading ? (
-            <div className="text-center py-4">
-              Loading interview history...
-            </div>
-          ) : interviewHistoryQuery.isError ? (
-            <div className="text-center py-4 text-red-500">
-              Error loading interview history:{" "}
-              {interviewHistoryQuery.error.message}
-            </div>
-          ) : (
-            <InfiniteScrollTable
-              data={interviewHistory}
-              isLoading={
-                interviewHistoryQuery.isFetchingNextPage
-              }
-              loaderRef={historyRef}
-              title={"Interview History"}
-            />
-          )}
+          <Table
+            query={interviewHistoryQuery}
+            data={interviewHistory}
+            loaderRef={historyRef}
+            title={"Interview History"}
+          />
         </div>
       </div>
 
