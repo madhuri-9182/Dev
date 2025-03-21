@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "lucide-react";
@@ -123,14 +123,23 @@ export const TextArea = React.forwardRef(
 );
 
 export const Select = React.forwardRef(
-  ({ label, options, error, ...props }, ref) => {
-    const [selected, setSelected] = useState(options[0]);
+  (
+    { label, options, error, value, onChange, ...props },
+    ref
+  ) => {
+    // Find the selected option based on the form value
+    const selectedOption =
+      options.find((option) => option.id === value) ||
+      options[0];
 
     return (
       <FormField label={label}>
         <Listbox
-          value={selected}
-          onChange={setSelected}
+          value={selectedOption}
+          onChange={(option) => {
+            // Pass the id value to react-hook-form
+            onChange(option.id);
+          }}
           {...props}
         >
           <div className="relative">
@@ -139,7 +148,7 @@ export const Select = React.forwardRef(
               className="w-full px-3 py-2 text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
             >
               <span className="block truncate">
-                {selected.name}
+                {selectedOption.name}
               </span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <ChevronDownIcon
