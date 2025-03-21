@@ -232,17 +232,11 @@ const EngagementForm = ({
                         : "Upload here"}
                     </span>
                     {resumeFile && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveFile();
-                        }}
-                        disabled={isPending}
-                        className="p-0"
-                      >
-                        <Trash size={20} color="red" />
-                      </button>
+                      <Trash
+                        size={20}
+                        color="red"
+                        onClick={handleRemoveFile}
+                      />
                     )}
                   </>
                 )}

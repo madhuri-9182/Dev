@@ -126,7 +126,7 @@ export default ArchiveModal;
 ArchiveModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  archiveId: PropTypes.string,
+  archiveId: PropTypes.number,
   fromJobDetails: PropTypes.bool,
   setFormdata: PropTypes.func,
   formdata: PropTypes.object,

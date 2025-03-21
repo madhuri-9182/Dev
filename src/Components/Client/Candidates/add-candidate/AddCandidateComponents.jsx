@@ -480,7 +480,10 @@ const Input = ({
 };
 
 Input.propTypes = {
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   type: PropTypes.string,

@@ -203,7 +203,10 @@ const CardItems = ({
 
 CardHeader.propTypes = {
   title: PropTypes.string,
-  count: PropTypes.number,
+  count: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
 };
 
 CardItems.propTypes = {
