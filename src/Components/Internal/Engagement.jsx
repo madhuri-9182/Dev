@@ -1,5 +1,5 @@
 import { debounce } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { IoSearchSharp } from 'react-icons/io5';
 import MultiSelectFilter from '../../utils/MultiSelectFilter';
 import axios from '../../api/axios';
@@ -17,6 +17,7 @@ function Engagement() {
     status: []
   });
   const navigate = useNavigate();
+  const isFirstRender = useRef(true);
 
   const STATUSES = [
     { label: "Active", value: "active" },
@@ -38,22 +39,20 @@ function Engagement() {
     setSearchValue(event.target.value);
   }, 1000);
 
-  useEffect(() => {
-    fetchEngagements();
-  }, [offset, filters, searchValue]);
-
-  const handleScroll = (event) => {
-    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight + 20 && !isLoading && hasMore) {
-      setOffset((prev) => prev + 10);
+  const fetchEngagements = useCallback(async () => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  };
-
-  const fetchEngagements = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get('/api/internal/engagements/', {
-        params: { q: searchValue, offset: offset, domain: filters?.domain?.map(item => item.domain)?.join(','), status: filters?.status?.map(item => item.value)?.join(',') },
+        params: {
+          q: searchValue,
+          offset: offset,
+          domain: filters?.domain?.map(item => item.domain)?.join(','),
+          status: filters?.status?.map(item => item.value)?.join(',')
+        }
       });
       setData((prev) => offset === 0 ? response.data.results : [...prev, ...response.data.results]);
       setHasMore(response?.data?.next !== null);
@@ -61,6 +60,17 @@ function Engagement() {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
+    }
+  }, [offset, filters, searchValue]);
+
+  useEffect(() => {
+    fetchEngagements();
+  }, [offset, filters, searchValue, fetchEngagements]);
+
+  const handleScroll = (event) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+    if (scrollHeight - scrollTop <= clientHeight + 20 && !isLoading && hasMore) {
+      setOffset((prev) => prev + 10);
     }
   };
 
@@ -95,27 +105,16 @@ function Engagement() {
           <table className="min-w-full text-xs text-gray-500 border-collapse">
             <thead className="bg-gray-100 text-gray-700 uppercase font-medium">
               <tr>
-                <th scope="col" className="px-6 py-4 whitespace-nowrap text-left">
-                  CLIENT
-                </th>
-                <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
-                  ACTIVE CANDIDATES
-                </th>
-                <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
-                  SCHEDULED
-                </th>
-                <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">
-                  PENDING SCHEDULED
-                </th>
+                <th scope="col" className="px-6 py-4 whitespace-nowrap text-left">CLIENT</th>
+                <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">ACTIVE CANDIDATES</th>
+                <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">SCHEDULED</th>
+                <th scope="col" className="px-6 py-4 whitespace-nowrap text-center">PENDING SCHEDULED</th>
               </tr>
             </thead>
             <tbody>
               {data.map((row, index) => (
                 <tr key={index} className="border-b">
-                  <td
-                    className="px-6 py-4 text-blue-600 font-bold cursor-pointer hover:underline"
-                    onClick={() => navigate(`/internal/engagement/${row.id}`)}
-                  >
+                  <td className="px-6 py-4 text-blue-600 font-bold cursor-pointer hover:underline" onClick={() => navigate(`/internal/engagement/${row.id}`)}>
                     {row.name}
                   </td>
                   <td className="px-6 py-4 text-center">{row.active_candidates}</td>

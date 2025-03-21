@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "../api/axios";
 import useAuth from "./useAuth";
 
-const fetchAllEngagements = async () => {
+const fetchAllEngagements = async () => {  
+  if (window.location.pathname.includes('internal/engagement')) {
+    return null; // Return null to indicate no data
+  }
+
   let allCandidates = [];
   let nextUrl = "/api/client/engagements/?limit=10&offset=0";
 

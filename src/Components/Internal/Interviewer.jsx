@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 import { DOMAINS } from '../Constants/constants';
@@ -38,10 +38,14 @@ function Interviewer() {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const navigate = useNavigate();
+  const isFirstRender = useRef(true);
   const { register, handleSubmit, formState: { errors }, reset, setError, clearErrors } = useForm();
 
-  // Debounced function to fetch data
-  const fetchData = useCallback(debounce((page, isMounted = true) => {
+  const fetchData = useCallback((page, isMounted = true) => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     axios.get(`/api/internal/interviewers/?offset=${(page - 1) * 10}${searchTerm ? `&q=${searchTerm}` : ''}${filters?.strength?.length > 0 ? `&strengths=${filters?.strength?.map((item) => item.value)?.join(",")}` : ""}${filters?.experience?.length > 0 ? `&experiences=${filters?.experience?.map((item) => item.value)?.join(",")}` : ""}`)
       .then(res => {
         if (isMounted) {
@@ -59,7 +63,7 @@ function Interviewer() {
           setLoading(false);
         }
       });
-  }, 1000), [filters, searchTerm]);
+  }, [filters, searchTerm]);
 
   const validateRoles = useCallback(() => {
     if (items.length === 0) {
@@ -190,14 +194,9 @@ function Interviewer() {
     { label: "10+ Years", value: "11" },
   ];
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    // Reset scroll position if needed
-    const tableElement = document.querySelector('.table-wrapper');
-    if (tableElement) {
-      tableElement.scrollTop = 0; // Reset scroll position
-    }
-  };
+  const handleSearchChange = debounce((event) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
 
   const downloadExcelReport = () => {
     const worksheet = XLSX.utils.json_to_sheet(summary.results.map(user => ({
@@ -251,7 +250,6 @@ function Interviewer() {
             <input
               className='w-[358px] ml-1 text-[#979DA3] bg-[#F4F4F4] border-none focus:outline-none text-xs' type="text"
               placeholder='Search interviewer by Name, Email & Mobile Number'
-              value={searchTerm}
               onChange={handleSearchChange}
             />
             <IoSearchSharp className="text-[#49454F]" />
