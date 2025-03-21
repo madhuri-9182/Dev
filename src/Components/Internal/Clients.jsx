@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MultiSelectFilter from '../../utils/MultiSelectFilter';
 import debounce from 'lodash/debounce';
@@ -16,21 +16,20 @@ function Clients() {
   const [offset, setOffset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [filters, setFilters] = useState({
-    domain: [],
-    status: []
-  });
+  const [filters, setFilters] = useState({ domain: [], status: [] });
   const [selectedClient, setSelectedClient] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
 
+  const firstRender = useRef(true); // Tracks first render to skip unnecessary duplicate calls
+
   const STATUSES = [
     { label: "Active", value: "active" },
     { label: "Inactive", value: "inactive" },
   ];
-
+  
   const handleChipClick = (type, value) => {
     setOffset(0);
     if (type === 'status') {
@@ -44,9 +43,15 @@ function Clients() {
     try {
       setIsLoading(true);
       const response = await axios.get('/api/internal/internal-client/', {
-        params: { q: searchValue, offset: offset, domain: filters?.domain?.map(item => item.domain)?.join(','), status: filters?.status?.map(item => item.value)?.join(',') },
+        params: { 
+          q: searchValue, 
+          offset, 
+          domain: filters?.domain?.map(item => item.domain)?.join(','), 
+          status: filters?.status?.map(item => item.value)?.join(',') 
+        },
       });
-      setClients((prev) => offset === 0 ? response.data.results : [...prev, ...response.data.results]);
+
+      setClients((prev) => (offset === 0 ? response.data.results : [...prev, ...response.data.results]));
       setHasMore(response?.data?.next !== null);
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -62,6 +67,10 @@ function Clients() {
   }, 1000);
 
   useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false; // Skip first duplicate call in Strict Mode
+      return;
+    }
     fetchClients();
   }, [offset, filters, searchValue]);
 
@@ -95,18 +104,18 @@ function Clients() {
   return (
     <div className="px-6">
       <div>
-        {/* Search and Add Client Section */}
-        <div className="flex flex-col justify-end sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0 ml-auto">
+      {/* Search and Add Client Section */}
+      <div className="flex flex-col justify-end sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0 ml-auto">
           {/* Search Input */}
-          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80 border focus-within:border-blue-700">
-            <input
-              type="text"
-              placeholder="Search Client by name"
-              className="flex-1 bg-transparent text-gray-600 outline-none text-xs"
-              onChange={handleSearchChange}
-            />
-            <IoSearchSharp className="text-[#49454F]" />
-          </div>
+        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full sm:w-80 border focus-within:border-blue-700">
+          <input
+            type="text"
+            placeholder="Search Client by name"
+            className="flex-1 bg-transparent text-gray-600 outline-none text-xs"
+            onChange={handleSearchChange}
+          />
+          <IoSearchSharp className="text-[#49454F]" />
+        </div>
 
           {/* Add Client Button */}
           <button
@@ -121,14 +130,14 @@ function Clients() {
 
           {/* Status Filter */}
           <MultiSelectFilter label='Status' options={STATUSES} filter_state_name='status' current_value={filters.status} handleChipClick={handleChipClick} />
-        </div>
+      </div>
 
-        {/* Table Section */}
+      {/* Table Section */}
         <TableLoadingWrapper loading={isLoading} data={clients} >
-          <div className="overflow-x-auto overflow-y-scroll max-h-[500px] mt-6" onScroll={handleScroll}>
-            <table className="min-w-full text-xs text-left text-gray-500 border-collapse">
-              <thead className="bg-gray-100 text-gray-700 uppercase font-medium">
-                <tr>
+        <div className="overflow-x-auto overflow-y-scroll max-h-[500px] mt-6" onScroll={handleScroll}>
+          <table className="min-w-full text-xs text-left text-gray-500 border-collapse">
+            <thead className="bg-gray-100 text-gray-700 uppercase font-medium">
+              <tr>
                   <th scope="col" className="px-6 py-4 whitespace-nowrap">
                     Client
                   </th>
@@ -141,26 +150,26 @@ function Clients() {
                   <th scope="col" className="px-6 py-4 whitespace-nowrap">
                     Total Candidates
                   </th>
-                </tr>
-              </thead>
-              <tbody>
-                {clients.map((client, index) => (
-                  <tr key={index} className="border-b">
+              </tr>
+            </thead>
+            <tbody>
+              {clients.map((client, index) => (
+                <tr key={index} className="border-b">
                     <td
                       className="px-6 py-4 text-blue-600 font-bold cursor-pointer hover:underline"
                       onClick={() => handleClientClick(client.id)}
                     >
-                      {client.name}
-                    </td>
-                    <td className="px-6 py-4">{client.active_jobs}</td>
-                    <td className="px-6 py-4">{client.passive_jobs}</td>
-                    <td className="px-6 py-4">{client.total_candidates}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </TableLoadingWrapper>
+                    {client.name}
+                  </td>
+                  <td className="px-6 py-4">{client.active_jobs}</td>
+                  <td className="px-6 py-4">{client.passive_jobs}</td>
+                  <td className="px-6 py-4">{client.total_candidates}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </TableLoadingWrapper>
       </div>
 
       {/* Modal for Client Details */}

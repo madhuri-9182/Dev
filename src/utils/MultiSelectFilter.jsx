@@ -31,7 +31,7 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const listboxRef = useRef(null);
+  const firstRender = useRef(true);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -39,7 +39,9 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
         setLoading(true);
         try {
           const response = await axios.get(`${apiEndpoint}?offset=${(page - 1) * 10}`);
-          setFetchedOptions(prev => !Array.isArray(prev) || page === 1 ? [...response.data.results] : [...prev, ...response.data.results]);
+          setFetchedOptions(prev =>
+            page === 1 ? [...response.data.results] : [...prev, ...response.data.results]
+          );
           setHasMore(response?.data?.next !== null);
         } catch (error) {
           console.error('Error fetching options:', error);
@@ -51,57 +53,61 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
       }
     };
 
+    if (firstRender.current) {
+      firstRender.current = false; // Skip first duplicate call in React 18 Strict Mode
+      return;
+    }
+
     fetchOptions();
   }, [apiEndpoint, options, page]);
 
-  const handleScroll = () => {
-    const listbox = listboxRef.current;
-    if (listbox) {
-      const { scrollTop, scrollHeight, clientHeight } = listbox;
-      if (scrollTop + clientHeight >= scrollHeight - 5 && !loading && hasMore) {
-        setPage((prev) => prev + 1);
-      }
+  // Scroll handler inside slotProps to ensure it always attaches correctly
+  const handleScroll = (event) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.target;
+    if (scrollTop + clientHeight >= scrollHeight - 5 && !loading && hasMore) {
+      setPage((prev) => prev + 1);
     }
   };
 
-  return (<div className="flex items-center font-medium space-x-1">
-    <span className="font-bold mr-2 text-xs">{label}</span>
-    <Autocomplete
-      isOptionEqualToValue={(option, value) =>
-        apiEndpoint ? option.id === value.id : option.value === value.value
-      }
-      disableCloseOnSelect
-      multiple
-      options={Array.isArray(fetchedOptions) ? fetchedOptions : []}
-      getOptionLabel={(option) => (apiEndpoint ? option.domain : option.label)}
-      filterSelectedOptions
-      value={current_value}
-      onChange={(event, newValue) => {
+  return (
+    <div className="flex items-center font-medium space-x-1">
+      <span className="font-bold mr-2 text-xs">{label}</span>
+      <Autocomplete
+        isOptionEqualToValue={(option, value) =>
+          apiEndpoint ? option.id === value.id : option.value === value.value
+        }
+        disableCloseOnSelect
+        multiple
+        options={Array.isArray(fetchedOptions) ? fetchedOptions : []}
+        getOptionLabel={(option) => (apiEndpoint ? option.domain : option.label)}
+        filterSelectedOptions
+        value={current_value}
+        onChange={(event, newValue) => {
         // Ensure each option is selected only once
-        const uniqueValues = newValue.filter(
-          (item, index, self) =>
-            index === self.findIndex((v) => (apiEndpoint ? v.id === item.id : v.value === item.value))
-        );
-        handleChipClick(filter_state_name, uniqueValues);
-      }}
-      renderInput={(params) => (
-        <StyledTextField {...params} placeholder={current_value?.length === 0 ? "All" : ""} />
-      )}
-      slotProps={{
-        paper: { sx: { fontSize: 12 } },
-        listbox: {
-          sx: { maxHeight: '200px', overflowY: 'auto' },
-          onScroll: handleScroll,
-          ref: listboxRef,
-        },
-      }}
-      renderOption={(props, option) => (
-        <li {...props} key={option.id || option.label}>
-          {apiEndpoint ? option.domain : option.label}
-        </li>
-      )}
-    />
-  </div>);
+          const uniqueValues = newValue.filter(
+            (item, index, self) =>
+              index === self.findIndex((v) => (apiEndpoint ? v.id === item.id : v.value === item.value))
+          );
+          handleChipClick(filter_state_name, uniqueValues);
+        }}
+        renderInput={(params) => (
+          <StyledTextField {...params} placeholder={current_value?.length === 0 ? "All" : ""} />
+        )}
+        slotProps={{
+          paper: { sx: { fontSize: 12 } },
+          listbox: {
+            sx: { maxHeight: '200px', overflowY: 'auto' },
+            onScroll: handleScroll, // Attach scroll event here
+          },
+        }}
+        renderOption={(props, option) => (
+          <li {...props} key={option.id || option.label}>
+            {apiEndpoint ? option.domain : option.label}
+          </li>
+        )}
+      />
+    </div>
+  );
 }
 
 MultiSelectFilter.propTypes = {

@@ -1,31 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "../../api/axios";
 
 function Dashboard() {
   const [data, setData] = useState({});
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     axios.get("/api/internal/dashboard/").then((res) => {
       setData(res.data.data);
     });
-  }, [])
+  }, []);
 
   return (
     <div className="overflow-hidden px-4">
       <div className="flex h-full">
         <div className="w-1/2">
           <div className="pendingTaskHeading">
-            <h1 className="text-[18px] font-semibold text-[#333B69]">
-              Details
-            </h1>
+            <h1 className="text-[18px] font-semibold text-[#333B69]">Details</h1>
           </div>
           <div className="pendingTaskBox mt-2">
             <div className="p-[30px] bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl w-[90%]">
               <div className="grid grid-cols-2 gap-x-[80px] gap-y-[32px] text-white overflow-auto">
                 <div>
-                  <p className="text-xs mb-[8px]">
-                    Total Interviews
-                  </p>
+                  <p className="text-xs mb-[8px]">Total Interviews</p>
                   <p className="text-sm font-semibold">
                     {data?.details?.total_interviewers || 0}
                   </p>
@@ -43,9 +43,7 @@ function Dashboard() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs mb-[8px]">
-                    Total Candidates
-                  </p>
+                  <p className="text-xs mb-[8px]">Total Candidates</p>
                   <p className="text-sm font-semibold">
                     {data?.details?.total_candidates || 0}
                   </p>
@@ -57,9 +55,7 @@ function Dashboard() {
 
         <div className="w-1/2">
           <div className="pendingTaskHeading">
-            <h1 className="text-[18px] font-semibold text-[#333B69]">
-              Clients
-            </h1>
+            <h1 className="text-[18px] font-semibold text-[#333B69]">Clients</h1>
           </div>
           <div className="pendingTaskBox mt-2">
             <div className="p-[30px] bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl w-[90%]">
@@ -77,9 +73,7 @@ function Dashboard() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs mb-[8px] min-w-max">
-                    Pending Onboardings
-                  </p>
+                  <p className="text-xs mb-[8px] min-w-max">Pending Onboardings</p>
                   <p className="text-sm font-semibold">
                     {data?.clients?.passive_clients || 0}
                   </p>
@@ -100,7 +94,11 @@ function Dashboard() {
         <div className="pendingTaskHeading">
           <h1 className="text-[18px] font-semibold text-[#333B69]">
             Interviewers
-            <span className={`ml-2 text-white bg-[#056DDC] ${(data?.interviewers?.total || 0) > 9 ? "p-1" : "py-1 px-2"} rounded-full text-[16px]`}>
+            <span
+              className={`ml-2 text-white bg-[#056DDC] ${
+                (data?.interviewers?.total || 0) > 9 ? "p-1" : "py-1 px-2"
+              } rounded-full text-[16px]`}
+            >
               {data?.interviewers?.total || 0}
             </span>
           </h1>
@@ -109,17 +107,13 @@ function Dashboard() {
           <div className="p-[30px] bg-[#E7E4E8] rounded-3xl w-[90%]">
             <div className="grid grid-cols-2 gap-x-[80px] gap-y-[32px] overflow-auto">
               <div>
-                <p className="text-xs mb-[8px]">
-                  Pending Acceptance
-                </p>
+                <p className="text-xs mb-[8px]">Pending Acceptance</p>
                 <p className="text-sm font-semibold">
                   {data?.interviewers?.pending_acceptance || 0}
                 </p>
               </div>
               <div>
-                <p className="text-xs mb-[8px]">
-                  Interview Decline
-                </p>
+                <p className="text-xs mb-[8px]">Interview Decline</p>
                 <p className="text-sm font-semibold">
                   {data?.interviewers?.interview_declined || 0}
                 </p>
@@ -137,9 +131,7 @@ function Dashboard() {
                 </p>
               </div>
               <div>
-                <p className="text-xs mb-[8px]">
-                  Strong Candidates
-                </p>
+                <p className="text-xs mb-[8px]">Strong Candidates</p>
                 <p className="text-sm font-semibold">
                   {data?.interviewers?.strong_candidates || 0}
                 </p>
