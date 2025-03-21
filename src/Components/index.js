@@ -45,7 +45,6 @@ import Layout from "./Interviewer/Layout";
 import CalendarComponent from "./Interviewer/Calendar";
 import InterviewRecord from "./Interviewer/Dashboard/InterviewRecord";
 import Payments from "./Interviewer/Payments";
-import { Feedback } from "./Interviewer/Feedback";
 
 //SignIn-SignUp Exports
 export {
@@ -101,7 +100,6 @@ export {
   CalendarComponent,
   InterviewRecord,
   Payments,
-  Feedback,
 };
 
 export { Hello };

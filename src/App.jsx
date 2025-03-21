@@ -17,7 +17,7 @@ import {
 import { Hello } from "./Components";
 import { InternalAddInterviewer } from "./Components/Internal/AddInterviewer";
 import InternalAddClient from "./Components/Internal/AddClient";
-import { Feedback } from "./Components/Interviewer/Feedback";
+import Feedback from "./Components/Interviewer/Feedback";
 // Internal Imports
 import {
   InternalDashboard,
