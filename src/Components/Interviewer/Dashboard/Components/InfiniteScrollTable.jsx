@@ -126,8 +126,9 @@ const InfiniteScrollTable = ({
                       <ActionButtons
                         navigate={navigate}
                         candidate={item.candidate}
-                        meet_link={item.meet_link}
+                        meet_link={item.meeting_link}
                         title={title}
+                        scheduled_time={item.scheduled_time}
                       />
                     </span>
                   </div>

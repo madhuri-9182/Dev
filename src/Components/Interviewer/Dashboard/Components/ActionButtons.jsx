@@ -40,8 +40,47 @@ const LightTooltip = styled(({ className, ...props }) => (
     color: "#056DDC",
     boxShadow: theme.shadows[1],
     fontSize: 11,
+    maxWidth: 200,
+    textAlign: "center",
   },
 }));
+
+/**
+ * Helper function to check if the meeting link should be enabled
+ * Only enable the link 1 hour before the scheduled time
+ */
+const isMeetingLinkEnabled = (scheduledTimeStr) => {
+  if (!scheduledTimeStr) return false;
+
+  // Parse the scheduled time string (format: "DD/MM/YYYY HH:MM:SS")
+  const [datePart, timePart] = scheduledTimeStr.split(" ");
+  const [day, month, year] = datePart.split("/");
+  const [hours, minutes, seconds] = timePart.split(":");
+
+  // Create Date objects for scheduled time and current time
+  const scheduledTime = new Date(
+    year,
+    month - 1,
+    day,
+    hours,
+    minutes,
+    seconds
+  );
+  const currentTime = new Date();
+
+  // Calculate the time difference in milliseconds
+  const timeDifference = scheduledTime - currentTime;
+
+  // Convert 1 hour to milliseconds
+  const oneHourInMs = 60 * 60 * 1000;
+
+  // Enable the link if current time is within 1 hour before the scheduled time
+  // or any time after the scheduled time (for late meetings)
+  return (
+    timeDifference <= oneHourInMs &&
+    timeDifference > -24 * oneHourInMs
+  ); // Allow access up to 24 hours after scheduled time
+};
 
 /**
  * buttons component for Action Buttons
@@ -73,6 +112,7 @@ export const ActionButtons = ({
   candidate,
   title,
   meet_link,
+  scheduled_time,
 }) => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] =
     useState(false);
@@ -80,6 +120,18 @@ export const ActionButtons = ({
   const isInterviewHistory = title === "Interview History";
   const isAcceptedInterviews =
     title === "Accepted Interviews";
+
+  const isMeetLinkEnabled =
+    isAcceptedInterviews &&
+    isMeetingLinkEnabled(scheduled_time);
+
+  // Generate appropriate tooltip message based on link status
+  const getMeetingButtonTooltip = () => {
+    if (!meet_link) return "No meeting link available";
+    if (!isMeetLinkEnabled)
+      return "Meeting access unlocks 1 hour before interview time";
+    return "Start";
+  };
 
   if (isInterviewHistory) {
     return null;
@@ -133,8 +185,8 @@ export const ActionButtons = ({
           onClick={() => {
             window.open(meet_link, "_blank");
           }}
-          disabled={false}
-          title="Start"
+          disabled={!meet_link || !isMeetLinkEnabled}
+          title={getMeetingButtonTooltip()}
         />
       )}
       {isDetailsModalOpen && (
@@ -154,4 +206,5 @@ ActionButtons.propTypes = {
   title: PropTypes.string,
   meet_link: PropTypes.string,
   setIsDetailsModalOpen: PropTypes.func,
+  scheduled_time: PropTypes.string,
 };
