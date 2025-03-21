@@ -39,6 +39,7 @@ const Feedback = () => {
     formState: { errors },
     setValue,
     getValues,
+    // watch,
   } = useForm({
     defaultValues: {
       candidateDetails: {
@@ -74,7 +75,13 @@ const Feedback = () => {
       improvementPoints: "",
       overallRemark: "",
     },
+    mode: "onSubmit",
   });
+
+  // Watch for communication and attitude values
+  // const communicationValue = watch("skillEvaluation.communication");
+  // const attitudeValue = watch("skillEvaluation.attitude");
+  // const overallRemarkValue = watch("overallRemark");
 
   // Skills field array
   const {
@@ -218,7 +225,9 @@ const Feedback = () => {
             <Input
               label="Current Company"
               placeholder="Enter Company"
-              {...register("candidateDetails.company")}
+              {...register("candidateDetails.company", {
+                required: "Company is required",
+              })}
               error={errors.candidateDetails?.company}
               disabled
             />
@@ -237,7 +246,11 @@ const Feedback = () => {
               placeholder="Enter Year"
               type="number"
               {...register(
-                "interviewerDetails.yearsOfExperience"
+                "interviewerDetails.yearsOfExperience",
+                {
+                  required:
+                    "Years of experience is required",
+                }
               )}
               error={
                 errors.interviewerDetails?.yearsOfExperience
@@ -246,7 +259,9 @@ const Feedback = () => {
             <Input
               label="Current Company"
               placeholder="Enter Company"
-              {...register("interviewerDetails.company")}
+              {...register("interviewerDetails.company", {
+                required: "Company is required",
+              })}
               error={errors.interviewerDetails?.company}
             />
           </FormRow>
@@ -467,9 +482,20 @@ const Feedback = () => {
                     placeholder="Add Summary"
                     rows={4}
                     {...register(
-                      `skills.${skillIndex}.summary`
+                      `skills.${skillIndex}.summary`,
+                      {
+                        required: "Summary is required",
+                      }
                     )}
                   />
+                  {errors.skills?.[skillIndex]?.summary && (
+                    <span className="text-[#B10E0EE5] text-2xs">
+                      {
+                        errors.skills[skillIndex].summary
+                          .message
+                      }
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -530,7 +556,8 @@ const Feedback = () => {
                       // Update the form value
                       setValue(
                         "skillEvaluation.communication",
-                        rating
+                        rating,
+                        { shouldValidate: true }
                       );
                     }}
                   >
@@ -538,6 +565,11 @@ const Feedback = () => {
                   </button>
                 ))}
               </div>
+              {errors.skillEvaluation?.communication && (
+                <div className="text-[#B10E0EE5] text-2xs mt-2">
+                  Communication rating is required
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-white rounded-xl border-gray-300 border">
@@ -567,7 +599,8 @@ const Feedback = () => {
                       // Update the form value
                       setValue(
                         "skillEvaluation.attitude",
-                        rating
+                        rating,
+                        { shouldValidate: true }
                       );
                     }}
                   >
@@ -575,6 +608,11 @@ const Feedback = () => {
                   </button>
                 ))}
               </div>
+              {errors.skillEvaluation?.attitude && (
+                <div className="text-[#B10E0EE5] text-2xs mt-2">
+                  Attitude rating is required
+                </div>
+              )}
             </div>
           </div>
         </FormSection>
@@ -588,12 +626,18 @@ const Feedback = () => {
           <TextArea
             label="Candidate's Strength"
             placeholder="Please provide the Strength of the candidate"
-            {...register("strength")}
+            {...register("strength", {
+              required: "Candidate's strength is required",
+            })}
+            error={errors.strength}
           />
           <TextArea
             label="Improvement Points"
             placeholder="Please provide the Improvement point of the candidate"
-            {...register("improvementPoints")}
+            {...register("improvementPoints", {
+              required: "Improvement points are required",
+            })}
+            error={errors.improvementPoints}
           />
         </FormSection>
 
@@ -604,17 +648,29 @@ const Feedback = () => {
           icon={Remark}
         >
           <FormRow>
-            <Controller
-              control={control}
-              name="overallRemark"
-              render={({ field }) => (
-                <Select
-                  label="Overall Remark"
-                  options={remarkOptions}
-                  {...field}
-                />
-              )}
-            />
+            <div className="mb-6 w-full">
+              <Controller
+                control={control}
+                name="overallRemark"
+                rules={{
+                  required: "Overall remark is required",
+                }}
+                render={({ field }) => (
+                  <>
+                    <Select
+                      label="Overall Remark"
+                      options={remarkOptions}
+                      {...field}
+                    />
+                    {errors.overallRemark && (
+                      <span className="text-[#B10E0EE5] text-2xs">
+                        {errors.overallRemark.message}
+                      </span>
+                    )}
+                  </>
+                )}
+              />
+            </div>
             <div className="mb-6">
               <label className="block mb-1 font-medium text-default">
                 Overall Score (auto-Calculated)

@@ -113,7 +113,7 @@ export const TextArea = React.forwardRef(
           {...props}
         />
         {error && (
-          <p className="mt-1 text-2xs text-[#B10E0EE5]">
+          <p className="text-2xs text-[#B10E0EE5]">
             {error.message}
           </p>
         )}
