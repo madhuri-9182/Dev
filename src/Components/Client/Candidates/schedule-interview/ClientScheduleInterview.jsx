@@ -525,36 +525,37 @@ function ClientScheduleInterview() {
 
             {/* Action Buttons */}
             <div className="mt-20 flex items-center justify-end gap-x-3">
-              <button
-                type="button"
-                className="py-2 rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
-                  transition-all duration-300 ease-in-out 
-                  hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 flex items-center justify-center"
-                onClick={handleDeleteCandidate}
-              >
-                Drop Candidate
-              </button>
-
               {(item?.id
                 ? item.status === "NSCH"
                 : true) && (
-                <button
-                  type="button"
-                  className="bg-[#E8DEF8] border border-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out 
+                <>
+                  <button
+                    type="button"
+                    className="py-2 rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
+                    transition-all duration-300 ease-in-out 
+                    hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 flex items-center justify-center"
+                    onClick={handleDeleteCandidate}
+                  >
+                    Drop Candidate
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-[#E8DEF8] border border-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out 
                     hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center w-36"
-                  onClick={() => {
-                    // Call onSubmit with scheduleNow=false
-                    handleSubmit((data) =>
-                      onSubmit(data, false)
-                    )();
-                  }}
-                >
-                  {candidateMutation.isPending ? (
-                    <Loader2 className="animate-spin h-4 w-4" />
-                  ) : (
-                    "Schedule Later"
-                  )}
-                </button>
+                    onClick={() => {
+                      // Call onSubmit with scheduleNow=false
+                      handleSubmit((data) =>
+                        onSubmit(data, false)
+                      )();
+                    }}
+                  >
+                    {candidateMutation.isPending ? (
+                      <Loader2 className="animate-spin h-4 w-4" />
+                    ) : (
+                      "Schedule Later"
+                    )}
+                  </button>
+                </>
               )}
 
               <button
