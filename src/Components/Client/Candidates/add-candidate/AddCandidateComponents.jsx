@@ -34,8 +34,9 @@ export const ResumeTable = ({
           <th className="px-3 w-[13%]">Mobile Number</th>
           <th className="px-3 w-1/6">Email ID</th>
           <th className="px-3 w-1/5">Company</th>
+          <th className="px-3 w-1/6">Designation</th>
           <th className="px-3 w-[11%]">Gender</th>
-          <th className="px-3 w-[13%]"></th>
+          <th className="px-3 w-[17%]"></th>
         </tr>
       </thead>
       <tbody>
@@ -152,6 +153,12 @@ const ResumeTableRow = ({
     )
       newErrors.current_company =
         "Company not parsed. Please fill manually to submit";
+    if (
+      !editedData.current_designation ||
+      editedData.current_designation === "Not Found"
+    )
+      newErrors.current_designation =
+        "Designation not parsed. Please fill manually to submit";
     if (!editedData.gender)
       newErrors.gender =
         "Gender is required. Please fill manually to submit";
@@ -338,6 +345,17 @@ const ResumeTableRow = ({
               />
             </td>
             <td className="px-3 w-[11%]">
+              <Input
+                type="text"
+                value={inputValue("current_designation")}
+                onChange={(e) =>
+                  handleChange(e, "current_designation")
+                }
+                placeholder="Designation"
+                className="max-w-[100%]"
+              />
+            </td>
+            <td className="px-3 w-[11%]">
               <select
                 value={editedData.gender}
                 onChange={(e) => handleChange(e, "gender")}
@@ -396,6 +414,9 @@ const ResumeTableRow = ({
             </td>
             <td className="px-3 w-1/5">
               {tableDataValues("current_company")}
+            </td>
+            <td className="px-3 w-1/6">
+              {tableDataValues("current_designation")}
             </td>
             <td className="px-3 w-[11%]">
               {item.gender

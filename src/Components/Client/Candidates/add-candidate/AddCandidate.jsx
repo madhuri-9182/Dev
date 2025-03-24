@@ -126,6 +126,7 @@ function ClientAddCandidate() {
           !row.email ||
           !row.phone_number ||
           !row.current_company ||
+          !row.current_designation ||
           (row.years_of_experience.year === 0 &&
             row.years_of_experience.month === 0)
       );
