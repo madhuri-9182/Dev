@@ -18,6 +18,7 @@ const Dashboard = () => {
     queryFn: fetchDashboardApi,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
   });
 
   if (isLoading) return <LoadingState />;

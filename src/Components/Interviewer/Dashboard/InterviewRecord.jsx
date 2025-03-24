@@ -60,6 +60,7 @@ function InterviewRecord() {
     getNextPageParam: (lastPage) =>
       getNextPageFromUrl(lastPage.next),
     staleTime: QUERY_STALE_TIME,
+    refetchOnWindowFocus: false,
   });
 
   // Infinite query for pending feedback
@@ -70,6 +71,7 @@ function InterviewRecord() {
     getNextPageParam: (lastPage) =>
       getNextPageFromUrl(lastPage.next),
     staleTime: QUERY_STALE_TIME,
+    refetchOnWindowFocus: false,
   });
 
   // Infinite query for interview history
@@ -80,6 +82,7 @@ function InterviewRecord() {
     getNextPageParam: (lastPage) =>
       getNextPageFromUrl(lastPage.next),
     staleTime: QUERY_STALE_TIME,
+    refetchOnWindowFocus: false,
   });
 
   // Load more data when intersecting with viewport
