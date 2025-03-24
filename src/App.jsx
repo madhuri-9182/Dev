@@ -75,6 +75,8 @@ import AddJob from "./Components/Client/Jobs/AddJob";
 import JobDetails from "./Components/Client/Jobs/JobDetails";
 import EmailVerification from "./Components/Authentication/EmailVerification";
 import InterviewerConfirmation from "./Components/Interviewer/confirmation/InterviewConfirmation";
+import CandidateView from "./Components/Client/Candidates/view-candidate-feedback/CandidateView";
+import CandidateFeedback from "./Components/Client/Candidates/view-candidate-feedback/CandidateFeedback";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -164,6 +166,13 @@ const router = createBrowserRouter(
                 path="schedule-interview"
                 element={<ClientScheduleInterview />}
               />
+              <Route path=":id">
+                <Route index element={<CandidateView />} />
+                <Route
+                  path="feedback"
+                  element={<CandidateFeedback />}
+                />
+              </Route>
             </Route>
 
             <Route path="analytics">
