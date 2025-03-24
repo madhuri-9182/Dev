@@ -408,6 +408,7 @@ function ClientScheduleInterview() {
         item.specialization
       );
       formdata.append("company", item.current_company);
+      formdata.append("current_designation", item.current_designation);
       formdata.append("source", item.source);
       formdata.append("cv", file);
       formdata.append("gender", item.gender || "M");

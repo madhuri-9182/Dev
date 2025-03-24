@@ -60,6 +60,7 @@ const useInterviewScheduling = (
       designation_id: candidateData?.role,
       specialization: candidateData?.specialization,
       company: candidateData?.current_company,
+      designation: candidateData?.current_designation,
       experience_year: experienceYear,
     };
   }, [selectedDate, candidateData]);

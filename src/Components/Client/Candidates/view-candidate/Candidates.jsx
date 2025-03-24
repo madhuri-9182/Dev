@@ -85,6 +85,7 @@ function Candidates() {
       // Build candidate data structure
       const candidateData = {
         current_company: person.company,
+        current_designation: person.current_designation,
         specialization: person.specialization,
         role: person.designation.id,
         years_of_experience: {
