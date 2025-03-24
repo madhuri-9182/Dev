@@ -175,7 +175,7 @@ function InterviewRecord() {
 
   return (
     <div className="flex h-full px-8 gap-x-5">
-      <div className="w-full h-screen pt-8 flex flex-col gap-y-5">
+      <div className="w-full pt-8 flex flex-col gap-y-5">
         <div className="flex flex-col gap-y-3">
           <Heading
             title={"Accepted Interviews"}

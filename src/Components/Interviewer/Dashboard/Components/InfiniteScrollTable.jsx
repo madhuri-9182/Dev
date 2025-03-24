@@ -30,7 +30,7 @@ const InfiniteScrollTable = ({
     "px-4 text-left text-wrap";
 
   return (
-    <div className="px-3 h-60 overflow-y-auto">
+    <div className="px-3 h-[22vh] overflow-y-auto">
       {data.length === 0 ? (
         <Empty description="No interviews found" />
       ) : (

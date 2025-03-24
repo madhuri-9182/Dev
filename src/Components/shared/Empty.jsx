@@ -4,8 +4,8 @@ const Empty = ({ description = "No data" }) => {
   return (
     <div className='flex flex-col items-center justify-center py-4 '>
       <svg
-        width="130"
-        height="120"
+        width="100"
+        height="90"
         viewBox="0 0 184 152"
         xmlns="http://www.w3.org/2000/svg"
       >

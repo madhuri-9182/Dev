@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
  * Sidebar component with navigation buttons
  */
 const Sidebar = ({ handleCalendarClick, isLoading }) => (
-  <div className="flex items-start justify-center w-52 py-5 h-screen">
-    <div className="mt-20 py-5 px-3 flex flex-col items-center justify-start rounded-2xl bg-[#E7E4E8CC] h-5/6 gap-y-4">
+  <div className="flex items-start justify-center w-52 py-5">
+    <div className="mt-20 py-5 px-3 flex flex-col items-center justify-start rounded-2xl bg-[#E7E4E8CC] h-4/6 gap-y-4">
       <Link
         to="/interviewer/payments"
         className="py-2 px-3 w-full text-default font-medium border border-[#79747E] rounded-full text-[#65558F] transition-all duration-300 ease-in-out 
