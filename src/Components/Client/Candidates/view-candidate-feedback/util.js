@@ -27,8 +27,10 @@ export const getFeedbackColor = (score) => {
 export const getFeedbackInputColor = (value) => {
   if (["REC", "HREC"].includes(value)) {
     return "bg-[#59B568] text-white border-[#59B568] shadow";
+  } else if (value === "NJ") {
+    return "bg-[#ffbe5d] text-white border-[#ffbe5d] shadow";
   } else {
-    return "bg-[#B10E0EE5] text-white border-[#B10E0EE5] shadow";
+    return "bg-[#ec1313] text-white border-[#ec1313] shadow";
   }
 };
 
