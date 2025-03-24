@@ -1,4 +1,6 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import FinalSelectionDropdown from "./FinalSelectionDropdown";
 
 const CandidateRow = ({
   candidate,
@@ -8,6 +10,7 @@ const CandidateRow = ({
 }) => {
   const { getRoleName, getSourceName, formatDate } =
     utilities;
+  const navigate = useNavigate();
 
   return (
     <div className="w-full flex items-center justify-evenly">
@@ -22,13 +25,22 @@ const CandidateRow = ({
         <div className="flex flex-col justify-start items-start gap-2">
           <div
             className={`text-xs font-bold text-[#056DDC] uppercase  ${
-              candidate?.status === "NSCH"
+              candidate?.status !== "SCH"
                 ? "hover:underline cursor-pointer"
                 : ""
             }`}
             onClick={() => {
               if (candidate?.status === "NSCH") {
                 onViewCandidate(candidate);
+              } else {
+                navigate(
+                  `/client/candidates/${candidate.id}`,
+                  {
+                    state: {
+                      id: candidate?.interviews[0],
+                    },
+                  }
+                );
               }
             }}
           >
@@ -65,8 +77,8 @@ const CandidateRow = ({
 
         {/* Archive Option */}
         <div className="flex items-start justify-center py-1 text-2xs text-black">
-          {candidate.status === "REC" ? (
-            <ArchiveButton />
+          {["REC", "NREC"].includes(candidate.status) ? (
+            <FinalSelectionDropdown candidate={candidate} />
           ) : (
             "-"
           )}
@@ -74,8 +86,8 @@ const CandidateRow = ({
 
         {/* Engagement Option */}
         <div className="flex items-start justify-center py-1 text-xs text-black">
-          {candidate.status === "REC" ? (
-            <EngagementButton />
+          {candidate.final_selection_status === "SLD" ? (
+            <EngagementButton candidate={candidate} />
           ) : (
             "-"
           )}
@@ -146,7 +158,7 @@ const ScoreDisplay = ({ candidate, onViewCandidate }) => {
     return "-";
   }
 
-  return <>Score: {candidate.score}/500</>;
+  return <>Score: {candidate.score}/100</>;
 };
 
 ScoreDisplay.propTypes = {
@@ -154,28 +166,25 @@ ScoreDisplay.propTypes = {
   onViewCandidate: PropTypes.func,
 };
 
-const ArchiveButton = () => (
-  <button className="ml-3 px-3 py-1 text-2xs border border-gray-400 rounded-lg flex">
-    Archived
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+const EngagementButton = ({ candidate }) => {
+  const navigate = useNavigate();
+  return (
+    <button
+      className="bg-[#E8DEF8] text-[#4A4459] text-2xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center"
+      type="button"
+      onClick={() => {
+        navigate("/client/engagement/form", {
+          state: { candidate },
+        });
+      }}
     >
-      <path
-        d="M9.99992 12.4997L5.83325 8.33301H14.1666L9.99992 12.4997Z"
-        fill="#1D1B20"
-      />
-    </svg>
-  </button>
-);
+      Push to Engagement
+    </button>
+  );
+};
 
-const EngagementButton = () => (
-  <button className="bg-[#E8DEF8] text-[#4A4459] text-2xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center">
-    Push to Engagement
-  </button>
-);
+EngagementButton.propTypes = {
+  candidate: PropTypes.object,
+};
 
 export default CandidateRow;

@@ -26,6 +26,7 @@ import SkillsSection from "./sections/SkillSection";
 import SkillEvaluationSection from "./sections/SkillEvaluationSection";
 import StrengthAndImprovementSection from "./sections/StrengthAndImprovementSection";
 import OverallRemarkSection from "./sections/OverallRemarkSection";
+import { REMARK_OPTIONS } from "../../Constants/constants";
 
 // Initial form state
 const DEFAULT_FORM_VALUES = {
@@ -278,15 +279,6 @@ const Feedback = () => {
   if (isLoading) return <LoadingState />;
   if (isError) return <ErrorState />;
 
-  // Define remark options for select component
-  const remarkOptions = [
-    { id: "HREC", name: "Highly Recommend" },
-    { id: "REC", name: "Recommend" },
-    { id: "NREC", name: "Not Recommended" },
-    { id: "SNREC", name: "Strongly Not Recommended" },
-    { id: "NJ", name: "Not Joined" },
-  ];
-
   return (
     <div className="max-w-7xl mx-auto p-6 my-14">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -326,7 +318,7 @@ const Feedback = () => {
           control={control}
           register={register}
           errors={errors}
-          remarkOptions={remarkOptions}
+          remarkOptions={REMARK_OPTIONS}
           isPending={isPending}
         />
       </form>

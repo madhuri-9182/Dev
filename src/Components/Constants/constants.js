@@ -261,3 +261,11 @@ export const GENDERS = [
     name: "Other",
   },
 ];
+
+export const REMARK_OPTIONS = [
+  { id: "HREC", name: "Highly Recommended" },
+  { id: "REC", name: "Recommended" },
+  { id: "NREC", name: "Not Recommended" },
+  { id: "SNREC", name: "Strongly Not Recommended" },
+  { id: "NJ", name: "Not Joined" },
+];

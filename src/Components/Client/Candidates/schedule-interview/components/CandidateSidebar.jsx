@@ -11,6 +11,7 @@ function CandidateSidebar({
   file,
   register,
   errors,
+  disabled = false,
 }) {
   // Handle file download
 
@@ -79,18 +80,30 @@ function CandidateSidebar({
           </span>
         </div>
 
-        <div className="flex flex-col">
-          <textarea
-            {...register("remark", { maxLength: 255 })}
-            placeholder="Write your remarks here"
-            className="rounded-2xl italic text-2xs text-[#6B6F7B] p-4 w-full h-[120px] bg-[#F6F6F6] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
-          />
-          {errors.remark && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.remark.message}
-            </p>
-          )}
-        </div>
+        {/* {check if it is from client schedule interview or client feedback} */}
+        {disabled ? (
+          <div className="flex flex-col">
+            <textarea
+              value={candidate?.remarks}
+              placeholder="Write your remarks here"
+              disabled={disabled}
+              className="rounded-2xl italic text-2xs text-[#6B6F7B] disabled:cursor-not-allowed disabled:opacity-50 p-4 w-full h-[120px] bg-[#F6F6F6] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <textarea
+              {...register("remark", { maxLength: 255 })}
+              placeholder="Write your remarks here"
+              className="rounded-2xl italic text-2xs text-[#6B6F7B] p-4 w-full h-[120px] bg-[#F6F6F6] focus:outline-none focus:ring-1 focus:ring-[#007AFF]"
+            />
+            {errors.remark && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.remark.message}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -103,4 +116,5 @@ CandidateSidebar.propTypes = {
   file: PropTypes.object,
   register: PropTypes.func,
   errors: PropTypes.object,
+  disabled: PropTypes.bool,
 };
