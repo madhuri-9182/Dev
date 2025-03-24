@@ -1,11 +1,14 @@
 import PropTypes from "prop-types";
-import { getJobLabel } from "../../../../utils/util";
 import {
-  REMARK_OPTIONS,
-  SPECIALIZATIONS,
-} from "../../../Constants/constants";
+  getJobLabel,
+  getSpecialization,
+} from "../../../../utils/util";
 import { formatExperience } from "../../../Interviewer/Dashboard/utils/formatters";
 import { useNavigate, useLocation } from "react-router-dom";
+import {
+  getFeedbackInputColor,
+  getRemarksLabel,
+} from "./util";
 
 const CandidateViewForm = ({ data }) => {
   const navigate = useNavigate();
@@ -22,10 +25,9 @@ const CandidateViewForm = ({ data }) => {
     },
     {
       label: "Function",
-      value: SPECIALIZATIONS.find(
-        (spec) =>
-          spec.id === data?.candidate?.specialization
-      )?.name,
+      value: getSpecialization(
+        data?.candidate?.specialization
+      ),
     },
   ];
 
@@ -47,20 +49,10 @@ const CandidateViewForm = ({ data }) => {
     },
   ];
 
-  const getFeedbackInputColor = (value) => {
-    if (["REC", "HREC"].includes(value)) {
-      return "bg-[#59B568] text-white border-[#59B568]";
-    } else {
-      return "bg-[#B10E0EE5] text-white border-[#B10E0EE5]";
-    }
-  };
-
   const FEEDBACK_FORM_ITEMS = [
     {
       label: "Feedback",
-      value: REMARK_OPTIONS.find(
-        (option) => option.id === data?.overall_remark
-      )?.name,
+      value: getRemarksLabel(data?.overall_remark),
       className: getFeedbackInputColor(
         data?.overall_remark
       ),
@@ -99,7 +91,7 @@ const CandidateViewForm = ({ data }) => {
               value={item.value || ""}
               readOnly
               type="text"
-              className={`rounded-lg w-[200px] text-2xs py-[6px] px-3 border text-center shadow ${item.className}`}
+              className={`rounded-lg w-[200px] text-2xs py-[6px] px-3 border text-center ${item.className}`}
             />
           </div>
         ))}
@@ -110,7 +102,9 @@ const CandidateViewForm = ({ data }) => {
           type="button"
           className="w-[200px] bg-[#007AFF] text-white rounded-full h-[36px] text-xs font-medium text-center"
           onClick={() => {
-            navigate(`${location.pathname}/feedback`);
+            navigate(`${location.pathname}/feedback`, {
+              state: { data },
+            });
           }}
         >
           View & Download Report

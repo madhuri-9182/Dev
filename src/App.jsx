@@ -76,7 +76,7 @@ import JobDetails from "./Components/Client/Jobs/JobDetails";
 import EmailVerification from "./Components/Authentication/EmailVerification";
 import InterviewerConfirmation from "./Components/Interviewer/confirmation/InterviewConfirmation";
 import CandidateView from "./Components/Client/Candidates/view-candidate-feedback/CandidateView";
-import CandidateFeedback from "./Components/Client/Candidates/view-candidate-feedback/CandidateFeedback";
+import CandidateFeedback from "./Components/Client/Candidates/view-candidate-feedback/candidate-feedback/CandidateFeedback";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
