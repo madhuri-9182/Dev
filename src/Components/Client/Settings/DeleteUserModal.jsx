@@ -21,7 +21,6 @@ const DeleteUserModal = ({ isOpen, onClose, id }) => {
       onClose(); // Close modal after successful deletion
     },
     onError: (error) => {
-      console.log(error, "error");
       const errorToDisplay = error?.response?.data?.message
         ? error.response.data.message
         : "Failed to delete user";

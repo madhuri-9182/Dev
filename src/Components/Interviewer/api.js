@@ -4,7 +4,6 @@ export const googleCalendarAuthInitialization =
     const response = await axios.get(
       "/api/google-auth/init/"
     );
-    console.log(response.data);
     return response.data;
   };
 
