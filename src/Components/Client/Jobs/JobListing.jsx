@@ -34,6 +34,7 @@ const JobListing = ({ data, groupedJobs, hiringManagers, recruiters, filters, se
     handleAddJobClick,
     handleShowJobDetails,
     handleArchiveModalOpen,
+    currentPage,
     handleChangePage,
     isArchiveModalOpen,
     setIsArchiveModalOpen,
@@ -265,6 +266,7 @@ const JobListing = ({ data, groupedJobs, hiringManagers, recruiters, filters, se
            variant="outlined"
            size="small"
            shape="rounded"
+           page={currentPage}
          />
        </>  
       ) : (

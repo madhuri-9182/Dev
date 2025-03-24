@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "@mui/material";
@@ -57,6 +57,10 @@ function Candidates() {
   const [selectedStatus, setSelectedStatus] =
     useState(status);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedRole, selectedStatus, searchQuery]);
 
   // Debounce search query to prevent excessive API calls
   const debouncedSearchQuery = useDebounce(
@@ -259,6 +263,7 @@ function Candidates() {
             variant="outlined"
             size="small"
             shape="rounded"
+            page={currentPage}
           />
         </>
       )}

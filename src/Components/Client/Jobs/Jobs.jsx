@@ -14,8 +14,8 @@ import { useLocation } from "react-router-dom";
 
 const Jobs = () => {
   const { auth } = useAuth();
-  const {state} = useLocation();
-  const { currentPage } = useJobContext();
+  const { state } = useLocation();
+  const { currentPage, setCurrentPage } = useJobContext();
 
   const { data: allJobs } = useAllJobs();
 
@@ -25,20 +25,20 @@ const Jobs = () => {
     [allJobs]
   );
 
-   const groupedJobs = useMemo(() => {
-      if (!allJobs) return {};
-  
-      return allJobs.reduce((acc, job) => {
-        if (job && job.name) {
-          if (!acc[job.name]) {
-            acc[job.name] = [];
-          }
-          acc[job.name].push(job.id);
+  const groupedJobs = useMemo(() => {
+    if (!allJobs) return {};
+
+    return allJobs.reduce((acc, job) => {
+      if (job && job.name) {
+        if (!acc[job.name]) {
+          acc[job.name] = [];
         }
-        return acc;
-      }, {});
-    }, [allJobs]);
-  const jobStatus = groupedJobs?.[state?.job_role] ? [groupedJobs?.[state?.job_role]]: [];
+        acc[job.name].push(job.id);
+      }
+      return acc;
+    }, {});
+  }, [allJobs]);
+  const jobStatus = groupedJobs?.[state?.job_role] ? [groupedJobs?.[state?.job_role]] : [];
   const [filters, setFilters] = useState({
     post_job_date: "",
     job_ids: jobStatus,
@@ -71,7 +71,10 @@ const Jobs = () => {
 
   return (
     <div className="m-0 px-3">
-      <JobListing data={data} groupedJobs={groupedJobs} hiringManagers={hiringManagers} recruiters={recruiters} filters={filters} setFilters={setFilters} />
+      <JobListing data={data} groupedJobs={groupedJobs} hiringManagers={hiringManagers} recruiters={recruiters} filters={filters} setFilters={(value) => {
+        setFilters(value);
+        setCurrentPage(1);
+      }} />
     </div>
   );
 };

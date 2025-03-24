@@ -59,6 +59,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
         ...filters,
         search: searchQuery,
       });
+      setOffset(0);
     }, 500),
     []
   );
@@ -92,21 +93,6 @@ function EngagementDashboard({ setSelectedEngagement }) {
   }, [filters, searchQuery, updateDebouncedFilters]);
 
   useEffect(() => {
-    // Reset offset and engagements when filters or search query changes
-    if (
-      searchQuery ||
-      filters.role.length > 0 ||
-      filters.function.length > 0 ||
-      filters.notice.length > 0 ||
-      filters.status.length > 0
-    ) {
-      setOffset(0);
-      setEngagementsList([]);
-      setHasMore(true);
-    }
-  }, [debouncedFilters]);
-
-  useEffect(() => {
     // Update data when it changes
     if (data) {
       if (offset === 0) {
@@ -130,7 +116,7 @@ function EngagementDashboard({ setSelectedEngagement }) {
         { label: "Pending", value: data?.pending },
       ]);
     }
-  }, [data, offset]);
+  }, [data]);
 
   const handleScroll = useCallback(() => {
     if (containerRef.current) {
