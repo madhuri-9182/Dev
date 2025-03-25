@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
@@ -10,6 +11,7 @@ import {
 } from "@tanstack/react-query";
 import axios from "../../../api/axios";
 import toast from "react-hot-toast";
+import moment from "moment";
 
 // Components
 import CalendarToolbar from "./components/CalendarToolbar";
@@ -25,7 +27,38 @@ import { getFormattedEvents } from "./utils/eventFormatters";
 
 // Styles
 import "./index.css";
-import moment from "moment";
+
+// Constants
+const DEFAULT_EVENT = {
+  title: "Interview Available Time",
+  description:
+    "This time slot is available for interviews.",
+  date: "",
+  start_time: "",
+  end_time: "",
+  recurring: "none",
+  formattedTime: "",
+  showRecurrenceOptions: false,
+  recurrence: {
+    frequency: "WEEKLY",
+    interval: 1,
+    days: [],
+    count: null,
+    until: null,
+    monthDay: [],
+    yearDay: [],
+  },
+};
+
+const CALENDAR_CONFIG = {
+  initialView: "timeGridWeek",
+  slotDuration: "01:00:00",
+  slotLabelInterval: "01:00:00",
+  snapDuration: "00:30:00",
+  slotMinTime: "10:00:00",
+  slotMaxTime: "21:00:00",
+  allDaySlot: false,
+};
 
 const CalendarComponent = () => {
   // Hooks
@@ -33,11 +66,11 @@ const CalendarComponent = () => {
   const location = useLocation();
   const calendarRef = useRef(null);
   const popupRef = useRef(null);
-  // const isClickRef = useRef(false); // Track if selection is a click vs drag
 
   // State
-  const [activeView, setActiveView] =
-    useState("timeGridWeek");
+  const [activeView, setActiveView] = useState(
+    CALENDAR_CONFIG.initialView
+  );
   const [calendarTitle, setCalendarTitle] =
     useState("Calendar");
   const [popupVisible, setPopupVisible] = useState(false);
@@ -45,40 +78,16 @@ const CalendarComponent = () => {
     top: 0,
     left: 0,
   });
-  const [newEvent, setNewEvent] = useState({
-    title: "Interview Available Time",
-    description:
-      "This time slot is available for interviews.",
-    date: "",
-    start_time: "",
-    end_time: "",
-    recurring: "none",
-    formattedTime: "",
-    showRecurrenceOptions: false,
-    recurrence: {
-      frequency: "WEEKLY",
-      interval: 1,
-      days: [],
-      count: null,
-      until: null,
-      monthDay: [],
-      yearDay: [],
-    },
-  });
+  const [newEvent, setNewEvent] = useState(DEFAULT_EVENT);
 
-  // Google Auth Callback Mutation
-  const callbackMutation = useMutation({
+  // Queries and Mutations
+  const { mutate: handleGoogleAuthCallback } = useMutation({
     mutationFn: (data) =>
       axios.post("/api/google-auth/callback/", data),
-    onSuccess: () => {
-      navigate("/interviewer/calendar/");
-    },
-    onError: () => {
-      navigate("/interviewer/dashboard/");
-    },
+    onSuccess: () => navigate("/interviewer/calendar/"),
+    onError: () => navigate("/interviewer/dashboard/"),
   });
 
-  // Query for Google Calendar events
   const {
     data: googleEvents,
     refetch: refetchGoogleEvents,
@@ -91,19 +100,20 @@ const CalendarComponent = () => {
     retryDelay: 1000,
   });
 
-  // Query for blocked calendar times
   const {
     data: blockedTimes,
     refetch: refetchBlockedTimes,
   } = useQuery({
     queryKey: ["blockedTimes"],
-    queryFn: async () =>
+    queryFn: () =>
       axios.get("/api/interviewer/block-calendar/"),
     enabled: false,
   });
 
-  // Mutation for blocking calendar time
-  const blockCalendarMutation = useMutation({
+  const {
+    mutate: blockCalendarTime,
+    isPending: isBlockingCalendar,
+  } = useMutation({
     mutationFn: (blockData) =>
       axios.post(
         "/api/interviewer/block-calendar/",
@@ -128,15 +138,14 @@ const CalendarComponent = () => {
     const scope = urlParams.get("scope");
 
     if (code && state) {
-      callbackMutation.mutate({
+      handleGoogleAuthCallback({
         state,
         authorization_response: window.location.href,
         scope: scope || "",
       });
     } else {
-      refetchEvents();
+      fetchAllEvents();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   useEffect(() => {
@@ -161,18 +170,24 @@ const CalendarComponent = () => {
   }, []);
 
   useEffect(() => {
+    if (popupVisible && newEvent.showRecurrenceOptions) {
+      updatePopupPosition();
+    }
+  }, [newEvent.showRecurrenceOptions, popupVisible]);
+
+  useEffect(() => {
     if (googleEventsError) {
       toast.error("Error fetching Google events");
       navigate("/interviewer/dashboard/");
     }
   }, [googleEventsError, navigate]);
 
-  const refetchEvents = async () => {
+  // Fetch events helper
+  const fetchAllEvents = async () => {
     try {
       try {
         await refetchGoogleEvents();
       } catch (error) {
-        // Instead of initializing Google Auth, redirect to calendar
         console.error(
           "Error fetching Google events:",
           error
@@ -187,41 +202,37 @@ const CalendarComponent = () => {
     }
   };
 
-  // Calendar navigation handlers
-  const handleDatesSet = () => {
-    if (calendarRef.current) {
-      const api = calendarRef.current.getApi();
-      setCalendarTitle(formatCustomTitle(api));
-    }
-  };
+  // Calendar navigation helpers
+  const getCalendarApi = () =>
+    calendarRef.current?.getApi();
 
   const handlePrev = () => {
-    if (calendarRef.current) {
-      const api = calendarRef.current.getApi();
+    const api = getCalendarApi();
+    if (api) {
       api.prev();
       setCalendarTitle(formatCustomTitle(api));
     }
   };
 
   const handleNext = () => {
-    if (calendarRef.current) {
-      const api = calendarRef.current.getApi();
+    const api = getCalendarApi();
+    if (api) {
       api.next();
       setCalendarTitle(formatCustomTitle(api));
     }
   };
 
   const handleToday = () => {
-    if (calendarRef.current) {
-      const api = calendarRef.current.getApi();
+    const api = getCalendarApi();
+    if (api) {
       api.today();
       setCalendarTitle(formatCustomTitle(api));
     }
   };
 
   const handleViewChange = (newView) => {
-    if (calendarRef.current) {
-      const api = calendarRef.current.getApi();
+    const api = getCalendarApi();
+    if (api) {
       api.changeView(newView);
       api.setOption(
         "selectable",
@@ -232,87 +243,114 @@ const CalendarComponent = () => {
     }
   };
 
-  const calculatePopupPosition = (jsEvent) => {
-    // Get the selected element's position
-    const rect = jsEvent.target.getBoundingClientRect();
+  const handleDatesSet = () => {
+    const api = getCalendarApi();
+    if (api) {
+      setCalendarTitle(formatCustomTitle(api));
+    }
+  };
 
-    // Get window dimensions
+  // Popup position calculation
+  const calculatePopupPosition = (
+    jsEvent,
+    showRecurrenceOptions
+  ) => {
+    const rect = jsEvent.target.getBoundingClientRect();
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
+    const scrollY =
+      window.scrollY || document.documentElement.scrollTop;
 
-    // Popup dimensions
     const popupWidth = 384; // Tailwind w-96 = 384px
-    const popupHeight = 400; // Fixed height
+    const popupHeight = showRecurrenceOptions ? 400 : 270;
 
-    // Calculate where the element is in the viewport vertically (using center point)
-    const positionRatio =
-      (rect.top + rect.height / 2) / windowHeight;
+    const elementBottom = rect.bottom;
+    const elementTop = rect.top;
+    const isInBottomPortion =
+      elementBottom > windowHeight * 0.6;
 
-    let top, left;
-
-    // HORIZONTAL POSITIONING
-    // Check if there's enough space on the right side
-    if (rect.right + 10 + popupWidth <= windowWidth) {
-      // Position 10px to the right of the element
+    // Calculate horizontal position
+    let left;
+    if (rect.left < windowWidth / 2) {
       left = rect.right + 10;
+      if (left + popupWidth > windowWidth) {
+        left = rect.left - popupWidth - 10;
+      }
     } else {
-      // Not enough space on right, position 10px to the left
-      left = rect.left - 10 - popupWidth;
+      left = rect.left - popupWidth - 10;
+      if (left < 0) {
+        left = rect.right + 10;
+        if (left + popupWidth > windowWidth) {
+          left = Math.max(
+            10,
+            (windowWidth - popupWidth) / 2
+          );
+        }
+      }
     }
 
-    // VERTICAL POSITIONING
-    if (positionRatio < 0.4) {
-      top = rect.bottom + window.scrollY - 10;
+    // Calculate vertical position
+    let top;
+    if (isInBottomPortion) {
+      top = elementTop + scrollY - popupHeight - 10;
+    } else if (elementTop < windowHeight * 0.3) {
+      top = elementBottom + scrollY + 10;
     } else {
+      const elementHeight = rect.height;
       top =
-        rect.top +
-        window.scrollY +
-        rect.height / 2 -
+        elementTop +
+        scrollY +
+        elementHeight / 2 -
         popupHeight / 2;
     }
 
-    // BOUNDARY CHECKS
-    // Prevent going above the viewport
-    if (top < window.scrollY) {
-      top = window.scrollY + 10;
-    }
-
-    // Prevent going below the viewport
-    const visibleBottom = windowHeight + window.scrollY;
-    if (top + popupHeight > visibleBottom) {
-      top = visibleBottom - popupHeight - 10;
-    }
-
-    // Prevent going off the left side
-    if (left < 0) {
-      left = 10;
-    }
+    // Boundary checks
+    left = Math.max(
+      10,
+      Math.min(left, windowWidth - popupWidth - 10)
+    );
+    top = Math.max(
+      scrollY + 10,
+      Math.min(
+        top,
+        windowHeight + scrollY - popupHeight - 10
+      )
+    );
 
     return { top, left };
+  };
+
+  const updatePopupPosition = () => {
+    const selectedCells =
+      document.querySelectorAll(".fc-highlight");
+    if (selectedCells.length > 0) {
+      const mockEvent = { target: selectedCells[0] };
+      const position = calculatePopupPosition(
+        mockEvent,
+        newEvent.showRecurrenceOptions
+      );
+      setPopupPosition(position);
+    }
   };
 
   // Event handlers
   const handleSelect = (selectionInfo) => {
     const startDate = new Date(selectionInfo.start);
     const endDate = new Date(selectionInfo.end);
-    const jsEvent = selectionInfo.jsEvent;
     let modifiedEndDate = endDate;
 
     // Calculate time difference in minutes
     const timeDiffInMinutes =
       (endDate - startDate) / (1000 * 60);
 
-    // Check if this is a click (short duration) and adjust to 1 hour
+    // Adjust to 1 hour for short selections (clicks)
     if (timeDiffInMinutes <= 30) {
       modifiedEndDate = new Date(startDate);
       modifiedEndDate.setHours(startDate.getHours() + 1);
 
-      // If click detected, adjust the selection to be 1 hour
-      if (calendarRef.current) {
-        const api = calendarRef.current.getApi();
-        // First unselect to prevent flicker
+      const api = getCalendarApi();
+      if (api) {
         api.unselect();
-        // Then immediately select the proper range
         api.select({
           start: startDate,
           end: modifiedEndDate,
@@ -321,28 +359,94 @@ const CalendarComponent = () => {
       }
     }
 
-    // Calculate popup position
-    let position;
-    if (jsEvent && jsEvent.target) {
-      position = calculatePopupPosition(jsEvent);
-    } else {
-      // Fallback position if no event
-      position = {
-        top: window.innerHeight / 2 - 200,
-        left: window.innerWidth / 2 - 192,
-      };
-    }
-    setPopupPosition(position);
-
     // Format dates for display and API
     const dateInfo = formatSelectedDate(
       startDate,
       modifiedEndDate
     );
-    setNewEvent({ ...newEvent, ...dateInfo });
+    const updatedEvent = { ...DEFAULT_EVENT, ...dateInfo };
 
-    // Show the popup
-    setPopupVisible(true);
+    // Set state before showing popup
+    setNewEvent(updatedEvent);
+
+    // Delay showing popup until selection is visible
+    setTimeout(() => {
+      const selectedElements =
+        document.querySelectorAll(".fc-highlight");
+      let position;
+
+      if (selectedElements.length > 0) {
+        position = calculatePopupPosition(
+          { target: selectedElements[0] },
+          updatedEvent.showRecurrenceOptions
+        );
+      } else if (
+        selectionInfo.jsEvent &&
+        selectionInfo.jsEvent.target
+      ) {
+        position = calculatePopupPosition(
+          selectionInfo.jsEvent,
+          updatedEvent.showRecurrenceOptions
+        );
+      } else {
+        // Fallback positioning
+        position = {
+          top:
+            window.innerHeight / 2 -
+            (updatedEvent.showRecurrenceOptions
+              ? 200
+              : 135),
+          left: window.innerWidth / 2 - 192,
+        };
+      }
+
+      setPopupPosition(position);
+      setPopupVisible(true);
+    }, 10);
+  };
+
+  const prepareRecurrenceData = (event) => {
+    const recurrenceData = {};
+
+    if (event.recurrence.frequency) {
+      recurrenceData.frequency = event.recurrence.frequency;
+    }
+
+    recurrenceData.intervals =
+      event.recurrence.interval || 1;
+
+    // Add days if selected (for weekly recurrence)
+    const cleanDays = event.recurrence.days?.filter(
+      (day) => day !== null && day !== undefined
+    );
+    if (cleanDays?.length > 0) {
+      recurrenceData.days = cleanDays;
+    }
+
+    // Add count or until if specified
+    if (event.recurrence.count) {
+      recurrenceData.count = event.recurrence.count;
+    } else if (event.recurrence.until) {
+      recurrenceData.until = event.recurrence.until;
+    }
+
+    // Add month_day or year_day if applicable
+    const cleanMonthDays =
+      event.recurrence.monthDay?.filter(
+        (day) => day !== null && day !== undefined
+      );
+    if (cleanMonthDays?.length > 0) {
+      recurrenceData.month_day = cleanMonthDays;
+    }
+
+    const cleanYearDays = event.recurrence.yearDay?.filter(
+      (day) => day !== null && day !== undefined
+    );
+    if (cleanYearDays?.length > 0) {
+      recurrenceData.year_day = cleanYearDays;
+    }
+
+    return recurrenceData;
   };
 
   const handleSaveEvent = () => {
@@ -353,6 +457,7 @@ const CalendarComponent = () => {
       end_time: newEvent.end_time,
     };
 
+    // Add description if provided and not default
     const defaultDescription =
       "This time slot is available for interviews.";
     if (
@@ -363,16 +468,13 @@ const CalendarComponent = () => {
       blockData.notes = newEvent.description;
     }
 
-    // New check - only include recurrence if showRecurrenceOptions is true
+    // Add recurrence data if applicable
     const showRecurrenceOptions =
       newEvent.showRecurrenceOptions || false;
-
-    // Check if this is a recurring event and options are visible
     const hasRecurrenceData =
       showRecurrenceOptions &&
       newEvent.recurrence &&
-      ((newEvent.recurrence.days &&
-        newEvent.recurrence.days.length > 0) ||
+      (newEvent.recurrence.days?.length > 0 ||
         newEvent.recurrence.count ||
         newEvent.recurrence.until);
 
@@ -380,65 +482,28 @@ const CalendarComponent = () => {
       showRecurrenceOptions &&
       (newEvent.recurring !== "none" || hasRecurrenceData)
     ) {
-      blockData.recurrence = {
-        frequency: newEvent.recurrence.frequency,
-        intervals: newEvent.recurrence.interval || 1,
-      };
-
-      // Add days if selected (for weekly recurrence), filtering out null values
-      if (
-        newEvent.recurrence.days &&
-        newEvent.recurrence.days.length > 0
-      ) {
-        // IMPORTANT: Filter out null values to ensure clean data
-        const cleanDays = newEvent.recurrence.days.filter(
-          (day) => day !== null && day !== undefined
-        );
-
-        if (cleanDays.length > 0) {
-          blockData.recurrence.days = cleanDays;
-        }
-      }
-
-      // Add count or until if specified
-      if (newEvent.recurrence.count) {
-        blockData.recurrence.count =
-          newEvent.recurrence.count;
-      } else if (newEvent.recurrence.until) {
-        blockData.recurrence.until =
-          newEvent.recurrence.until;
-      }
-
-      // Add month_day or year_day if applicable, filtering out null values
-      if (
-        newEvent.recurrence.monthDay &&
-        newEvent.recurrence.monthDay.length > 0
-      ) {
-        const cleanMonthDays =
-          newEvent.recurrence.monthDay.filter(
-            (day) => day !== null && day !== undefined
-          );
-        if (cleanMonthDays.length > 0) {
-          blockData.recurrence.month_day = cleanMonthDays;
-        }
-      }
-
-      if (
-        newEvent.recurrence.yearDay &&
-        newEvent.recurrence.yearDay.length > 0
-      ) {
-        const cleanYearDays =
-          newEvent.recurrence.yearDay.filter(
-            (day) => day !== null && day !== undefined
-          );
-        if (cleanYearDays.length > 0) {
-          blockData.recurrence.year_day = cleanYearDays;
-        }
-      }
+      blockData.recurrence =
+        prepareRecurrenceData(newEvent);
     }
 
     // Send the data to the API
-    blockCalendarMutation.mutate(blockData);
+    blockCalendarTime(blockData);
+  };
+
+  // Check if selection is valid
+  const isSelectionAllowed = (selectInfo) => {
+    // Check if selection is in the future
+    const isInFuture = moment().diff(selectInfo.start) <= 0;
+
+    // Check if start and end are on the same day
+    const startDate = moment(selectInfo.start).startOf(
+      "day"
+    );
+    const endDate = moment(selectInfo.end).startOf("day");
+    const isSameDay = startDate.isSame(endDate);
+
+    // Return true only if both conditions are met
+    return isInFuture && isSameDay;
   };
 
   return (
@@ -463,23 +528,25 @@ const CalendarComponent = () => {
             interactionPlugin,
           ]}
           datesSet={handleDatesSet}
-          initialView="timeGridWeek"
+          initialView={CALENDAR_CONFIG.initialView}
           headerToolbar={false}
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
           weekends={true}
-          slotDuration={"01:00:00"}
-          slotLabelInterval={"01:00:00"}
-          snapDuration={"00:30:00"}
+          slotDuration={CALENDAR_CONFIG.slotDuration}
+          slotLabelInterval={
+            CALENDAR_CONFIG.slotLabelInterval
+          }
+          snapDuration={CALENDAR_CONFIG.snapDuration}
           slotLabelFormat={{
             hour: "numeric",
             minute: "2-digit",
             meridiem: "short",
           }}
-          slotMinTime={"10:00:00"}
-          slotMaxTime={"21:00:00"}
-          allDaySlot={false}
+          slotMinTime={CALENDAR_CONFIG.slotMinTime}
+          slotMaxTime={CALENDAR_CONFIG.slotMaxTime}
+          allDaySlot={CALENDAR_CONFIG.allDaySlot}
           select={handleSelect}
           events={getFormattedEvents(
             googleEvents,
@@ -491,25 +558,11 @@ const CalendarComponent = () => {
           nowIndicator={true}
           dayHeaderClassNames="text-center px-0.5 py-1"
           slotLabelClassNames="text-right pr-2 text-[#70757a]"
-          selectAllow={function (selectInfo) {
-            // First check if the selection is in the future
-            const isInFuture =
-              moment().diff(selectInfo.start) <= 0;
-
-            // Check if start and end are on the same day
-            const startDate = moment(
-              selectInfo.start
-            ).startOf("day");
-            const endDate = moment(selectInfo.end).startOf(
-              "day"
-            );
-            const isSameDay = startDate.isSame(endDate);
-
-            // Return true only if both conditions are met
-            return isInFuture && isSameDay;
-          }}
+          selectAllow={isSelectionAllowed}
         />
       </div>
+
+      {/* Popup background overlay */}
       {popupVisible && (
         <div
           className="fixed inset-0 bg-transparent z-10"
@@ -526,7 +579,7 @@ const CalendarComponent = () => {
           setNewEvent={setNewEvent}
           handleSaveEvent={handleSaveEvent}
           setPopupVisible={setPopupVisible}
-          isLoading={blockCalendarMutation.isLoading}
+          isLoading={isBlockingCalendar}
         />
       )}
     </div>

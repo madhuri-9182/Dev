@@ -167,11 +167,13 @@ const CalendarPopup = ({
   return (
     <div
       ref={popupRef}
-      className="bg-white rounded-lg shadow-xl w-96 absolute z-50 flex flex-col max-h-screen"
+      className="bg-white rounded-lg shadow-xl w-96 absolute z-50 flex flex-col"
       style={{
         top: popupPosition.top,
         left: popupPosition.left,
-        maxHeight: "400px",
+        maxHeight: showRecurrenceOptions
+          ? "400px"
+          : "270px",
       }}
     >
       {/* Header with close button */}
