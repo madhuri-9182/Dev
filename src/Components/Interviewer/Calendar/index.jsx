@@ -295,31 +295,75 @@ const CalendarComponent = () => {
     const startDate = new Date(selectionInfo.start);
     const endDate = new Date(selectionInfo.end);
 
+    // Calculate time difference in minutes
     const timeDiffInMinutes =
       (endDate - startDate) / (1000 * 60);
 
-    if (timeDiffInMinutes < 60) {
-      toast.error(
-        "Please select time frame of at least 1 hour."
-      );
+    // Store the original jsEvent if it exists
+    const originalEvent = selectionInfo.jsEvent;
 
+    // If time difference is less than 60 minutes (likely a click rather than drag)
+    if (timeDiffInMinutes < 60) {
+      // Store position info before we clear the selection
+      let position = { top: 0, left: 0 };
+
+      // Only calculate position if we have a valid event
+      if (originalEvent && originalEvent.target) {
+        position = calculatePopupPosition(originalEvent);
+      } else {
+        // Fallback position if no event
+        position = {
+          top: window.innerHeight / 2 - 200,
+          left: window.innerWidth / 2 - 192,
+        };
+      }
+
+      // Save the position before clearing the selection
+      setPopupPosition(position);
+
+      // Clear the current selection
       calendarRef.current?.getApi().unselect();
+
+      // Create a new end date 1 hour after start
+      const newEndDate = new Date(startDate);
+      newEndDate.setHours(startDate.getHours() + 1);
+
+      // Format dates for display and API with the corrected end time
+      const dateInfo = formatSelectedDate(
+        startDate,
+        newEndDate
+      );
+      setNewEvent({ ...newEvent, ...dateInfo });
+
+      // Show the popup with the position we already calculated
+      setPopupVisible(true);
+
+      // Update the selection visually in the calendar (without triggering this handler again)
+      setTimeout(() => {
+        calendarRef.current?.getApi().select({
+          start: startDate,
+          end: newEndDate,
+        });
+      }, 0);
+
       return;
     }
 
-    // Format dates for display and API
+    // Format dates for display and API for normal drag selections
     const dateInfo = formatSelectedDate(startDate, endDate);
     setNewEvent({ ...newEvent, ...dateInfo });
 
-    // Get the calendar view type
-    const viewType =
-      calendarRef.current?.getApi().view.type;
-
-    // Calculate proper popup position that won't go off-screen
-    const position = calculatePopupPosition(
-      selectionInfo.jsEvent,
-      viewType
-    );
+    // Calculate popup position
+    let position;
+    if (originalEvent && originalEvent.target) {
+      position = calculatePopupPosition(originalEvent);
+    } else {
+      // Fallback position if no event
+      position = {
+        top: window.innerHeight / 2 - 200,
+        left: window.innerWidth / 2 - 192,
+      };
+    }
     setPopupPosition(position);
 
     setPopupVisible(true);
