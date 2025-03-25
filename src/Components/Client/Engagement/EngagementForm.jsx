@@ -5,11 +5,7 @@ import { useForm } from "react-hook-form";
 import { LogoutCurve, Trash } from "iconsax-react";
 import { NOTICE_PERIOD } from "./constants";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  useAddEngagement,
-  useJobs,
-  useResumeParser,
-} from "./api";
+import { useAddEngagement, useResumeParser } from "./api";
 import {
   InputField,
   SelectField,

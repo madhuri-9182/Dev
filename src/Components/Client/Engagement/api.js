@@ -4,6 +4,7 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
+  useInfiniteQuery,
 } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { extractErrors } from "./utils";
@@ -26,39 +27,48 @@ const successToaster = (message) => {
   toast.success(message, { position: "top-right" });
 };
 
-// Fetch all candidates with optional search and pagination
-export const useEngagements = (filters, org_id) => {
-  return useQuery({
-    queryKey: ["engagements", filters, filters.offset],
-    queryFn: async () => {
-      try {
-        // Create params object excluding 'all' values and empty values
-        const params = {};
+const buildQueryParams = (filters) => {
+  const params = {};
 
-        if (filters?.search) params.q = filters.search;
-        if (filters?.role && filters.role.length > 0)
-          params.job_ids = filters.role
-            .map((role) => role.value)
-            .join(",");
-        if (
-          filters?.function &&
-          filters.function.length > 0
-        )
-          params.specializations = filters.function
-            .map((func) => func.value)
-            .join(",");
-        if (filters?.notice && filters.notice.length > 0)
-          params.nps = filters.notice
-            .map((notice) => notice.value)
-            .join(",");
-        if (filters?.status && filters.status.length > 0)
-          params.status = filters.status
-            .map((status) => status.value)
-            .join(",");
+  if (filters?.search) params.q = filters.search;
+  if (filters?.role && filters.role.length > 0)
+    params.job_ids = filters.role
+      .map((role) => role.value)
+      .join(",");
+  if (filters?.function && filters.function.length > 0)
+    params.specializations = filters.function
+      .map((func) => func.value)
+      .join(",");
+  if (filters?.notice && filters.notice.length > 0)
+    params.nps = filters.notice
+      .map((notice) => notice.value)
+      .join(",");
+  if (filters?.status && filters.status.length > 0)
+    params.status = filters.status
+      .map((status) => status.value)
+      .join(",");
+
+  return params;
+};
+
+// Fetch engagements with infinite query
+export const useEngagements = (
+  filters,
+  org_id,
+  limit = 10
+) => {
+  return useInfiniteQuery({
+    queryKey: ["engagements", filters],
+    queryFn: async ({ pageParam = 0 }) => {
+      try {
+        // Build query parameters
+        const params = buildQueryParams(filters);
 
         // Add pagination parameters
-        params.offset = filters.offset || 0;
+        params.offset = pageParam;
+        params.limit = limit;
 
+        // Add organization ID if provided
         if (org_id) params.organization_id = org_id;
 
         const { data } = await axios.get(
@@ -71,28 +81,20 @@ export const useEngagements = (filters, org_id) => {
         throw error;
       }
     },
+    getNextPageParam: (lastPage) => {
+      // Return the next offset or undefined if there are no more pages
+      if (lastPage.next) {
+        // Parse the offset from the next URL or calculate it
+        const url = new URL(lastPage.next);
+        const nextOffset = url.searchParams.get("offset");
+        return nextOffset
+          ? parseInt(nextOffset)
+          : undefined;
+      }
+      return undefined;
+    },
     // Keep previous data while loading new data
     keepPreviousData: true,
-  });
-};
-
-export const useJobs = (org_id) => {
-  return useQuery({
-    queryKey: ["jobs"],
-    queryFn: async () => {
-      try {
-        const params = {};
-        if (org_id) params.organization_id = org_id;
-        const { data } = await axios.get(
-          "/api/client/jobs/",
-          { params }
-        );
-        return data;
-      } catch (error) {
-        errorToaster(error);
-        throw error;
-      }
-    },
   });
 };
 
@@ -407,4 +409,9 @@ export const useClientUser = () => {
       }
     },
   });
+};
+
+export const extractAllResults = (data) => {
+  if (!data || !data.pages) return [];
+  return data.pages.flatMap((page) => page.results || []);
 };
