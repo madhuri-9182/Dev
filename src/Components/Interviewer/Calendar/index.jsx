@@ -33,6 +33,7 @@ const CalendarComponent = () => {
   const location = useLocation();
   const calendarRef = useRef(null);
   const popupRef = useRef(null);
+  // const isClickRef = useRef(false); // Track if selection is a click vs drag
 
   // State
   const [activeView, setActiveView] =
@@ -53,7 +54,7 @@ const CalendarComponent = () => {
     end_time: "",
     recurring: "none",
     formattedTime: "",
-    showRecurrenceOptions: false, // Add this line
+    showRecurrenceOptions: false,
     recurrence: {
       frequency: "WEEKLY",
       interval: 1,
@@ -294,69 +295,36 @@ const CalendarComponent = () => {
   const handleSelect = (selectionInfo) => {
     const startDate = new Date(selectionInfo.start);
     const endDate = new Date(selectionInfo.end);
+    const jsEvent = selectionInfo.jsEvent;
+    let modifiedEndDate = endDate;
 
     // Calculate time difference in minutes
     const timeDiffInMinutes =
       (endDate - startDate) / (1000 * 60);
 
-    // Store the original jsEvent if it exists
-    const originalEvent = selectionInfo.jsEvent;
+    // Check if this is a click (short duration) and adjust to 1 hour
+    if (timeDiffInMinutes <= 30) {
+      modifiedEndDate = new Date(startDate);
+      modifiedEndDate.setHours(startDate.getHours() + 1);
 
-    // If time difference is less than 60 minutes (likely a click rather than drag)
-    if (timeDiffInMinutes < 60) {
-      // Store position info before we clear the selection
-      let position = { top: 0, left: 0 };
-
-      // Only calculate position if we have a valid event
-      if (originalEvent && originalEvent.target) {
-        position = calculatePopupPosition(originalEvent);
-      } else {
-        // Fallback position if no event
-        position = {
-          top: window.innerHeight / 2 - 200,
-          left: window.innerWidth / 2 - 192,
-        };
-      }
-
-      // Save the position before clearing the selection
-      setPopupPosition(position);
-
-      // Clear the current selection
-      calendarRef.current?.getApi().unselect();
-
-      // Create a new end date 1 hour after start
-      const newEndDate = new Date(startDate);
-      newEndDate.setHours(startDate.getHours() + 1);
-
-      // Format dates for display and API with the corrected end time
-      const dateInfo = formatSelectedDate(
-        startDate,
-        newEndDate
-      );
-      setNewEvent({ ...newEvent, ...dateInfo });
-
-      // Show the popup with the position we already calculated
-      setPopupVisible(true);
-
-      // Update the selection visually in the calendar (without triggering this handler again)
-      setTimeout(() => {
-        calendarRef.current?.getApi().select({
+      // If click detected, adjust the selection to be 1 hour
+      if (calendarRef.current) {
+        const api = calendarRef.current.getApi();
+        // First unselect to prevent flicker
+        api.unselect();
+        // Then immediately select the proper range
+        api.select({
           start: startDate,
-          end: newEndDate,
+          end: modifiedEndDate,
+          allDay: false,
         });
-      }, 0);
-
-      return;
+      }
     }
-
-    // Format dates for display and API for normal drag selections
-    const dateInfo = formatSelectedDate(startDate, endDate);
-    setNewEvent({ ...newEvent, ...dateInfo });
 
     // Calculate popup position
     let position;
-    if (originalEvent && originalEvent.target) {
-      position = calculatePopupPosition(originalEvent);
+    if (jsEvent && jsEvent.target) {
+      position = calculatePopupPosition(jsEvent);
     } else {
       // Fallback position if no event
       position = {
@@ -366,6 +334,14 @@ const CalendarComponent = () => {
     }
     setPopupPosition(position);
 
+    // Format dates for display and API
+    const dateInfo = formatSelectedDate(
+      startDate,
+      modifiedEndDate
+    );
+    setNewEvent({ ...newEvent, ...dateInfo });
+
+    // Show the popup
     setPopupVisible(true);
   };
 
@@ -509,7 +485,6 @@ const CalendarComponent = () => {
             googleEvents,
             blockedTimes
           )}
-          // eventClick={handleEventClick}
           height="auto"
           eventClassNames="rounded-md text-xs px-1 py-0.5 overflow-hidden text-white shadow-md"
           dayHeaderContent={DayHeaderContent}
@@ -535,6 +510,12 @@ const CalendarComponent = () => {
           }}
         />
       </div>
+      {popupVisible && (
+        <div
+          className="fixed inset-0 bg-transparent z-10"
+          onClick={() => setPopupVisible(false)}
+        />
+      )}
 
       {/* Popup */}
       {popupVisible && (
