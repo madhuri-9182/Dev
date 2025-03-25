@@ -79,6 +79,8 @@ const CalendarComponent = () => {
     left: 0,
   });
   const [newEvent, setNewEvent] = useState(DEFAULT_EVENT);
+  const [currentSelection, setCurrentSelection] =
+    useState(null);
 
   // Queries and Mutations
   const { mutate: handleGoogleAuthCallback } = useMutation({
@@ -121,7 +123,7 @@ const CalendarComponent = () => {
       ),
     onSuccess: () => {
       refetchBlockedTimes();
-      setPopupVisible(false);
+      closePopup();
     },
     onError: (error) => {
       toast.error(
@@ -152,9 +154,10 @@ const CalendarComponent = () => {
     const handleClickOutside = (event) => {
       if (
         popupRef.current &&
-        !popupRef.current.contains(event.target)
+        !popupRef.current.contains(event.target) &&
+        !event.target.closest(".fc-highlight") // Don't close when clicking on the selection
       ) {
-        setPopupVisible(false);
+        closePopup();
       }
     };
 
@@ -168,6 +171,70 @@ const CalendarComponent = () => {
         handleClickOutside
       );
   }, []);
+
+  // Effect to maintain selection when popup is visible
+  useEffect(() => {
+    if (popupVisible && currentSelection) {
+      // Check if the selection is still visible
+      const hasHighlight =
+        document.querySelectorAll(".fc-highlight").length >
+        0;
+
+      if (!hasHighlight) {
+        // Reapply the selection if it's not visible
+        const api = getCalendarApi();
+        if (api) {
+          api.select({
+            start: currentSelection.start,
+            end: currentSelection.end,
+            allDay: currentSelection.allDay,
+          });
+        }
+      }
+    }
+  }, [popupVisible, currentSelection]);
+
+  // Effect to prevent unselection when interacting
+  useEffect(() => {
+    const preventUnselect = (e) => {
+      // Only prevent unselect when popup is visible and clicking is not on close buttons
+      if (
+        popupVisible &&
+        !e.target.closest(".close-popup-button") &&
+        !e.target.closest(".fc-event")
+      ) {
+        // Check if we lost our highlight and need to reapply
+        const hasHighlight =
+          document.querySelectorAll(".fc-highlight")
+            .length > 0;
+        if (!hasHighlight && currentSelection) {
+          const api = getCalendarApi();
+          if (api) {
+            setTimeout(() => {
+              api.select({
+                start: currentSelection.start,
+                end: currentSelection.end,
+                allDay: currentSelection.allDay,
+              });
+            }, 0);
+          }
+        }
+      }
+    };
+
+    document.addEventListener(
+      "click",
+      preventUnselect,
+      true
+    );
+    return () => {
+      document.removeEventListener(
+        "click",
+        preventUnselect,
+        true
+      );
+    };
+  }, [popupVisible, currentSelection]);
 
   useEffect(() => {
     if (popupVisible && newEvent.showRecurrenceOptions) {
@@ -250,11 +317,18 @@ const CalendarComponent = () => {
     }
   };
 
+  // Close popup and clear selection
+  const closePopup = () => {
+    setPopupVisible(false);
+    setCurrentSelection(null);
+    const api = getCalendarApi();
+    if (api) {
+      api.unselect();
+    }
+  };
+
   // Popup position calculation
-  const calculatePopupPosition = (
-    jsEvent,
-    showRecurrenceOptions
-  ) => {
+  const calculatePopupPosition = (jsEvent) => {
     const rect = jsEvent.target.getBoundingClientRect();
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
@@ -262,7 +336,7 @@ const CalendarComponent = () => {
       window.scrollY || document.documentElement.scrollTop;
 
     const popupWidth = 384; // Tailwind w-96 = 384px
-    const popupHeight = showRecurrenceOptions ? 400 : 270;
+    const popupHeight = 270;
 
     const elementBottom = rect.bottom;
     const elementTop = rect.top;
@@ -325,10 +399,7 @@ const CalendarComponent = () => {
       document.querySelectorAll(".fc-highlight");
     if (selectedCells.length > 0) {
       const mockEvent = { target: selectedCells[0] };
-      const position = calculatePopupPosition(
-        mockEvent,
-        newEvent.showRecurrenceOptions
-      );
+      const position = calculatePopupPosition(mockEvent);
       setPopupPosition(position);
     }
   };
@@ -369,6 +440,13 @@ const CalendarComponent = () => {
     // Set state before showing popup
     setNewEvent(updatedEvent);
 
+    // Store the selection info for reuse
+    setCurrentSelection({
+      start: startDate,
+      end: modifiedEndDate || endDate,
+      allDay: false,
+    });
+
     // Delay showing popup until selection is visible
     setTimeout(() => {
       const selectedElements =
@@ -376,17 +454,15 @@ const CalendarComponent = () => {
       let position;
 
       if (selectedElements.length > 0) {
-        position = calculatePopupPosition(
-          { target: selectedElements[0] },
-          updatedEvent.showRecurrenceOptions
-        );
+        position = calculatePopupPosition({
+          target: selectedElements[0],
+        });
       } else if (
         selectionInfo.jsEvent &&
         selectionInfo.jsEvent.target
       ) {
         position = calculatePopupPosition(
-          selectionInfo.jsEvent,
-          updatedEvent.showRecurrenceOptions
+          selectionInfo.jsEvent
         );
       } else {
         // Fallback positioning
@@ -532,6 +608,7 @@ const CalendarComponent = () => {
           headerToolbar={false}
           selectable={true}
           selectMirror={true}
+          unselectAuto={false} // Prevent automatic unselection
           dayMaxEvents={true}
           weekends={true}
           slotDuration={CALENDAR_CONFIG.slotDuration}
@@ -566,7 +643,7 @@ const CalendarComponent = () => {
       {popupVisible && (
         <div
           className="fixed inset-0 bg-transparent z-10"
-          onClick={() => setPopupVisible(false)}
+          onClick={closePopup}
         />
       )}
 
@@ -578,7 +655,7 @@ const CalendarComponent = () => {
           newEvent={newEvent}
           setNewEvent={setNewEvent}
           handleSaveEvent={handleSaveEvent}
-          setPopupVisible={setPopupVisible}
+          closePopup={closePopup}
           isLoading={isBlockingCalendar}
         />
       )}

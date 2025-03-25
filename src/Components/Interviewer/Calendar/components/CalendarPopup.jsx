@@ -16,7 +16,7 @@ import { LuMessageSquare } from "react-icons/lu";
  * @param {Object} props.newEvent New event data
  * @param {Function} props.setNewEvent Function to update event data
  * @param {Function} props.handleSaveEvent Handler for saving event
- * @param {Function} props.setPopupVisible Function to control popup visibility
+ * @param {Function} props.closePopup Function to control popup visibility
  * @param {Boolean} props.isLoading Loading state for save button
  * @returns {JSX.Element} Popup component
  */
@@ -26,7 +26,7 @@ const CalendarPopup = ({
   newEvent,
   setNewEvent,
   handleSaveEvent,
-  setPopupVisible,
+  closePopup,
   isLoading,
 }) => {
   // State for expanded recurrence options
@@ -193,7 +193,7 @@ const CalendarPopup = ({
           />
         </div>
         <button
-          onClick={() => setPopupVisible(false)}
+          onClick={closePopup}
           className="bg-transparent border-none text-[#5f6368] text-lg w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6]"
         >
           ×
@@ -476,6 +476,6 @@ CalendarPopup.propTypes = {
   newEvent: PropTypes.object,
   setNewEvent: PropTypes.func,
   handleSaveEvent: PropTypes.func,
-  setPopupVisible: PropTypes.func,
+  closePopup: PropTypes.func,
   isLoading: PropTypes.bool,
 };
