@@ -1,6 +1,10 @@
 // Feedback.jsx - Main container component
 import { useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  useWatch,
+} from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   useQuery,
@@ -150,6 +154,41 @@ const Feedback = () => {
     control,
     name: "skills",
   });
+
+  const calculateAverageScore = (skills) => {
+    if (!skills || skills.length === 0) return 0;
+
+    // Filter out skills with no name (incomplete skills)
+    const validSkills = skills.filter(
+      (skill) => skill.skillName
+    );
+
+    if (validSkills.length === 0) return 0;
+
+    // Calculate the sum of all skill scores
+    const totalScore = validSkills.reduce(
+      (sum, skill) =>
+        sum + (parseInt(skill.score, 10) || 0),
+      0
+    );
+
+    // Return the average (rounded to nearest integer)
+    return Math.round(totalScore / validSkills.length);
+  };
+
+  // Add this after the useFieldArray declaration
+  // Watch for changes in skills array to recalculate score
+  const watchedSkills = useWatch({
+    control,
+    name: "skills",
+    defaultValue: DEFAULT_FORM_VALUES.skills,
+  });
+
+  useEffect(() => {
+    const averageScore =
+      calculateAverageScore(watchedSkills);
+    setValue("score", averageScore);
+  }, [watchedSkills, setValue]);
 
   // Fetch feedback data
   const { data, isLoading, isError } = useQuery({
