@@ -75,7 +75,7 @@ export const CLIENT_NAVLINKS = [
   {
     text: "Engagement",
     icon: Share,
-    link: "/client/engagement",
+    link: "/client/engagement/dashboard",
   },
 ];
 

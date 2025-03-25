@@ -21,7 +21,7 @@ const RedirectToDashboard = () => {
       isFirstRender.current = false;
       return;
     }
-    console.log("function called");
+
     if (org_id) {
       navigate("/internal/engagement/dashboard/", {
         state: { org_id: org_id },

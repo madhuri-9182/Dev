@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { auth } = useAuth();
-  console.log(auth, "auth");
   const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard", auth],
