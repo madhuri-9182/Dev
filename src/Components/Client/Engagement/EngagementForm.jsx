@@ -225,6 +225,13 @@ const EngagementForm = ({
       delete payload.offer_date;
     }
 
+    if (state && Object.keys(state?.candidate).length > 0) {
+      payload.candidate_id = state.candidate.id;
+      delete payload.candidate_name;
+      delete payload.candidate_email;
+      delete payload.candidate_phone;
+    }
+
     try {
       const res = await addEngagement(payload);
       setSelectedEngagement({ ...res.data });
