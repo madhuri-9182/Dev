@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import { LogoutCurve, Trash } from "iconsax-react";
 import { NOTICE_PERIOD } from "./constants";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   useAddEngagement,
   useJobs,
@@ -25,15 +25,20 @@ import {
   EMAIL_REGEX,
   MOBILE_REGEX,
 } from "../../Constants/constants";
+import {
+  createFileFromUrl,
+  getJobLabel,
+} from "../../../utils/util";
+import useAllJobs from "../../../hooks/useFetchAllJobs";
 
 const EngagementForm = ({
   setSelectedEngagement,
   engagement,
 }) => {
+  const { state } = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { data: jobsData } = useJobs();
-  const jobs = jobsData?.results || [];
+  const { data: jobsData } = useAllJobs();
 
   const {
     data,
@@ -58,10 +63,14 @@ const EngagementForm = ({
     watch,
   } = useForm({
     defaultValues: {
-      candidate_name: "",
-      candidate_phone: "",
-      candidate_email: "",
-      candidate_company: "",
+      candidate_name: state ? state.candidate.name : "",
+      candidate_phone: state
+        ? state.candidate.phone.split("+91")[1]
+        : "",
+      candidate_email: state ? state.candidate.email : "",
+      candidate_company: state
+        ? state.candidate.company
+        : "",
       notice_period: "",
       offer_accepted: false,
       offered: false,
@@ -76,6 +85,42 @@ const EngagementForm = ({
 
   // Watch the offered value to conditionally validate offer_date
   const isOffered = watch("offered");
+
+  // Effect to validate fields on mount if state exists
+  useEffect(() => {
+    if (state) {
+      // Set resume file if state exists
+      if (state.candidate.cv) {
+        const fetchResume = async (cv) => {
+          const file = await createFileFromUrl(cv);
+          return file;
+        };
+        const file = fetchResume(state.candidate.cv);
+        // Creating a mock file object since we don't have the actual file
+        setResumeFile(file);
+      }
+
+      // Determine which fields to validate based on offered status
+      const fieldsToValidate = [
+        "candidate_name",
+        "candidate_email",
+        "candidate_phone",
+        "candidate_company",
+        "notice_period",
+        "job_id",
+        "client_user_name",
+        "client_user_email",
+      ];
+
+      // Only validate offer_date if offered is true
+      if (isOffered) {
+        fieldsToValidate.push("offer_date");
+      }
+
+      // Trigger validation for all fields from state
+      trigger(fieldsToValidate);
+    }
+  }, [state, trigger, isOffered]);
 
   // Handle file upload
   const handleFileChange = async (event) => {
@@ -139,7 +184,7 @@ const EngagementForm = ({
   };
 
   const onSubmit = async (formData) => {
-    if (!resumeFile) {
+    if (!resumeFile && !state) {
       return;
     }
 
@@ -195,6 +240,10 @@ const EngagementForm = ({
     navigate(-1);
   };
 
+  const shouldFieldsBeDisabled = state
+    ? false
+    : isPending || !resumeFile;
+
   return (
     <div className="w-full px-3">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -205,49 +254,62 @@ const EngagementForm = ({
           </label>
           <div className="flex-1">
             <div className="w-full">
-              <button
-                type="button"
-                className={`flex items-center justify-center px-10 py-1.5 text-2xs border border-dashed rounded-xl bg-[#F8F8F8] min-w-[300px] gap-x-2 h-[32px] ${
-                  !resumeFile && errors.candidate_cv
-                    ? "border-red-500"
-                    : "border-[#6B6F7B]"
-                }`}
-                onClick={() =>
-                  fileInputRef.current?.click()
-                }
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <Loader2 className="animate-spin text-[#979DA3]" />
-                ) : (
-                  <>
-                    <LogoutCurve
-                      className="rotate-90"
-                      color="#171717"
-                      size={20}
-                    />
-                    <span className="text-gray-600">
-                      {resumeFile
-                        ? resumeFile.name
-                        : "Upload here"}
-                    </span>
-                    {resumeFile && (
-                      <Trash
-                        size={20}
-                        color="red"
-                        onClick={handleRemoveFile}
-                      />
+              {state ? (
+                <button
+                  className="flex items-center justify-center px-10 py-1.5 text-2xs border border-dashed rounded-xl bg-[#F8F8F8] min-w-[300px] gap-x-2 h-[32px] border-[#6B6F7B] cursor-not-allowed"
+                  disabled={true}
+                >
+                  <span className="text-gray-600">
+                    {state?.candidate.cv.split("/").pop()}
+                  </span>
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className={`flex items-center justify-center px-10 py-1.5 text-2xs border border-dashed rounded-xl bg-[#F8F8F8] min-w-[300px] gap-x-2 h-[32px] ${
+                      !resumeFile && errors.candidate_cv
+                        ? "border-red-500"
+                        : "border-[#6B6F7B]"
+                    }`}
+                    onClick={() =>
+                      fileInputRef.current?.click()
+                    }
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <Loader2 className="animate-spin text-[#979DA3]" />
+                    ) : (
+                      <>
+                        <LogoutCurve
+                          className="rotate-90"
+                          color="#171717"
+                          size={20}
+                        />
+                        <span className="text-gray-600">
+                          {resumeFile
+                            ? resumeFile.name
+                            : "Upload here"}
+                        </span>
+                        {resumeFile && (
+                          <Trash
+                            size={20}
+                            color="red"
+                            onClick={handleRemoveFile}
+                          />
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                onChange={handleFileChange}
-                className="hidden"
-                accept=".pdf,.doc,.docx"
-              />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept=".pdf,.doc,.docx"
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -261,7 +323,7 @@ const EngagementForm = ({
             rules={{ required: "Name is required" }}
             label="Name"
             placeholder="Name"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* Phone Number */}
@@ -279,7 +341,7 @@ const EngagementForm = ({
             label="Phone Number"
             type="tel"
             placeholder="XXXXXXXXXX"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
             prefix="+91"
           />
 
@@ -298,7 +360,7 @@ const EngagementForm = ({
             label="Email ID"
             type="email"
             placeholder="abc@xyz.com"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* Company */}
@@ -308,7 +370,7 @@ const EngagementForm = ({
             rules={{ required: "Company is required" }}
             label="Company"
             placeholder="Company"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* Offered */}
@@ -316,7 +378,7 @@ const EngagementForm = ({
             name="offered"
             control={control}
             label="Offered"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* Offer Date */}
@@ -330,7 +392,7 @@ const EngagementForm = ({
                   : "Offer date is required",
             }}
             label="Offer Date"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled || !isOffered}
           />
 
           {/* Offer Accepted */}
@@ -338,7 +400,7 @@ const EngagementForm = ({
             name="offer_accepted"
             control={control}
             label="Offer Accepted"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* Notice Period */}
@@ -351,7 +413,7 @@ const EngagementForm = ({
             label="Notice Period"
             options={NOTICE_PERIOD}
             placeholder="Select Days"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
         </div>
 
@@ -367,7 +429,7 @@ const EngagementForm = ({
             rules={{ required: "GTP Name is required" }}
             label="GTP Name"
             placeholder="GTP Name"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* GTP Email */}
@@ -385,7 +447,7 @@ const EngagementForm = ({
             label="GTP Email ID"
             type="email"
             placeholder="abc@xyz.com"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
         </div>
 
@@ -399,7 +461,7 @@ const EngagementForm = ({
             name="other_offer"
             control={control}
             label="Other Offer"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
 
           {/* Role Offer */}
@@ -408,12 +470,12 @@ const EngagementForm = ({
             control={control}
             rules={{ required: "Role is required" }}
             label="Role Offer"
-            options={jobs.map((job) => ({
+            options={jobsData?.map((job) => ({
               value: job.id,
-              label: job.name.split("_").join(" "),
+              label: getJobLabel(job.name),
             }))}
             placeholder="Select Role"
-            disabled={isPending || !resumeFile}
+            disabled={shouldFieldsBeDisabled}
           />
         </div>
 
@@ -428,7 +490,11 @@ const EngagementForm = ({
               isAddingEngagement ? "Saving..." : "Save"
             }
             type="submit"
-            disabled={!resumeFile || isAddingEngagement}
+            disabled={
+              (!resumeFile && !state) ||
+              isAddingEngagement ||
+              isPending
+            }
             onClick={() => {}}
           />
         </div>
