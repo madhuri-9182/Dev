@@ -13,7 +13,7 @@ import { useEffect } from "react";
 
 const RedirectToDashboard = () => {
   const navigate = useNavigate();
-  const { "*":org_id } = useParams();
+  const { "*": org_id } = useParams();
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -21,14 +21,17 @@ const RedirectToDashboard = () => {
       isFirstRender.current = false;
       return;
     }
-    
-    if (org_id){
-      navigate("/internal/engagement/dashboard/", { state: {org_id: org_id} });
-    }else{
+
+    if (org_id) {
+      navigate("/internal/engagement/dashboard/", {
+        state: { org_id: org_id },
+      });
+    } else {
       navigate("/client/engagement/dashboard");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navigate, org_id]);
+
+  return null;
 };
 
 function Engagement() {

@@ -21,7 +21,6 @@ import Analytics from "./Client/Analytics/Analytics";
 import AnalyticsDateFilter from "./Client/Analytics/AnalyticsDateFilter";
 import Integration from "./Client/Integration";
 import Finance from "./Client/Finance";
-import Engagement from "./Client/Engagement";
 import Message from "./Client/Message";
 
 //Agency Imports
@@ -69,7 +68,6 @@ export {
   AnalyticsDateFilter,
   Integration,
   Finance,
-  Engagement,
   Message,
 };
 
