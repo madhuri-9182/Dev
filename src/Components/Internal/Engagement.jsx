@@ -17,7 +17,7 @@ function Engagement() {
     status: []
   });
   const navigate = useNavigate();
-  const isFirstRender = useRef(true);
+  // const isFirstRender = useRef(true);
 
   const STATUSES = [
     { label: "Active", value: "active" },
@@ -40,10 +40,10 @@ function Engagement() {
   }, 1000);
 
   const fetchEngagements = useCallback(async () => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    // if (isFirstRender.current) {
+    //   isFirstRender.current = false;
+    //   return;
+    // }
     try {
       setIsLoading(true);
       const response = await axios.get('/api/internal/engagements/', {

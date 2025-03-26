@@ -31,7 +31,7 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const firstRender = useRef(true);
+  // const firstRender = useRef(true);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -53,10 +53,10 @@ function MultiSelectFilter({ label, options, filter_state_name, current_value, h
       }
     };
 
-    if (firstRender.current) {
-      firstRender.current = false; // Skip first duplicate call in React 18 Strict Mode
-      return;
-    }
+    // if (firstRender.current) {
+    //   firstRender.current = false; // Skip first duplicate call in React 18 Strict Mode
+    //   return;
+    // }
 
     fetchOptions();
   }, [apiEndpoint, options, page]);
