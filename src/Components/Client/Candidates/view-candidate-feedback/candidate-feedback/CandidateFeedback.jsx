@@ -2,6 +2,10 @@ import { FormItem } from "./components/FormItems";
 import { SkillList, SkillTable } from "./components";
 import { useCandidateData } from "./hooks/useCandidateData";
 import { LoadingState } from "../../../../shared/loading-error-state";
+import { useState } from "react";
+import Modal from "../../../../shared/Modal";
+import InterviewFeedbackPDF from "../../../../PDF Report/InterviewFeedbackPDF";
+import { useLocation } from "react-router-dom";
 
 const CandidateFeedback = () => {
   const {
@@ -11,6 +15,11 @@ const CandidateFeedback = () => {
     skillsCount,
     skillsData,
   } = useCandidateData();
+
+  const location = useLocation();
+  const { state } = location;
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   if (loading) {
     return <LoadingState />;
@@ -43,11 +52,15 @@ const CandidateFeedback = () => {
           <button
             type="button"
             className="w-[200px] bg-[#007AFF] text-white rounded-full h-[36px] text-xs font-medium text-center"
+            onClick={() => setIsModalOpen(true)}
           >
             Download Report
           </button>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Feedback Report" className="min-w-fit top-auto left-auto" >
+        <InterviewFeedbackPDF data={state.data} />
+      </Modal>
     </div>
   );
 };

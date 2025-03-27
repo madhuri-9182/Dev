@@ -1,52 +1,6 @@
 import PropTypes from 'prop-types';
 
 const InterviewFeedbackPDF = ({ data }) => {
-  const interviewData = {
-    "interview_id": 2,
-    "interview_date": "14/03/2025 08:00:00",
-    "candidate": {
-      "name": "Samyak Rout",
-      "email": "samyak@mailsac.com",
-      "phone": "+918759004569",
-      "year": 2,
-      "month": 8,
-      "company": "JP Morgan",
-      "role": "SDE-II",
-      "current_designation": "Django developer",
-      "source": "CLT",
-      "specialization": "backend",
-      "cv": "/media/candidate_cvs/Akhil_Resume.pdf",
-      "remark": "POW POW, POW POW POW, POW POW POW POW"
-    },
-    "interviewer": {
-      "name": "Sumit Interviewer",
-      "total_experience_years": 5,
-      "total_experience_months": 8,
-      "current_company": "Hiringdog"
-    },
-    "skill_based_performance": {
-      "python with pytorch": {
-        "score": "45",
-        "summary": "Awesome python skills and knowledge of pytorch and",
-        "questions": [
-          {
-            "ans": "Decorator is the function that alters the behavior of another function without changing the original code.",
-            "que": "What is a decorator? "
-          }
-        ]
-      }
-    },
-    "skill_evaluation": {
-      "Attitude": "poor",
-      "Communication": "average"
-    },
-    "strength": "DSA, Python, TensorFlow, Pytorch, MySQL",
-    "improvement_points": "Projects",
-    "overall_remark": "REC",
-    "overall_score": 85,
-    "recording_link": null
-  };
-
   const {
     interview_date,
     candidate,
@@ -57,7 +11,7 @@ const InterviewFeedbackPDF = ({ data }) => {
     improvement_points,
     overall_remark,
     overall_score
-  } = interviewData || data;
+  } = data;
 
   // Parse interview date and time
   const formatDateTime = (dateTimeString) => {
@@ -190,7 +144,7 @@ const InterviewFeedbackPDF = ({ data }) => {
             </div>
             <div className="flex gap-2 items-center">
               <p className='min-w-[96px]' >Current Design. : </p>
-              <p className="bg-white rounded-lg w-full px-[4px]">{candidate.role || "N/A"}</p>
+              <p className="bg-white rounded-lg w-full px-[4px]">{candidate.current_designation || "N/A"}</p>
             </div>
             <div className="flex gap-2 items-center">
               <p className='min-w-[121px]' >Current Company : </p>
@@ -220,7 +174,7 @@ const InterviewFeedbackPDF = ({ data }) => {
           className="rounded-xl pr-[14px] pl-[26px] mb-[10px] flex"
           style={{ background: "linear-gradient(90deg, rgba(174, 212, 235, 0.63) 0%, rgba(202, 206, 208, 0.63) 100%)" }}
         >
-          <div className="w-[70%] pt-[20px] pb-[25px] pr-[10px] border border-r-[#000000] border-l-0 border-y-0">
+          <div className="w-[70%] pt-[20px] pb-[25px] pr-[10px] mr-[10px] border border-r-[#000000] border-l-0 border-y-0">
             <p className="text-[13px] font-semibold mb-[20px]">Score & Values ({skillEvaluationArray.length})</p>
             {skillEvaluationArray.map((skill, index) => (
               <div key={index} className="flex gap-2 items-center mb-[15px]">
@@ -229,13 +183,12 @@ const InterviewFeedbackPDF = ({ data }) => {
               </div>
             ))}
           </div>
-          <div className="pt-[30px] pb-[25px] pl-[10px]">
-            <svg width="100%" viewBox="0 0 692 451" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="692" height="451" fill="#130303" />
-              <line x1="34" y1="387" x2="669" y2="387" stroke="white" strokeWidth="10" />
-              <path d="M385 187L326.5 220.775V153.225L385 187Z" fill="#D9D9D9" />
-            </svg>
-          </div>
+          <a target='_blank' href='https://videos.pexels.com/video-files/4267802/4267802-uhd_2560_1440_30fps.mp4' >
+            <video className='mt-[6px]' >
+              <source src="https://videos.pexels.com/video-files/4267802/4267802-uhd_2560_1440_30fps.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </a>
         </div>
 
         {/* Strength and Improvements */}
@@ -328,7 +281,7 @@ const InterviewFeedbackPDF = ({ data }) => {
         ))}
 
         {/* Overall remark */}
-        <div
+        {/* <div
           className="rounded-xl pt-[18px] pb-[36px] px-[24px] mb-[10px]"
           style={{ background: "linear-gradient(90deg, rgba(174, 212, 235, 0.63) 0%, rgba(202, 206, 208, 0.63) 100%)" }}
         >
@@ -336,11 +289,13 @@ const InterviewFeedbackPDF = ({ data }) => {
           <div className="bg-white p-[10px] pt-[7px] rounded-lg w-full min-h-[200px] text-[12px]">
             {overall_remark}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
 };
+
+InterviewFeedbackPDF.displayName = 'InterviewFeedbackPDF';
 
 InterviewFeedbackPDF.propTypes = {
   data: PropTypes.object.isRequired
