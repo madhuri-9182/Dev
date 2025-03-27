@@ -38,14 +38,14 @@ function Interviewer() {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const navigate = useNavigate();
-  const isFirstRender = useRef(true);
+  // const isFirstRender = useRef(true);
   const { register, handleSubmit, formState: { errors }, reset, setError, clearErrors } = useForm();
 
   const fetchData = useCallback((page, isMounted = true) => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    // if (isFirstRender.current) {
+    //   isFirstRender.current = false;
+    //   return;
+    // }
     axios.get(`/api/internal/interviewers/?offset=${(page - 1) * 10}${searchTerm ? `&q=${searchTerm}` : ''}${filters?.strength?.length > 0 ? `&strengths=${filters?.strength?.map((item) => item.value)?.join(",")}` : ""}${filters?.experience?.length > 0 ? `&experiences=${filters?.experience?.map((item) => item.value)?.join(",")}` : ""}`)
       .then(res => {
         if (isMounted) {

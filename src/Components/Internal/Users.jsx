@@ -32,14 +32,14 @@ function Users() {
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
   const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
 
-  const clientFirstRender = useRef(true);
-  const hdipFirstRender = useRef(true);
+  // const clientFirstRender = useRef(true);
+  // const hdipFirstRender = useRef(true);
 
   const fetchClientUsers = async (query = "") => {
-    if (clientFirstRender.current) {
-      clientFirstRender.current = false;
-      return;
-    }
+    // if (clientFirstRender.current) {
+    //   clientFirstRender.current = false;
+    //   return;
+    // }
     setLoadingClient(true);
     try {
       const response = await axios.get(`/api/internal/internal-client-user/`, {
@@ -58,10 +58,10 @@ function Users() {
   };
 
   const fetchHdipUsers = async (query = "") => {
-    if (hdipFirstRender.current) {
-      hdipFirstRender.current = false;
-      return;
-    }
+    // if (hdipFirstRender.current) {
+    //   hdipFirstRender.current = false;
+    //   return;
+    // }
     setLoadingHdip(true);
     try {
       const response = await axios.get(`/api/internal/hdip-users/`, {

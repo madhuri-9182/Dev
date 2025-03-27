@@ -23,7 +23,7 @@ function Clients() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const firstRender = useRef(true); // Tracks first render to skip unnecessary duplicate calls
+  // const firstRender = useRef(true); // Tracks first render to skip unnecessary duplicate calls
 
   const STATUSES = [
     { label: "Active", value: "active" },
@@ -67,10 +67,10 @@ function Clients() {
   }, 1000);
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false; // Skip first duplicate call in Strict Mode
-      return;
-    }
+    // if (firstRender.current) {
+    //   firstRender.current = false; // Skip first duplicate call in Strict Mode
+    //   return;
+    // }
     fetchClients();
   }, [offset, filters, searchValue]);
 

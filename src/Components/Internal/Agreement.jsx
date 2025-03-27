@@ -17,7 +17,7 @@ function Agreement() {
   const [searchQuery, setSearchQuery] = useState("");
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const containerRef = useRef(null);
-  const initialRenderRef = useRef(true);
+  // const isFirstRender = useRef(true);
 
   const fetchAgreements = async (query = "") => {
     if (loading) return;
@@ -47,10 +47,10 @@ function Agreement() {
 
   useEffect(() => {
     // Only fetch data when the component is fully mounted (skip initial render in strict mode)
-    if (initialRenderRef.current) {
-      initialRenderRef.current = false;
-      return;
-    }
+    // if (isFirstRender.current) {
+    //   isFirstRender.current = false;
+    //   return;
+    // }
     
     fetchAgreements(searchQuery);
   }, [page, searchQuery]);

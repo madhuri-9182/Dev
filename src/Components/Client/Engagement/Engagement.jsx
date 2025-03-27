@@ -14,13 +14,13 @@ import { useEffect } from "react";
 const RedirectToDashboard = () => {
   const navigate = useNavigate();
   const { "*": org_id } = useParams();
-  const isFirstRender = useRef(true);
+  // const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    // if (isFirstRender.current) {
+    //   isFirstRender.current = false;
+    //   return;
+    // }
 
     if (org_id) {
       navigate("/internal/engagement/dashboard/", {
