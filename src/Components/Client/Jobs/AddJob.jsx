@@ -21,6 +21,7 @@ import {
   CancelButton,
   SaveButton,
 } from "../../shared/SaveAndCancelButtons";
+import { Loader2 } from "lucide-react";
 
 const AddJob = () => {
   const { auth } = useAuth();
@@ -464,10 +465,10 @@ const AddJob = () => {
                         errors.jobDescriptionFile
                           ? "border-[#B10E0EE5]"
                           : "border-[#6B6F7B]"
-                      } rounded-xl w-full py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
+                      } rounded-xl w-full py-[5px] px-3 h-8 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
                     >
                       {resumeUploadLoading ? (
-                        <span className="animate-spin"></span>
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <>
                           <LogoutCurve
