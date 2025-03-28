@@ -20,6 +20,7 @@ import {
   CancelButton,
   SaveButton,
 } from "../../shared/SaveAndCancelButtons";
+import { getJobLabel } from "../../../utils/util";
 
 const JobDetails = () => {
   const navigate = useNavigate();
@@ -332,15 +333,7 @@ const JobDetails = () => {
             </label>
             <input
               type="text"
-              value={
-                JOB_NAMES?.find(
-                  (job) => job.id === formdata.name
-                )?.name
-                  ? JOB_NAMES.find(
-                      (job) => job.id === formdata.name
-                    )?.name
-                  : formdata.name
-              }
+              value={getJobLabel(formdata.name)}
               readOnly
               className={inputClassName}
             />

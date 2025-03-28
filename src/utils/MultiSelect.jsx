@@ -8,7 +8,6 @@ const MultiSelect = ({
   setIsRecruitersDropdownOpen,
   options,
   errors,
-  setErrors,
 }) => {
   const optionRef = useRef(null);
 
@@ -41,13 +40,6 @@ const MultiSelect = ({
         ...selectedRecruiters,
         option,
       ]);
-      setErrors((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        if (option && newErrors.recruiters) {
-          delete newErrors.recruiters;
-        }
-        return newErrors;
-      });
     }
   };
 
@@ -137,5 +129,4 @@ MultiSelect.propTypes = {
   setIsRecruitersDropdownOpen: PropTypes.func,
   options: PropTypes.array,
   errors: PropTypes.object,
-  setErrors: PropTypes.func,
 };
