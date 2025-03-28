@@ -174,7 +174,6 @@ export const JOB_TYPES = {
 };
 
 export const CANDIDATE_SOURCE = [
-  { id: "CLT", name: "Client" },
   { id: "AGN", name: "Agency" },
   { id: "INT", name: "Internal" },
 ];
