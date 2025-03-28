@@ -32,7 +32,7 @@ const InfiniteScrollTable = ({
   return (
     <div className="px-3 h-[22vh] overflow-y-auto">
       {data.length === 0 ? (
-        <Empty description="No interviews found" />
+        <Empty description={`No ${title} found`} />
       ) : (
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
