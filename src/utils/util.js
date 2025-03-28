@@ -49,14 +49,20 @@ export const handleTxtAndDocxFile = (
   reader.readAsText(file);
 };
 
-export const handlePdfFile = (file, setJobDescription) => {
-  pdfToText(file)
-    .then((text) => {
-      setJobDescription(text);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+export const handlePdfFile = async (
+  file,
+  setJobDescription,
+  setLoading
+) => {
+  setLoading(true);
+  try {
+    const text = await pdfToText(file);
+    setJobDescription(text);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    setLoading(false);
+  }
 };
 
 export const formatExperience = (experience) => {

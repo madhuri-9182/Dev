@@ -80,6 +80,8 @@ const AddJob = () => {
     isSpecializationDropdownOpen,
     setIsSpecializationDropdownOpen,
   ] = useState(false);
+  const [resumeUploadLoading, setResumeUploadLoading] =
+    useState(false);
 
   // Filter users for recruiters and hiring managers
   const filteredRecruiters = users?.filter(
@@ -118,8 +120,10 @@ const AddJob = () => {
         setValue("jobDescription", content)
       );
     } else if (extension === "pdf") {
-      handlePdfFile(file, (content) =>
-        setValue("jobDescription", content)
+      handlePdfFile(
+        file,
+        (content) => setValue("jobDescription", content),
+        setResumeUploadLoading
       );
     } else {
       toast.error("Unsupported file type");
@@ -455,18 +459,25 @@ const AddJob = () => {
                     <button
                       type="button"
                       onClick={handleUploadButtonClick}
+                      disabled={resumeUploadLoading}
                       className={`border border-dashed ${
                         errors.jobDescriptionFile
                           ? "border-[#B10E0EE5]"
                           : "border-[#6B6F7B]"
                       } rounded-xl w-full py-[5px] px-3 text-[#6B6F7B] text-2xs font-medium cursor-pointer flex items-center justify-center gap-3 bg-[#F8F8F8]`}
                     >
-                      <LogoutCurve
-                        className="rotate-90"
-                        color="#171717"
-                        size={20}
-                      />{" "}
-                      Upload Here
+                      {resumeUploadLoading ? (
+                        <span className="animate-spin"></span>
+                      ) : (
+                        <>
+                          <LogoutCurve
+                            className="rotate-90"
+                            color="#171717"
+                            size={20}
+                          />{" "}
+                          Upload Here
+                        </>
+                      )}
                     </button>
                   </>
                 )}
