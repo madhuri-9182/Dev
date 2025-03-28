@@ -49,7 +49,7 @@ const BasicDatePicker = ({
               sx: {
                 "& .MuiPaper-root": {
                   backgroundColor: "#ECE6F0",
-                  height: "300px",
+                  maxHeight: "330px",
                 },
               },
             },
