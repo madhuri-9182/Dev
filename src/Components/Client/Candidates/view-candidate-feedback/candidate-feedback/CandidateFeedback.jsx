@@ -6,6 +6,8 @@ import { useState } from "react";
 import Modal from "../../../../shared/Modal";
 import InterviewFeedbackPDF from "../../../../PDF Report/InterviewFeedbackPDF";
 import { useLocation } from "react-router-dom";
+import axios from "../../../../../api/axios";
+import { CircularProgress } from "@mui/material";
 
 const CandidateFeedback = () => {
   const {
@@ -20,6 +22,7 @@ const CandidateFeedback = () => {
   const { state } = location;
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   if (loading) {
     return <LoadingState />;
@@ -32,6 +35,29 @@ const CandidateFeedback = () => {
       </div>
     );
   }
+
+  const handleDownload = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.post("http://localhost:3000/generate-pdf", state.data, {
+        responseType: "blob", // Important to receive binary data
+      });
+
+      // Create a blob from the response
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "generated.pdf"; // Set the download file name
+      link.click();
+
+      // Clean up the URL object after download
+      URL.revokeObjectURL(link.href);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="px-3 w-full pt-6">
@@ -59,6 +85,20 @@ const CandidateFeedback = () => {
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Feedback Report" className="min-w-fit top-auto left-auto" >
+        <div className="flex flex-row-reverse" >
+          <button disabled={isLoading} className="primary-button flex items-center" onClick={handleDownload}>
+            Download PDF
+            {isLoading && (
+              <CircularProgress
+                size={16}
+                sx={{
+                  color: "white", // Change this to any color you want
+                  marginLeft: '5px'
+                }}
+              />
+            )}
+          </button>
+        </div>
         <InterviewFeedbackPDF data={state.data} />
       </Modal>
     </div>
