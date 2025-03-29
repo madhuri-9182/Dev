@@ -61,8 +61,15 @@ export const JobProvider = () => {
   };
 
   const handleAddJobClick = (data) => {
-    if (data) {
+    const isEdit =
+      data &&
+      typeof data === "object" &&
+      !data.nativeEvent &&
+      Object.keys(data).length !== 0;
+    if (isEdit) {
       setSelectedData(data);
+    } else {
+      reset();
     }
     navigate("/client/jobs/add-job");
   };

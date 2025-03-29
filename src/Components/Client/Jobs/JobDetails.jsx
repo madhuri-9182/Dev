@@ -229,6 +229,18 @@ const JobDetails = () => {
 
     const formdataToSubmit = new FormData();
 
+    const processedDetails = details.map((detail) => {
+      const detailCopy = { ...detail };
+
+      detailCopy.time = detailCopy.time.replace(
+        " Minutes",
+        "min"
+      );
+      delete detailCopy.id;
+
+      return detailCopy;
+    });
+
     if (!isEdit) {
       formdataToSubmit.append("name", formdata.name);
       formdataToSubmit.append("job_id", formdata.job_id);
@@ -260,6 +272,10 @@ const JobDetails = () => {
         "job_description_file",
         formdata.job_description_file
       );
+      formdataToSubmit.append(
+        "other_details",
+        JSON.stringify(processedDetails)
+      );
     } else {
       const changedFields = getChangedFields();
 
@@ -290,18 +306,6 @@ const JobDetails = () => {
 
       // Always add other_details if they've changed
       if (haveDetailsChanged()) {
-        const processedDetails = details.map((detail) => {
-          const detailCopy = { ...detail };
-
-          detailCopy.time = detailCopy.time.replace(
-            " Minutes",
-            "min"
-          );
-          delete detailCopy.id;
-
-          return detailCopy;
-        });
-
         formdataToSubmit.append(
           "other_details",
           JSON.stringify(processedDetails)
