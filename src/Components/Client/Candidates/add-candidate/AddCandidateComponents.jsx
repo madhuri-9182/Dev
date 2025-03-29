@@ -25,7 +25,7 @@ export const ResumeTable = ({
   selectedRole,
   selectedSpecialization,
 }) => (
-  <div className="w-full mt-20 overflow-x-auto">
+  <div className="w-full mt-20 overflow-x-auto overflow-y-auto max-h-[38vh] ">
     <table className="w-full text-2xs text-[#313A4E] border-collapse">
       <thead className="text-[#6B6F7B] font-bold mt-3">
         <tr className="flex items-center gap-2 text-left">

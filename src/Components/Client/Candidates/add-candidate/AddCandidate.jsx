@@ -21,6 +21,9 @@ import { FilterGroup } from "../components/FilterGroup";
 import { useUploadProgress } from "./useUploadProgress";
 import { useLocation } from "react-router-dom";
 
+// constants
+const MAX_BULK_FILES = 15;
+
 function ClientAddCandidate() {
   // Get location to access route state
   const location = useLocation();
@@ -113,6 +116,11 @@ function ClientAddCandidate() {
     onSuccess: (data) => {
       stopProgress();
       setUploadProgress(100);
+      setTimeout(resetProgress, 0);
+      if (data.data.length === 0) {
+        toast.error("Error parsing resume.");
+        return;
+      }
       const dataWithId = data.data.map((row, index) => ({
         ...row,
         id: generateUniqueId(),
@@ -137,7 +145,6 @@ function ClientAddCandidate() {
           { duration: 5000 }
         );
       }
-      setTimeout(resetProgress, 0);
     },
     onError: (error) => {
       stopProgress();
@@ -171,6 +178,20 @@ function ClientAddCandidate() {
       const filesArray = Array.isArray(files)
         ? files
         : [files];
+
+      // Check if bulk upload exceeds the maximum file limit
+      if (filesArray.length > MAX_BULK_FILES) {
+        toast.error(
+          `You can only upload a maximum of ${MAX_BULK_FILES} files at once.`
+        );
+        // Reset the file input
+        if (filesArray.length > 1) {
+          uploadBulkCVRef.current.value = "";
+        } else {
+          uploadCVRef.current.value = "";
+        }
+        return;
+      }
 
       filesArray.forEach((file) =>
         formdata.append("resume", file)
