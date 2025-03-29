@@ -1,23 +1,13 @@
 import PropTypes from "prop-types";
 import { Loader2 } from "lucide-react";
 import BasicDatePicker from "../../../../../utils/BasicDatePicker";
+import { createHourlySlots } from "../utils/hourlySlots";
 
 /**
  * Component for selecting date and time slots
  */
 
-const hourlySlots = [
-  { time: "10 AM" },
-  { time: "11 AM" },
-  { time: "12 PM" },
-  { time: "1 PM" },
-  { time: "2 PM" },
-  { time: "3 PM" },
-  { time: "4 PM" },
-  { time: "5 PM" },
-  { time: "6 PM" },
-  { time: "7 PM" },
-];
+const hourlySlots = createHourlySlots();
 function TimeSlotSelector({
   selectedDate,
   setSelectedDate,

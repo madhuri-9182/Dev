@@ -1,6 +1,7 @@
 /**
  * Functions for processing availability data for interview scheduling
  */
+import { createHourlySlots } from "./hourlySlots";
 import {
   timeToHours,
   formatTimeDisplay,
@@ -8,19 +9,10 @@ import {
 
 // Process API data to determine which hourly slots are available
 export const processAvailabilityData = (data) => {
-  // Initialize time slots for 10 AM to 7 PM
-  const hourlySlots = [
-    { time: "10 AM", available: false, slotIds: [] },
-    { time: "11 AM", available: false, slotIds: [] },
-    { time: "12 PM", available: false, slotIds: [] },
-    { time: "1 PM", available: false, slotIds: [] },
-    { time: "2 PM", available: false, slotIds: [] },
-    { time: "3 PM", available: false, slotIds: [] },
-    { time: "4 PM", available: false, slotIds: [] },
-    { time: "5 PM", available: false, slotIds: [] },
-    { time: "6 PM", available: false, slotIds: [] },
-    { time: "7 PM", available: false, slotIds: [] },
-  ];
+  // Initialize time slots with availability properties
+  const hourlySlots = createHourlySlots({
+    includeAvailability: true,
+  });
 
   // If no data available, return the base hourly slots
   if (!data || !data.length) {
@@ -34,14 +26,10 @@ export const processAvailabilityData = (data) => {
 
     // Check each hourly slot to see if it can accommodate a 1-hour meeting
     hourlySlots.forEach((hourlySlot) => {
-      // Convert slot time label to 24-hour format number
-      const hourText = hourlySlot.time.split(" ")[0];
-      const isPM = hourlySlot.time.includes("PM");
-      let slotHour = parseInt(hourText);
-
-      // Convert to 24-hour format
-      if (isPM && slotHour !== 12) slotHour += 12;
-      else if (!isPM && slotHour === 12) slotHour = 0;
+      // Convert slot time label to 24-hour format using our utility function
+      const slotHour = timeToHours(
+        hourlySlot.time.replace(" ", ":00 ")
+      );
 
       // A slot is available if a 1-hour window can start at any 15-minute interval within it
       const canFitFullHour =
