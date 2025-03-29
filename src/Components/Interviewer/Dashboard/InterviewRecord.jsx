@@ -22,9 +22,6 @@ import Heading from "./Components/Heading";
 import Sidebar from "./Components/Sidebar";
 import Table from "./Components/Table";
 
-// Constants
-const QUERY_STALE_TIME = 5 * 60 * 1000; // 5 minutes
-
 function InterviewRecord() {
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -59,8 +56,7 @@ function InterviewRecord() {
       getAcceptedInterviews(pageParam),
     getNextPageParam: (lastPage) =>
       getNextPageFromUrl(lastPage.next),
-    staleTime: QUERY_STALE_TIME,
-    refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   // Infinite query for pending feedback
@@ -70,8 +66,7 @@ function InterviewRecord() {
       getPendingFeedbackInterviews(pageParam),
     getNextPageParam: (lastPage) =>
       getNextPageFromUrl(lastPage.next),
-    staleTime: QUERY_STALE_TIME,
-    refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   // Infinite query for interview history
@@ -81,8 +76,7 @@ function InterviewRecord() {
       getInterviewHistory(pageParam),
     getNextPageParam: (lastPage) =>
       getNextPageFromUrl(lastPage.next),
-    staleTime: QUERY_STALE_TIME,
-    refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   // Load more data when intersecting with viewport
