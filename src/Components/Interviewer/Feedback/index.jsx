@@ -210,8 +210,12 @@ const Feedback = () => {
     },
     onError: (error) => {
       toast.error(
-        `Error submitting feedback: ${
-          error.message || "Please try again"
+        `${
+          error.response.data.message
+            ? error.response.data.message
+            : `Error submitting feedback: ${
+                error.message || "Please try again"
+              }`
         }`
       );
     },
