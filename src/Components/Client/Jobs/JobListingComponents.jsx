@@ -189,7 +189,6 @@ export const FilterTags = ({
   if (!hasFilters) return null;
 
   const getJobName = (jobId) => {
-
     for (const [name, ids] of Object.entries(groupedJobs)) {
       if (ids.includes(jobId) || ids.includes(jobId[0])) {
         return getJobLabel(name);
@@ -314,12 +313,14 @@ export const JobCard = ({
 }) => (
   <div className="rounded-2xl bg-[#EBEBEB80] flex justify-between items-center px-7 py-2">
     <div className="flex items-center justify-between gap-3 w-2/3">
-      <p
-        className="text-2xs uppercase cursor-pointer w-[30%]"
-        onClick={() => onEdit(job)}
-      >
-        {getJobLabel(job.name)}
-      </p>
+      <div className="w-[30%]">
+        <span
+          className="hover:underline hover:font-semibold text-2xs uppercase cursor-pointer"
+          onClick={() => onEdit(job)}
+        >
+          {getJobLabel(job.name)}
+        </span>
+      </div>
       <div className="flex gap-4 w-[70%]">
         <button
           className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-20 py-1 flex items-center justify-center rounded-[100px] hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
