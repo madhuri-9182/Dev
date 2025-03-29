@@ -228,7 +228,16 @@ const ResumeTableRow = ({
 
     // if data length is more than 1 then open in new tab, else open in same tab
     if (data.length > 1) {
-      window.open(url, "_blank");
+      const newTab = window.open(url, "_blank");
+
+      // Check if the new tab was successfully opened
+      if (newTab) {
+        // Remove the candidate from the data after a slight delay
+        // to ensure the data is available in the new tab
+        setTimeout(() => {
+          window.removeCandidateFromData(uniqueKey);
+        }, 500);
+      }
     } else {
       navigate(url);
     }
