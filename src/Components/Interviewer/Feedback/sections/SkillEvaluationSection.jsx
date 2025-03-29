@@ -35,6 +35,22 @@ const SkillEvaluationSection = ({
     "Excellent",
   ];
 
+  // Get background color based on rating
+  const getRatingColor = (rating) => {
+    switch (rating) {
+      case "Poor":
+        return "#dd463b";
+      case "Average":
+        return "#eb8c51";
+      case "Good":
+        return "#a0ca69";
+      case "Excellent":
+        return "#5cb357";
+      default:
+        return "#D9D9D9";
+    }
+  };
+
   return (
     <FormSection
       title="Skill Evaluation"
@@ -54,11 +70,17 @@ const SkillEvaluationSection = ({
               <button
                 key={rating}
                 type="button"
-                className={`px-6 py-2 text-default rounded-md ${
-                  communicationRating === rating
-                    ? "bg-[#007aff] text-white"
-                    : "bg-[#D9D9D9] text-[#00000099] hover:bg-gray-300"
-                }`}
+                style={{
+                  backgroundColor:
+                    communicationRating === rating
+                      ? getRatingColor(rating)
+                      : "#D9D9D9",
+                  color:
+                    communicationRating === rating
+                      ? "white"
+                      : "#00000099",
+                }}
+                className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
                 onClick={() => {
                   setCommunicationRating(rating);
                   setValue(
@@ -93,11 +115,17 @@ const SkillEvaluationSection = ({
               <button
                 key={rating}
                 type="button"
-                className={`px-6 py-2 text-default rounded-md ${
-                  attitudeRating === rating
-                    ? "bg-[#007aff] text-white"
-                    : "bg-[#D9D9D9] text-[#00000099] hover:bg-gray-300"
-                }`}
+                style={{
+                  backgroundColor:
+                    attitudeRating === rating
+                      ? getRatingColor(rating)
+                      : "#D9D9D9",
+                  color:
+                    attitudeRating === rating
+                      ? "white"
+                      : "#00000099",
+                }}
+                className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
                 onClick={() => {
                   setAttitudeRating(rating);
                   setValue(
