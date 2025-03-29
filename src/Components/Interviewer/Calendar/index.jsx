@@ -55,8 +55,8 @@ const CALENDAR_CONFIG = {
   slotDuration: "01:00:00",
   slotLabelInterval: "01:00:00",
   snapDuration: "00:30:00",
-  slotMinTime: "10:00:00",
-  slotMaxTime: "21:00:00",
+  slotMinTime: "00:00:00",
+  slotMaxTime: "24:00:00",
   allDaySlot: false,
 };
 
@@ -592,10 +592,13 @@ const CalendarComponent = () => {
         handlePrev={handlePrev}
         handleNext={handleNext}
         handleViewChange={handleViewChange}
+        handleBack={() =>
+          navigate("/interviewer/dashboard/")
+        }
       />
 
       {/* Calendar */}
-      <div className="bg-white border-none rounded-lg">
+      <div className="bg-white border-none rounded-lg max-h-[500px]">
         <FullCalendar
           ref={calendarRef}
           plugins={[
@@ -629,7 +632,7 @@ const CalendarComponent = () => {
             googleEvents,
             blockedTimes
           )}
-          height="auto"
+          height="75vh"
           eventClassNames="rounded-md text-xs px-1 py-0.5 overflow-hidden text-white shadow-md"
           dayHeaderContent={DayHeaderContent}
           nowIndicator={true}

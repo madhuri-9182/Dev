@@ -1,5 +1,9 @@
 import PropTypes from "prop-types";
-import { ArrowLeft2, ArrowRight2 } from "iconsax-react";
+import {
+  ArrowLeft,
+  ArrowLeft2,
+  ArrowRight2,
+} from "iconsax-react";
 
 /**
  * Calendar toolbar component
@@ -10,6 +14,7 @@ import { ArrowLeft2, ArrowRight2 } from "iconsax-react";
  * @param {Function} props.handlePrev Handler for Previous button
  * @param {Function} props.handleNext Handler for Next button
  * @param {Function} props.handleViewChange Handler for view change
+ * @param {Function} props.handleBack Handler for Back button
  * @returns {JSX.Element} Toolbar component
  */
 const CalendarToolbar = ({
@@ -19,6 +24,7 @@ const CalendarToolbar = ({
   handlePrev,
   handleNext,
   handleViewChange,
+  handleBack,
 }) => {
   const getViewBtnClass = (view) => {
     return `${googleCalViewBtn} ${
@@ -32,7 +38,14 @@ const CalendarToolbar = ({
     <div className="flex justify-between items-center py-2 px-4 mb-2">
       <div className="flex items-center gap-4">
         <button
-          className="bg-transparent border border-[#dadce0] rounded-full text-[#3c4043] text-sm font-medium px-4 py-2 cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6]"
+          className="bg-transparent border border-[#dadce0] rounded-full text-[#3c4043] text-sm font-medium p-2 cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6] flex items-center gap-x-1 justify-around"
+          title="Back"
+          onClick={handleBack}
+        >
+          <ArrowLeft size="16" color="#3c4043" />
+        </button>
+        <button
+          className="bg-transparent border border-[#dadce0] rounded-full text-[#3c4043] font-medium px-4 py-2 cursor-pointer transition-colors duration-200 hover:bg-[#f6f6f6] text-default"
           onClick={handleToday}
         >
           Today
@@ -90,6 +103,7 @@ CalendarToolbar.propTypes = {
   handlePrev: PropTypes.func,
   handleNext: PropTypes.func,
   handleViewChange: PropTypes.func,
+  handleBack: PropTypes.func,
 };
 
 const googleCalNavBtn =
