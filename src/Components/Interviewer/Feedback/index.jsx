@@ -59,6 +59,7 @@ const DEFAULT_FORM_VALUES = {
   skillEvaluation: {
     communication: "",
     attitude: "",
+    additional: [], // Add this for custom skill evaluations
   },
   strength: "",
   improvementPoints: "",
@@ -107,15 +108,31 @@ const transformFormData = (formData, interviewId) => {
     }
   });
 
+  // Transform skill evaluation data
+  const skill_evaluation = {
+    Communication:
+      formData.skillEvaluation.communication.toLowerCase(),
+    Attitude:
+      formData.skillEvaluation.attitude.toLowerCase(),
+  };
+
+  // Add additional skill evaluations if they exist
+  if (
+    formData.skillEvaluation.additional &&
+    formData.skillEvaluation.additional.length > 0
+  ) {
+    formData.skillEvaluation.additional.forEach((item) => {
+      if (item.name && item.rating) {
+        skill_evaluation[item.name] =
+          item.rating.toLowerCase();
+      }
+    });
+  }
+
   return {
     interview_id: Number(interviewId),
     skill_based_performance,
-    skill_evaluation: {
-      Communication:
-        formData.skillEvaluation.communication.toLowerCase(),
-      Attitude:
-        formData.skillEvaluation.attitude.toLowerCase(),
-    },
+    skill_evaluation,
     strength: formData.strength,
     improvement_points: formData.improvementPoints,
     overall_remark: formData.overallRemark,
@@ -221,6 +238,50 @@ const Feedback = () => {
     },
   });
 
+  // Transform skill evaluation data
+  const transformSkillEvaluation = (
+    skillEvaluationData
+  ) => {
+    if (!skillEvaluationData)
+      return {
+        communication: "",
+        attitude: "",
+        additional: [],
+      };
+
+    // Extract the default evaluations
+    const communication =
+      skillEvaluationData.Communication || "";
+    const attitude = skillEvaluationData.Attitude || "";
+
+    // Create the additional evaluations array
+    const additional = [];
+
+    // Process all other evaluations as additional
+    Object.entries(skillEvaluationData).forEach(
+      ([key, value]) => {
+        if (key !== "Communication" && key !== "Attitude") {
+          additional.push({
+            name: key,
+            rating:
+              value.charAt(0).toUpperCase() +
+              value.slice(1), // Capitalize first letter
+          });
+        }
+      }
+    );
+
+    return {
+      communication:
+        communication.charAt(0).toUpperCase() +
+        communication.slice(1),
+      attitude:
+        attitude.charAt(0).toUpperCase() +
+        attitude.slice(1),
+      additional,
+    };
+  };
+
   // Update form values when data loads
   useEffect(() => {
     if (data && Object.keys(data?.data).length > 0) {
@@ -233,11 +294,11 @@ const Feedback = () => {
         responseData?.skill_based_performance
       );
 
-      // Get communication and attitude values (capitalize first letter to match the buttons)
-      const communicationValue =
-        responseData?.skill_evaluation?.Communication || "";
-      const attitudeValue =
-        responseData?.skill_evaluation?.Attitude || "";
+      // Transform skill evaluation data
+      const transformedSkillEvaluation =
+        transformSkillEvaluation(
+          responseData?.skill_evaluation
+        );
 
       // Reset the form with all values
       reset({
@@ -265,14 +326,7 @@ const Feedback = () => {
           transformedSkills.length > 0
             ? transformedSkills
             : getValues("skills"),
-        skillEvaluation: {
-          communication:
-            communicationValue.charAt(0).toUpperCase() +
-            communicationValue.slice(1),
-          attitude:
-            attitudeValue.charAt(0).toUpperCase() +
-            attitudeValue.slice(1),
-        },
+        skillEvaluation: transformedSkillEvaluation,
         strength: responseData?.strength || "",
         improvementPoints:
           responseData?.improvement_points || "",

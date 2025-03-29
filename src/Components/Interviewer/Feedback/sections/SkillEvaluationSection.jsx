@@ -1,18 +1,41 @@
 // sections/SkillEvaluationSection.jsx
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useWatch } from "react-hook-form";
+import { useWatch, useFieldArray } from "react-hook-form";
 import { Skill } from "../../../../assets";
 import { FormSection } from "../FeedbackComponents";
+import { Check, X } from "lucide-react";
+import { Edit, Trash } from "iconsax-react";
 
 const SkillEvaluationSection = ({
   control,
   setValue,
   errors,
 }) => {
-  const [communicationRating, setCommunicationRating] =
+  // Use fieldArray for dynamic skill evaluations
+  const {
+    fields: evaluationFields,
+    append: appendEvaluation,
+    remove: removeEvaluation,
+    update: updateEvaluation,
+  } = useFieldArray({
+    control,
+    name: "skillEvaluation.additional",
+  });
+
+  // States for managing UI
+  const [isAddingSkill, setIsAddingSkill] = useState(false);
+  const [newSkillName, setNewSkillName] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingSkillName, setEditingSkillName] =
     useState("");
-  const [attitudeRating, setAttitudeRating] = useState("");
+
+  // State to store rating selections for UI
+  const [ratingSelections, setRatingSelections] = useState({
+    communication: "",
+    attitude: "",
+    additional: [],
+  });
 
   // Watch for changes in the form values
   const skillEvaluation = useWatch({
@@ -23,8 +46,18 @@ const SkillEvaluationSection = ({
   // Set the initial values from the form
   useEffect(() => {
     if (skillEvaluation) {
-      setCommunicationRating(skillEvaluation.communication);
-      setAttitudeRating(skillEvaluation.attitude);
+      // Update UI state for default evaluations
+      setRatingSelections((prev) => ({
+        ...prev,
+        communication: skillEvaluation.communication,
+        attitude: skillEvaluation.attitude,
+        additional: skillEvaluation.additional
+          ? skillEvaluation.additional.map((item) => ({
+              name: item.name,
+              rating: item.rating,
+            }))
+          : [],
+      }));
     }
   }, [skillEvaluation]);
 
@@ -51,6 +84,127 @@ const SkillEvaluationSection = ({
     }
   };
 
+  // Start adding a new custom skill evaluation
+  const handleAddSkillClick = () => {
+    setIsAddingSkill(true);
+    setNewSkillName("");
+  };
+
+  // Save the new skill evaluation
+  const handleSaveNewSkill = () => {
+    if (newSkillName.trim()) {
+      appendEvaluation({
+        name: newSkillName.trim(),
+        rating: "",
+      });
+      setRatingSelections((prev) => ({
+        ...prev,
+        additional: [
+          ...prev.additional,
+          { name: newSkillName.trim(), rating: "" },
+        ],
+      }));
+      setIsAddingSkill(false);
+      setNewSkillName("");
+    }
+  };
+
+  // Cancel adding new skill
+  const handleCancelAddSkill = () => {
+    setIsAddingSkill(false);
+    setNewSkillName("");
+  };
+
+  // Start editing a skill
+  const handleEditSkill = (index) => {
+    setEditingIndex(index);
+    setEditingSkillName(evaluationFields[index].name);
+  };
+
+  // Save edited skill
+  const handleSaveEditSkill = (index) => {
+    if (editingSkillName.trim()) {
+      const updatedField = {
+        ...evaluationFields[index],
+        name: editingSkillName.trim(),
+      };
+      updateEvaluation(index, updatedField);
+
+      const updatedAdditional = [
+        ...ratingSelections.additional,
+      ];
+      updatedAdditional[index] = {
+        ...updatedAdditional[index],
+        name: editingSkillName.trim(),
+      };
+
+      setRatingSelections((prev) => ({
+        ...prev,
+        additional: updatedAdditional,
+      }));
+
+      setEditingIndex(null);
+      setEditingSkillName("");
+    }
+  };
+
+  // Cancel editing skill
+  const handleCancelEditSkill = () => {
+    setEditingIndex(null);
+    setEditingSkillName("");
+  };
+
+  // Handle removing a custom skill evaluation
+  const handleRemoveEvaluation = (index) => {
+    removeEvaluation(index);
+    const updatedAdditional = [
+      ...ratingSelections.additional,
+    ];
+    updatedAdditional.splice(index, 1);
+    setRatingSelections((prev) => ({
+      ...prev,
+      additional: updatedAdditional,
+    }));
+  };
+
+  // Set rating for a skill evaluation
+  const handleRatingClick = (type, index, rating) => {
+    if (type === "communication") {
+      setValue("skillEvaluation.communication", rating, {
+        shouldValidate: true,
+      });
+      setRatingSelections((prev) => ({
+        ...prev,
+        communication: rating,
+      }));
+    } else if (type === "attitude") {
+      setValue("skillEvaluation.attitude", rating, {
+        shouldValidate: true,
+      });
+      setRatingSelections((prev) => ({
+        ...prev,
+        attitude: rating,
+      }));
+    } else if (type === "additional") {
+      setValue(
+        `skillEvaluation.additional.${index}.rating`,
+        rating,
+        { shouldValidate: true }
+      );
+      const updatedAdditional = [
+        ...ratingSelections.additional,
+      ];
+      updatedAdditional[index] = {
+        ...updatedAdditional[index],
+        rating,
+      };
+      setRatingSelections((prev) => ({
+        ...prev,
+        additional: updatedAdditional,
+      }));
+    }
+  };
+
   return (
     <FormSection
       title="Skill Evaluation"
@@ -58,6 +212,7 @@ const SkillEvaluationSection = ({
       icon={Skill}
     >
       <div className="space-y-6">
+        {/* Communication (default) */}
         <div className="p-4 bg-white rounded-xl border border-gray-300">
           <h3 className="text-md font-semibold mb-2">
             Communication
@@ -72,25 +227,24 @@ const SkillEvaluationSection = ({
                 type="button"
                 style={{
                   backgroundColor:
-                    communicationRating === rating
+                    ratingSelections.communication ===
+                    rating
                       ? getRatingColor(rating)
                       : "#D9D9D9",
                   color:
-                    communicationRating === rating
+                    ratingSelections.communication ===
+                    rating
                       ? "white"
                       : "#00000099",
                 }}
                 className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
-                onClick={() => {
-                  setCommunicationRating(rating);
-                  setValue(
-                    "skillEvaluation.communication",
-                    rating,
-                    {
-                      shouldValidate: true,
-                    }
-                  );
-                }}
+                onClick={() =>
+                  handleRatingClick(
+                    "communication",
+                    null,
+                    rating
+                  )
+                }
               >
                 {rating}
               </button>
@@ -103,6 +257,7 @@ const SkillEvaluationSection = ({
           )}
         </div>
 
+        {/* Attitude (default) */}
         <div className="p-4 bg-white rounded-xl border-gray-300 border">
           <h3 className="text-md font-semibold mb-2">
             Attitude
@@ -117,25 +272,22 @@ const SkillEvaluationSection = ({
                 type="button"
                 style={{
                   backgroundColor:
-                    attitudeRating === rating
+                    ratingSelections.attitude === rating
                       ? getRatingColor(rating)
                       : "#D9D9D9",
                   color:
-                    attitudeRating === rating
+                    ratingSelections.attitude === rating
                       ? "white"
                       : "#00000099",
                 }}
                 className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
-                onClick={() => {
-                  setAttitudeRating(rating);
-                  setValue(
-                    "skillEvaluation.attitude",
-                    rating,
-                    {
-                      shouldValidate: true,
-                    }
-                  );
-                }}
+                onClick={() =>
+                  handleRatingClick(
+                    "attitude",
+                    null,
+                    rating
+                  )
+                }
               >
                 {rating}
               </button>
@@ -147,6 +299,170 @@ const SkillEvaluationSection = ({
             </div>
           )}
         </div>
+
+        {/* Additional custom skill evaluations */}
+        {evaluationFields.map((field, index) => (
+          <div
+            key={field.id}
+            className="p-4 bg-white rounded-xl border-gray-300 border"
+          >
+            {editingIndex === index ? (
+              /* Editing mode */
+              <div className="mb-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    className="flex-grow p-2 border border-gray-300 rounded-md text-default text-[#49454F]"
+                    placeholder="Enter skill name"
+                    value={editingSkillName}
+                    onChange={(e) =>
+                      setEditingSkillName(e.target.value)
+                    }
+                  />
+                  <button
+                    type="button"
+                    className=" text-green-600 hover:text-green-800 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                    onClick={() =>
+                      handleSaveEditSkill(index)
+                    }
+                  >
+                    <Check size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    className=" text-red-500 hover:text-red-700 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                    onClick={handleCancelEditSkill}
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                {editingSkillName.trim() === "" && (
+                  <div className="text-[#B10E0EE5] text-2xs mt-1">
+                    Skill name cannot be empty
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Display mode */
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-md font-semibold">
+                  {field.name}
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="text-blue-500 hover:text-blue-700 "
+                    onClick={() => handleEditSkill(index)}
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() =>
+                      handleRemoveEvaluation(index)
+                    }
+                  >
+                    <Trash size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {editingIndex !== index && (
+              <>
+                <p className="text-gray-600 text-default mb-2">
+                  How would you like to rate?
+                </p>
+                <div className="flex gap-4">
+                  {ratingOptions.map((rating) => (
+                    <button
+                      key={rating}
+                      type="button"
+                      style={{
+                        backgroundColor:
+                          ratingSelections.additional[index]
+                            ?.rating === rating
+                            ? getRatingColor(rating)
+                            : "#D9D9D9",
+                        color:
+                          ratingSelections.additional[index]
+                            ?.rating === rating
+                            ? "white"
+                            : "#00000099",
+                      }}
+                      className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
+                      onClick={() =>
+                        handleRatingClick(
+                          "additional",
+                          index,
+                          rating
+                        )
+                      }
+                    >
+                      {rating}
+                    </button>
+                  ))}
+                </div>
+                {errors.skillEvaluation?.additional?.[index]
+                  ?.rating && (
+                  <div className="text-[#B10E0EE5] text-2xs mt-2">
+                    Rating is required
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        ))}
+
+        {/* New skill input area */}
+        {isAddingSkill && (
+          <div className="p-4 bg-white rounded-xl border-gray-300 border">
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="text"
+                className="flex-grow p-2 border border-gray-300 rounded-md text-default text-[#49454F]"
+                placeholder="Enter skill name (e.g. Leadership, Problem Solving)"
+                value={newSkillName}
+                onChange={(e) =>
+                  setNewSkillName(e.target.value)
+                }
+              />
+              <button
+                type="button"
+                className=" text-green-600 hover:text-green-800 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                onClick={handleSaveNewSkill}
+              >
+                <Check size={16} />
+              </button>
+              <button
+                type="button"
+                className=" text-red-500 hover:text-red-700 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                onClick={handleCancelAddSkill}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {newSkillName.trim() === "" && (
+              <div className="text-[#B10E0EE5] text-2xs">
+                Skill name cannot be empty
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Add new skill evaluation button */}
+        {!isAddingSkill && (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg"
+              onClick={handleAddSkillClick}
+            >
+              <span>Add Skill Evaluation</span>
+            </button>
+          </div>
+        )}
       </div>
     </FormSection>
   );
