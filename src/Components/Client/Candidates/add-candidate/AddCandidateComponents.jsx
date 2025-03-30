@@ -58,54 +58,56 @@ export const ResumeTable = ({
   selectedRole,
   selectedSpecialization,
 }) => (
-  <div className="w-full mt-20 overflow-x-auto overflow-y-auto max-h-[38vh] ">
-    <table className="w-full text-2xs text-[#313A4E] border-collapse">
-      <thead className="text-[#6B6F7B] font-bold mt-3">
-        <tr className="flex items-center gap-2 text-left">
-          <th className="px-3 w-[14.33%]">Name</th>
-          <th
-            className={`px-3 w-[12%] flex items-center ${
-              !editingRowId ? "text-[#F59E0B]" : ""
-            }`}
+  <div className="w-full mt-20 relative">
+    {/* Fixed header */}
+    <div className="sticky top-0 bg-white z-10 pb-3">
+      <div className="grid grid-cols-8 text-[#6B6F7B] font-bold text-2xs text-left">
+        <div className="px-3 col-span-1">Name</div>
+        <div
+          className={`px-3 col-span-1 flex items-center ${
+            !editingRowId ? "text-[#F59E0B]" : ""
+          }`}
+        >
+          Experience
+          <LightTooltip
+            title={"Please review the experience values"}
+            placement="top"
           >
-            Experience
-            <LightTooltip
-              title={"Please review the experience values"}
-              placement="top"
-            >
-              {!editingRowId && (
-                <InfoCircle
-                  size={16}
-                  color="#F59E0B"
-                  className="ml-1 cursor-help"
-                />
-              )}
-            </LightTooltip>
-          </th>
-          <th className="px-3 w-[13%]">Mobile Number</th>
-          <th className="px-3 w-1/6">Email ID</th>
-          <th className="px-3 w-1/5">Company</th>
-          <th className="px-3 w-1/6">Designation</th>
-          <th className="px-3 w-[11%]">Gender</th>
-          <th className="px-3 w-[17%]"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item) => (
-          <ResumeTableRow
-            key={item.id}
-            item={item}
-            data={data}
-            setData={setData}
-            editingRowId={editingRowId}
-            setEditingRowId={setEditingRowId}
-            selectedSource={selectedSource}
-            selectedRole={selectedRole}
-            selectedSpecialization={selectedSpecialization}
-          />
-        ))}
-      </tbody>
-    </table>
+            {!editingRowId && (
+              <InfoCircle
+                size={16}
+                color="#F59E0B"
+                className="ml-1 cursor-help"
+              />
+            )}
+          </LightTooltip>
+        </div>
+        <div className="px-3 col-span-1">Mobile Number</div>
+        <div className="px-3 col-span-1">Email ID</div>
+        <div className="px-3 col-span-1">Company</div>
+        <div className="px-3 col-span-1">Designation</div>
+        <div className="px-3 col-span-1">Gender</div>
+        <div className="px-3 col-span-1"></div>
+      </div>
+      <hr className="w-full bg-[#F4F4F4] h-[1px] my-3" />
+    </div>
+
+    {/* Scrollable body */}
+    <div className="overflow-y-auto max-h-[38vh]">
+      {data.map((item) => (
+        <ResumeTableRow
+          key={item.id}
+          item={item}
+          data={data}
+          setData={setData}
+          editingRowId={editingRowId}
+          setEditingRowId={setEditingRowId}
+          selectedSource={selectedSource}
+          selectedRole={selectedRole}
+          selectedSpecialization={selectedSpecialization}
+        />
+      ))}
+    </div>
   </div>
 );
 
@@ -378,16 +380,12 @@ const ResumeTableRow = ({
     Object.keys(validationMessages).length > 0;
 
   return (
-    <>
-      <tr>
-        <td colSpan="7">
-          <hr className="w-full bg-[#F4F4F4] h-[1px] my-3" />
-        </td>
-      </tr>
-      <tr className="flex items-center gap-x-2 text-left">
+    <div className="mb-3">
+      {/* Main row with grid layout */}
+      <div className="grid grid-cols-8 text-2xs text-left items-center text-[#313A4E]">
         {editingRowId === item.id ? (
           <>
-            <td className="px-3 w-[14.33%]">
+            <div className="px-3 col-span-1">
               <Controller
                 name="name"
                 control={control}
@@ -396,7 +394,7 @@ const ResumeTableRow = ({
                     {...field}
                     type="text"
                     placeholder="Name"
-                    className="w-[95%]"
+                    className="w-full"
                     onChange={(e) => {
                       field.onChange(e);
                       handleChange(e, "name");
@@ -404,9 +402,9 @@ const ResumeTableRow = ({
                   />
                 )}
               />
-            </td>
-            <td className="px-3 w-[12%]">
-              <div className="flex items-center justify-between">
+            </div>
+            <div className="px-3 col-span-1">
+              <div className="flex items-center space-x-1">
                 <Controller
                   name="years_of_experience.year"
                   control={control}
@@ -414,8 +412,8 @@ const ResumeTableRow = ({
                     <Input
                       {...field}
                       type="number"
-                      placeholder="Years"
-                      className="w-[45%]"
+                      placeholder="Yrs"
+                      className="w-1/2"
                       onChange={(e) => {
                         field.onChange(e);
                         handleChange(
@@ -433,8 +431,8 @@ const ResumeTableRow = ({
                     <Input
                       {...field}
                       type="number"
-                      placeholder="Months"
-                      className="w-[45%]"
+                      placeholder="Mos"
+                      className="w-1/2"
                       max={11}
                       onChange={(e) => {
                         field.onChange(e);
@@ -447,8 +445,8 @@ const ResumeTableRow = ({
                   )}
                 />
               </div>
-            </td>
-            <td className="px-3 w-[13%]">
+            </div>
+            <div className="px-3 col-span-1">
               <Controller
                 name="phone_number"
                 control={control}
@@ -457,7 +455,7 @@ const ResumeTableRow = ({
                     {...field}
                     type="number"
                     placeholder="Mobile Number"
-                    className="w-[95%]"
+                    className="w-full"
                     maxLength={10}
                     onChange={(e) => {
                       field.onChange(e);
@@ -466,8 +464,8 @@ const ResumeTableRow = ({
                   />
                 )}
               />
-            </td>
-            <td className="px-3 w-1/6">
+            </div>
+            <div className="px-3 col-span-1">
               <Controller
                 name="email"
                 control={control}
@@ -476,6 +474,7 @@ const ResumeTableRow = ({
                     {...field}
                     type="email"
                     placeholder="Email ID"
+                    className="w-full"
                     onChange={(e) => {
                       field.onChange(e);
                       handleChange(e, "email");
@@ -483,8 +482,8 @@ const ResumeTableRow = ({
                   />
                 )}
               />
-            </td>
-            <td className="px-3 w-1/5">
+            </div>
+            <div className="px-3 col-span-1">
               <Controller
                 name="current_company"
                 control={control}
@@ -493,6 +492,7 @@ const ResumeTableRow = ({
                     {...field}
                     type="text"
                     placeholder="Company"
+                    className="w-full"
                     onChange={(e) => {
                       field.onChange(e);
                       handleChange(e, "current_company");
@@ -500,8 +500,8 @@ const ResumeTableRow = ({
                   />
                 )}
               />
-            </td>
-            <td className="px-3 w-1/6">
+            </div>
+            <div className="px-3 col-span-1">
               <Controller
                 name="current_designation"
                 control={control}
@@ -510,7 +510,7 @@ const ResumeTableRow = ({
                     {...field}
                     type="text"
                     placeholder="Designation"
-                    className="max-w-[100%]"
+                    className="w-full"
                     onChange={(e) => {
                       field.onChange(e);
                       handleChange(
@@ -521,8 +521,8 @@ const ResumeTableRow = ({
                   />
                 )}
               />
-            </td>
-            <td className="px-3 w-[11%]">
+            </div>
+            <div className="px-3 col-span-1">
               <Controller
                 name="gender"
                 control={control}
@@ -544,10 +544,10 @@ const ResumeTableRow = ({
                   </select>
                 )}
               />
-            </td>
-            <td className="px-3 flex items-center gap-2 w-[13%]">
+            </div>
+            <div className="pl-3 flex items-center gap-2 col-span-1">
               <CloseCircle
-                size="20"
+                size="18"
                 color="#555555"
                 variant="Outline"
                 className="cursor-pointer"
@@ -587,38 +587,53 @@ const ResumeTableRow = ({
               >
                 Save
               </button>
-            </td>
+            </div>
           </>
         ) : (
           <>
-            <td className="px-3 w-[14.33%]">
+            <div
+              className="px-3 col-span-1 truncate"
+              title={tableDataValues("name")}
+            >
               {tableDataValues("name")}
-            </td>
-            <td className="px-3 w-[12%]">
+            </div>
+            <div className="px-3 col-span-1">
               {formatExperience(item.years_of_experience)}
-            </td>
-            <td className="px-3 w-[13%]">
+            </div>
+            <div
+              className="px-3 col-span-1 truncate"
+              title={tableDataValues("phone_number")}
+            >
               {tableDataValues("phone_number")}
-            </td>
-            <td className="px-3 w-1/6">
+            </div>
+            <div
+              className="px-3 col-span-1 truncate"
+              title={tableDataValues("email")}
+            >
               {tableDataValues("email")}
-            </td>
-            <td className="px-3 w-1/5">
+            </div>
+            <div
+              className="px-3 col-span-1 truncate"
+              title={tableDataValues("current_company")}
+            >
               {tableDataValues("current_company")}
-            </td>
-            <td className="px-3 w-1/6">
+            </div>
+            <div
+              className="px-3 col-span-1 truncate"
+              title={tableDataValues("current_designation")}
+            >
               {tableDataValues("current_designation")}
-            </td>
-            <td className="px-3 w-[11%]">
+            </div>
+            <div className="px-3 col-span-1">
               {item.gender
                 ? GENDERS.find(
                     (gender) => gender.id === item.gender
                   )?.name
                 : "Not specified"}
-            </td>
-            <td className="px-3 flex items-center gap-2 w-[13%]">
+            </div>
+            <div className="pl-3 flex items-center gap-2 col-span-1">
               <Edit
-                size={20}
+                size={18}
                 color="#595BD4"
                 variant="Outline"
                 className="cursor-pointer min-w-4 min-h-4"
@@ -638,25 +653,27 @@ const ResumeTableRow = ({
               >
                 Submit
               </button>
-            </td>
+            </div>
           </>
         )}
-      </tr>
-      <tr>
-        <td colSpan="7">
+      </div>
+
+      {/* Validation messages */}
+      {Object.keys(validationMessages).length > 0 && (
+        <div className="px-3 mt-1">
           {Object.keys(validationMessages).map(
             (key, idx) => (
               <p
                 key={idx}
-                className="text-[#F00000] text-[10px] px-2 mt-[2px]"
+                className="text-[#F00000] text-[10px] mt-[2px]"
               >
                 {validationMessages[key]}
               </p>
             )
           )}
-        </td>
-      </tr>
-    </>
+        </div>
+      )}
+    </div>
   );
 };
 
