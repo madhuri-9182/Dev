@@ -145,6 +145,15 @@ function ClientAddCandidate() {
           { duration: 5000 }
         );
       }
+      toast(
+        <span>
+          Please review the experience values as they may
+          require verification or correction.
+        </span>,
+        {
+          icon: "⚠️",
+        }
+      );
     },
     onError: (error) => {
       stopProgress();
@@ -199,6 +208,7 @@ function ClientAddCandidate() {
 
       const newFilesMap = createFilesMap(filesArray);
       setFilesMap(newFilesMap);
+      setResumeTableData([]);
 
       parseResumeMutation(formdata);
     },

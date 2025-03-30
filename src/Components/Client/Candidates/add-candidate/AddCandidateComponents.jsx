@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import {
   CloseCircle,
   Edit,
+  InfoCircle,
   LogoutCurve,
 } from "iconsax-react";
-import { FaCheck } from "react-icons/fa6";
 import {
   fileToBase64,
   formatExperience,
@@ -18,6 +18,36 @@ import {
 } from "../../../Constants/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
+import { Tooltip, tooltipClasses } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip
+    {...props}
+    classes={{ popper: className }}
+    slotProps={{
+      popper: {
+        modifiers: [
+          {
+            name: "offset",
+            options: {
+              offset: [0, -10],
+            },
+          },
+        ],
+      },
+    }}
+  />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: "#F59E0B",
+    boxShadow: theme.shadows[1],
+    fontSize: 11,
+    maxWidth: 200,
+    textAlign: "center",
+  },
+}));
 
 export const ResumeTable = ({
   data,
@@ -33,7 +63,25 @@ export const ResumeTable = ({
       <thead className="text-[#6B6F7B] font-bold mt-3">
         <tr className="flex items-center gap-2 text-left">
           <th className="px-3 w-[14.33%]">Name</th>
-          <th className="px-3 w-[12%]">Experience</th>
+          <th
+            className={`px-3 w-[12%] flex items-center ${
+              !editingRowId ? "text-[#F59E0B]" : ""
+            }`}
+          >
+            Experience
+            <LightTooltip
+              title={"Please review the experience values"}
+              placement="top"
+            >
+              {!editingRowId && (
+                <InfoCircle
+                  size={16}
+                  color="#F59E0B"
+                  className="ml-1 cursor-help"
+                />
+              )}
+            </LightTooltip>
+          </th>
           <th className="px-3 w-[13%]">Mobile Number</th>
           <th className="px-3 w-1/6">Email ID</th>
           <th className="px-3 w-1/5">Company</th>
@@ -528,14 +576,14 @@ const ResumeTableRow = ({
               <button
                 onClick={saveEdit}
                 disabled={hasErrors}
-                className={`px-3 py-1 rounded-full text-xs font-medium text-white 
+                className={`px-3 py-1 rounded-full text-xs font-medium text-white  
                   ${
                     !hasErrors
-                      ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
-                      : "bg-gray-400"
+                      ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
+                      : "bg-[#CAC4D0] cursor-not-allowed"
                   }
                   transition-all duration-300 ease-in-out
-                  cursor-pointer flex items-center w-[90px] justify-center`}
+                   flex items-center`}
               >
                 Save
               </button>
@@ -580,15 +628,15 @@ const ResumeTableRow = ({
                 className={`px-3 py-1 rounded-full text-xs font-medium text-white  
                       ${
                         !hasErrors
-                          ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
-                          : "bg-gray-400"
+                          ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
+                          : "bg-[#CAC4D0] cursor-not-allowed"
                       }
                       transition-all duration-300 ease-in-out
-                      cursor-pointer flex items-center`}
+                       flex items-center`}
                 onClick={handleFormSubmit}
                 disabled={hasErrors}
               >
-                <FaCheck className="mr-2" /> Submit
+                Submit
               </button>
             </td>
           </>
