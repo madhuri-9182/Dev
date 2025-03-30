@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
@@ -13,8 +14,10 @@ import {
 import {
   EMAIL_REGEX,
   GENDERS,
+  MOBILE_REGEX,
 } from "../../../Constants/constants";
 import { useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
 
 export const ResumeTable = ({
   data,
@@ -80,181 +83,232 @@ const ResumeTableRow = ({
   selectedSpecialization,
 }) => {
   const navigate = useNavigate();
-  const [editedData, setEditedData] = useState({
-    ...item,
-    phone_number: item.phone_number.startsWith("+91")
-      ? item.phone_number.slice(3)
-      : item.phone_number,
-    gender: item.gender ? item.gender : "",
-  });
-  const [errors, setErrors] = useState({});
 
-  // Reset editedData whenever item changes - THIS IS THE KEY FIX
-  useEffect(() => {
-    setEditedData({
-      ...item,
+  // Initialize React Hook Form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    getValues,
+    setError,
+    clearErrors,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      name: item.name,
+      years_of_experience: {
+        year: item.years_of_experience.year,
+        month: item.years_of_experience.month,
+      },
       phone_number: item.phone_number.startsWith("+91")
         ? item.phone_number.slice(3)
         : item.phone_number,
-      gender: item.gender ? item.gender : "",
-    });
-    validateFields();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item.id]); // Add item.id as dependency to reset state when item changes
+      email: item.email,
+      current_company: item.current_company,
+      current_designation: item.current_designation,
+      gender: item.gender || "",
+    },
+  });
 
-  const handleChange = (e, field, subField = null) => {
-    const value = e.target.value;
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: "",
-    }));
-    setEditedData((prev) => {
-      if (subField) {
-        return {
-          ...prev,
-          [field]: {
-            ...prev[field],
-            [subField]: value,
-          },
-        };
-      }
-      return { ...prev, [field]: value };
+  // Use state to store validation messages to prevent jitter
+  const [validationMessages, setValidationMessages] =
+    useState({});
+
+  // Reset form when item changes
+  useEffect(() => {
+    reset({
+      name: item.name,
+      years_of_experience: {
+        year: item.years_of_experience.year,
+        month: item.years_of_experience.month,
+      },
+      phone_number: item.phone_number.startsWith("+91")
+        ? item.phone_number.slice(3)
+        : item.phone_number,
+      email: item.email,
+      current_company: item.current_company,
+      current_designation: item.current_designation,
+      gender: item.gender || "",
     });
-    // Validate the field immediately after changing it
+    // Validate after reset
+    setTimeout(() => validateFields(true), 0);
+  }, [item.id, reset]);
+
+  // Custom validation function similar to the original code
+  const validateFields = (forceUpdate = false) => {
+    const values = getValues();
+    const newValidationMessages = {};
+
+    if (!values.name) {
+      newValidationMessages.name =
+        "Name is required. Please fill manually to submit";
+    }
+
+    if (!values.email) {
+      newValidationMessages.email =
+        "Email is required. Please fill manually to submit";
+    } else if (!EMAIL_REGEX.test(values.email)) {
+      newValidationMessages.email =
+        "Invalid email address.";
+    }
+
+    if (!values.phone_number) {
+      newValidationMessages.phone_number =
+        "Mobile number is required. Please fill manually to submit";
+    } else if (!MOBILE_REGEX.test(values.phone_number)) {
+      newValidationMessages.phone_number =
+        "Invalid mobile number.";
+    }
+
+    if (!values.current_company) {
+      newValidationMessages.current_company =
+        "Company is required. Please fill manually to submit";
+    }
+
+    if (!values.current_designation) {
+      newValidationMessages.current_designation =
+        "Designation is required. Please fill manually to submit";
+    }
+
+    if (!values.gender) {
+      newValidationMessages.gender =
+        "Gender is required. Please fill manually to submit";
+    }
+
+    if (
+      values.years_of_experience.year == 0 &&
+      values.years_of_experience.month == 0
+    ) {
+      newValidationMessages.years_of_experience =
+        "Experience is required. Please fill manually to submit";
+    }
+
+    // Only update validation messages if they've changed or force update is true
+    // This prevents jitter by avoiding unnecessary re-renders
+    if (
+      forceUpdate ||
+      JSON.stringify(newValidationMessages) !==
+        JSON.stringify(validationMessages)
+    ) {
+      setValidationMessages(newValidationMessages);
+
+      // Set errors for react-hook-form (for form validation)
+      Object.keys(newValidationMessages).forEach((key) => {
+        setError(key, {
+          message: newValidationMessages[key],
+        });
+      });
+
+      // Clear errors that are no longer present
+      Object.keys(errors).forEach((key) => {
+        if (!newValidationMessages[key]) {
+          clearErrors(key);
+        }
+      });
+    }
+
+    // Return true if there are no errors
+    return Object.keys(newValidationMessages).length === 0;
+  };
+
+  // Handler for field changes
+  const handleChange = (e, field) => {
+    // Clear the error for this field
+    clearErrors(field);
+
+    // Validate after change
     setTimeout(() => validateFields(), 0);
   };
 
-  const validateFields = () => {
-    const newErrors = {};
-    if (!editedData.name || editedData.name === "Not Found")
-      newErrors.name =
-        "Name not parsed. Please fill manually to submit";
-    if (
-      !editedData.email ||
-      editedData.email === "NotFound"
-    )
-      newErrors.email =
-        "Email not parsed. Please fill manually to submit";
-    if (
-      editedData.email &&
-      editedData.email !== "NotFound" &&
-      !EMAIL_REGEX.test(editedData.email)
-    )
-      newErrors.email = "Invalid email address.";
-    if (
-      !editedData.phone_number ||
-      editedData.phone_number === "Not Found"
-    )
-      newErrors.phone_number =
-        "Mobile number not parsed. Please fill manually to submit";
-    if (
-      !editedData.current_company ||
-      editedData.current_company === "Not Found"
-    )
-      newErrors.current_company =
-        "Company not parsed. Please fill manually to submit";
-    if (
-      !editedData.current_designation ||
-      editedData.current_designation === "Not Found"
-    )
-      newErrors.current_designation =
-        "Designation not parsed. Please fill manually to submit";
-    if (!editedData.gender)
-      newErrors.gender =
-        "Gender is required. Please fill manually to submit";
-
-    if (
-      editedData.years_of_experience.year === 0 &&
-      editedData.years_of_experience.month === 0
-    ) {
-      newErrors.years_of_experience =
-        "Experience not parsed. Please fill manually to submit";
-    }
-
-    setErrors(newErrors);
-
-    // Return true if there are no errors
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const saveEdit = () => {
+  const saveEdit = handleSubmit((formData) => {
     if (!validateFields()) return;
+
     const updatedData = data.map((row) =>
       row.id === item.id
         ? {
-            ...editedData,
-            phone_number: `+91${editedData.phone_number}`,
+            ...row,
+            name: formData.name,
+            years_of_experience:
+              formData.years_of_experience,
+            phone_number: `+91${formData.phone_number}`,
+            email: formData.email,
+            current_company: formData.current_company,
+            current_designation:
+              formData.current_designation,
+            gender: formData.gender,
           }
         : row
     );
     setData(updatedData);
     setEditingRowId(null);
-  };
+  });
 
-  const handleSubmit = async () => {
-    if (!validateFields()) return;
-    const selectedIData = data.find(
-      (row) => row.id === item.id
-    );
-    let fileBase64 = null;
-    if (selectedIData.file) {
-      fileBase64 = await fileToBase64(selectedIData.file);
-    }
-    const encodedData = {
-      ...selectedIData,
-      source: selectedSource,
-      role: selectedRole,
-      specialization: selectedSpecialization,
-      fileBase64,
-    };
-    delete encodedData.id;
-    delete encodedData.file;
+  const handleFormSubmit = handleSubmit(
+    async (formData) => {
+      if (!validateFields()) return;
 
-    const uniqueKey = `candidateData-${selectedIData.id}`;
-
-    // Clear only candidateData entries before setting new one
-    Object.keys(localStorage).forEach((key) => {
-      if (key.includes("candidateData-")) {
-        localStorage.removeItem(key);
+      const selectedIData = data.find(
+        (row) => row.id === item.id
+      );
+      let fileBase64 = null;
+      if (selectedIData.file) {
+        fileBase64 = await fileToBase64(selectedIData.file);
       }
-    });
 
-    // Store the encoded data in localStorage
-    localStorage.setItem(
-      uniqueKey,
-      JSON.stringify(encodedData)
-    );
-    const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
+      const encodedData = {
+        ...selectedIData,
+        name: formData.name,
+        years_of_experience: formData.years_of_experience,
+        phone_number: `+91${formData.phone_number}`,
+        email: formData.email,
+        current_company: formData.current_company,
+        current_designation: formData.current_designation,
+        gender: formData.gender,
+        source: selectedSource,
+        role: selectedRole,
+        specialization: selectedSpecialization,
+        fileBase64,
+      };
+      delete encodedData.id;
+      delete encodedData.file;
 
-    // if data length is more than 1 then open in new tab, else open in same tab
-    if (data.length > 1) {
-      const newTab = window.open(url, "_blank");
+      const uniqueKey = `candidateData-${selectedIData.id}`;
 
-      // Check if the new tab was successfully opened
-      if (newTab) {
-        // Remove the candidate from the data after a slight delay
-        // to ensure the data is available in the new tab
-        setTimeout(() => {
-          window.removeCandidateFromData(uniqueKey);
-        }, 500);
+      // Clear only candidateData entries before setting new one
+      Object.keys(localStorage).forEach((key) => {
+        if (key.includes("candidateData-")) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      // Store the encoded data in localStorage
+      localStorage.setItem(
+        uniqueKey,
+        JSON.stringify(encodedData)
+      );
+      const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
+
+      // if data length is more than 1 then open in new tab, else open in same tab
+      if (data.length > 1) {
+        const newTab = window.open(url, "_blank");
+
+        // Check if the new tab was successfully opened
+        if (newTab) {
+          // Remove the candidate from the data after a slight delay
+          // to ensure the data is available in the new tab
+          setTimeout(() => {
+            window.removeCandidateFromData(uniqueKey);
+          }, 500);
+        }
+      } else {
+        navigate(url);
       }
-    } else {
-      navigate(url);
     }
-  };
-
-  const inputValue = (key) => {
-    return editedData[key] === "Not Found" ||
-      editedData[key] === "NotFound"
-      ? ""
-      : editedData[key];
-  };
+  );
 
   const tableDataValues = (key) => {
-    return item[key] === "Not Found" ||
-      item[key] === "NotFound"
-      ? "-"
-      : item[key];
+    return item[key] || "-";
   };
 
   window.removeCandidateFromData = (key) => {
@@ -271,6 +325,10 @@ const ResumeTableRow = ({
     setData(updatedData);
   };
 
+  // Check if there are any errors to disable buttons
+  const hasErrors =
+    Object.keys(validationMessages).length > 0;
+
   return (
     <>
       <tr>
@@ -282,101 +340,162 @@ const ResumeTableRow = ({
         {editingRowId === item.id ? (
           <>
             <td className="px-3 w-[14.33%]">
-              <Input
-                type="text"
-                value={inputValue("name")}
-                onChange={(e) => handleChange(e, "name")}
-                placeholder="Name"
-                className="w-[95%]"
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Name"
+                    className="w-[95%]"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(e, "name");
+                    }}
+                  />
+                )}
               />
             </td>
             <td className="px-3 w-[12%]">
               <div className="flex items-center justify-between">
-                <Input
-                  type="number"
-                  value={
-                    editedData.years_of_experience.year
-                  }
-                  onChange={(e) =>
-                    handleChange(
-                      e,
-                      "years_of_experience",
-                      "year"
-                    )
-                  }
-                  placeholder="Years"
-                  className="w-[45%]"
+                <Controller
+                  name="years_of_experience.year"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="number"
+                      placeholder="Years"
+                      className="w-[45%]"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleChange(
+                          e,
+                          "years_of_experience"
+                        );
+                      }}
+                    />
+                  )}
                 />
-                <Input
-                  type="number"
-                  value={
-                    editedData.years_of_experience.month
-                  }
-                  onChange={(e) =>
-                    handleChange(
-                      e,
-                      "years_of_experience",
-                      "month"
-                    )
-                  }
-                  placeholder="Months"
-                  className="w-[45%]"
+                <Controller
+                  name="years_of_experience.month"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="number"
+                      placeholder="Months"
+                      className="w-[45%]"
+                      max={11}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleChange(
+                          e,
+                          "years_of_experience"
+                        );
+                      }}
+                    />
+                  )}
                 />
               </div>
             </td>
             <td className="px-3 w-[13%]">
-              <Input
-                type="number"
-                value={editedData.phone_number}
-                onChange={(e) =>
-                  handleChange(e, "phone_number")
-                }
-                placeholder="Mobile Number"
-                className="w-[95%]"
+              <Controller
+                name="phone_number"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Mobile Number"
+                    className="w-[95%]"
+                    maxLength={10}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(e, "phone_number");
+                    }}
+                  />
+                )}
               />
             </td>
             <td className="px-3 w-1/6">
-              <Input
-                type="email"
-                value={inputValue("email")}
-                onChange={(e) => handleChange(e, "email")}
-                placeholder="Email ID"
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="Email ID"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(e, "email");
+                    }}
+                  />
+                )}
               />
             </td>
             <td className="px-3 w-1/5">
-              <Input
-                type="text"
-                value={inputValue("current_company")}
-                onChange={(e) =>
-                  handleChange(e, "current_company")
-                }
-                placeholder="Company"
+              <Controller
+                name="current_company"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Company"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(e, "current_company");
+                    }}
+                  />
+                )}
+              />
+            </td>
+            <td className="px-3 w-1/6">
+              <Controller
+                name="current_designation"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Designation"
+                    className="max-w-[100%]"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(
+                        e,
+                        "current_designation"
+                      );
+                    }}
+                  />
+                )}
               />
             </td>
             <td className="px-3 w-[11%]">
-              <Input
-                type="text"
-                value={inputValue("current_designation")}
-                onChange={(e) =>
-                  handleChange(e, "current_designation")
-                }
-                placeholder="Designation"
-                className="max-w-[100%]"
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(e, "gender");
+                    }}
+                  >
+                    <option value="">Select</option>
+                    {GENDERS.map((gender, idx) => (
+                      <option key={idx} value={gender.id}>
+                        {gender.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               />
-            </td>
-            <td className="px-3 w-[11%]">
-              <select
-                value={editedData.gender}
-                onChange={(e) => handleChange(e, "gender")}
-                className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
-              >
-                <option value="">Select</option>
-                {GENDERS.map((gender, idx) => (
-                  <option key={idx} value={gender.id}>
-                    {gender.name}
-                  </option>
-                ))}
-              </select>
             </td>
             <td className="px-3 flex items-center gap-2 w-[13%]">
               <CloseCircle
@@ -385,23 +504,38 @@ const ResumeTableRow = ({
                 variant="Outline"
                 className="cursor-pointer"
                 onClick={() => {
-                  setEditingRowId(null);
-                  setEditedData({
-                    ...item,
+                  reset({
+                    name: item.name,
+                    years_of_experience: {
+                      year: item.years_of_experience.year,
+                      month: item.years_of_experience.month,
+                    },
                     phone_number:
                       item.phone_number.startsWith("+91")
                         ? item.phone_number.slice(3)
                         : item.phone_number,
-                    gender: item.gender ? item.gender : "",
+                    email: item.email,
+                    current_company: item.current_company,
+                    current_designation:
+                      item.current_designation,
+                    gender: item.gender || "",
                   });
-                  validateFields();
+                  setEditingRowId(null);
+                  // Force update validation after canceling edit
+                  setTimeout(() => validateFields(true), 0);
                 }}
               />
               <button
                 onClick={saveEdit}
-                className="px-3 py-1 rounded-full text-xs font-medium text-white 
-                  bg-[#007AFF] transition-all duration-300 ease-in-out
-                  hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer flex items-center w-[90px] justify-center"
+                disabled={hasErrors}
+                className={`px-3 py-1 rounded-full text-xs font-medium text-white 
+                  ${
+                    !hasErrors
+                      ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
+                      : "bg-gray-400"
+                  }
+                  transition-all duration-300 ease-in-out
+                  cursor-pointer flex items-center w-[90px] justify-center`}
               >
                 Save
               </button>
@@ -443,10 +577,16 @@ const ResumeTableRow = ({
                 onClick={() => setEditingRowId(item.id)}
               />
               <button
-                className="px-3 py-1 rounded-full text-xs font-medium text-white  
-                       bg-[#007AFF] transition-all duration-300 ease-in-out
-                       hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer flex items-center"
-                onClick={handleSubmit}
+                className={`px-3 py-1 rounded-full text-xs font-medium text-white  
+                      ${
+                        !hasErrors
+                          ? "bg-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]"
+                          : "bg-gray-400"
+                      }
+                      transition-all duration-300 ease-in-out
+                      cursor-pointer flex items-center`}
+                onClick={handleFormSubmit}
+                disabled={hasErrors}
               >
                 <FaCheck className="mr-2" /> Submit
               </button>
@@ -456,14 +596,16 @@ const ResumeTableRow = ({
       </tr>
       <tr>
         <td colSpan="7">
-          {Object.keys(errors).map((key, idx) => (
-            <p
-              key={idx}
-              className="text-[#F00000] text-[10px] px-2 mt-[2px]"
-            >
-              {errors[key]}
-            </p>
-          ))}
+          {Object.keys(validationMessages).map(
+            (key, idx) => (
+              <p
+                key={idx}
+                className="text-[#F00000] text-[10px] px-2 mt-[2px]"
+              >
+                {validationMessages[key]}
+              </p>
+            )
+          )}
         </td>
       </tr>
     </>
@@ -487,22 +629,20 @@ const Input = ({
   placeholder,
   type,
   className,
+  max,
+  maxLength,
+  onBlur,
+  name,
 }) => {
   return (
     <input
+      name={name}
       type={type}
-      max={
-        type === "number" && placeholder === "Months"
-          ? 11
-          : undefined
-      }
-      maxLength={
-        type === "number" && placeholder === "Mobile Number"
-          ? 10
-          : undefined
-      }
+      max={max}
+      maxLength={maxLength}
       value={value}
       onChange={onChange}
+      onBlur={onBlur}
       placeholder={placeholder}
       className={`border rounded px-1 py-1 ${className}`}
     />
@@ -515,9 +655,13 @@ Input.propTypes = {
     PropTypes.number,
   ]),
   onChange: PropTypes.func,
+  onBlur: PropTypes.func,
   placeholder: PropTypes.string,
   type: PropTypes.string,
   className: PropTypes.string,
+  max: PropTypes.number,
+  maxLength: PropTypes.number,
+  name: PropTypes.string,
 };
 
 // Upload button component
