@@ -46,8 +46,9 @@ const DeleteUserModal = ({ isOpen, onClose, id }) => {
           <div className="flex justify-center gap-2 mb-2">
             <button
               onClick={handleDelete}
+              disabled={deleteUserMutation.isPending}
               className="px-6 py-[5px] rounded-[100px] text-white bg-[#E84D4D] transition-all duration-300 ease-in-out 
-  hover:bg-gradient-to-r hover:from-[#E84D4D] hover:to-[#C0392B]  text-xs font-semibold  cursor-pointer"
+  hover:bg-gradient-to-r hover:from-[#E84D4D] hover:to-[#C0392B]  text-xs font-semibold  cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Delete
             </button>
