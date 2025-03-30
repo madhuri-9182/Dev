@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import VideoPlayer from "../Client/Candidates/view-candidate-feedback/candidate-feedback/components/VideoPlayer";
 
-const InterviewFeedbackPDF = ({ data }) => {
+const InterviewFeedbackPDF = ({ data, recording_link }) => {
   const {
     interview_date,
     candidate,
@@ -10,7 +11,7 @@ const InterviewFeedbackPDF = ({ data }) => {
     strength,
     improvement_points,
     overall_remark,
-    overall_score
+    overall_score,
   } = data;
 
   // Parse interview date and time
@@ -233,52 +234,49 @@ const InterviewFeedbackPDF = ({ data }) => {
 
         {/* Question and answers skill wise */}
         {skillsPerformance.map((skillAssessment, skillIndex) => (
-          <div
-            key={skillIndex}
-            className="rounded-xl pr-[14px] pl-[8px] mb-[10px] flex"
+            <div
+              key={skillIndex}
+              className="rounded-xl pr-[14px] pl-[8px] mb-[10px] flex"
             style={{ background: "linear-gradient(90deg, rgba(174, 212, 235, 0.63) 0%, rgba(202, 206, 208, 0.63) 100%)" }}
-          >
-            <div className="w-[100%] py-[18px] pr-[10px] border border-r-[#000000] border-l-0 border-y-0">
-              <div className="bg-white p-[10px] pt-[7px] rounded-lg border border-black">
-                <div className="flex justify-between items-center">
-                  <p className="text-[12px] border border-[#000000] rounded pl-[8px] pr-[16px]">
-                    {skillAssessment.skillName}
-                  </p>
+            >
+              <div className="w-[100%] py-[18px] pr-[10px] border border-r-[#000000] border-l-0 border-y-0">
+                <div className="bg-white p-[10px] pt-[7px] rounded-lg border border-black">
+                  <div className="flex justify-between items-center">
+                    <p className="text-[12px] border border-[#000000] rounded pl-[8px] pr-[16px]">
+                      {skillAssessment.skillName}
+                    </p>
                   {renderScoreBar(skillAssessment.score, 150, 12, "#976464CF")}
-                </div>
-                <div
-                  className="rounded-md px-[10px] pt-[8px] pb-[38px] mt-[5px]"
+                  </div>
+                  <div
+                    className="rounded-md px-[10px] pt-[8px] pb-[38px] mt-[5px]"
                   style={{ background: "linear-gradient(90deg, rgba(174, 212, 235, 0.63) 0%, rgba(202, 206, 208, 0.63) 100%)" }}
-                >
+                  >
                   {skillAssessment.questions.map((qa, qaIndex) => (
                     <div key={qaIndex} className="mb-[16px]">
-                      <div className="flex items-center gap-2 mb-[5px]">
+                          <div className="flex items-center gap-2 mb-[5px]">
                         <p className="text-[15px]">{qaIndex + 1}.</p>
-                        <div className="bg-white w-full min-h-[35px] rounded-md text-[12px] pl-[10px] flex items-center">
-                          {qa.que}
+                            <div className="bg-white w-full min-h-[35px] rounded-md text-[12px] pl-[10px] flex items-center">
+                              {qa.que}
+                            </div>
+                          </div>
+                          <div className="bg-white max-w-full min-h-[35px] rounded-md text-[12px] pl-[10px] flex items-center ml-[20px]">
+                            {qa.ans}
+                          </div>
                         </div>
-                      </div>
-                      <div className="bg-white max-w-full min-h-[35px] rounded-md text-[12px] pl-[10px] flex items-center ml-[20px]">
-                        {qa.ans}
-                      </div>
-                    </div>
                   ))}
                   <div className="mb-[5px] ml-[20px] text-[12px]">Summary :</div>
-                  <div className="bg-white max-w-full min-h-[100px] rounded-md text-[12px] pl-[10px] pt-[8px] ml-[20px]">
-                    {skillAssessment.summary}
+                    <div className="bg-white max-w-full min-h-[100px] rounded-md text-[12px] pl-[10px] pt-[8px] ml-[20px]">
+                      {skillAssessment.summary}
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="py-[18px] pl-[10px] w-80 h-40">
+                <VideoPlayer file={recording_link} />
+              </div>
             </div>
-            <div className="py-[18px] pl-[10px]">
-              <svg width="100%" viewBox="0 0 692 451" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="692" height="451" fill="#130303" />
-                <line x1="34" y1="387" x2="669" y2="387" stroke="white" strokeWidth="10" />
-                <path d="M385 187L326.5 220.775V153.225L385 187Z" fill="#D9D9D9" />
-              </svg>
-            </div>
-          </div>
-        ))}
+          )
+        )}
 
         {/* Overall remark */}
         {/* <div
@@ -298,7 +296,8 @@ const InterviewFeedbackPDF = ({ data }) => {
 InterviewFeedbackPDF.displayName = 'InterviewFeedbackPDF';
 
 InterviewFeedbackPDF.propTypes = {
-  data: PropTypes.object.isRequired
-}
+  data: PropTypes.object.isRequired,
+  recording_link: PropTypes.string.isRequired,
+};
 
 export default InterviewFeedbackPDF;

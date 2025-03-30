@@ -19,6 +19,7 @@ export const useCandidateData = () => {
       formItems: [],
       skillsCount: 0,
       skillsData: {},
+      recording_link: "",
     };
   }
 
@@ -72,5 +73,6 @@ export const useCandidateData = () => {
       Object.keys(data?.skill_based_performance || {})
         .length || 0,
     skillsData: data?.skill_based_performance || {},
+    recording_link: data?.recording_link,
   };
 };
