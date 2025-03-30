@@ -123,34 +123,34 @@ const Finance = () => {
   };
 
   // Function to download past payments PDF based on date range
-  const handleDownloadPastPaymentsPDF = async () => {
-    try {
-      setIsGeneratingPdf(true);
+  // const handleDownloadPastPaymentsPDF = async () => {
+  //   try {
+  //     setIsGeneratingPdf(true);
       
-      // Here you would typically fetch past payments data based on date range
-      // For now, we'll create a simple PDF showing the date range
+  //     // Here you would typically fetch past payments data based on date range
+  //     // For now, we'll create a simple PDF showing the date range
       
-      const doc = new jsPDF();
+  //     const doc = new jsPDF();
       
-      // Add title
-      doc.setFontSize(18);
-      doc.text('Past Payments Report', 14, 20);
+  //     // Add title
+  //     doc.setFontSize(18);
+  //     doc.text('Past Payments Report', 14, 20);
       
-      // Add date range
-      doc.setFontSize(12);
-      doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, 30);
+  //     // Add date range
+  //     doc.setFontSize(12);
+  //     doc.text(`Date Range: ${fromDate} to ${toDate}`, 14, 30);
       
-      // You would typically add a table with past payment data here
-      doc.text('No past payment data available for the selected date range.', 14, 40);
+  //     // You would typically add a table with past payment data here
+  //     doc.text('No past payment data available for the selected date range.', 14, 40);
       
-      // Save the PDF
-      doc.save('past_payments_report.pdf');
-      setIsGeneratingPdf(false);
-    } catch (error) {
-      console.error('Error generating past payments PDF:', error);
-      setIsGeneratingPdf(false);
-    }
-  };
+  //     // Save the PDF
+  //     doc.save('past_payments_report.pdf');
+  //     setIsGeneratingPdf(false);
+  //   } catch (error) {
+  //     console.error('Error generating past payments PDF:', error);
+  //     setIsGeneratingPdf(false);
+  //   }
+  // };
    
    if(auth?.role !== 'client_owner'){
     return (
@@ -247,12 +247,12 @@ const Finance = () => {
       
       {/* Past payments panel */}
       <div className="md:w-1/3 mt-16">
-        <div className="bg-gray-100 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-center text-gray-800 mb-8">Past Payments</h2>
+        <div className="bg-[#E7E4E8CC] min-h-[60vh] rounded-2xl p-6">
+          <h2 className="text-base font-bold text-center text-[#1C1C1C] mb-8">Past Payments</h2>
           
           <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <label className="text-gray-700">From</label>
+              <div className="flex justify-between items-center px-3">
+                <label className="text-[#6B6F7B] text-default">From</label>
                 <input 
                   type="date" 
                   value={formatDateForInput(fromDate)}
@@ -266,12 +266,12 @@ const Finance = () => {
                     });
                     setFromDate(formattedDate);
                   }}
-                  className="border border-gray-300 rounded-md px-3 py-2 w-40"
+                  className="border border-gray-300 rounded-md px-3 py-1 text-default w-40"
                 />
               </div>
               
-              <div className="flex justify-between items-center">
-                <label className="text-gray-700">To</label>
+              <div className="flex justify-between items-center px-3">
+                <label className="text-[#6B6F7B] text-default">To</label>
                 <input 
                   type="date" 
                   value={formatDateForInput(toDate)}
@@ -285,20 +285,25 @@ const Finance = () => {
                     });
                     setToDate(formattedDate);
                   }}
-                  className="border border-gray-300 rounded-md px-3 py-2 w-40"
+                  className="border border-gray-300 rounded-md px-3 py-1 text-default w-40"
                 />
               </div>
             
-            <div className="flex justify-center mt-8">
-              <button 
-                onClick={handleDownloadPastPaymentsPDF}
-                disabled={isGeneratingPdf}
-                className={`bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-full transition duration-300 w-full
-                ${isGeneratingPdf ? 'opacity-70 cursor-not-allowed' : ''}`}>
-                {isGeneratingPdf ? "Generating..." : "Click to Download"}
-              </button>
-            </div>
+            
           </div>
+          <div className="flex justify-center mt-16 w-2/3 mx-auto">
+              <button 
+                // onClick={handleDownloadPastPaymentsPDF}
+                // disabled={isGeneratingPdf}
+                className={`py-2 px-6 rounded-full text-xs font-semibold text-white h-[32px] 
+                  bg-[#007AFF] transition-all duration-300 ease-in-out
+                  hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] 
+                 cursor-pointer`}>
+                {/* {isGeneratingPdf ? "Generating..." : "Click to Download"} */}
+                Click to Download
+              </button>
+              {/*  // ${isGeneratingPdf ? 'opacity-70 cursor-not-allowed' :  */}
+            </div>
         </div>
       </div>
     </div>
