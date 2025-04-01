@@ -174,8 +174,8 @@ export const JOB_TYPES = {
 };
 
 export const CANDIDATE_SOURCE = [
-  { id: "AGN", name: "Agency" },
   { id: "INT", name: "Internal" },
+  { id: "AGN", name: "Agency" },
 ];
 
 export const SPECIALIZATIONS = [
