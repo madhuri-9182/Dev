@@ -7,7 +7,7 @@ const ViewModal = ({ isOpen, onClose, details }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
       <motion.div
-        className={`bg-white rounded-lg shadow-lg w-[420px] p-4 absolute top-[20%] left-[40%] transform -translate-x-1/2 overflow-y-auto max-h-[90vh] `}
+        className={`bg-white rounded-lg shadow-lg w-[420px] p-4 absolute top-[15%] left-[40%] transform -translate-x-1/2 overflow-y-auto max-h-[75vh] `}
         initial={{ opacity: 0, scale: 0.9 }} // Start hidden & small
         animate={{ opacity: 1, scale: 1 }} // Fully visible & normal size
         exit={{ opacity: 0, scale: 0.9 }} // Shrink and fade out

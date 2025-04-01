@@ -31,7 +31,6 @@ const CandidateFeedback = () => {
   useEffect(() => {
     const fetchRecordingLink = async (url) => {
       const file = await createFileFromUrl(url);
-      console.log(file, "file in fetch");
       return file;
     };
     if (recording_link) {
@@ -40,10 +39,6 @@ const CandidateFeedback = () => {
       });
     }
   }, [recording_link]);
-
-  useEffect(() => {
-    console.log("Recording Link: ", recordingLink);
-  }, [recordingLink]);
 
   if (loading) {
     return <LoadingState />;

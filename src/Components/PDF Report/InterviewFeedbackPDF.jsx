@@ -184,12 +184,9 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
               </div>
             ))}
           </div>
-          <a target='_blank' href='https://videos.pexels.com/video-files/4267802/4267802-uhd_2560_1440_30fps.mp4' >
-            <video className='mt-[6px]' >
-              <source src="https://videos.pexels.com/video-files/4267802/4267802-uhd_2560_1440_30fps.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </a>
+          <div className="py-[18px] pl-[10px] w-80 h-40">
+                <VideoPlayer file={recording_link} />
+              </div>
         </div>
 
         {/* Strength and Improvements */}
@@ -236,10 +233,10 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
         {skillsPerformance.map((skillAssessment, skillIndex) => (
             <div
               key={skillIndex}
-              className="rounded-xl pr-[14px] pl-[8px] mb-[10px] flex"
+              className="rounded-xl px-2 mb-[10px] flex"
             style={{ background: "linear-gradient(90deg, rgba(174, 212, 235, 0.63) 0%, rgba(202, 206, 208, 0.63) 100%)" }}
             >
-              <div className="w-[100%] py-[18px] pr-[10px] border border-r-[#000000] border-l-0 border-y-0">
+              <div className="w-[100%] py-[18px] px-2">
                 <div className="bg-white p-[10px] pt-[7px] rounded-lg border border-black">
                   <div className="flex justify-between items-center">
                     <p className="text-[12px] border border-[#000000] rounded pl-[8px] pr-[16px]">
@@ -271,9 +268,7 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
                   </div>
                 </div>
               </div>
-              <div className="py-[18px] pl-[10px] w-80 h-40">
-                <VideoPlayer file={recording_link} />
-              </div>
+              
             </div>
           )
         )}
@@ -297,7 +292,7 @@ InterviewFeedbackPDF.displayName = 'InterviewFeedbackPDF';
 
 InterviewFeedbackPDF.propTypes = {
   data: PropTypes.object.isRequired,
-  recording_link: PropTypes.string.isRequired,
+  recording_link: PropTypes.object.isRequired,
 };
 
 export default InterviewFeedbackPDF;

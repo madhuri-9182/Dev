@@ -110,6 +110,8 @@ CandidateRow.propTypes = {
 const StatusBadge = ({ status, candidateStatus }) => {
   const getStatusClass = (status) => {
     switch (status) {
+      case "HREC":
+        return "bg-[#0cba55]"; 
       case "REC":
         return "bg-[#2ECC71]";
       case "NREC":

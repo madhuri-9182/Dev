@@ -55,5 +55,8 @@ const VideoPlayer = ({ file }) => {
 export default VideoPlayer;
 
 VideoPlayer.propTypes = {
-  file: PropTypes.object,
+  file: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.instanceOf(File),
+  ]),
 };
