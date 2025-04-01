@@ -42,7 +42,7 @@ const CandidateView = () => {
       email: candidate.email,
       current_company: candidate.company,
       source: candidate.source,
-      current_designation: candidate?.designation,
+      current_designation: candidate?.current_designation,
       remark: candidate.remark,
     };
   };
