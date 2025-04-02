@@ -145,7 +145,7 @@
 
 .primary-button:disabled {
   background-color: lightgray;
-  border: none !important
+  border: none !important;
 }
 
 .primary-button:disabled:hover {
@@ -176,4 +176,34 @@
     #ece8f2,
     #dcd6e6
   );
+}
+
+.scroll-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.scroll-container:hover {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+}
+
+.scroll-container:hover::-webkit-scrollbar {
+  width: 6px;
+  display: block;
+}
+
+.scroll-container:hover::-webkit-scrollbar-thumb {
+  background-color: rgb(0, 122, 255);
+  border-radius: 3px;
+}
+
+.scroll-container:hover::-webkit-scrollbar-track {
+  background-color: transparent;
 }

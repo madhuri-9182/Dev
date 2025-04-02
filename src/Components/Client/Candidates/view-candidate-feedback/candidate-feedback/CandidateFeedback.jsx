@@ -87,11 +87,13 @@ const CandidateFeedback = () => {
       <div className="mt-12">
         <div className="w-full flex gap-x-8">
           <div className="w-[50%] min-w-[450px] ml-6">
-            <div className="w-full max-h-[200px] overflow-y-auto">
-              <p className="text-md text-[#6B6F7B] font-semibold mb-8">
-                Skills & Values ({skillsCount})
-              </p>
-              <SkillList skills={skillsData} />
+            <div className="w-full max-h-[200px] overflow-y-auto scroll-hidden scroll-container">
+              <div className="w-[97%]">
+                <p className="text-md text-[#6B6F7B] font-semibold mb-8">
+                  Skills & Values ({skillsCount})
+                </p>
+                <SkillList skills={skillsData} />
+              </div>
             </div>
             <div className="mt-7">
               <SkillTable skills={skillsData} />
