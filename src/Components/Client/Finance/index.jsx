@@ -263,7 +263,7 @@ const Finance = () => {
         
         {/* Past Payments Section */}
         <div className="md:w-1/4 mt-16">
-          <div className="bg-[#E7E4E8CC] min-h-[60vh] rounded-2xl p-6">
+          <div className="bg-[#E7E4E8CC] min-h-[60vh] rounded-2xl py-6 px-4">
             <h2 className="text-base font-bold text-center text-[#1C1C1C] mb-8">Past Payments</h2>
             
             <div className="space-y-4">
@@ -274,7 +274,7 @@ const Finance = () => {
                   type="date" 
                   value={formatDateForInput(dateRange.from)}
                   onChange={(e) => handleDateChange('from', e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-default w-40"
+                  className="border border-gray-300 rounded-md px-3 py-1 text-default w-28"
                 />
               </div>
               
@@ -285,13 +285,13 @@ const Finance = () => {
                   type="date" 
                   value={formatDateForInput(dateRange.to)}
                   onChange={(e) => handleDateChange('to', e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-default w-40"
+                  className="border border-gray-300 rounded-md px-3 py-1 text-default w-28"
                 />
               </div>
             </div>
             
             {/* Download past payments button */}
-            <div className="flex justify-center mt-16 w-2/3 mx-auto">
+            <div className="flex justify-center mt-16 w-[90%] mx-auto">
               <button 
                 className={`
                   py-2 px-6 rounded-full text-xs font-semibold text-white h-[32px] 
