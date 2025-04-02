@@ -263,7 +263,7 @@ const EngagementForm = ({
                   disabled={true}
                 >
                   <span className="text-gray-600">
-                    {state?.candidate.cv.split("/").pop()}
+                  {state?.candidate.cv.split("/").pop().split("?")[0]}
                   </span>
                 </button>
               ) : (
