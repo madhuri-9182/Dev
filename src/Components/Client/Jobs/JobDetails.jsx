@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
 import toast from "react-hot-toast";
@@ -11,11 +10,7 @@ import {
 } from "@tanstack/react-query";
 import { createJob, updateJob } from "./api";
 import { useJobContext } from "../../../context/JobContext";
-import {
-  JOB_NAMES,
-  JOB_TYPES,
-} from "../../Constants/constants";
-import _ from "lodash";
+import { JOB_TYPES } from "../../Constants/constants";
 import {
   CancelButton,
   SaveButton,
@@ -31,6 +26,11 @@ const JobDetails = () => {
     selectedData,
     originalFormData,
     getChangedFields,
+    // Use the job details state and functions from context instead of local state
+    jobDetails,
+    setJobDetails,
+    haveDetailsChanged,
+    processJobDetailsForSubmission,
   } = useJobContext();
 
   const queryClient = useQueryClient();
@@ -39,52 +39,6 @@ const JobDetails = () => {
   const [detailsModalOpen, setDetailsModalOpen] =
     useState(false);
   const [editDetail, setEditDetail] = useState(null);
-  // Initialize details with default value
-  const [details, setDetails] = useState([
-    {
-      id: Date.now(),
-      details: "Intro",
-      time: "5min",
-      guidelines:
-        "Introduce Yourself\nAsk Introduction\nEtc.",
-    },
-  ]);
-  const [initialDetails, setInitialDetails] = useState([]);
-
-  // Update details when formdata changes or in edit mode
-  useEffect(() => {
-    if (isEdit && formdata.other_details) {
-      try {
-        const parsedDetails =
-          typeof formdata.other_details === "string"
-            ? JSON.parse(formdata.other_details)
-            : formdata.other_details;
-
-        if (
-          Array.isArray(parsedDetails) &&
-          parsedDetails.length > 0
-        ) {
-          const detailsWithIds = parsedDetails.map(
-            (detail) => ({
-              ...detail,
-              id: detail.id || Date.now() + Math.random(),
-              time: detail.time.endsWith("min")
-                ? detail.time
-                : `${detail.time}min`,
-            })
-          );
-
-          setDetails(detailsWithIds);
-          setInitialDetails(_.cloneDeep(detailsWithIds));
-        }
-      } catch (error) {
-        console.error(
-          "Error parsing other_details:",
-          error
-        );
-      }
-    }
-  }, [formdata, isEdit]);
 
   const handleAddDetail = () => {
     setEditDetail(null); // Reset edit state
@@ -92,7 +46,7 @@ const JobDetails = () => {
   };
 
   const handleEditDetail = (id) => {
-    const selectedDetail = details.find(
+    const selectedDetail = jobDetails.find(
       (item) => item.id === id
     );
     setEditDetail(selectedDetail);
@@ -127,95 +81,11 @@ const JobDetails = () => {
     },
   });
 
-  useEffect(() => {
-    const isFirstLoad =
-      localStorage.getItem("hasLoaded") !== "true";
-
-    if (!isFirstLoad) {
-      navigate("/client/jobs");
-    } else {
-      localStorage.setItem("hasLoaded", "true");
-    }
-
-    return () => {
-      localStorage.removeItem("hasLoaded");
-    };
-  }, [navigate]);
-
-  // Compare details for changes
-  const haveDetailsChanged = () => {
-    const originalDetails =
-      originalFormData?.other_details || [];
-
-    let parsedOriginalDetails = [];
-    try {
-      parsedOriginalDetails =
-        typeof originalDetails === "string"
-          ? JSON.parse(originalDetails)
-          : originalDetails;
-    } catch (error) {
-      console.error(
-        "Error parsing original details:",
-        error
-      );
-      return true;
-    }
-    if (parsedOriginalDetails.length !== details.length)
-      return true;
-    const normalizedOriginalDetails =
-      parsedOriginalDetails.map((detail) => {
-        const detailObj =
-          typeof detail === "string"
-            ? JSON.parse(detail)
-            : detail;
-        const { id, ...rest } = detailObj;
-        return {
-          ...rest,
-          time: (rest.time || "")
-            .replace(" Minutes", "min")
-            .replace("min", "min"),
-        };
-      });
-
-    const normalizedCurrentDetails = details.map(
-      (detail) => {
-        const { id, ...rest } = detail;
-        return {
-          ...rest,
-          time: rest.time
-            .replace(" Minutes", "min")
-            .replace("min", "min"),
-        };
-      }
-    );
-
-    for (
-      let i = 0;
-      i < normalizedOriginalDetails.length;
-      i++
-    ) {
-      if (
-        !_.isEqual(
-          normalizedOriginalDetails[i],
-          normalizedCurrentDetails[i]
-        )
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
   const hasDataChanged = () => {
     if (!isEdit) return true;
-
     if (!originalFormData) return true;
-
     if (haveDetailsChanged()) return true;
-
     const changedFields = getChangedFields();
-
     return Object.keys(changedFields).length > 0;
   };
 
@@ -228,18 +98,8 @@ const JobDetails = () => {
     }
 
     const formdataToSubmit = new FormData();
-
-    const processedDetails = details.map((detail) => {
-      const detailCopy = { ...detail };
-
-      detailCopy.time = detailCopy.time.replace(
-        " Minutes",
-        "min"
-      );
-      delete detailCopy.id;
-
-      return detailCopy;
-    });
+    const processedDetails =
+      processJobDetailsForSubmission();
 
     if (!isEdit) {
       formdataToSubmit.append("name", formdata.name);
@@ -441,8 +301,8 @@ const JobDetails = () => {
               </button>
             </div>
           </div>
-          {details.length > 0 &&
-            details.map((row, index) => (
+          {jobDetails.length > 0 &&
+            jobDetails.map((row, index) => (
               <div
                 key={index}
                 className="grid grid-cols-[20%_15%_55%_10%] text-2xs font-medium items-center text-black bg-[#EBEBEB80] py-2 px-4 rounded-2xl"
@@ -502,8 +362,8 @@ const JobDetails = () => {
         <DetailsModal
           isOpen={detailsModalOpen}
           onClose={() => setDetailsModalOpen(false)}
-          onSave={setDetails}
-          details={details}
+          onSave={setJobDetails}
+          details={jobDetails}
           editDetail={editDetail}
         />
       )}

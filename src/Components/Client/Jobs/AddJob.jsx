@@ -26,12 +26,7 @@ import { Loader2 } from "lucide-react";
 const AddJob = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
-  const {
-    formdata,
-    setFormdata,
-    isEdit,
-    reset: resetJob,
-  } = useJobContext();
+  const { formdata, setFormdata, isEdit } = useJobContext();
   const fileInputRef = useRef(null);
   const { data: users } = useAllUsers();
 
@@ -171,8 +166,6 @@ const AddJob = () => {
 
   const onBack = () => {
     window.history.back();
-    // reset formdata
-    resetJob();
   };
 
   // First load check

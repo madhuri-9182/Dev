@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   useState,
   useContext,
@@ -36,6 +37,17 @@ const initialState = {
   recruiter_names: [],
 };
 
+// Initial job details state with a default intro item
+const initialDetailsState = [
+  {
+    id: Date.now(),
+    details: "Intro",
+    time: "5min",
+    guidelines:
+      "Introduce Yourself\nAsk Introduction\nEtc.",
+  },
+];
+
 export const JobProvider = () => {
   const navigate = useNavigate();
   const [formdata, setFormdata] = useState(initialState);
@@ -46,6 +58,13 @@ export const JobProvider = () => {
   const [archiveId, setArchiveId] = useState(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] =
     useState(false);
+
+  // Add state for job details to persist across navigation
+  const [jobDetails, setJobDetails] = useState(
+    initialDetailsState
+  );
+  const [initialJobDetails, setInitialJobDetails] =
+    useState([]);
 
   const handleShowJobDetails = (data) => {
     if (data) {
@@ -58,6 +77,8 @@ export const JobProvider = () => {
     setFormdata(initialState);
     setSelectedData({});
     setOriginalFormData(null);
+    setJobDetails(initialDetailsState);
+    setInitialJobDetails([]);
   };
 
   const handleAddJobClick = (data) => {
@@ -88,6 +109,58 @@ export const JobProvider = () => {
     typeof selectedData === "object" &&
     !selectedData.nativeEvent &&
     Object.keys(selectedData).length !== 0;
+
+  // Function to handle detail changes to persist across navigation
+  const handleAddDetail = (newDetails) => {
+    setJobDetails(newDetails);
+  };
+
+  // Function to check if job details have changed
+  const haveDetailsChanged = () => {
+    if (initialJobDetails.length !== jobDetails.length)
+      return true;
+
+    const normalizedOriginalDetails = initialJobDetails.map(
+      (detail) => {
+        const { id, ...rest } = detail;
+        return {
+          ...rest,
+          time: (rest.time || "")
+            .replace(" Minutes", "min")
+            .replace("min", "min"),
+        };
+      }
+    );
+
+    const normalizedCurrentDetails = jobDetails.map(
+      (detail) => {
+        const { id, ...rest } = detail;
+        return {
+          ...rest,
+          time: rest.time
+            .replace(" Minutes", "min")
+            .replace("min", "min"),
+        };
+      }
+    );
+
+    for (
+      let i = 0;
+      i < normalizedOriginalDetails.length;
+      i++
+    ) {
+      if (
+        !_.isEqual(
+          normalizedOriginalDetails[i],
+          normalizedCurrentDetails[i]
+        )
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   useEffect(() => {
     if (isEdit) {
@@ -135,6 +208,42 @@ export const JobProvider = () => {
         setFormdata(normalizedData);
         // Store original data for comparison
         setOriginalFormData(_.cloneDeep(normalizedData));
+
+        // Process job details from other_details
+        if (selectedData.other_details) {
+          try {
+            const parsedDetails =
+              typeof selectedData.other_details === "string"
+                ? JSON.parse(selectedData.other_details)
+                : selectedData.other_details;
+
+            if (
+              Array.isArray(parsedDetails) &&
+              parsedDetails.length > 0
+            ) {
+              const detailsWithIds = parsedDetails.map(
+                (detail) => ({
+                  ...detail,
+                  id:
+                    detail.id || Date.now() + Math.random(),
+                  time: detail.time.endsWith("min")
+                    ? detail.time
+                    : `${detail.time}min`,
+                })
+              );
+
+              setJobDetails(detailsWithIds);
+              setInitialJobDetails(
+                _.cloneDeep(detailsWithIds)
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Error parsing other_details:",
+              error
+            );
+          }
+        }
       };
       fetchFile();
     }
@@ -161,6 +270,19 @@ export const JobProvider = () => {
     return changes;
   };
 
+  // Process details for submission
+  const processJobDetailsForSubmission = () => {
+    return jobDetails.map((detail) => {
+      const detailCopy = { ...detail };
+      detailCopy.time = detailCopy.time.replace(
+        " Minutes",
+        "min"
+      );
+      delete detailCopy.id;
+      return detailCopy;
+    });
+  };
+
   return (
     <JobContext.Provider
       value={{
@@ -183,6 +305,14 @@ export const JobProvider = () => {
         handleAddJobClick,
         isEdit,
         reset,
+        // Job details state and functions
+        jobDetails,
+        setJobDetails,
+        initialJobDetails,
+        setInitialJobDetails,
+        handleAddDetail,
+        haveDetailsChanged,
+        processJobDetailsForSubmission,
       }}
     >
       <Outlet />
