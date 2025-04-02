@@ -31,13 +31,13 @@ const VideoPlayer = ({ file }) => {
   return (
     <div className="w-full rounded-lg flex items-center justify-center">
       {isLoading ? (
-       <LoadingState />
+        <LoadingState />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : videoUrl ? (
         <video
           ref={videoRef}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain border-2 border-[#49454f] rounded-lg"
           controls
           autoPlay={false}
           src={videoUrl}
