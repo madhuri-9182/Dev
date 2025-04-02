@@ -37,25 +37,36 @@ const DetailsModal = ({
         "Invalid time format! Use numbers only."
       );
     }
-
-    const totalMinutes =
-      details.reduce(
+  
+    // Calculate total minutes with proper handling for edit case
+    let totalMinutes = 0;
+    
+    if (editDetail) {
+      // When editing, exclude the current item's time from the calculation
+      totalMinutes = details.reduce(
+        (sum, item) => sum + (item.id === editDetail.id ? 0 : parseInt(item.time)),
+        0
+      ) + parseInt(time);
+    } else {
+      // When adding a new item, include all existing items plus the new one
+      totalMinutes = details.reduce(
         (sum, item) => sum + parseInt(item.time),
         0
       ) + parseInt(time);
+    }
     if (totalMinutes > 60) {
       return toast.error(
         "Total time cannot exceed 60 minutes."
       );
     }
-
+  
     const newDetail = {
       id: editDetail ? editDetail.id : Date.now(),
-      details: detail, // Fixed incorrect assignment
+      details: detail,
       time: `${time}min`,
       guidelines: guidelines.split(", ").join("\n"),
     };
-
+  
     onSave(
       editDetail
         ? details.map((d) =>
