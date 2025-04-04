@@ -20,18 +20,17 @@ function TimeSlotSelector({
   return (
     <>
       {/* Date Picker */}
-      <div className="mt-24">
-        <div className="px-4 py-2 w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
-          <div>
-            <span className="text-xs text-[#49454F]">
-              Select Date
-            </span>
-          </div>
-          <BasicDatePicker
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-          />
+
+      <div className="px-4 py-2 w-[328px] h-[100px] bg-[#ECE6F0] rounded-xl">
+        <div>
+          <span className="text-xs text-[#49454F]">
+            Select Date
+          </span>
         </div>
+        <BasicDatePicker
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
       </div>
 
       {/* Time Slots */}

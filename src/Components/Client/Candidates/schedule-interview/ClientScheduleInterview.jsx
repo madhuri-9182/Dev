@@ -31,6 +31,7 @@ import TimeSlotSelector from "./components/TimeSlotSelector";
 import TimeWindowSelector from "./components/TimeWindowSelector";
 import DropCandidateModal from "../components/DropCandidateModal";
 import TimeRemainingComponent from "./components/TimeRemainingComponent";
+import { Alert } from "@mui/material";
 
 /**
  * Error modal component for scheduling errors
@@ -100,6 +101,7 @@ function ClientScheduleInterview() {
     setShowSchedulingErrorModal,
   ] = useState(false);
   const [candidateId, setCandidateId] = useState(null); // Track candidate ID for retry scenarios
+  const [showAlert, setShowAlert] = useState(true);
 
   // Parse query parameters to get candidate data
   const queryParams = new URLSearchParams(location.search);
@@ -408,7 +410,10 @@ function ClientScheduleInterview() {
         item.specialization
       );
       formdata.append("company", item.current_company);
-      formdata.append("current_designation", item.current_designation);
+      formdata.append(
+        "current_designation",
+        item.current_designation
+      );
       formdata.append("source", item.source);
       formdata.append("cv", file);
       formdata.append("gender", item.gender || "M");
@@ -494,16 +499,33 @@ function ClientScheduleInterview() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <CandidateForm candidate={item} jobs={jobs} />
 
+            {showAlert && (
+              <Alert
+                severity="info"
+                sx={{
+                  marginTop: 7,
+                  fontSize: "12px",
+                }}
+                onClose={() => {
+                  setShowAlert(false);
+                }}
+              >
+                {`To ensure the interviewer's session proceeds seamlessly, please schedule it for at least 8 hours from now.`}
+              </Alert>
+            )}
+
             {/* Time Slot Selection */}
-            <TimeSlotSelector
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              availableHourlySlots={availableHourlySlots}
-              selectedTimeSlot={selectedTimeSlot}
-              handleTimeSlotSelect={handleTimeSlotSelect}
-              isLoading={isLoading}
-              isError={isError}
-            />
+            <div className={showAlert ? "mt-6" : "mt-36"}>
+              <TimeSlotSelector
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                availableHourlySlots={availableHourlySlots}
+                selectedTimeSlot={selectedTimeSlot}
+                handleTimeSlotSelect={handleTimeSlotSelect}
+                isLoading={isLoading}
+                isError={isError}
+              />
+            </div>
 
             {/* Time Window Selection */}
             <TimeWindowSelector
