@@ -4,6 +4,7 @@ import Business from "./Business.svg";
 import Improvement from "./Improvement.svg";
 import Skill from "./Skill.svg";
 import User from "./User.svg";
+import CompanyLogo from "./hiring-dog-logo.png";
 
 export {
   Questions,
@@ -12,4 +13,5 @@ export {
   Improvement,
   Skill,
   User,
+  CompanyLogo,
 };

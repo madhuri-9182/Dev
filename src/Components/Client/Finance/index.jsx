@@ -24,6 +24,8 @@ import {
   createTheme,
 } from "@mui/material/styles";
 import dayjs from "dayjs";
+// Import company logo
+import { CompanyLogo } from "../../../assets/index"; // Update this path to match your actual logo location
 
 const Finance = () => {
   // State and hooks
@@ -203,16 +205,95 @@ const Finance = () => {
       // Create PDF document
       const doc = new jsPDF();
 
+      // Add company logo
+      try {
+        // Create an Image object to get proper dimensions
+        const img = new Image();
+        img.src = CompanyLogo;
+
+        // Function to handle image loading and maintain aspect ratio
+        const addLogoToDoc = () => {
+          const logoWidth = 18; // Target width in mm
+          const aspectRatio = img.height / img.width;
+          const logoHeight = logoWidth * aspectRatio;
+
+          doc.addImage(
+            CompanyLogo,
+            "PNG",
+            14,
+            10,
+            logoWidth,
+            logoHeight
+          );
+        };
+
+        // If image is already loaded
+        if (img.complete) {
+          addLogoToDoc();
+        } else {
+          // Wait for image to load
+          await new Promise((resolve) => {
+            img.onload = () => {
+              addLogoToDoc();
+              resolve();
+            };
+            img.onerror = () => {
+              console.error(
+                "Failed to load logo image for PDF"
+              );
+              resolve(); // Resolve anyway to continue PDF generation
+            };
+          });
+        }
+      } catch (logoError) {
+        console.error(
+          "Error adding logo to PDF:",
+          logoError
+        );
+        // Continue without logo if there's an error
+      }
+
+      // Add billing period and download date
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      const billingPeriod = `Billing Period: ${dayjs()
+        .startOf("month")
+        .format("DD/MM/YYYY")} - ${dayjs().format(
+        "DD/MM/YYYY"
+      )}`;
+      const downloadDate = `Date Printed: ${dayjs().format(
+        "DD/MM/YYYY"
+      )}`;
+      doc.text(
+        billingPeriod,
+        doc.internal.pageSize.width - 14,
+        15,
+        { align: "right" }
+      );
+      doc.text(
+        downloadDate,
+        doc.internal.pageSize.width - 14,
+        20,
+        { align: "right" }
+      );
+
+      const pageWidth = doc.internal.pageSize.width;
+      doc.setDrawColor(200, 200, 200); // Light gray color
+      doc.setLineWidth(0.5);
+      doc.line(14, 30, pageWidth - 14, 30);
+
       // Add title and total
       doc.setFontSize(14);
-      doc.text("Current Dues", 14, 20);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Current Dues", 14, 40);
       doc.text(
         `TOTAL: INR ${totalAmount.toLocaleString("en-IN", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`,
-        14,
-        30
+        doc.internal.pageSize.width - 14,
+        40,
+        { align: "right" }
       );
 
       // Get all finance data and prepare table
@@ -228,7 +309,7 @@ const Finance = () => {
 
       // Create table with autoTable
       autoTable(doc, {
-        startY: 40,
+        startY: 50,
         head: [
           [
             "Candidate",
