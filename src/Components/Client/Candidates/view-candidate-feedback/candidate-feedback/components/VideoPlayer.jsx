@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { LoadingState } from "../../../../../shared/loading-error-state";
 
 const VideoPlayer = ({ file }) => {
   const videoRef = useRef(null);
@@ -31,7 +30,7 @@ const VideoPlayer = ({ file }) => {
   return (
     <div className="w-full rounded-lg flex items-center justify-center">
       {isLoading ? (
-        <LoadingState />
+        <div className="animate-spin rounded-full mt-8 h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : videoUrl ? (
