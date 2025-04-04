@@ -163,7 +163,7 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
             <div className="flex flex-col gap-2">
               <div
                 className={
-                  "p-[4px] font-bold text-white rounded-md text-xs h-[28px] flex items-center justify-center"
+                  "px-2 py-1 font-bold text-white rounded-md text-xs h-[28px] flex items-center justify-center"
                 }
                 style={{
                   backgroundColor: getRecommendationColor(),
@@ -173,7 +173,7 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
               </div>
               <div
                 className={
-                  "text-center p-[2px] font-bold text-white rounded-md text-base w-[150px] bg-[#A4333582]"
+                  "text-center px-2 py-1 font-bold text-white rounded-md text-sm w-full bg-[#A4333582]"
                 }
               >
                 {overall_score}/100
