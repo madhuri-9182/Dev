@@ -1,11 +1,14 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getFinance } from "./api";
+import {
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
+import { getFinance, getLastMonthFinance } from "./api";
 import useAuth from "../../../hooks/useAuth";
 import {
   LoadingState,
   ErrorState,
 } from "../../shared/loading-error-state";
-import { Warning2 } from "iconsax-react";
+import { Warning2, CloseCircle } from "iconsax-react";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
 import { getJobLabel } from "../../../utils/util";
@@ -29,6 +32,7 @@ const Finance = () => {
     from: dayjs().subtract(1, "month").format("DD/MM/YYYY"),
     to: dayjs().format("DD/MM/YYYY"),
   });
+  const [showDuesAlert, setShowDuesAlert] = useState(true);
 
   const [isGeneratingPdf, setIsGeneratingPdf] =
     useState(false);
@@ -112,7 +116,17 @@ const Finance = () => {
     }));
   };
 
-  // Data fetching with React Query
+  // Query for last month's pending dues
+  const {
+    data: lastMonthData,
+    isLoading: isLastMonthLoading,
+    isError: isLastMonthError,
+  } = useQuery({
+    queryKey: ["lastMonthFinance"],
+    queryFn: () => getLastMonthFinance(),
+  });
+
+  // Data fetching with React Query for current dues
   const {
     data,
     isLoading,
@@ -122,7 +136,7 @@ const Finance = () => {
     isError,
   } = useInfiniteQuery({
     queryKey: ["finance"],
-    queryFn: () => getFinance(),
+    queryFn: ({ pageParam = 1 }) => getFinance(pageParam),
     getNextPageParam: (lastPage) =>
       lastPage.next
         ? parseInt(lastPage.next.split("page=")[1])
@@ -141,6 +155,21 @@ const Finance = () => {
       }, sum);
     }, 0);
   }, [data]);
+
+  // Check if there are pending dues from last month
+  const hasPendingLastMonthDues = useMemo(() => {
+    if (!lastMonthData) return false;
+    return lastMonthData.count > 0;
+  }, [lastMonthData]);
+
+  // Format the due amount for last month
+  const lastMonthDueAmount = useMemo(() => {
+    if (!lastMonthData || !lastMonthData.results) return 0;
+
+    return lastMonthData.results.reduce((sum, item) => {
+      return sum + (parseFloat(item.client_amount) || 0);
+    }, 0);
+  }, [lastMonthData]);
 
   // Fetch next page when scrolling into view
   useEffect(() => {
@@ -264,8 +293,9 @@ const Finance = () => {
   }
 
   // Loading and error states
-  if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isLoading || isLastMonthLoading)
+    return <LoadingState />;
+  if (isError && isLastMonthError) return <ErrorState />;
 
   // Prepare data for rendering
   const displayData =
@@ -279,10 +309,42 @@ const Finance = () => {
       "py-4 text-left text-[#2B313E] font-normal text-xs",
   };
 
+  // Last month name for alert
+  const lastMonthName = dayjs()
+    .subtract(1, "month")
+    .format("MMMM");
+
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <div className="p-6 max-w-7xl mx-auto">
+          {/* Alert for pending last month dues */}
+          {hasPendingLastMonthDues && showDuesAlert && (
+            <div className="bg-[#FFF3F3] border border-[#FF3B30] rounded-lg p-4 mb-4 flex justify-between items-center">
+              <div className="flex items-center">
+                <Warning2 className="h-5 w-5 text-[#FF3B30] mr-3" />
+                <p className="text-sm text-[#FF3B30]">
+                  <span className="font-semibold">
+                    Important:{" "}
+                  </span>
+                  You have pending dues from {lastMonthName}
+                  . Please clear your pending amount of
+                  <span className="font-semibold">
+                    {" "}
+                    INR {formatCurrency(lastMonthDueAmount)}
+                  </span>
+                  .
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDuesAlert(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <CloseCircle className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row gap-x-12">
             {/* Current Dues Section */}
             <div className="md:w-3/4">
