@@ -24,10 +24,11 @@ const CandidateRow = ({
         {/* Name and Status */}
         <div className="flex flex-col justify-start items-start gap-2">
           <div
-            className={`text-xs font-bold text-[#056DDC] uppercase  ${candidate?.status !== "SCH"
+            className={`text-xs font-bold text-[#056DDC] uppercase  ${
+              candidate?.status !== "SCH"
                 ? "hover:underline cursor-pointer"
                 : ""
-              }`}
+            }`}
             onClick={() => {
               if (candidate?.status === "SCH") {
                 return;
@@ -111,11 +112,15 @@ const StatusBadge = ({ status, candidateStatus }) => {
   const getStatusClass = (status) => {
     switch (status) {
       case "HREC":
-        return "bg-[#0cba55]"; 
+        return "bg-[#27AE60]";
       case "REC":
         return "bg-[#2ECC71]";
       case "NREC":
-        return "bg-[#B10E0E] text-white";
+        return "bg-[#ec1313] text-white";
+      case "SNREC":
+        return "bg-[#B71C1C] text-white";
+      case "NJ":
+        return "bg-[#00ABF0] text-white";
       case "SCH":
         return "bg-[#DF8C0F] text-white";
       default:

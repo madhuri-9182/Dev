@@ -25,12 +25,19 @@ export const getFeedbackColor = (score) => {
 };
 
 export const getFeedbackInputColor = (value) => {
-  if (["REC", "HREC"].includes(value)) {
-    return "bg-[#59B568] text-white border-[#59B568] shadow";
-  } else if (value === "NJ") {
-    return "bg-[#ffbe5d] text-white border-[#ffbe5d] shadow";
-  } else {
-    return "bg-[#ec1313] text-white border-[#ec1313] shadow";
+  switch (value) {
+    case "REC":
+      return "bg-[#2ECC71] text-white border-[#2ECC71] shadow";
+    case "HREC":
+      return "bg-[#27AE60] text-white border-[#27AE60] shadow";
+    case "NJ":
+      return "bg-[#00ABF0] text-white border-[#00ABF0] shadow";
+    case "NREC":
+      return "bg-[#ec1313] text-white border-[#ec1313] shadow";
+    case "SNREC":
+      return "bg-[#B71C1C] text-white border-[#B71C1C] shadow";
+    default:
+      return "bg-[#C4C4C4] border-[#C4C4C4] shadow";
   }
 };
 

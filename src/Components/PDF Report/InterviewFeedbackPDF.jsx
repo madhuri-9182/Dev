@@ -74,10 +74,10 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
 
   // Get the recommendation color
   const getRecommendationColor = () => {
-    if (overall_remark === "HREC") return "#038a0e";
-    if (overall_remark === "REC") return "#3CBA68";
-    if (overall_remark === "NREC") return "#FD7E14";
-    if (overall_remark === "SNREC") return "#DC3545";
+    if (overall_remark === "HREC") return "#27AE60";
+    if (overall_remark === "REC") return "#2ECC71";
+    if (overall_remark === "NREC") return "#ec1313";
+    if (overall_remark === "SNREC") return "#B71C1C";
     if (overall_remark === "NJ") return "#00ABF0";
     return "bg-[#000000]";
   };
