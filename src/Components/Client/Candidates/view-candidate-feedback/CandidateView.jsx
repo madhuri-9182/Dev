@@ -15,7 +15,7 @@ const CandidateView = () => {
   const [resumeFile, setResumeFile] = useState(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["candidate-feedback"],
+    queryKey: ["candidate-feedback", state.id],
     queryFn: () => getCandidateFeedback(state.id),
   });
 
@@ -24,6 +24,9 @@ const CandidateView = () => {
       const file = await createFileFromUrl(cv);
       return file;
     };
+    if (!data) {
+      return;
+    }
     if (!isLoading && Object.keys(data?.data)?.length > 0) {
       const file = fetchResume(data?.data?.candidate?.cv);
       setResumeFile(file);
