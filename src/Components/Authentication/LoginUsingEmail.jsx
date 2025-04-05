@@ -102,17 +102,24 @@ const LoginUsingEmail = () => {
     },
   });
 
+  // Initialize email field once when component mounts
   useEffect(() => {
-    // Set remembered email if check is true
-    if (check) {
-      const rememberedEmail =
-        localStorage.getItem("email") || "";
+    // This runs only once when component mounts
+    const rememberedEmail =
+      localStorage.getItem("email") || "";
+    const shouldRemember = JSON.parse(
+      localStorage.getItem("persist") || "false"
+    );
+
+    // Set the initial values
+    if (shouldRemember) {
       setValue("email", rememberedEmail);
-    } else {
-      setValue("email", "");
     }
+
+    // Always clear password field for security
     setValue("password", "");
-  }, [check, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array means it only runs once on mount
 
   const handleFPNavigation = () => {
     navigate("/auth/forgetpass");
@@ -120,6 +127,18 @@ const LoginUsingEmail = () => {
 
   const togglePassVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  // Handle toggle for the remember me checkbox
+  const handleToggleCheck = () => {
+    // Toggle the checkbox (the hook should update localStorage)
+    toggleCheck();
+
+    // If we're unchecking, clear the email from localStorage
+    if (check) {
+      // check is still the previous value before toggling
+      localStorage.removeItem("email");
+    }
   };
 
   // Form submission handler
@@ -232,7 +251,7 @@ const LoginUsingEmail = () => {
                 type="checkbox"
                 className="w-[15px] h-[15px] font-[1px] text-[#D9CFFB] rounded-[2px] mr-1"
                 id="persist"
-                onChange={toggleCheck}
+                onChange={handleToggleCheck}
                 checked={check}
               />
               <Label
