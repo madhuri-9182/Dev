@@ -6,15 +6,10 @@ import {
   ArrowSquareRight,
   Eye,
   MessageText1,
-  ReceiveSquare,
   TickSquare,
 } from "iconsax-react";
 
 // Utilities
-import {
-  createFileFromUrl,
-  handleFileDownload,
-} from "../../../../utils/util";
 import ViewModal from "./ViewModal";
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -140,18 +135,6 @@ export const ActionButtons = ({
 
   return (
     <>
-      <Button
-        Icon={ReceiveSquare}
-        disabled={false}
-        onClick={async () => {
-          const file = await createFileFromUrl(
-            candidate.cv
-          );
-          // download the file
-          handleFileDownload(file);
-        }}
-        title={"Download"}
-      />
       <Button
         Icon={Eye}
         onClick={() => {

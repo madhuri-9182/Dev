@@ -36,7 +36,7 @@ const InfiniteScrollTable = ({
       ) : (
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
-            <tr className="text-black text-xs font-semibold uppercase grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr] items-center">
+            <tr className="text-black text-xs font-semibold uppercase grid grid-cols-8 items-center">
               <th className={tableHeadingAndBodyClassName}>
                 Name
               </th>
@@ -65,7 +65,7 @@ const InfiniteScrollTable = ({
             {data.map((item) => (
               <tr key={item.id}>
                 <td colSpan={8} className="p-0">
-                  <div className="bg-[#EBEBEB80] text-2xs rounded-2xl font-normal grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1.5fr] items-center py-3">
+                  <div className="bg-[#EBEBEB80] text-2xs rounded-2xl font-normal grid grid-cols-8 items-center py-3">
                     <span
                       className={
                         tableHeadingAndBodyClassName
@@ -122,7 +122,7 @@ const InfiniteScrollTable = ({
                     >
                       {item.candidate.company || "N/A"}
                     </span>
-                    <span className="px-2 flex gap-x-1 items-center justify-center">
+                    <span className="px-2 flex gap-x-1 items-center justify-start">
                       <ActionButtons
                         navigate={navigate}
                         candidate={item.candidate}
