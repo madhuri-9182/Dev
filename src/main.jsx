@@ -12,7 +12,13 @@ import { isDesktop } from "react-device-detect";
 import App from "./App";
 import { createTheme, ThemeProvider } from "@mui/material";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+    },
+  },
+});
 
 const theme = createTheme({
   typography: {
