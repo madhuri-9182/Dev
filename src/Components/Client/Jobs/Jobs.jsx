@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 import useAllJobs from "../../../hooks/useFetchAllJobs";
 import { extractUniquePersonnel } from "./util";
 import { useLocation } from "react-router-dom";
+import { getErrorMessage } from "../../../utils/util";
 
 const Jobs = () => {
   const { auth } = useAuth();
@@ -38,7 +39,9 @@ const Jobs = () => {
       return acc;
     }, {});
   }, [allJobs]);
-  const jobStatus = groupedJobs?.[state?.job_role] ? [groupedJobs?.[state?.job_role]] : [];
+  const jobStatus = groupedJobs?.[state?.job_role]
+    ? [groupedJobs?.[state?.job_role]]
+    : [];
   const [filters, setFilters] = useState({
     post_job_date: "",
     job_ids: jobStatus,
@@ -58,7 +61,7 @@ const Jobs = () => {
     };
   }, [currentPage, filters]);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["jobs", queryFilters, auth],
     queryFn: fetchJobs,
     keepPreviousData: true,
@@ -67,14 +70,22 @@ const Jobs = () => {
   });
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   return (
     <div className="m-0 px-3">
-      <JobListing data={data} groupedJobs={groupedJobs} hiringManagers={hiringManagers} recruiters={recruiters} filters={filters} setFilters={(value) => {
-        setFilters(value);
-        setCurrentPage(1);
-      }} />
+      <JobListing
+        data={data}
+        groupedJobs={groupedJobs}
+        hiringManagers={hiringManagers}
+        recruiters={recruiters}
+        filters={filters}
+        setFilters={(value) => {
+          setFilters(value);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

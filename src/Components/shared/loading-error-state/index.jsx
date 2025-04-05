@@ -1,4 +1,5 @@
 import { Warning2 } from "iconsax-react";
+import PropTypes from "prop-types";
 
 export const LoadingState = () => {
   return (
@@ -7,14 +8,18 @@ export const LoadingState = () => {
     </div>
   );
 };
-export const ErrorState = () => {
+export const ErrorState = ({ message }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-60 text-[#B10E0EE5]">
       <Warning2 className="h-12 w-12" />
       <p className="mt-2">
-        An error occurred while loading the data. Please try
-        again later.
+        {message ||
+          "An error occurred while loading the data. Please try again later."}
       </p>
     </div>
   );
+};
+
+ErrorState.propTypes = {
+  message: PropTypes.string,
 };

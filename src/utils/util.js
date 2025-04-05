@@ -169,3 +169,13 @@ export const handleFileDownload = (file) => {
     window.URL.revokeObjectURL(url);
   }
 };
+
+export const getErrorMessage = (error) => {
+  const errorMessage =
+    error?.response?.data?.errors?.length > 0
+      ? error?.response?.data?.errors[0]
+      : error?.response?.data?.message
+      ? error?.response?.data?.message
+      : error?.message;
+  return errorMessage;
+};

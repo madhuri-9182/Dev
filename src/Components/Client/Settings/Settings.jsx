@@ -16,6 +16,7 @@ import {
   ErrorState,
   LoadingState,
 } from "../../shared/loading-error-state";
+import { getErrorMessage } from "../../../utils/util";
 
 function Settings() {
   const { auth } = useAuth();
@@ -26,7 +27,7 @@ function Settings() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] =
     useState(false);
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["users", currentPage, auth],
     queryFn: () => fetchUsers(currentPage),
     keepPreviousData: true,
@@ -45,7 +46,8 @@ function Settings() {
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   const canShowTrashIcon = (user) => {
     // Client owner cannot delete themselves but can delete other roles

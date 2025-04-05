@@ -5,7 +5,10 @@ import {
   LoadingState,
   ErrorState,
 } from "../../shared/loading-error-state";
-import { getJobLabel } from "../../../utils/util";
+import {
+  getErrorMessage,
+  getJobLabel,
+} from "../../../utils/util";
 import { ALL_TASKS, ANALYTICS, MY_JOBS } from "./constants";
 import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["dashboard", auth],
     queryFn: fetchDashboardApi,
     refetchOnWindowFocus: false,
@@ -22,7 +25,8 @@ const Dashboard = () => {
   });
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   const dashboardData = data?.data || {};
 

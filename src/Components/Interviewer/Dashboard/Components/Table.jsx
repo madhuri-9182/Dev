@@ -4,13 +4,14 @@ import {
   LoadingState,
 } from "../../../shared/loading-error-state";
 import InfiniteScrollTable from "./InfiniteScrollTable";
+import { getErrorMessage } from "../../../../utils/util";
 
 const Table = ({ query, data, loaderRef, title }) => (
   <>
     {query.isLoading ? (
       <LoadingState />
     ) : query.isError ? (
-      <ErrorState />
+      <ErrorState message={getErrorMessage(query.error)} />
     ) : (
       <InfiniteScrollTable
         data={data}

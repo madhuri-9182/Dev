@@ -5,7 +5,10 @@ import {
   ErrorState,
   LoadingState,
 } from "../../../shared/loading-error-state";
-import { createFileFromUrl } from "../../../../utils/util";
+import {
+  createFileFromUrl,
+  getErrorMessage,
+} from "../../../../utils/util";
 import { useEffect, useState } from "react";
 import CandidateSidebar from "../schedule-interview/components/CandidateSidebar";
 import CandidateViewForm from "./CandidateViewForm";
@@ -14,7 +17,7 @@ const CandidateView = () => {
   const { state } = useLocation();
   const [resumeFile, setResumeFile] = useState(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["candidate-feedback", state.id],
     queryFn: () => getCandidateFeedback(state.id),
   });
@@ -34,7 +37,8 @@ const CandidateView = () => {
   }, [data, isLoading]);
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   const formatCandidate = (candidate) => {
     return {

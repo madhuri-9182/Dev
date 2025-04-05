@@ -22,7 +22,10 @@ import {
   LoadingState,
 } from "../../shared/loading-error-state";
 import { formatExperience } from "../Dashboard/utils/formatters";
-import { getJobLabel } from "../../../utils/util";
+import {
+  getErrorMessage,
+  getJobLabel,
+} from "../../../utils/util";
 
 import CandidateDetailsSection from "./sections/CandidateDetailsSection";
 import InterviewerDetailsSection from "./sections/InterviewerDetailsSection";
@@ -208,7 +211,7 @@ const Feedback = () => {
   }, [watchedSkills, setValue]);
 
   // Fetch feedback data
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["getFeedback", interviewId],
     queryFn: () => getCandidateFeedback(interviewId),
     refetchOnWindowFocus: false,
@@ -374,7 +377,8 @@ const Feedback = () => {
 
   // Loading and error states
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   return (
     <div className="max-w-7xl mx-auto p-6 my-14">

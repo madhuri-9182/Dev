@@ -17,6 +17,7 @@ import {
   fileToBase64,
   createFileFromUrl,
   getJobLabel,
+  getErrorMessage,
 } from "../../../../utils/util";
 import { useDebounce } from "../../../../hooks/useDebounce";
 
@@ -32,7 +33,7 @@ import { CandidateFilters } from "./CandidateFilters";
 import AddButton from "../../../shared/AddButton";
 
 function Candidates() {
-  const {state} = useLocation();
+  const { state } = useLocation();
 
   const navigate = useNavigate();
   const { data: candidates } = useAllCandidates();
@@ -49,7 +50,7 @@ function Candidates() {
       ].map((str) => JSON.parse(str))
     : [];
 
-    const status = state?.status || "All";
+  const status = state?.status || "All";
 
   // State management
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,7 +70,7 @@ function Candidates() {
   );
 
   // Fetch candidates data
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: [
       "candidates",
       {
@@ -103,7 +104,8 @@ function Candidates() {
         id: person.id,
         status: person.status,
         remark: person.remark,
-        last_scheduled_initiate_time: person.last_scheduled_initiate_time,
+        last_scheduled_initiate_time:
+          person.last_scheduled_initiate_time,
       };
 
       // Process CV file
@@ -179,7 +181,8 @@ function Candidates() {
   };
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   return (
     <div className="flex flex-col gap-y-5 px-3">

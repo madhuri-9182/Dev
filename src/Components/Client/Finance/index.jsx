@@ -11,7 +11,10 @@ import {
 import { Warning2, CloseCircle } from "iconsax-react";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo, useState } from "react";
-import { getJobLabel } from "../../../utils/util";
+import {
+  getErrorMessage,
+  getJobLabel,
+} from "../../../utils/util";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import Empty from "../../shared/Empty";
@@ -136,6 +139,7 @@ const Finance = () => {
     hasNextPage,
     fetchNextPage,
     isError,
+    error,
   } = useInfiniteQuery({
     queryKey: ["finance"],
     queryFn: ({ pageParam = 1 }) => getFinance(pageParam),
@@ -376,7 +380,8 @@ const Finance = () => {
   // Loading and error states
   if (isLoading || isLastMonthLoading)
     return <LoadingState />;
-  if (isError && isLastMonthError) return <ErrorState />;
+  if (isError && isLastMonthError)
+    return <ErrorState message={getErrorMessage(error)} />;
 
   // Prepare data for rendering
   const displayData =
