@@ -263,7 +263,12 @@ const EngagementForm = ({
                   disabled={true}
                 >
                   <span className="text-gray-600">
-                  {state?.candidate.cv.split("/").pop().split("?")[0]}
+                    {
+                      state?.candidate.cv
+                        .split("/")
+                        .pop()
+                        .split("?")[0]
+                    }
                   </span>
                 </button>
               ) : (
@@ -327,12 +332,14 @@ const EngagementForm = ({
             label="Name"
             placeholder="Name"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
 
           {/* Phone Number */}
           <InputField
             name="candidate_phone"
             control={control}
+            required={true}
             rules={{
               required: "Phone number is required",
               pattern: {
@@ -364,6 +371,7 @@ const EngagementForm = ({
             type="email"
             placeholder="abc@xyz.com"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
 
           {/* Company */}
@@ -374,6 +382,7 @@ const EngagementForm = ({
             label="Company"
             placeholder="Company"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
 
           {/* Offered */}
@@ -396,6 +405,7 @@ const EngagementForm = ({
             }}
             label="Offer Date"
             disabled={shouldFieldsBeDisabled || !isOffered}
+            required={isOffered}
           />
 
           {/* Offer Accepted */}
@@ -417,6 +427,7 @@ const EngagementForm = ({
             options={NOTICE_PERIOD}
             placeholder="Select Days"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
         </div>
 
@@ -433,6 +444,7 @@ const EngagementForm = ({
             label="GTP Name"
             placeholder="GTP Name"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
 
           {/* GTP Email */}
@@ -451,6 +463,7 @@ const EngagementForm = ({
             type="email"
             placeholder="abc@xyz.com"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
         </div>
 
@@ -479,6 +492,7 @@ const EngagementForm = ({
             }))}
             placeholder="Select Role"
             disabled={shouldFieldsBeDisabled}
+            required={true}
           />
         </div>
 

@@ -38,11 +38,18 @@ Input.propTypes = {
   required: PropTypes.bool,
 };
 
-export const Label = ({ name, label, className }) => {
+export const Label = ({
+  name,
+  label,
+  className,
+  required,
+}) => {
   return (
     <label
       htmlFor={name}
-      className={`text-xs font-medium font-outfit text-label ${className}`}
+      className={`text-xs font-medium font-outfit text-label ${className} ${
+        required ? "required-field-label" : ""
+      }`}
     >
       {label}
     </label>
@@ -53,6 +60,7 @@ Label.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
   className: PropTypes.string,
+  required: PropTypes.bool,
 };
 
 export const SubmitButton = ({ disabled, label }) => {

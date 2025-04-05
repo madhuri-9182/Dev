@@ -12,11 +12,16 @@ export const FieldWrapper = ({
   children,
   label,
   error,
+  required = false,
 }) => {
   return (
     <div>
       <div className="flex items-center w-full">
-        <label className="w-32 flex-shrink-0 text-2xs font-semibold text-[#6B6F7B]">
+        <label
+          className={`w-32 flex-shrink-0 text-2xs font-semibold text-[#6B6F7B] ${
+            required ? "required-field-label" : ""
+          }`}
+        >
           {label}
         </label>
         <div className="flex-1">
@@ -54,6 +59,7 @@ export const InputField = ({
   placeholder,
   disabled = false,
   prefix = null,
+  required = false,
 }) => {
   return (
     <Controller
@@ -61,7 +67,11 @@ export const InputField = ({
       control={control}
       rules={rules}
       render={({ field, fieldState: { error } }) => (
-        <FieldWrapper label={label} error={error?.message}>
+        <FieldWrapper
+          label={label}
+          error={error?.message}
+          required={required}
+        >
           {prefix ? (
             <div className="relative flex items-center h-[30px]">
               <span className="absolute left-3 text-xs">
@@ -104,6 +114,7 @@ export const SelectField = ({
   valueKey = "value",
   labelKey = "label",
   booleanValues = false,
+  required = false,
 }) => {
   const optionRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] =
@@ -173,6 +184,7 @@ export const SelectField = ({
           <FieldWrapper
             label={label}
             error={error?.message}
+            required={required}
           >
             <div ref={optionRef} className="relative">
               <div
@@ -284,6 +296,7 @@ export const BooleanSelectField = ({
   control,
   label,
   disabled = false,
+  required = false,
 }) => {
   const options = [
     { value: 1, label: "Yes" },
@@ -298,6 +311,7 @@ export const BooleanSelectField = ({
       options={options}
       disabled={disabled}
       booleanValues={true}
+      required={required}
     />
   );
 };
@@ -309,6 +323,7 @@ export const DatePickerField = ({
   rules = {},
   label,
   disabled = false,
+  required = false,
 }) => {
   return (
     <Controller
@@ -316,7 +331,11 @@ export const DatePickerField = ({
       control={control}
       rules={rules}
       render={({ field, fieldState: { error } }) => (
-        <FieldWrapper label={label} error={error?.message}>
+        <FieldWrapper
+          label={label}
+          error={error?.message}
+          required={required}
+        >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               value={
@@ -367,6 +386,7 @@ FieldWrapper.propTypes = {
   children: PropTypes.node,
   label: PropTypes.string,
   error: PropTypes.string,
+  required: PropTypes.bool,
 };
 
 InputField.propTypes = {
@@ -378,6 +398,7 @@ InputField.propTypes = {
   placeholder: PropTypes.string,
   disabled: PropTypes.bool,
   prefix: PropTypes.string,
+  required: PropTypes.bool,
 };
 
 SelectField.propTypes = {
@@ -391,6 +412,7 @@ SelectField.propTypes = {
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   booleanValues: PropTypes.bool,
+  required: PropTypes.bool,
 };
 
 BooleanSelectField.propTypes = {
@@ -398,6 +420,7 @@ BooleanSelectField.propTypes = {
   control: PropTypes.object.isRequired,
   label: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  required: PropTypes.bool,
 };
 
 DatePickerField.propTypes = {
@@ -406,4 +429,5 @@ DatePickerField.propTypes = {
   rules: PropTypes.object,
   label: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  required: PropTypes.bool,
 };

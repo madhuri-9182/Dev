@@ -8,9 +8,18 @@ import {
   ListboxOption,
 } from "@headlessui/react";
 
-export const FormField = ({ label, error, children }) => (
+export const FormField = ({
+  label,
+  error,
+  children,
+  required,
+}) => (
   <div className="space-y-1">
-    <label className="block text-[#6B6F7B] text-2xs font-bold">
+    <label
+      className={`block text-[#6B6F7B] text-2xs font-bold ${
+        required ? "required-field-label" : ""
+      }`}
+    >
       {label}
     </label>
     {children}
@@ -28,6 +37,11 @@ FormField.propTypes = {
   label: PropTypes.string.isRequired,
   error: PropTypes.string,
   children: PropTypes.node.isRequired,
+  required: PropTypes.bool,
+};
+
+FormField.defaultProps = {
+  required: false,
 };
 
 // Input component

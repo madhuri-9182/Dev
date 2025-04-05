@@ -74,6 +74,7 @@ function ForgetPass() {
               className="mb-5"
               label={"E-Mail Id :"}
               name={"email"}
+              required={true}
             />
 
             {/* Using Controller to wrap the custom Input component */}

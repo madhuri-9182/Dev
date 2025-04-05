@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
+import { useForm } from "react-hook-form";
 import Modal from "../../shared/Modal";
 
 const DetailsModal = ({
@@ -11,62 +12,76 @@ const DetailsModal = ({
   details,
   editDetail,
 }) => {
-  const [detail, setDetail] = useState("");
-  const [time, setTime] = useState("");
-  const [guidelines, setGuidelines] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    defaultValues: {
+      detail: "",
+      time: "",
+      guidelines: "",
+    },
+  });
 
   useEffect(() => {
     if (editDetail) {
-      setDetail(editDetail?.details || "");
-      setTime(editDetail?.time?.replace("min", "") || "");
-      setGuidelines(
+      setValue("detail", editDetail?.details || "");
+      setValue(
+        "time",
+        editDetail?.time?.replace("min", "") || ""
+      );
+      setValue(
+        "guidelines",
         editDetail?.guidelines?.replace(/\n/g, ", ") || ""
       );
     } else {
-      setDetail("");
-      setTime("");
-      setGuidelines("");
+      reset({
+        detail: "",
+        time: "",
+        guidelines: "",
+      });
     }
-  }, [editDetail, isOpen]);
+  }, [editDetail, isOpen, setValue, reset]);
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    const timeRegex = /^\d{1,2}$/;
-    if (!timeRegex.test(time)) {
-      return toast.error(
-        "Invalid time format! Use numbers only."
-      );
-    }
-  
+  const onSubmit = (data) => {
     // Calculate total minutes with proper handling for edit case
     let totalMinutes = 0;
-    
+
     if (editDetail) {
       // When editing, exclude the current item's time from the calculation
-      totalMinutes = details.reduce(
-        (sum, item) => sum + (item.id === editDetail.id ? 0 : parseInt(item.time)),
-        0
-      ) + parseInt(time);
+      totalMinutes =
+        details.reduce(
+          (sum, item) =>
+            sum +
+            (item.id === editDetail.id
+              ? 0
+              : parseInt(item.time)),
+          0
+        ) + parseInt(data.time);
     } else {
       // When adding a new item, include all existing items plus the new one
-      totalMinutes = details.reduce(
-        (sum, item) => sum + parseInt(item.time),
-        0
-      ) + parseInt(time);
+      totalMinutes =
+        details.reduce(
+          (sum, item) => sum + parseInt(item.time),
+          0
+        ) + parseInt(data.time);
     }
+
     if (totalMinutes > 60) {
-      return toast.error(
-        "Total time cannot exceed 60 minutes."
-      );
+      toast.error("Total time cannot exceed 60 minutes.");
+      return;
     }
-  
+
     const newDetail = {
       id: editDetail ? editDetail.id : Date.now(),
-      details: detail,
-      time: `${time}min`,
-      guidelines: guidelines.split(", ").join("\n"),
+      details: data.detail,
+      time: `${data.time}min`,
+      guidelines: data.guidelines.split(", ").join("\n"),
     };
-  
+
     onSave(
       editDetail
         ? details.map((d) =>
@@ -74,11 +89,13 @@ const DetailsModal = ({
           )
         : [...details, newDetail]
     );
+
     toast.success(
       editDetail
         ? "Detail updated successfully!"
         : "Detail added successfully!"
     );
+
     onClose();
   };
 
@@ -91,39 +108,60 @@ const DetailsModal = ({
         onClose={onClose}
         title={editDetail ? "Edit Detail" : "Add Detail"}
       >
-        <form onSubmit={handleSave}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-3">
             <div className="space-y-1">
-              <Label name="name" label="Detail" />
+              <Label name="detail" label="Detail" />
               <Input
                 type="text"
-                value={detail}
-                onChange={(e) => setDetail(e.target.value)}
+                {...register("detail", {
+                  required: "Detail name is required",
+                })}
                 placeholder="Enter Detail Name"
-                required
+                error={errors.detail}
               />
+              {errors.detail && (
+                <p className="text-[#B10E0EE5] text-[10px] mt-1">
+                  {errors.detail.message}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <Label name="time" label="Time" />
               <Input
                 type="number"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
+                {...register("time", {
+                  required: "Time is required",
+                  pattern: {
+                    value: /^\d{1,2}$/,
+                    message:
+                      "Invalid time format! Use numbers only.",
+                  },
+                })}
                 placeholder="Time (e.g., 10)"
-                required
+                error={errors.time}
               />
+              {errors.time && (
+                <p className="text-[#B10E0EE5] text-[10px] mt-1">
+                  {errors.time.message}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <Label name="guidelines" label="Guidelines" />
               <Input
-                value={guidelines}
                 type="text"
-                onChange={(e) =>
-                  setGuidelines(e.target.value)
-                }
+                {...register("guidelines", {
+                  required: "Guidelines are required",
+                })}
                 placeholder="Guidelines (comma-separated)"
-                required
+                error={errors.guidelines}
               />
+              {errors.guidelines && (
+                <p className="text-[#B10E0EE5] text-[10px] mt-1">
+                  {errors.guidelines.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex justify-end items-center gap-2 mt-4 mb-2">
@@ -164,7 +202,7 @@ const Label = ({ name, label }) => {
   return (
     <label
       htmlFor={name}
-      className="block text-[#6B6F7B] text-2xs font-bold"
+      className="block text-[#6B6F7B] text-2xs font-bold required-field-label"
     >
       {label}
     </label>
@@ -176,33 +214,22 @@ Label.propTypes = {
   label: PropTypes.string.isRequired,
 };
 
-const Input = ({
-  type,
-  value,
-  onChange,
-  placeholder,
-  required,
-}) => {
+const Input = ({ type, placeholder, error, ...rest }) => {
   return (
     <input
       maxLength={type === "tel" ? 10 : undefined}
       type={type}
-      value={value}
-      onChange={onChange}
-      required={required}
       placeholder={placeholder}
-      className="w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium"
+      className={`w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium ${
+        error ? "border-red-500" : ""
+      }`}
+      {...rest}
     />
   );
 };
 
 Input.propTypes = {
   type: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
-  onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  required: PropTypes.bool,
+  error: PropTypes.object,
 };

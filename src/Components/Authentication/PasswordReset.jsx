@@ -123,6 +123,7 @@ const PasswordReset = () => {
                 name={"password"}
                 className="mb-1"
                 label={"New Password"}
+                required={true}
               />
               <div className="flex flex-col w-full">
                 <div className="flex items-center justify-start">
@@ -199,6 +200,7 @@ const PasswordReset = () => {
                 className="mb-1"
                 label="Confirm Password"
                 name="confirmPassword"
+                required={true}
               />
               <div className="flex flex-col w-full mb-4">
                 <div className="flex items-center justify-start">

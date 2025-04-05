@@ -215,7 +215,9 @@ const AddJob = () => {
       <div className="w-full max-w-[500px] my-5">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={formRowClassName}>
-            <label className={labelClassName}>
+            <label
+              className={`${labelClassName} required-field-label`}
+            >
               Job Role
             </label>
             {isClientUser && isEdit ? (
@@ -267,7 +269,9 @@ const AddJob = () => {
           </div>
 
           <div className={formRowClassName}>
-            <label className={labelClassName}>
+            <label
+              className={`${labelClassName} required-field-label`}
+            >
               Assigned Recruiter
             </label>
             {isClientUser && isEdit ? (
@@ -318,7 +322,9 @@ const AddJob = () => {
           </div>
 
           <div className={formRowClassName}>
-            <label className={labelClassName}>
+            <label
+              className={`${labelClassName} required-field-label`}
+            >
               Hiring Manager
             </label>
             {isClientUser && isEdit ? (
@@ -382,7 +388,9 @@ const AddJob = () => {
           </div>
 
           <div className={formRowClassName}>
-            <label className={labelClassName}>
+            <label
+              className={`${labelClassName} required-field-label`}
+            >
               Function
             </label>
             <Controller
@@ -420,7 +428,9 @@ const AddJob = () => {
         </div> */}
 
           <div className={formRowClassName}>
-            <label className={labelClassName}>
+            <label
+              className={`${labelClassName} required-field-label`}
+            >
               Job Description
             </label>
             <div className="w-2/3">
@@ -495,7 +505,9 @@ const AddJob = () => {
             />
           </div>
           <div className={formRowClassName}>
-            <label className={labelClassName}>
+            <label
+              className={`${labelClassName} required-field-label`}
+            >
               Essentials
             </label>
 

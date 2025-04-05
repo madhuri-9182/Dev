@@ -149,6 +149,7 @@ const LoginUsingEmail = () => {
               name="email"
               className="mb-1"
               label="Login using Email"
+              required={true}
             />
             <Controller
               name="email"
@@ -186,6 +187,7 @@ const LoginUsingEmail = () => {
               name="password"
               className="mb-1 mt-3"
               label="Password"
+              required={true}
             />
             <div className="flex items-center justify-start">
               <Controller

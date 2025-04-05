@@ -108,13 +108,13 @@
 /* Astrik to show in required fields lable */
 .required-field-label::before {
   display: inline-block;
-  margin-inline-end: 2px;
-  color: red;
-  font-size: 12px;
+  margin-right: 2px;
+  color: #b10e0ee5;
+  font-size: 13px;
   font-family: SimSun, sans-serif;
   line-height: 1;
   content: "*";
-  vertical-align: super;
+  vertical-align: text-top;
 }
 
 .primary-button {

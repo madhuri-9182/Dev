@@ -282,6 +282,7 @@ const AddUserModal = ({
                   <FormField
                     label="Full Name (First Name + Last Name)"
                     error={errors.name?.message}
+                    required={true}
                   >
                     <Input
                       type="text"
@@ -310,6 +311,7 @@ const AddUserModal = ({
                   <FormField
                     label="Email ID"
                     error={errors.email?.message}
+                    required={true}
                   >
                     <Input
                       type="text"
@@ -338,6 +340,7 @@ const AddUserModal = ({
                   <FormField
                     label="Mobile Number"
                     error={errors.phone?.message}
+                    required={true}
                   >
                     <Input
                       type="tel"
@@ -355,7 +358,10 @@ const AddUserModal = ({
 
               {selectedUser?.user?.role ===
               "client_owner" ? (
-                <FormField label="User Type">
+                <FormField
+                  label="User Type"
+                  required={true}
+                >
                   <div className="w-full rounded-lg text-2xs py-2 px-3 border text-left custom-select border-[#cac4d0] opacity-50 cursor-not-allowed">
                     Owner
                   </div>
@@ -371,6 +377,7 @@ const AddUserModal = ({
                     <FormField
                       label="User Type"
                       error={errors.role?.message}
+                      required={true}
                     >
                       <CustomSelect
                         type="role"
@@ -397,6 +404,7 @@ const AddUserModal = ({
                   <FormField
                     label="Accessibility"
                     error={errors.accessibility?.message}
+                    required={true}
                   >
                     <CustomSelect
                       type="accessibility"
@@ -430,6 +438,7 @@ const AddUserModal = ({
                   <FormField
                     label="Jobs Assigned"
                     error={errors.jobs_assigned?.message}
+                    required={accessibility === "AGJ"}
                   >
                     <CustomSelect
                       type="jobs_assigned"
