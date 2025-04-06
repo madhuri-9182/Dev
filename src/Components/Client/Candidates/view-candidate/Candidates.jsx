@@ -252,7 +252,12 @@ function Candidates() {
       <CandidateList
         candidates={data?.results || []}
         utilities={utilities}
-        candidateStatus={CANDIDATE_STATUS}
+        candidateStatus={CANDIDATE_STATUS.filter(
+          (status) =>
+            !["All", "SLD", "RJD", "drop"].includes(
+              status.id
+            )
+        )}
         onViewCandidate={handleViewCandidate}
       />
 

@@ -210,7 +210,7 @@ export const CANDIDATE_STATUS = [
     name: "All",
   },
   {
-    id: 'HREC',
+    id: "HREC",
     name: "Highly Recommended",
   },
   {
@@ -222,7 +222,7 @@ export const CANDIDATE_STATUS = [
     name: "Not Recommended",
   },
   {
-    id: 'SNREC',
+    id: "SNREC",
     name: "Strongly Not Recommended",
   },
   {
@@ -242,9 +242,13 @@ export const CANDIDATE_STATUS = [
     name: "Rejected",
   },
   {
-    id: 'NJ',
+    id: "NJ",
     name: "Not Joined",
-  }
+  },
+  {
+    id: "drop",
+    name: "Dropped",
+  },
 ];
 
 export const JOB_STATUS = [
