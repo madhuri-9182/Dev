@@ -34,16 +34,14 @@ const InterviewerConfirmation = () => {
     mutate(interviewId);
   }, [interviewId]);
 
-  if (isPending) {
-    return <LoadingState />;
-  }
-
   const isRejected = data?.message === "Interview Rejected";
 
   return (
     <div className="w-full flex items-center justify-center">
       <div className="flex flex-col items-center justify-center mt-16 w-[360px] mx-10">
-        {isSuccess ? (
+        {isPending ? (
+          <LoadingState />
+        ) : isSuccess ? (
           <>
             {isRejected ? (
               <FaCircleXmark className="text-[#FF5252] w-[60px] h-[60px] font-bold" />
