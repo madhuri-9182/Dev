@@ -215,7 +215,9 @@ function ClientScheduleInterview() {
   const scheduleInterviewMutation = useMutation({
     mutationFn: scheduleInterview,
     onSuccess: () => {
-      toast.success("Interviewers notified successfully");
+      toast.success(
+        "Scheduling initiated successfully. Interviewers will be notified shortly."
+      );
       navigate("/client/candidates");
     },
     onError: (error) => {
