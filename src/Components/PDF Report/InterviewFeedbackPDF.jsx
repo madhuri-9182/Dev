@@ -435,7 +435,10 @@ InterviewFeedbackPDF.displayName = "InterviewFeedbackPDF";
 
 InterviewFeedbackPDF.propTypes = {
   data: PropTypes.object.isRequired,
-  recording_link: PropTypes.object.isRequired,
+  recording_link: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]),
 };
 
 export default InterviewFeedbackPDF;
