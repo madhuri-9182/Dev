@@ -141,7 +141,7 @@ function Candidates() {
       label: "Total Candidates",
       value: data?.total_candidates,
     },
-    { label: "To be Scheduled", value: data?.scheduled },
+    { label: "Scheduled", value: data?.scheduled },
     { label: "In Process", value: data?.inprocess },
     { label: "Recommended", value: data?.recommended },
     { label: "Rejected", value: data?.rejected },
