@@ -13,7 +13,7 @@ import {
 } from "../Constants/constants";
 import toast from "react-hot-toast";
 import {
-  SecondaryButton,
+  // SecondaryButton,
   SubmitButton,
   Label,
   Input,
@@ -284,11 +284,11 @@ const LoginUsingEmail = () => {
               label={"Login Using Mobile Number"}
               onClick={handleLGNNavigation}
             /> */}
-            <SecondaryButton
+            {/* <SecondaryButton
               disabled={true}
               label={"Login Using SSO"}
               onClick={() => {}}
-            />
+            /> */}
           </div>
         </form>
       </div>
