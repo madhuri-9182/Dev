@@ -29,6 +29,8 @@ import {
 import dayjs from "dayjs";
 // Import company logo
 import { CompanyLogo } from "../../../assets/index"; // Update this path to match your actual logo location
+// Import Modal component
+import LastMonthModal from "./LastMonthModal";
 
 const Finance = () => {
   // State and hooks
@@ -38,10 +40,14 @@ const Finance = () => {
     to: dayjs().format("DD/MM/YYYY"),
   });
   const [showDuesAlert, setShowDuesAlert] = useState(true);
+  const [isLastMonthModalOpen, setIsLastMonthModalOpen] =
+    useState(false);
 
   const [isGeneratingPdf, setIsGeneratingPdf] =
     useState(false);
   const { ref, inView } = useInView({ threshold: 0 });
+  const { ref: lastMonthRef, inView: lastMonthInView } =
+    useInView({ threshold: 0 });
 
   // Parse date string in DD/MM/YYYY format to dayjs object
   const parseDate = (dateString) => {
@@ -121,6 +127,11 @@ const Finance = () => {
     }));
   };
 
+  // Function to toggle last month modal
+  const toggleLastMonthModal = () => {
+    setIsLastMonthModalOpen((prev) => !prev);
+  };
+
   // Query for last month's pending dues
   const {
     data: lastMonthData,
@@ -142,11 +153,45 @@ const Finance = () => {
     error,
   } = useInfiniteQuery({
     queryKey: ["finance"],
-    queryFn: ({ pageParam = 1 }) => getFinance(pageParam),
-    getNextPageParam: (lastPage) =>
-      lastPage.next
-        ? parseInt(lastPage.next.split("page=")[1])
-        : undefined,
+    queryFn: ({ pageParam = 1 }) =>
+      getFinance({ page: pageParam }),
+    getNextPageParam: (lastPage) => {
+      // If the total count is greater than the current offset + limit, there are more pages
+      const currentItemCount =
+        (lastPage.offset || 0) + lastPage.results.length;
+      if (currentItemCount < lastPage.count) {
+        return lastPage.offset / 10 + 2; // Next page number
+      }
+      return undefined;
+    },
+  });
+
+  // Data fetching for last month's dues for the modal
+  const {
+    data: lastMonthModalData,
+    isLoading: isLastMonthModalLoading,
+    isFetchingNextPage: isLastMonthModalFetchingNextPage,
+    hasNextPage: hasLastMonthModalNextPage,
+    fetchNextPage: fetchLastMonthModalNextPage,
+    isError: isLastMonthModalError,
+    error: lastMonthModalError,
+  } = useInfiniteQuery({
+    queryKey: ["finance", "lastMonth"],
+    queryFn: ({ pageParam = 1 }) =>
+      getFinance({
+        page: pageParam,
+        param: { finance_month: "last_month" },
+      }),
+    getNextPageParam: (lastPage) => {
+      // If the total count is greater than the current offset + limit, there are more pages
+      const currentItemCount =
+        (lastPage.offset || 0) + lastPage.results.length;
+      if (currentItemCount < lastPage.count) {
+        return lastPage.offset / 10 + 2; // Next page number
+      }
+      return undefined;
+    },
+    enabled: isLastMonthModalOpen, // Only fetch when modal is open
   });
 
   // Calculate total amount
@@ -161,6 +206,19 @@ const Finance = () => {
       }, sum);
     }, 0);
   }, [data]);
+
+  // Calculate total amount for last month modal
+  const lastMonthModalTotalAmount = useMemo(() => {
+    if (!lastMonthModalData) return 0;
+
+    return lastMonthModalData.pages.reduce((sum, page) => {
+      return page.results.reduce((pageSum, item) => {
+        return (
+          pageSum + (parseFloat(item.client_amount) || 0)
+        );
+      }, sum);
+    }, 0);
+  }, [lastMonthModalData]);
 
   // Check if there are pending dues from last month
   const hasPendingLastMonthDues = useMemo(() => {
@@ -187,6 +245,24 @@ const Finance = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+  ]);
+
+  // Fetch next page for last month modal when scrolling
+  useEffect(() => {
+    if (
+      lastMonthInView &&
+      hasLastMonthModalNextPage &&
+      !isLastMonthModalFetchingNextPage &&
+      isLastMonthModalOpen
+    ) {
+      fetchLastMonthModalNextPage();
+    }
+  }, [
+    lastMonthInView,
+    fetchLastMonthModalNextPage,
+    hasLastMonthModalNextPage,
+    isLastMonthModalFetchingNextPage,
+    isLastMonthModalOpen,
   ]);
 
   // PDF Generation
@@ -351,6 +427,183 @@ const Finance = () => {
     }
   };
 
+  // Generate PDF for last month dues
+  const generateLastMonthPDF = async () => {
+    try {
+      setIsGeneratingPdf(true);
+
+      // Fetch remaining pages if necessary
+      let safetyCounter = 0;
+      const MAX_ITERATIONS = 20;
+
+      while (
+        hasLastMonthModalNextPage &&
+        safetyCounter < MAX_ITERATIONS
+      ) {
+        await fetchLastMonthModalNextPage();
+        safetyCounter++;
+      }
+
+      // Create PDF document
+      const doc = new jsPDF();
+
+      // Add company logo
+      try {
+        const img = new Image();
+        img.src = CompanyLogo;
+
+        const addLogoToDoc = () => {
+          const logoWidth = 18;
+          const aspectRatio = img.height / img.width;
+          const logoHeight = logoWidth * aspectRatio;
+
+          doc.addImage(
+            CompanyLogo,
+            "PNG",
+            14,
+            10,
+            logoWidth,
+            logoHeight
+          );
+        };
+
+        if (img.complete) {
+          addLogoToDoc();
+        } else {
+          await new Promise((resolve) => {
+            img.onload = () => {
+              addLogoToDoc();
+              resolve();
+            };
+            img.onerror = () => {
+              console.error(
+                "Failed to load logo image for PDF"
+              );
+              resolve();
+            };
+          });
+        }
+      } catch (logoError) {
+        console.error(
+          "Error adding logo to PDF:",
+          logoError
+        );
+      }
+
+      // Add last month billing period and download date
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      const lastMonthStart = dayjs()
+        .subtract(1, "month")
+        .startOf("month")
+        .format("DD/MM/YYYY");
+      const lastMonthEnd = dayjs()
+        .subtract(1, "month")
+        .endOf("month")
+        .format("DD/MM/YYYY");
+      const billingPeriod = `Billing Period: ${lastMonthStart} - ${lastMonthEnd}`;
+      const downloadDate = `Date Printed: ${dayjs().format(
+        "DD/MM/YYYY"
+      )}`;
+
+      doc.text(
+        billingPeriod,
+        doc.internal.pageSize.width - 14,
+        15,
+        { align: "right" }
+      );
+      doc.text(
+        downloadDate,
+        doc.internal.pageSize.width - 14,
+        20,
+        { align: "right" }
+      );
+
+      const pageWidth = doc.internal.pageSize.width;
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.5);
+      doc.line(14, 30, pageWidth - 14, 30);
+
+      // Add title and total
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text(
+        `${dayjs()
+          .subtract(1, "month")
+          .format("MMMM")} Dues`,
+        14,
+        40
+      );
+      doc.text(
+        `TOTAL: INR ${lastMonthModalTotalAmount.toLocaleString(
+          "en-IN",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )}`,
+        doc.internal.pageSize.width - 14,
+        40,
+        { align: "right" }
+      );
+
+      // Get all last month finance data and prepare table
+      const allData =
+        lastMonthModalData?.pages.flatMap(
+          (page) => page.results
+        ) || [];
+      const tableData = allData.map((item) => [
+        item.candidate.name,
+        getJobLabel(item.candidate.role),
+        `${item.candidate.year}.${item.candidate.month} Years`,
+        formatDate(item.scheduled_time),
+        formatCurrency(item.client_amount),
+      ]);
+
+      // Create table with autoTable
+      autoTable(doc, {
+        startY: 50,
+        head: [
+          [
+            "Candidate",
+            "ROLE",
+            "EXPERIENCE",
+            "DATE",
+            "AMOUNT",
+          ],
+        ],
+        body: tableData,
+        headStyles: {
+          fillColor: [43, 49, 62],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [229, 236, 246],
+        },
+        theme: "grid",
+        styles: {
+          fontSize: 10,
+          cellPadding: 3,
+        },
+      });
+
+      // Save the PDF
+      doc.save(
+        `${dayjs()
+          .subtract(1, "month")
+          .format("MMMM")}_finance_report.pdf`
+      );
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert(
+        "Error generating PDF. Check console for details."
+      );
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   // Helper Functions
   const formatDate = (dateTime) => {
     return typeof dateTime === "string" &&
@@ -387,6 +640,12 @@ const Finance = () => {
   const displayData =
     data?.pages.flatMap((page) => page.results) || [];
 
+  // Prepare last month data for modal
+  const lastMonthDisplayData =
+    lastMonthModalData?.pages.flatMap(
+      (page) => page.results
+    ) || [];
+
   // Table styling
   const tableStyles = {
     firstCol:
@@ -422,12 +681,22 @@ const Finance = () => {
                   .
                 </p>
               </div>
-              <button
-                onClick={() => setShowDuesAlert(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <CloseCircle className="h-5 w-5" />
-              </button>
+              <div className="flex justify-center items-center gap-x-2">
+                <button
+                  onClick={toggleLastMonthModal}
+                  className="py-1 px-4 rounded-lg text-xs font-semibold text-white h-[28px] 
+             bg-[#007AFF] transition-all duration-300 ease-in-out
+             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
+                >
+                  View
+                </button>
+                <button
+                  onClick={() => setShowDuesAlert(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <CloseCircle className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           )}
 
@@ -676,6 +945,193 @@ const Finance = () => {
               </div>
             </div>
           </div>
+
+          {/* Last Month Dues Modal */}
+          <LastMonthModal
+            isOpen={isLastMonthModalOpen}
+            onClose={toggleLastMonthModal}
+            title={`${lastMonthName} Dues`}
+            className="w-[60vw] max-h-[80vh]"
+          >
+            <div className="p-4">
+              {isLastMonthModalLoading ? (
+                <LoadingState />
+              ) : isLastMonthModalError ? (
+                <ErrorState
+                  message={getErrorMessage(
+                    lastMonthModalError
+                  )}
+                />
+              ) : (
+                <>
+                  <div className="flex justify-between mb-6">
+                    <h2 className="text-lg font-bold text-[#1C1C1C]">
+                      {lastMonthName} Dues
+                    </h2>
+                    <h2 className="text-lg font-bold text-[#1C1C1C]">
+                      TOTAL: INR{" "}
+                      {lastMonthModalTotalAmount.toLocaleString(
+                        "en-IN",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}
+                    </h2>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b-[3px] border-[#4F4F4F] grid grid-cols-[2.5fr_2.5fr_2.5fr_2.5fr_2fr]">
+                          <th
+                            className={tableStyles.firstCol}
+                          >
+                            Candidate
+                          </th>
+                          <th
+                            className={tableStyles.standard}
+                          >
+                            ROLE
+                          </th>
+                          <th
+                            className={tableStyles.standard}
+                          >
+                            EXPERIENCE
+                          </th>
+                          <th
+                            className={tableStyles.standard}
+                          >
+                            DATE
+                          </th>
+                          <th
+                            className={tableStyles.standard}
+                          >
+                            AMOUNT
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lastMonthDisplayData.length > 0 ? (
+                          <>
+                            {lastMonthDisplayData.map(
+                              (item, index) => (
+                                <tr
+                                  key={`${item.candidate.name}-${item.scheduled_time}-${index}`}
+                                  className={`${
+                                    index % 2 === 1
+                                      ? "bg-[#e5ecf6d4] border-y border-[#0000001A]"
+                                      : ""
+                                  } grid grid-cols-[2.5fr_2.5fr_2.5fr_2.5fr_2fr]`}
+                                >
+                                  <td
+                                    className={
+                                      tableStyles.firstCol
+                                    }
+                                  >
+                                    {item.candidate.name}
+                                  </td>
+                                  <td
+                                    className={
+                                      tableStyles.standard
+                                    }
+                                  >
+                                    {getJobLabel(
+                                      item.candidate.role
+                                    )}
+                                  </td>
+                                  <td
+                                    className={
+                                      tableStyles.standard
+                                    }
+                                  >
+                                    {item.candidate.year}.
+                                    {item.candidate.month}{" "}
+                                    Years
+                                  </td>
+                                  <td
+                                    className={
+                                      tableStyles.standard
+                                    }
+                                  >
+                                    {formatDate(
+                                      item.scheduled_time
+                                    )}
+                                  </td>
+                                  <td
+                                    className={
+                                      tableStyles.standard
+                                    }
+                                  >
+                                    {formatCurrency(
+                                      item.client_amount
+                                    )}
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                          </>
+                        ) : null}
+                      </tbody>
+                    </table>
+
+                    {/* Infinite scroll for modal */}
+                    <div
+                      ref={lastMonthRef}
+                      className="py-4 text-center text-gray-500"
+                    >
+                      {isLastMonthModalFetchingNextPage
+                        ? "Loading more..."
+                        : hasLastMonthModalNextPage
+                        ? "Scroll for more"
+                        : ""}
+                    </div>
+                  </div>
+
+                  {/* Empty state for modal */}
+                  {lastMonthDisplayData.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <Empty description="No data to display" />
+                    </div>
+                  )}
+
+                  {/* Download button for modal */}
+                  {lastMonthDisplayData.length > 0 && (
+                    <div className="mt-6 flex justify-end items-center gap-x-3">
+                      <button
+                        type="button"
+                        onClick={generateLastMonthPDF}
+                        disabled={isGeneratingPdf}
+                        className={`
+                          py-2 px-6 rounded-full text-xs font-semibold text-white h-[32px] 
+                          bg-[#007AFF] transition-all duration-300 ease-in-out
+                          hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] 
+                          ${
+                            isGeneratingPdf
+                              ? "opacity-70 cursor-not-allowed"
+                              : "cursor-pointer"
+                          }
+                        `}
+                      >
+                        {isGeneratingPdf
+                          ? "Generating..."
+                          : "Download"}
+                      </button>
+                      <button
+                        type="button"
+                        className="                          py-2 px-6 rounded-full text-xs font-semibold text-white h-[32px] 
+                          bg-[#007AFF] transition-all duration-300 ease-in-out
+                          hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer
+"
+                      >
+                        Pay Now
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </LastMonthModal>
         </div>
       </LocalizationProvider>
     </ThemeProvider>
