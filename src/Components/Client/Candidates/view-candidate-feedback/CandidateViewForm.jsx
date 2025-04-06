@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import {
+  formatExperienceFromYearsAndMonths,
   getJobLabel,
   getSpecialization,
 } from "../../../../utils/util";
-import { formatExperience } from "../../../Interviewer/Dashboard/utils/formatters";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   getFeedbackInputColor,
@@ -34,7 +34,7 @@ const CandidateViewForm = ({ data }) => {
   const INTERVIEW_FORM_ITEMS = [
     {
       label: "Interviewer Experience",
-      value: formatExperience(
+      value: formatExperienceFromYearsAndMonths(
         data?.interviewer?.total_experience_months,
         data?.interviewer?.total_experience_years
       ),

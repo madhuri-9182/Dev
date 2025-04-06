@@ -78,6 +78,20 @@ export const formatExperience = (experience) => {
   return `${years} ${months}`.trim();
 };
 
+export const formatExperienceFromYearsAndMonths = (
+  years,
+  months
+) => {
+  if (years === 0 && months === 0) return "No experience";
+  if (years === 0)
+    return `${months} Month${months !== 1 ? "s" : ""}`;
+  if (months === 0)
+    return `${years} Year${years !== 1 ? "s" : ""}`;
+  return `${years} Year${
+    years !== 1 ? "s" : ""
+  } ${months} Month${months !== 1 ? "s" : ""}`;
+};
+
 export const fileToBase64 = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

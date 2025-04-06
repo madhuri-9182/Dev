@@ -47,20 +47,3 @@ export const formatTime = (dateTimeString) => {
 
   return `${hours}:${minutes} ${ampm}`;
 };
-
-/**
- * Format experience to readable string (e.g. "2 Years 3 Months")
- * @param {number} years - Number of years
- * @param {number} months - Number of months
- * @returns {string} Formatted experience string
- */
-export const formatExperience = (years, months) => {
-  if (years === 0 && months === 0) return "No experience";
-  if (years === 0)
-    return `${months} Month${months !== 1 ? "s" : ""}`;
-  if (months === 0)
-    return `${years} Year${years !== 1 ? "s" : ""}`;
-  return `${years} Year${
-    years !== 1 ? "s" : ""
-  } ${months} Month${months !== 1 ? "s" : ""}`;
-};

@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 // Utilities
 import {
+  formatExperienceFromYearsAndMonths,
   getJobLabel,
   getSpecialization,
 } from "../../../../utils/util";
 import {
   formatDate,
   formatTime,
-  formatExperience,
 } from "../utils/formatters";
 import { LoadingState } from "../../../shared/loading-error-state";
 import { ActionButtons } from "./ActionButtons";
@@ -110,7 +110,7 @@ const InfiniteScrollTable = ({
                         tableHeadingAndBodyClassName
                       }
                     >
-                      {formatExperience(
+                      {formatExperienceFromYearsAndMonths(
                         item.candidate.year,
                         item.candidate.month
                       )}

@@ -21,8 +21,8 @@ import {
   ErrorState,
   LoadingState,
 } from "../../shared/loading-error-state";
-import { formatExperience } from "../Dashboard/utils/formatters";
 import {
+  formatExperienceFromYearsAndMonths,
   getErrorMessage,
   getJobLabel,
 } from "../../../utils/util";
@@ -309,18 +309,20 @@ const Feedback = () => {
           name: candidate.name,
           email: candidate.email,
           phone: candidate.phone.split("+91")[1],
-          yearsOfExperience: formatExperience(
-            candidate.year,
-            candidate.month
-          ),
+          yearsOfExperience:
+            formatExperienceFromYearsAndMonths(
+              candidate.year,
+              candidate.month
+            ),
           role: getJobLabel(candidate.role),
           company: candidate.company,
         },
         interviewerDetails: {
-          yearsOfExperience: formatExperience(
-            interviewer.total_experience_years,
-            interviewer.total_experience_months
-          ),
+          yearsOfExperience:
+            formatExperienceFromYearsAndMonths(
+              interviewer.total_experience_years,
+              interviewer.total_experience_months
+            ),
           company: interviewer.current_company,
           interviewDate:
             responseData?.interview_date.split(" ")[0],
