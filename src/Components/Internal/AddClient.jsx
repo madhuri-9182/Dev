@@ -43,6 +43,7 @@ function AddClient() {
             setValue("domain", clientData?.domain);
             setValue("gstin", clientData?.gstin);
             setValue("pan", clientData?.pan);
+            setValue("client_level", clientData?.client_level?.toString());
             setValue("is_signed", `${clientData?.is_signed}`);
             setValue("address", clientData?.address);
             setAssignedTo(clientData?.assigned_to?.id);
@@ -153,6 +154,7 @@ function AddClient() {
             if (data.domain !== clientData?.domain) payload.domain = data.domain;
             if (data.gstin !== clientData?.gstin) payload.gstin = data.gstin;
             if (data.pan !== clientData?.pan) payload.pan = data.pan;
+            if (data.client_level !== clientData?.client_level?.toString()) payload.client_level = parseInt(data.client_level);
             if (data.is_signed !== clientData?.is_signed) payload.is_signed = data.is_signed === "true";
             if (data.address !== clientData?.address) payload.address = data.address;
             if (assignedTo !== clientData?.assigned_to?.id) payload.assigned_to = assignedTo;
@@ -273,6 +275,23 @@ function AddClient() {
                                             className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         />
                                         {errors.pan && <span className="error-message">{errors.pan.message}</span>}
+                                    </div>
+                                </li>
+                                <li className="flex items-center">
+                                    <label className="text-[#6B6F7B] font-bold text-xs w-1/5 px-4 required-field-label">Client Level</label>
+                                    <div>
+                                        <select
+                                            name="client_level"
+                                            defaultValue={""}
+                                            {...register("client_level", { required: "Client Level is required." })}
+                                            className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        >
+                                            <option disabled value="">Select</option>
+                                            <option value={"1"}>1</option>
+                                            <option value={"2"}>2</option>
+                                            <option value={"3"}>3</option>
+                                        </select>
+                                        {errors.client_level && <span className="error-message">{errors.client_level.message}</span>}
                                     </div>
                                 </li>
                                 <li className="flex items-center">

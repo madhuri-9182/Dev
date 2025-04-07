@@ -10,6 +10,7 @@ import DynamicMultiSelect from '../../utils/DynamicMultiSelect';
 
 function AddInterviewer() {
   const [selectedStrength, setSelectedStrength] = useState("")
+  const [selectedInterviewerLevel, setSelectedInterviewerLevel] = useState("");
   const [items, setItems] = useState([]);
   const [itemsSkills, setItemsSkills] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,13 @@ function AddInterviewer() {
       trigger("strength"); // Trigger validation
     }
   }, [selectedStrength, trigger]);
+
+  useEffect(() => {
+    // Revalidate interviewer level when changed, only if the user has interacted
+    if (hasInteracted.current) {
+      trigger("interviewer_level"); // Trigger validation
+    }
+  }, [selectedInterviewerLevel, trigger]);
 
   useEffect(() => {
     if (hasInteracted.current) {
@@ -112,6 +120,7 @@ function AddInterviewer() {
       formdata.append("current_company", data.currentCompany);
       formdata.append("previous_company", data.previousCompany);
       formdata.append("current_designation", data.currentDesignation);
+      formdata.append("interviewer_level", data.interviewer_level);
       formdata.append("total_experience_years", data.totalExperienceYears);
       formdata.append("total_experience_months", data.totalExperienceMonths);
       formdata.append("interview_experience_years", data.interviewExperienceYears);
@@ -256,7 +265,32 @@ function AddInterviewer() {
                   />
                   {errors.currentDesignation && <span className="error-message" >{errors.currentDesignation.message}</span>}
                 </div>
+                
               </li>
+              <li className='flex items-center justify-start gap-x-4 '>
+  <div className='w-[30%]  flex items-end justify-end'>
+    <label className=" w-full text-right text-[12px] text-[#6B6F7B] font-bold required-field-label">Interviewer Level</label>
+  </div>
+  <div className='w-1/2'>
+    <select
+      name="interviewer_level"
+      {...register("interviewer_level", { required: "Please select an interviewer level." })}
+      onChange={(e) => {
+        hasInteracted.current = true; // Mark as interacted 
+        setSelectedInterviewerLevel(e.target.value);
+        setValue("interviewer_level", e.target.value);
+      }}
+      className=" 2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+      defaultValue={""}
+    >
+      <option value="" disabled>Select Level</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+    {errors.interviewer_level && <span className="error-message" >{errors.interviewer_level.message}</span>}
+  </div>
+</li>
             </ul>
           </div>
           <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
