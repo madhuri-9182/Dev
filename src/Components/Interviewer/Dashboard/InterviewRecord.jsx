@@ -178,7 +178,7 @@ function InterviewRecord() {
   };
   return (
     <div className="flex h-full px-8 gap-x-5">
-      {hasVerificationError ? (
+      {!hasVerificationError ? (
         <>  
         <div className="w-full pt-8 flex flex-col gap-y-5">
         <div className="flex flex-col gap-y-3">
