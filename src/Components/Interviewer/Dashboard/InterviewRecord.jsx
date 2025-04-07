@@ -21,6 +21,7 @@ import useAuth from "../../../hooks/useAuth";
 import Heading from "./Components/Heading";
 import Sidebar from "./Components/Sidebar";
 import Table from "./Components/Table";
+import VerificationAlert from "./Components/VerificationAlert";
 
 function InterviewRecord() {
   const { auth } = useAuth();
@@ -131,6 +132,15 @@ function InterviewRecord() {
   const historyCount =
     interviewHistoryQuery.data?.pages[0]?.count || 0;
 
+  // Check if any query has failed with verification error
+  const hasVerificationError = 
+    (acceptedInterviewsQuery.data?.pages[0]?.status === "failed" && 
+     acceptedInterviewsQuery.data?.pages[0]?.message?.includes("please verify your email and phone")) ||
+    (pendingFeedbackQuery.data?.pages[0]?.status === "failed" && 
+     pendingFeedbackQuery.data?.pages[0]?.message?.includes("please verify your email and phone")) ||
+    (interviewHistoryQuery.data?.pages[0]?.status === "failed" && 
+     interviewHistoryQuery.data?.pages[0]?.message?.includes("please verify your email and phone"));
+
   // Mutation for checking events API
   const checkEventsMutation = useMutation({
     mutationFn: getGoogleEvents,
@@ -166,10 +176,11 @@ function InterviewRecord() {
   const handleCalendarClick = () => {
     checkEventsMutation.mutate();
   };
-
   return (
     <div className="flex h-full px-8 gap-x-5">
-      <div className="w-full pt-8 flex flex-col gap-y-5">
+      {hasVerificationError ? (
+        <>  
+        <div className="w-full pt-8 flex flex-col gap-y-5">
         <div className="flex flex-col gap-y-3">
           <Heading
             title={"Accepted Interviews"}
@@ -215,6 +226,10 @@ function InterviewRecord() {
         handleCalendarClick={handleCalendarClick}
         isLoading={checkEventsMutation.isLoading}
       />
+        </>
+      ): (
+        <VerificationAlert />
+      )}
     </div>
   );
 }
