@@ -139,6 +139,15 @@ const AddUserModal = ({
     }
   }, [isOpen, selectedUser, reset]);
 
+  useEffect(() => {
+    if (accessibility === "AJ") {
+      setValue("jobs_assigned", [], {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  }, [accessibility, setValue]);
+
   // Function to get only changed fields for edit mode
   const getChangedFields = (formData) => {
     if (!isEdit || !selectedUser) return formData;
@@ -226,7 +235,7 @@ const AddUserModal = ({
     () => [
       { id: "client_admin", name: "Admin" },
       { id: "client_user", name: "User" },
-      { id: "agency", name: "Agency" },
+      // { id: "agency", name: "Agency" },
     ],
     []
   );
@@ -420,7 +429,8 @@ const AddUserModal = ({
                 )}
               />
 
-              <Controller
+              {accessibility === 'AGJ' && (
+                <Controller
                 name="jobs_assigned"
                 control={control}
                 rules={{
@@ -462,6 +472,7 @@ const AddUserModal = ({
                   </FormField>
                 )}
               />
+              )}
             </div>
 
             {selectedJobs.length > 0 && (
