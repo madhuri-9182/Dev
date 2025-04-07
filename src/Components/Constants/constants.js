@@ -19,6 +19,8 @@ export const EMAIL_REGEX =
 
 export const MOBILE_REGEX = /^\d{10}$/;
 
+export const WEBSITE_REGEX = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+
 export const ROLES = {
   CLIENT: ["client_admin", "client_user", "client_owner"],
   AGENCY: ["agency"],

@@ -5,7 +5,7 @@ import axios from '../../api/axios';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import InfiniteScrollSelect from "../../utils/InfiniteScrollSelect";
-import { EMAIL_REGEX, MOBILE_REGEX } from "../Constants/constants";
+import { EMAIL_REGEX, MOBILE_REGEX, WEBSITE_REGEX } from "../Constants/constants";
 import Modal from "../shared/Modal";
 
 function AddClient() {
@@ -222,7 +222,7 @@ function AddClient() {
                                             placeholder="Enter Web Address"
                                             {...register("website", {
                                                 required: "Website is required",
-                                                pattern: { value: /^https?:\/\/.+/, message: "Website must be a valid URL." }
+                                                pattern: { value: WEBSITE_REGEX, message: "Website must be a valid URL." }
                                             })}
                                             className="block w-[360px] h-[32px] border border-gray-300 rounded-lg shadow-sm text-xs text-center px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         />
