@@ -36,8 +36,9 @@ const DEFAULT_EVENT = {
   date: "",
   start_time: "",
   end_time: "",
-  recurring: "none",
   formattedTime: "",
+  // Commented out recurrence related fields
+  /* recurring: "none",
   showRecurrenceOptions: false,
   recurrence: {
     frequency: "WEEKLY",
@@ -47,7 +48,7 @@ const DEFAULT_EVENT = {
     until: null,
     monthDay: [],
     yearDay: [],
-  },
+  }, */
 };
 
 const CALENDAR_CONFIG = {
@@ -236,11 +237,13 @@ const CalendarComponent = () => {
     };
   }, [popupVisible, currentSelection]);
 
+  /* Commented out recurrence related effect
   useEffect(() => {
     if (popupVisible && newEvent.showRecurrenceOptions) {
       updatePopupPosition();
     }
   }, [newEvent.showRecurrenceOptions, popupVisible]);
+  */
 
   useEffect(() => {
     if (googleEventsError) {
@@ -394,15 +397,15 @@ const CalendarComponent = () => {
     return { top, left };
   };
 
-  const updatePopupPosition = () => {
-    const selectedCells =
-      document.querySelectorAll(".fc-highlight");
-    if (selectedCells.length > 0) {
-      const mockEvent = { target: selectedCells[0] };
-      const position = calculatePopupPosition(mockEvent);
-      setPopupPosition(position);
-    }
-  };
+  // const updatePopupPosition = () => {
+  //   const selectedCells =
+  //     document.querySelectorAll(".fc-highlight");
+  //   if (selectedCells.length > 0) {
+  //     const mockEvent = { target: selectedCells[0] };
+  //     const position = calculatePopupPosition(mockEvent);
+  //     setPopupPosition(position);
+  //   }
+  // };
 
   // Event handlers
   const handleSelect = (selectionInfo) => {
@@ -467,11 +470,13 @@ const CalendarComponent = () => {
       } else {
         // Fallback positioning
         position = {
-          top:
-            window.innerHeight / 2 -
-            (updatedEvent.showRecurrenceOptions
-              ? 200
-              : 135),
+          top: window.innerHeight / 2 - 135,
+          // Commented out recurrence options check
+          // top:
+          //   window.innerHeight / 2 -
+          //   (updatedEvent.showRecurrenceOptions
+          //     ? 200
+          //     : 135),
           left: window.innerWidth / 2 - 192,
         };
       }
@@ -481,6 +486,7 @@ const CalendarComponent = () => {
     }, 10);
   };
 
+  /* Commented out recurrence data preparation function
   const prepareRecurrenceData = (event) => {
     const recurrenceData = {};
 
@@ -524,6 +530,7 @@ const CalendarComponent = () => {
 
     return recurrenceData;
   };
+  */
 
   const handleSaveEvent = () => {
     // Prepare the data for the API
@@ -544,6 +551,7 @@ const CalendarComponent = () => {
       blockData.notes = newEvent.description;
     }
 
+    /* Commented out recurrence data handling
     // Add recurrence data if applicable
     const showRecurrenceOptions =
       newEvent.showRecurrenceOptions || false;
@@ -561,6 +569,7 @@ const CalendarComponent = () => {
       blockData.recurrence =
         prepareRecurrenceData(newEvent);
     }
+    */
 
     // Send the data to the API
     blockCalendarTime(blockData);

@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import {
   IoMdTime,
-  IoIosArrowDown,
-  IoIosArrowUp,
+  // IoIosArrowDown,
+  // IoIosArrowUp,
 } from "react-icons/io";
 import { LuMessageSquare } from "react-icons/lu";
 
@@ -30,11 +29,10 @@ const CalendarPopup = ({
   isLoading,
 }) => {
   // State for expanded recurrence options
-  const [showRecurrenceOptions, setShowRecurrenceOptions] =
-    useState(false);
+  // const [showRecurrenceOptions, setShowRecurrenceOptions] = useState(false);
 
   // Initialize recurrence state with default values
-  const [recurrence, setRecurrence] = useState({
+  /* const [recurrence, setRecurrence] = useState({
     frequency: "WEEKLY", // default frequency
     interval: 1, // default interval (every 1 week/day/month/etc)
     days: [], // selected days of week
@@ -42,27 +40,27 @@ const CalendarPopup = ({
     until: null, // end date
     monthDay: [], // days of month for monthly recurrence
     yearDay: [], // days of year for yearly recurrence
-  });
+  }); */
 
   // Update newEvent when recurrence changes
-  useEffect(() => {
+  /* useEffect(() => {
     setNewEvent({
       ...newEvent,
       recurrence: recurrence,
       showRecurrenceOptions: showRecurrenceOptions, // Pass this state up to parent
     });
-  }, [recurrence, showRecurrenceOptions]);
+  }, [recurrence, showRecurrenceOptions]); */
 
   // Frequency options from the image
-  const frequencyOptions = [
+  /* const frequencyOptions = [
     { value: "WEEKLY", label: "Weekly" },
     { value: "DAILY", label: "Daily" },
     { value: "MONTHLY", label: "Monthly" },
     { value: "YEARLY", label: "Yearly" },
-  ];
+  ]; */
 
   // Days of week options
-  const daysOfWeek = [
+  /* const daysOfWeek = [
     { value: "MO", label: "M", fullLabel: "Monday" },
     { value: "TU", label: "T", fullLabel: "Tuesday" },
     { value: "WE", label: "W", fullLabel: "Wednesday" },
@@ -70,10 +68,10 @@ const CalendarPopup = ({
     { value: "FR", label: "F", fullLabel: "Friday" },
     { value: "SA", label: "S", fullLabel: "Saturday" },
     { value: "SU", label: "S", fullLabel: "Sunday" },
-  ];
+  ]; */
 
   // Toggle a day in the days array
-  const toggleDay = (day) => {
+  /* const toggleDay = (day) => {
     setRecurrence((prev) => {
       // Filter out any null values and then check if day exists
       const cleanDays = prev.days.filter((d) => d !== null);
@@ -86,10 +84,10 @@ const CalendarPopup = ({
         days: newDays,
       };
     });
-  };
+  }; */
 
   // Helper to get the current day for default selection
-  useEffect(() => {
+  /* useEffect(() => {
     if (
       recurrence.frequency === "WEEKLY" &&
       recurrence.days.length === 0
@@ -119,20 +117,20 @@ const CalendarPopup = ({
         console.error("Error setting default day", e);
       }
     }
-  }, [newEvent.date, recurrence.frequency]);
+  }, [newEvent.date, recurrence.frequency]); */
 
   // Handle frequency change
-  const handleFrequencyChange = (frequency) => {
+  /* const handleFrequencyChange = (frequency) => {
     setRecurrence((prev) => ({
       ...prev,
       frequency,
       // Reset days array when changing frequency
       days: frequency === "WEEKLY" ? prev.days : [],
     }));
-  };
+  }; */
 
   // Handle interval change
-  const handleIntervalChange = (e) => {
+  /* const handleIntervalChange = (e) => {
     const value = parseInt(e.target.value, 10);
     setRecurrence((prev) => ({
       ...prev,
@@ -140,10 +138,10 @@ const CalendarPopup = ({
         ? 1
         : Math.min(Math.max(value, 1), 90), // Constrain between 1 and 90
     }));
-  };
+  }; */
 
   // Handle count change (number of occurrences)
-  const handleCountChange = (e) => {
+  /* const handleCountChange = (e) => {
     const value = parseInt(e.target.value, 10);
     setRecurrence((prev) => ({
       ...prev,
@@ -152,17 +150,17 @@ const CalendarPopup = ({
         : Math.min(Math.max(value, 1), 250), // Constrain between 1 and 250
       until: null, // Reset until when count is set
     }));
-  };
+  }; */
 
   // Handle until date change
-  const handleUntilChange = (e) => {
+  /* const handleUntilChange = (e) => {
     const untilDate = e.target.value;
     setRecurrence((prev) => ({
       ...prev,
       until: untilDate,
       count: null, // Reset count when until is set
     }));
-  };
+  }; */
 
   return (
     <div
@@ -171,9 +169,8 @@ const CalendarPopup = ({
       style={{
         top: popupPosition.top,
         left: popupPosition.left,
-        maxHeight: showRecurrenceOptions
-          ? "400px"
-          : "270px",
+        maxHeight: "270px",
+        // maxHeight: showRecurrenceOptions ? "400px" : "270px",
       }}
     >
       {/* Header with close button */}
@@ -211,6 +208,7 @@ const CalendarPopup = ({
             <div className="font-medium text-xs">
               {newEvent.formattedTime}
             </div>
+            {/* Comment out the recurrence options toggle
             <div
               className="flex items-center mt-1 text-gray-500 text-2xs cursor-pointer"
               onClick={() =>
@@ -226,6 +224,7 @@ const CalendarPopup = ({
                 <IoIosArrowDown className="h-4 w-4 ml-1" />
               )}
             </div>
+            */}
           </div>
         </div>
 
@@ -248,6 +247,7 @@ const CalendarPopup = ({
             ></textarea>
           </div>
         </div>
+        {/* Comment out the recurrence options UI
         {showRecurrenceOptions && (
           <div className=" mb-4 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200">
             <h3 className="font-medium mb-3 text-default">
@@ -308,7 +308,6 @@ const CalendarPopup = ({
               </div>
             </div>
 
-            {/* Days of week selector (for WEEKLY) */}
             {recurrence.frequency === "WEEKLY" && (
               <div className="mb-3">
                 <label className="block text-xs font-medium mb-1">
@@ -335,13 +334,11 @@ const CalendarPopup = ({
               </div>
             )}
 
-            {/* End options */}
             <div className="mb-3">
               <label className="block text-xs font-medium mb-1">
                 Ends
               </label>
 
-              {/* Never end */}
               <div className="flex items-center mb-2">
                 <input
                   type="radio"
@@ -367,7 +364,6 @@ const CalendarPopup = ({
                 </label>
               </div>
 
-              {/* End after X occurrences */}
               <div className="flex items-center mb-2">
                 <input
                   type="radio"
@@ -401,7 +397,6 @@ const CalendarPopup = ({
                 </label>
               </div>
 
-              {/* End on specific date */}
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -442,10 +437,12 @@ const CalendarPopup = ({
             </div>
           </div>
         )}
+        */}
       </div>
 
       {/* Footer actions */}
       <div className="px-4 py-3 border-t flex justify-end space-x-2 sticky bottom-0 bg-white z-10">
+        {/* Comment out the "More options" button
         <button
           className="text-[#007AFF] font-medium text-default px-3 py-1 hover:bg-[#dee8f6] rounded-full"
           onClick={() =>
@@ -454,6 +451,7 @@ const CalendarPopup = ({
         >
           {showRecurrenceOptions ? "Hide" : "More"} options
         </button>
+        */}
         <button
           onClick={handleSaveEvent}
           disabled={isLoading}
