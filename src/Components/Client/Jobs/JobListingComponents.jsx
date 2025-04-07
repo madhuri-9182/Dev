@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from "react";
 import { IoClose } from "react-icons/io5";
-import { getJobLabel } from "../../../utils/util";
+import { getJobLabel, getSpecialization } from "../../../utils/util";
 import PropTypes from "prop-types";
 import {
   Listbox,
@@ -312,16 +312,16 @@ export const JobCard = ({
   onEdit,
 }) => (
   <div className="rounded-2xl bg-[#EBEBEB80] flex justify-between items-center px-7 py-2">
-    <div className="flex items-center justify-between gap-3 w-2/3">
-      <div className="w-[30%]">
+    <div className="flex items-center justify-between gap-3 w-3/4">
+      <div className="w-1/2">
         <span
           className="hover:underline hover:font-semibold text-2xs uppercase cursor-pointer"
           onClick={() => onEdit(job)}
         >
-          {getJobLabel(job.name)}
+          {getJobLabel(job.name)} ({getSpecialization(job.specialization)})
         </span>
       </div>
-      <div className="flex gap-4 w-[70%]">
+      <div className="flex gap-4 w-1/2">
         <button
           className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-20 py-1 flex items-center justify-center rounded-[100px] hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
           onClick={() => onView(job)}
@@ -349,7 +349,7 @@ export const JobCard = ({
         Active Candidates
       </p>
       <div className="w-6 h-6 bg-[#979DA3] text-white text-[10px] font-medium rounded-full flex items-center justify-center">
-        {job.total_positions}
+        {job.active_candidates}
       </div>
     </div>
   </div>
