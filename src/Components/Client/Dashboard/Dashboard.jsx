@@ -9,7 +9,7 @@ import {
   getErrorMessage,
   getJobLabel,
 } from "../../../utils/util";
-import { ALL_TASKS, ANALYTICS, MY_JOBS } from "./constants";
+import { ALL_TASKS, MY_JOBS } from "./constants";
 import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -70,9 +70,9 @@ const Dashboard = () => {
     },
   }));
 
-  const analyticsItems = ANALYTICS.map((analytics) => ({
-    label: analytics.label,
-  }));
+  // const analyticsItems = ANALYTICS.map((analytics) => ({
+  //   label: analytics.label,
+  // }));
 
   const blueGradient =
     "bg-gradient-to-r from-[#2D60FF] to-[#539BFF]";
@@ -139,7 +139,7 @@ const Dashboard = () => {
         </div>
 
         {/* Analytics */}
-        <div className="w-full flex flex-col gap-y-6">
+        {/* <div className="w-full flex flex-col gap-y-6">
           <CardHeader title="Analytics" />
           <CardItems
             items={analyticsItems}
@@ -147,7 +147,7 @@ const Dashboard = () => {
             textColor="text-white"
             customClass="h-28"
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -189,10 +189,9 @@ const CardItems = ({
       {items.map((item, idx) => (
         <div
           key={idx}
-          className={`flex flex-col gap-1 ${textColor} cursor-pointer`}
-          onClick={item.onClick}
+          className={`flex flex-col gap-1 ${textColor}`}
         >
-          <p className="text-2xs font-medium">
+          <p className="text-2xs font-medium cursor-pointer hover:underline" onClick={item.onClick}>
             {item.label}
           </p>
           {item.value !== undefined && (
