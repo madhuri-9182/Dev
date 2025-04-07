@@ -2,8 +2,46 @@ import { useEffect } from "react";
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import Modal from "../../shared/Modal";
+
+// Keep original Label component
+const Label = ({ name, label }) => {
+  return (
+    <label
+      htmlFor={name}
+      className="block text-[#6B6F7B] text-2xs font-bold required-field-label"
+    >
+      {label}
+    </label>
+  );
+};
+
+Label.propTypes = {
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+// Keep original Input component
+const Input = ({ type, placeholder, error, ...rest }) => {
+  return (
+    <input
+      maxLength={type === "tel" ? 10 : undefined}
+      type={type}
+      placeholder={placeholder}
+      className={`w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium ${
+        error ? "border-red-500" : ""
+      }`}
+      {...rest}
+    />
+  );
+};
+
+Input.propTypes = {
+  type: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  error: PropTypes.object,
+};
 
 const DetailsModal = ({
   isOpen,
@@ -13,11 +51,10 @@ const DetailsModal = ({
   editDetail,
 }) => {
   const {
-    register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
-    setValue,
   } = useForm({
     defaultValues: {
       detail: "",
@@ -27,16 +64,16 @@ const DetailsModal = ({
   });
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (editDetail) {
-      setValue("detail", editDetail?.details || "");
-      setValue(
-        "time",
-        editDetail?.time?.replace("min", "") || ""
-      );
-      setValue(
-        "guidelines",
-        editDetail?.guidelines?.replace(/\n/g, ", ") || ""
-      );
+      reset({
+        detail: editDetail?.details || "",
+        time: editDetail?.time?.replace("min", "") || "",
+        guidelines:
+          editDetail?.guidelines?.replace(/\n/g, ", ") ||
+          "",
+      });
     } else {
       reset({
         detail: "",
@@ -44,7 +81,7 @@ const DetailsModal = ({
         guidelines: "",
       });
     }
-  }, [editDetail, isOpen, setValue, reset]);
+  }, [editDetail, isOpen, reset]);
 
   const onSubmit = (data) => {
     // Calculate total minutes with proper handling for edit case
@@ -99,6 +136,8 @@ const DetailsModal = ({
     onClose();
   };
 
+  // No custom button components - will use original button styles
+
   if (!isOpen) return null;
 
   return (
@@ -112,13 +151,23 @@ const DetailsModal = ({
           <div className="space-y-3">
             <div className="space-y-1">
               <Label name="detail" label="Detail" />
-              <Input
-                type="text"
-                {...register("detail", {
+              <Controller
+                name="detail"
+                control={control}
+                rules={{
                   required: "Detail name is required",
-                })}
-                placeholder="Enter Detail Name"
-                error={errors.detail}
+                }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    placeholder="Enter Detail Name"
+                    error={errors.detail}
+                    value={field.value}
+                    onChange={(e) =>
+                      field.onChange(e.target.value)
+                    }
+                  />
+                )}
               />
               {errors.detail && (
                 <p className="text-[#B10E0EE5] text-[10px] mt-1">
@@ -128,18 +177,28 @@ const DetailsModal = ({
             </div>
             <div className="space-y-1">
               <Label name="time" label="Time" />
-              <Input
-                type="number"
-                {...register("time", {
+              <Controller
+                name="time"
+                control={control}
+                rules={{
                   required: "Time is required",
                   pattern: {
                     value: /^\d{1,2}$/,
                     message:
                       "Invalid time format! Use numbers only.",
                   },
-                })}
-                placeholder="Time (e.g., 10)"
-                error={errors.time}
+                }}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    placeholder="Time (e.g., 10)"
+                    error={errors.time}
+                    value={field.value}
+                    onChange={(e) =>
+                      field.onChange(e.target.value)
+                    }
+                  />
+                )}
               />
               {errors.time && (
                 <p className="text-[#B10E0EE5] text-[10px] mt-1">
@@ -149,13 +208,23 @@ const DetailsModal = ({
             </div>
             <div className="space-y-1">
               <Label name="guidelines" label="Guidelines" />
-              <Input
-                type="text"
-                {...register("guidelines", {
+              <Controller
+                name="guidelines"
+                control={control}
+                rules={{
                   required: "Guidelines are required",
-                })}
-                placeholder="Guidelines (comma-separated)"
-                error={errors.guidelines}
+                }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    placeholder="Guidelines (comma-separated)"
+                    error={errors.guidelines}
+                    value={field.value}
+                    onChange={(e) =>
+                      field.onChange(e.target.value)
+                    }
+                  />
+                )}
               />
               {errors.guidelines && (
                 <p className="text-[#B10E0EE5] text-[10px] mt-1">
@@ -188,8 +257,6 @@ const DetailsModal = ({
   );
 };
 
-export default DetailsModal;
-
 DetailsModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
@@ -198,38 +265,4 @@ DetailsModal.propTypes = {
   editDetail: PropTypes.object,
 };
 
-const Label = ({ name, label }) => {
-  return (
-    <label
-      htmlFor={name}
-      className="block text-[#6B6F7B] text-2xs font-bold required-field-label"
-    >
-      {label}
-    </label>
-  );
-};
-
-Label.propTypes = {
-  name: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-};
-
-const Input = ({ type, placeholder, error, ...rest }) => {
-  return (
-    <input
-      maxLength={type === "tel" ? 10 : undefined}
-      type={type}
-      placeholder={placeholder}
-      className={`w-full px-3 py-2 border rounded-lg text-2xs text-[#6B6F7B] font-medium ${
-        error ? "border-red-500" : ""
-      }`}
-      {...rest}
-    />
-  );
-};
-
-Input.propTypes = {
-  type: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
-  error: PropTypes.object,
-};
+export default DetailsModal;
