@@ -3,8 +3,8 @@ import {
   Chart2,
   Setting2,
   Profile2User,
-  ChartSquare,
-  Setting,
+  // ChartSquare,
+  // Setting,
   Cards,
   Share,
   UserOctagon,
@@ -57,16 +57,16 @@ export const CLIENT_NAVLINKS = [
     icon: Profile2User,
     link: "/client/candidates",
   },
-  {
-    text: "Analytics",
-    icon: ChartSquare,
-    link: "/client/analytics",
-  },
-  {
-    text: "Integration",
-    icon: Setting,
-    link: "/client/integration",
-  },
+  // {
+  //   text: "Analytics",
+  //   icon: ChartSquare,
+  //   link: "/client/analytics",
+  // },
+  // {
+  //   text: "Integration",
+  //   icon: Setting,
+  //   link: "/client/integration",
+  // },
   {
     text: "Finance",
     icon: Cards,
