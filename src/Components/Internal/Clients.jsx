@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MultiSelectFilter from '../../utils/MultiSelectFilter';
 import debounce from 'lodash/debounce';
 import axios from '../../api/axios';
 import TableLoadingWrapper from '../../utils/TableLoadingWrapper';
 import toast from 'react-hot-toast';
-import { Close, CreditCard, Done, Edit, Language, Mail, Person, Phone, PinDrop, ReceiptLong, Work } from '@mui/icons-material';
+import { Close, CreditCard, Done, Edit, Language, Mail, Person, Phone, PinDrop, ReceiptLong, StackedLineChart, Work } from '@mui/icons-material';
 import Modal from '../shared/Modal';
 import { IoSearchSharp } from 'react-icons/io5';
 
@@ -72,6 +72,7 @@ function Clients() {
     //   return;
     // }
     fetchClients();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset, filters, searchValue]);
 
   const handleScroll = (event) => {
@@ -202,6 +203,15 @@ function Clients() {
                   <p className="font-medium text-xs">{selectedClient?.domain}</p>
                 </div>
               </div>
+              {selectedClient?.client_level && (
+                <div className="flex items-start">
+                <StackedLineChart className="text-indigo-500 mt-1 mr-3 flex-shrink-0" size={14} />
+                <div>
+                  <p className="text-[10px] text-gray-500">Client Level</p>
+                  <p className="font-medium text-xs">{selectedClient?.client_level || 1}</p>
+                </div>
+              </div>
+              )}
             </div>
           </div>
 
