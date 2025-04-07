@@ -216,7 +216,7 @@ function ClientScheduleInterview() {
     mutationFn: scheduleInterview,
     onSuccess: () => {
       toast.success(
-        "Scheduling initiated successfully. Interviewers will be notified shortly."
+        "Scheduling initiated successfully. You will be notified shortly."
       );
       navigate("/client/candidates");
     },
