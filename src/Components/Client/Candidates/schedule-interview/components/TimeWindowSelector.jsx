@@ -9,8 +9,13 @@ function TimeWindowSelector({
   selectedWindow,
   handleWindowSelect,
 }) {
-  if (!selectedTimeSlot || !availableWindows.length)
+  if (!selectedTimeSlot) {
     return null;
+  }
+
+  if (!availableWindows || !availableWindows.length) {
+    return null;
+  }
 
   return (
     <div className="mt-12">

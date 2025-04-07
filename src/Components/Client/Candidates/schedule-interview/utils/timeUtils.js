@@ -4,22 +4,31 @@
 
 // Convert time string to hours for calculations
 export const timeToHours = (timeStr) => {
-  const [timePart, period] = timeStr.split(" ");
-  const [hours, minutes] = timePart.split(":").map(Number);
+  // Check if the time string contains AM/PM (12-hour format)
+  if (timeStr.includes("AM") || timeStr.includes("PM")) {
+    const [timePart, period] = timeStr.split(" ");
+    const [hours, minutes] = timePart
+      .split(":")
+      .map(Number);
 
-  let decimalHours = hours;
+    let decimalHours = hours;
 
-  // Convert to 24-hour format
-  if (period === "PM" && hours !== 12) {
-    decimalHours += 12;
-  } else if (period === "AM" && hours === 12) {
-    decimalHours = 0;
+    // Convert to 24-hour format
+    if (period === "PM" && hours !== 12) {
+      decimalHours += 12;
+    } else if (period === "AM" && hours === 12) {
+      decimalHours = 0;
+    }
+
+    // Add minutes as fraction of hour
+    decimalHours += minutes / 60;
+
+    return decimalHours;
+  } else {
+    // Handle 24-hour format (HH:MM:SS)
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours + minutes / 60;
   }
-
-  // Add minutes as fraction of hour
-  decimalHours += minutes / 60;
-
-  return decimalHours;
 };
 
 // Format time for display (e.g., "3:30pm")

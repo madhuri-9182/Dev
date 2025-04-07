@@ -1,6 +1,9 @@
 /**
  * Functions for processing availability data for interview scheduling
  */
+/**
+ * Functions for processing availability data for interview scheduling
+ */
 import { createHourlySlots } from "./hourlySlots";
 import {
   timeToHours,
@@ -27,9 +30,8 @@ export const processAvailabilityData = (data) => {
     // Check each hourly slot to see if it can accommodate a 1-hour meeting
     hourlySlots.forEach((hourlySlot) => {
       // Convert slot time label to 24-hour format using our utility function
-      const slotHour = timeToHours(
-        hourlySlot.time.replace(" ", ":00 ")
-      );
+      const slotTime = hourlySlot.time.replace(" ", ":00 ");
+      const slotHour = timeToHours(slotTime);
 
       // A slot is available if a 1-hour window can start at any 15-minute interval within it
       const canFitFullHour =
@@ -61,14 +63,16 @@ export const generateAvailableWindows = (
   selectedSlot,
   data
 ) => {
-  if (!selectedSlot || !data || !data.length) return [];
+  if (!selectedSlot || !data || !data.length) {
+    return [];
+  }
 
   // Get the hour of the selected slot (24-hour format)
   const hourStr = selectedSlot.split(" ")[0];
   const isPM = selectedSlot.includes("PM");
   let hour = parseInt(hourStr);
   if (isPM && hour !== 12) hour += 12;
-  if (!isPM && hour === 12) hour = 12; // Keep 12 PM as 12 in 24h format
+  if (!isPM && hour === 12) hour = 0; // This is important - 12 AM is hour 0 in 24h format
 
   const windows = [];
   const timeWindows = {};
@@ -77,19 +81,20 @@ export const generateAvailableWindows = (
   const relevantSlots = data.filter((slot) => {
     const startTime = timeToHours(slot.start_time);
     const endTime = timeToHours(slot.end_time);
-
     // Check if this availability period can accommodate any 1-hour window starting within the selected hour
-    return (
-      // For a window starting at :00
-      (hour >= startTime && hour + 1 <= endTime) ||
-      // For a window starting at :15
-      (hour + 0.25 >= startTime &&
-        hour + 1.25 <= endTime) ||
-      // For a window starting at :30
-      (hour + 0.5 >= startTime && hour + 1.5 <= endTime) ||
-      // For a window starting at :45
-      (hour + 0.75 >= startTime && hour + 1.75 <= endTime)
-    );
+    const canFitAt00 =
+      hour >= startTime && hour + 1 <= endTime;
+    const canFitAt15 =
+      hour + 0.25 >= startTime && hour + 1.25 <= endTime;
+    const canFitAt30 =
+      hour + 0.5 >= startTime && hour + 1.5 <= endTime;
+    const canFitAt45 =
+      hour + 0.75 >= startTime && hour + 1.75 <= endTime;
+
+    const canFit =
+      canFitAt00 || canFitAt15 || canFitAt30 || canFitAt45;
+
+    return canFit;
   });
 
   // Process each relevant slot
@@ -105,17 +110,18 @@ export const generateAvailableWindows = (
     // For each 15-minute interval in the hour, check if we can fit a 1-hour window
     const startTimeInMinutes = startHour * 60 + startMin;
     const endTimeInMinutes = endHour * 60 + endMin;
-
     // Check for 15-minute intervals (00, 15, 30, 45)
     [0, 15, 30, 45].forEach((minutes) => {
       const startMinutes = hour * 60 + minutes;
+      const endMinutes = startMinutes + 60;
       if (
         startMinutes >= startTimeInMinutes &&
-        startMinutes + 60 <= endTimeInMinutes
+        endMinutes <= endTimeInMinutes
       ) {
         const timeKey = `${hour}:${minutes
           .toString()
           .padStart(2, "0")}`;
+
         if (!timeWindows[timeKey]) {
           timeWindows[timeKey] = {
             slots: [],
@@ -148,6 +154,5 @@ export const generateAvailableWindows = (
 
   // Sort windows by time
   windows.sort((a, b) => a.minuteValue - b.minuteValue);
-
   return windows;
 };
