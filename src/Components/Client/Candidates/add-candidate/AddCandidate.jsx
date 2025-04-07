@@ -47,7 +47,7 @@ function ClientAddCandidate() {
   const [filters, setFilters] = useState({
     role: selectedJob?.id || "", // Prefill with selected job id if available
     specialization: selectedJob?.function || "",
-    source: "",
+    source: "INT",
   });
   const [resumeTableData, setResumeTableData] = useState(
     []
@@ -249,6 +249,7 @@ function ClientAddCandidate() {
             onSelect={(value) =>
               handleFilterChange("source", value)
             }
+            disabled={true}
           />
         </div>
       </div>
