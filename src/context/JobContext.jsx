@@ -35,6 +35,7 @@ const initialState = {
   reason_for_archived: "",
   hiring_manager_name: "",
   recruiter_names: [],
+  is_diversity_hiring: false,
 };
 
 // Initial job details state with a default intro item
@@ -203,6 +204,10 @@ export const JobProvider = () => {
             selectedData.total_positions
           ),
           job_description_file: file, // Now it's a resolved File object
+          // Explicitly include is_diversity_hiring with proper type conversion
+          is_diversity_hiring: Boolean(
+            selectedData.is_diversity_hiring
+          ),
         };
 
         setFormdata(normalizedData);
@@ -263,7 +268,19 @@ export const JobProvider = () => {
         key !== "other_details" &&
         !_.isEqual(formdata[key], originalFormData[key])
       ) {
-        changes[key] = formdata[key];
+        // For is_diversity_hiring, ensure we're comparing boolean values
+        if (key === "is_diversity_hiring") {
+          const originalValue = Boolean(
+            originalFormData[key]
+          );
+          const currentValue = Boolean(formdata[key]);
+
+          if (originalValue !== currentValue) {
+            changes[key] = currentValue;
+          }
+        } else {
+          changes[key] = formdata[key];
+        }
       }
     });
 

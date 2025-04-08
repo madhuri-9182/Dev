@@ -136,6 +136,10 @@ const JobDetails = () => {
         "other_details",
         JSON.stringify(processedDetails)
       );
+      formdataToSubmit.append(
+        "is_diversity_hiring",
+        formdata.is_diversity_hiring
+      );
     } else {
       const changedFields = getChangedFields();
 

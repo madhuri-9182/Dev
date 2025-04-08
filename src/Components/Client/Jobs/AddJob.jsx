@@ -49,6 +49,7 @@ const AddJob = () => {
       specialization: null,
       jobDescriptionFile: null,
       essentialSkills: [],
+      isDiversityHiring: false,
     },
   });
   const shouldBeDisabled =
@@ -60,6 +61,7 @@ const AddJob = () => {
   const selectedHiringManager = watch("hiringManager");
   const selectedEssentialSkills =
     watch("essentialSkills") || [];
+  // const isDiversityHiring = watch("isDiversityHiring");
 
   // State for dropdown open/close
   const [isJobRoleDropdownOpen, setIsJobRoleDropdownOpen] =
@@ -160,6 +162,7 @@ const AddJob = () => {
       specialization: data.specialization,
       mandatory_skills: data.essentialSkills,
       job_description_file: data.jobDescriptionFile,
+      is_diversity_hiring: data.isDiversityHiring,
     });
     navigate("/client/jobs/job-details");
   };
@@ -195,6 +198,8 @@ const AddJob = () => {
         totalPositions: formdata.total_positions || "",
         specialization: formdata.specialization || null,
         essentialSkills: formdata.mandatory_skills || [],
+        isDiversityHiring:
+          formdata.is_diversity_hiring || false,
       };
       if (formdata.job_description_file instanceof File) {
         resetData.jobDescriptionFile =
@@ -532,7 +537,7 @@ const AddJob = () => {
                 }
               />
               {errors.essentialSkills && (
-                <p className="text-xs text-[#B10E0EE5] mt-1">
+                <p className="text-2xs text-[#B10E0EE5] mt-1">
                   {errors.essentialSkills.message}
                 </p>
               )}
@@ -558,9 +563,32 @@ const AddJob = () => {
               ))}
             </div>
           </div>
+          <div className={formRowClassName}>
+            <div className="w-1/3"></div>
+            <div className="w-2/3 flex items-center mt-3">
+              <Controller
+                name="isDiversityHiring"
+                control={control}
+                render={({
+                  field: { onChange, value },
+                }) => (
+                  <input
+                    type="checkbox"
+                    checked={value}
+                    onChange={onChange}
+                    disabled={shouldBeDisabled}
+                    className="h-4 w-4 rounded border-gray-300 text-[#007AFF] focus:ring-[#007AFF] mr-2 cursor-pointer"
+                  />
+                )}
+              />
+              <span className="text-2xs text-[#49454F]">
+                Enable diversity hiring for this job
+              </span>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <div className="w-1/3"></div>
-            <p className="text-xs text-[#B10E0EE5] w-2/3 mt-4">
+            <p className="text-2xs text-[#B10E0EE5] w-2/3 mt-4">
               {Object.keys(errors).length > 0 &&
                 "Please fill all the required fields"}
             </p>
