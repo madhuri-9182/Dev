@@ -6,6 +6,7 @@ import {
   XCircleIcon,
   Trash2Icon,
 } from "lucide-react";
+import { getColorForValue } from "../utils";
 
 // Constants for textarea sizing
 const TEXTAREA_CONFIG = {
@@ -278,59 +279,68 @@ const SkillItem = ({
 export default SkillItem;
 
 // Component for the score slider
-const ScoreSlider = ({ value, onChange, hasError }) => (
-  <div className="flex gap-x-2 items-center">
-    <div className="relative flex items-center w-40 mr-3">
-      {/* Slider track (background) */}
-      <div
-        className={`absolute w-full h-2 bg-[#f5f5f5] rounded-full ${
-          hasError ? "border border-[#B10E0EE5]" : ""
+const ScoreSlider = ({ value, onChange, hasError }) => {
+  // Calculate the color based on the current value
+  const trackColor = hasError
+    ? "#ffb4b4"
+    : getColorForValue(value);
+
+  return (
+    <div className="flex gap-x-2 items-center">
+      <div className="relative flex items-center w-40 mr-3">
+        {/* Slider track (background) */}
+        <div
+          className={`absolute w-full h-2 bg-[#f5f5f5] rounded-full ${
+            hasError ? "border border-[#B10E0EE5]" : ""
+          }`}
+        ></div>
+
+        {/* Filled portion of the track */}
+        <div
+          className="absolute h-2 rounded-full transition-all duration-150"
+          style={{
+            width: `${value}%`,
+            backgroundColor: trackColor,
+          }}
+        ></div>
+
+        {/* Draggable thumb */}
+        <div
+          className="absolute w-4 h-4 bg-white border-2 cursor-pointer rounded-full shadow-md transform -translate-y-0 transition-all duration-150 z-10"
+          style={{
+            left: `calc(${value}% - 0.5rem)`,
+            borderColor: hasError
+              ? "#B10E0EE5"
+              : trackColor,
+          }}
+        ></div>
+
+        {/* Invisible range input for functionality */}
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="5"
+          value={value}
+          onChange={(e) =>
+            onChange(parseInt(e.target.value, 10))
+          }
+          className="absolute w-full h-5 opacity-0 cursor-pointer z-20"
+          aria-label="Skill proficiency score"
+        />
+      </div>
+
+      {/* Score display */}
+      <span
+        className={`font-medium text-sm ${
+          hasError ? "text-[#B10E0EE5]" : "text-[#0000006b]"
         }`}
-      ></div>
-
-      {/* Filled portion of the track */}
-      <div
-        className={`absolute h-2 ${
-          hasError ? "bg-[#ffb4b4]" : "bg-[#91caff]"
-        } rounded-full transition-all duration-150`}
-        style={{ width: `${value}%` }}
-      ></div>
-
-      {/* Draggable thumb */}
-      <div
-        className={`absolute w-4 h-4 bg-white border-2 cursor-pointer ${
-          hasError
-            ? "border-[#B10E0EE5]"
-            : "border-[#91caff]"
-        } rounded-full shadow-md transform -translate-y-0 transition-all duration-150 z-10`}
-        style={{ left: `calc(${value}% - 0.5rem)` }}
-      ></div>
-
-      {/* Invisible range input for functionality */}
-      <input
-        type="range"
-        min="0"
-        max="100"
-        step="5"
-        value={value}
-        onChange={(e) =>
-          onChange(parseInt(e.target.value, 10))
-        }
-        className="absolute w-full h-5 opacity-0 cursor-pointer z-20"
-        aria-label="Skill proficiency score"
-      />
+      >
+        {value}/100
+      </span>
     </div>
-
-    {/* Score display */}
-    <span
-      className={`font-medium text-sm ${
-        hasError ? "text-[#B10E0EE5]" : "text-[#0000006b]"
-      }`}
-    >
-      {value}/100
-    </span>
-  </div>
-);
+  );
+};
 
 // Component for question and answer pair
 const QuestionAnswerPair = ({
