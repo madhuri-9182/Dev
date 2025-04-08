@@ -94,16 +94,13 @@ const DropCandidateModal = ({ onClose, id }) => {
           {/* Buttons */}
           <div className="flex gap-3 justify-center items-center mb-4">
             <button
-              className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
-                transition-all duration-300 ease-in-out 
-                hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-[140px]"
+              className="secondary-button h-7 w-[140px]"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
-              className="px-6 py-[5px] border border-[#007AFF] rounded-[100px] text-white bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer w-[140px]"
+              className="primary-button h-7 w-[140px]"
               onClick={handleDeleteCandidate}
             >
               Save

@@ -1,6 +1,9 @@
 import { Fragment, useMemo } from "react";
 import { IoClose } from "react-icons/io5";
-import { getJobLabel, getSpecialization } from "../../../utils/util";
+import {
+  getJobLabel,
+  getSpecialization,
+} from "../../../utils/util";
 import PropTypes from "prop-types";
 import {
   Listbox,
@@ -318,18 +321,19 @@ export const JobCard = ({
           className="hover:underline hover:font-semibold text-2xs uppercase cursor-pointer"
           onClick={() => onEdit(job)}
         >
-          {getJobLabel(job.name)} ({getSpecialization(job.specialization)})
+          {getJobLabel(job.name)} (
+          {getSpecialization(job.specialization)})
         </span>
       </div>
       <div className="flex gap-4 w-1/2">
         <button
-          className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-20 py-1 flex items-center justify-center rounded-[100px] hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
+          className="text-2xs font-semibold w-20 py-1 tertiary-button"
           onClick={() => onView(job)}
         >
           View
         </button>
         <button
-          className="text-2xs font-semibold text-[#4A4459] bg-[#E8DEF8] w-36 py-1 flex items-center justify-center rounded-[100px] hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
+          className="text-2xs font-semibold w-36 py-1 tertiary-button"
           onClick={() => onAddCandidate(job)}
         >
           + Add Candidate

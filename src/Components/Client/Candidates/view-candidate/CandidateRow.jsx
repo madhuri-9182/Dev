@@ -157,7 +157,7 @@ const ScoreDisplay = ({ candidate, onViewCandidate }) => {
     return (
       <button
         type="button"
-        className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center"
+        className="text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
         onClick={() => {
           onViewCandidate(candidate);
         }}

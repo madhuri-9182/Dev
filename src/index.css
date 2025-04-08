@@ -187,6 +187,28 @@
   );
 }
 
+.tertiary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a4459;
+  background-color: #e8def8;
+  border-radius: 100px;
+  transition-property: all;
+  border: 1px solid #e8def8;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.tertiary-button:hover {
+  background-image: linear-gradient(
+    to right,
+    #ece8f2,
+    #dcd6e6
+  );
+}
+
 .scroll-hidden {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */

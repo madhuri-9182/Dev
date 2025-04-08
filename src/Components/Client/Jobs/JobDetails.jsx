@@ -384,6 +384,6 @@ const inputClassName =
   "rounded-lg text-2xs py-2 px-3 w-1/2 border border-[#CAC4D0] text-[#49454F] text-center";
 
 const btnClassName =
-  " bg-[#E8DEF8] text-[#4A4459] text-2xs py-2 px-3 rounded-[100px] font-semibold transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center";
+  "text-2xs py-2 px-3 tertiary-button font-semibold";
 
 const formRowClassName = "flex items-center mb-3 gap-4";
