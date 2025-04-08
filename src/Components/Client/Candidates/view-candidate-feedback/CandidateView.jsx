@@ -31,8 +31,13 @@ const CandidateView = () => {
       return;
     }
     if (!isLoading && Object.keys(data?.data)?.length > 0) {
-      const file = fetchResume(data?.data?.candidate?.cv);
-      setResumeFile(file);
+      fetchResume(data?.data?.candidate?.cv)
+        .then((file) => {
+          setResumeFile(file);
+        })
+        .catch((error) => {
+          console.error("Error fetching resume:", error);
+        });
     }
   }, [data, isLoading]);
 

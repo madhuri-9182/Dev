@@ -91,9 +91,13 @@ const EngagementForm = ({
           const file = await createFileFromUrl(cv);
           return file;
         };
-        const file = fetchResume(state.candidate.cv);
-        // Creating a mock file object since we don't have the actual file
-        setResumeFile(file);
+        fetchResume(state.candidate.cv)
+          .then((file) => {
+            setResumeFile(file);
+          })
+          .catch((error) => {
+            console.error("Error fetching resume:", error);
+          });
       }
 
       // Determine which fields to validate based on offered status
@@ -226,6 +230,7 @@ const EngagementForm = ({
       delete payload.candidate_name;
       delete payload.candidate_email;
       delete payload.candidate_phone;
+      delete payload.candidate_cv;
     }
 
     try {
