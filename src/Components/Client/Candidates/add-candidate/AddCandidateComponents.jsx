@@ -57,6 +57,7 @@ export const ResumeTable = ({
   selectedSource,
   selectedRole,
   selectedSpecialization,
+  isDiversityHiring = false, // Add isDiversityHiring prop with default value
 }) => (
   <div className="w-full mt-20 relative">
     {/* Fixed header */}
@@ -86,8 +87,16 @@ export const ResumeTable = ({
         <div className="px-3 col-span-1">Email ID</div>
         <div className="px-3 col-span-1">Company</div>
         <div className="px-3 col-span-1">Designation</div>
-        <div className="px-3 col-span-1">Gender</div>
-        <div className="px-3 col-span-1"></div>
+        {/* Only show Gender column if diversity hiring is enabled */}
+        {isDiversityHiring && (
+          <div className="px-3 col-span-1">Gender</div>
+        )}
+        {/* Adjust column width based on whether gender is shown */}
+        <div
+          className={`px-3 ${
+            isDiversityHiring ? "col-span-1" : "col-span-2"
+          }`}
+        ></div>
       </div>
       <hr className="w-full bg-[#F4F4F4] h-[1px] my-3" />
     </div>
@@ -105,6 +114,7 @@ export const ResumeTable = ({
           selectedSource={selectedSource}
           selectedRole={selectedRole}
           selectedSpecialization={selectedSpecialization}
+          isDiversityHiring={isDiversityHiring} // Pass isDiversityHiring to row
         />
       ))}
     </div>
@@ -119,6 +129,7 @@ ResumeTable.propTypes = {
   selectedSource: PropTypes.string,
   selectedRole: PropTypes.number,
   selectedSpecialization: PropTypes.string,
+  isDiversityHiring: PropTypes.bool, // Add prop type for isDiversityHiring
 };
 
 // Table row component
@@ -131,6 +142,7 @@ const ResumeTableRow = ({
   selectedSource,
   selectedRole,
   selectedSpecialization,
+  isDiversityHiring,
 }) => {
   const navigate = useNavigate();
 
@@ -165,7 +177,7 @@ const ResumeTableRow = ({
   const [validationMessages, setValidationMessages] =
     useState({});
 
-  // Reset form when item changes
+  // Reset form when item changes or diversity hiring status changes
   useEffect(() => {
     reset({
       name: item.name,
@@ -183,7 +195,7 @@ const ResumeTableRow = ({
     });
     // Validate after reset
     setTimeout(() => validateFields(true), 0);
-  }, [item.id, reset]);
+  }, [item.id, reset, isDiversityHiring]); // Add isDiversityHiring dependency
 
   // Custom validation function similar to the original code
   const validateFields = (forceUpdate = false) => {
@@ -221,7 +233,8 @@ const ResumeTableRow = ({
         "Designation is required. Please fill manually to submit";
     }
 
-    if (!values.gender) {
+    // Only validate gender if diversity hiring is enabled
+    if (isDiversityHiring && !values.gender) {
       newValidationMessages.gender =
         "Gender is required. Please fill manually to submit";
     }
@@ -286,7 +299,10 @@ const ResumeTableRow = ({
             current_company: formData.current_company,
             current_designation:
               formData.current_designation,
-            gender: formData.gender,
+            // Only update gender if diversity hiring is enabled
+            gender: isDiversityHiring
+              ? formData.gender
+              : row.gender,
           }
         : row
     );
@@ -314,12 +330,14 @@ const ResumeTableRow = ({
         email: formData.email,
         current_company: formData.current_company,
         current_designation: formData.current_designation,
-        gender: formData.gender,
         source: selectedSource,
         role: selectedRole,
         specialization: selectedSpecialization,
         fileBase64,
       };
+      if (isDiversityHiring) {
+        encodedData.gender = formData.gender;
+      }
       delete encodedData.id;
       delete encodedData.file;
 
@@ -522,30 +540,40 @@ const ResumeTableRow = ({
                 )}
               />
             </div>
-            <div className="px-3 col-span-1">
-              <Controller
-                name="gender"
-                control={control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
-                    onChange={(e) => {
-                      field.onChange(e);
-                      handleChange(e, "gender");
-                    }}
-                  >
-                    <option value="">Select</option>
-                    {GENDERS.map((gender, idx) => (
-                      <option key={idx} value={gender.id}>
-                        {gender.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              />
-            </div>
-            <div className="pl-3 flex items-center gap-2 col-span-1">
+            {/* Only show gender field if diversity hiring is enabled */}
+            {isDiversityHiring && (
+              <div className="px-3 col-span-1">
+                <Controller
+                  name="gender"
+                  control={control}
+                  render={({ field }) => (
+                    <select
+                      {...field}
+                      className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleChange(e, "gender");
+                      }}
+                    >
+                      <option value="">Select</option>
+                      {GENDERS.map((gender, idx) => (
+                        <option key={idx} value={gender.id}>
+                          {gender.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                />
+              </div>
+            )}
+            {/* Adjust column width if gender is not shown */}
+            <div
+              className={`pl-3 flex items-center gap-2 ${
+                isDiversityHiring
+                  ? "col-span-1"
+                  : "col-span-2"
+              }`}
+            >
               <CloseCircle
                 size="18"
                 color="#555555"
@@ -624,14 +652,24 @@ const ResumeTableRow = ({
             >
               {tableDataValues("current_designation")}
             </div>
-            <div className="px-3 col-span-1">
-              {item.gender
-                ? GENDERS.find(
-                    (gender) => gender.id === item.gender
-                  )?.name
-                : "Not specified"}
-            </div>
-            <div className="pl-3 flex items-center gap-2 col-span-1">
+            {/* Only show gender column if diversity hiring is enabled */}
+            {isDiversityHiring && (
+              <div className="px-3 col-span-1">
+                {item.gender
+                  ? GENDERS.find(
+                      (gender) => gender.id === item.gender
+                    )?.name
+                  : "Not specified"}
+              </div>
+            )}
+            {/* Adjust column width if gender is not shown */}
+            <div
+              className={`pl-3 flex items-center gap-2 ${
+                isDiversityHiring
+                  ? "col-span-1"
+                  : "col-span-2"
+              }`}
+            >
               <Edit
                 size={18}
                 color="#595BD4"
@@ -686,6 +724,7 @@ ResumeTableRow.propTypes = {
   selectedSource: PropTypes.string,
   selectedRole: PropTypes.number,
   selectedSpecialization: PropTypes.string,
+  isDiversityHiring: PropTypes.bool, // Add prop type for isDiversityHiring
 };
 
 const Input = ({

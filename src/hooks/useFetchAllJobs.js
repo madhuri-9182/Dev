@@ -20,12 +20,14 @@ const fetchAllJobs = async () => {
       clients,
       hiring_manager,
       specialization,
+      is_diversity_hiring,
     }) => ({
       id,
       name,
       clients,
       hiring_manager,
       specialization,
+      is_diversity_hiring,
     })
   );
 };

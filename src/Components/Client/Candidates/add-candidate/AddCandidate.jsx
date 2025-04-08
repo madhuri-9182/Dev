@@ -49,6 +49,9 @@ function ClientAddCandidate() {
     specialization: selectedJob?.function || "",
     source: "INT",
   });
+  // Add isDiversityHiring state
+  const [isDiversityHiring, setIsDiversityHiring] =
+    useState(selectedJob?.is_diversity_hiring || false);
   const [resumeTableData, setResumeTableData] = useState(
     []
   );
@@ -66,6 +69,11 @@ function ClientAddCandidate() {
         specialization:
           selectedJob.function || prev.specialization,
       }));
+
+      // Set diversity hiring from selected job if available
+      setIsDiversityHiring(
+        !!selectedJob.is_diversity_hiring
+      );
 
       if (selectedJob.function) {
         setIsSpecializationDisabled(true);
@@ -89,6 +97,11 @@ function ClientAddCandidate() {
         specialization: selectedRoleData.specialization,
       }));
       setIsSpecializationDisabled(true);
+
+      // Update diversity hiring based on selected role
+      setIsDiversityHiring(
+        !!selectedRoleData.is_diversity_hiring
+      );
     } else {
       setIsSpecializationDisabled(false);
     }
@@ -107,6 +120,16 @@ function ClientAddCandidate() {
       ...prev,
       [filterType]: value,
     }));
+
+    // When changing role, update diversity hiring status
+    if (filterType === "role") {
+      const selectedRoleData = roles?.find(
+        (role) => role.id === value
+      );
+      setIsDiversityHiring(
+        !!selectedRoleData?.is_diversity_hiring
+      );
+    }
   };
 
   const { mutate: parseResumeMutation } = useMutation({
@@ -128,6 +151,7 @@ function ClientAddCandidate() {
       }));
       setResumeTableData(dataWithId);
 
+      // Only include gender in validation if diversity hiring is enabled
       const incompleteResumes = dataWithId.filter(
         (row) =>
           !row.name ||
@@ -136,7 +160,8 @@ function ClientAddCandidate() {
           !row.current_company ||
           !row.current_designation ||
           (row.years_of_experience.year === 0 &&
-            row.years_of_experience.month === 0)
+            row.years_of_experience.month === 0) ||
+          (isDiversityHiring && !row.gender) // Only check gender if diversity hiring is enabled
       );
 
       if (incompleteResumes.length > 0) {
@@ -300,6 +325,7 @@ function ClientAddCandidate() {
           selectedSource={filters.source}
           selectedRole={filters.role}
           selectedSpecialization={filters.specialization}
+          isDiversityHiring={isDiversityHiring} // Pass isDiversityHiring prop to ResumeTable
         />
       )}
     </div>

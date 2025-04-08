@@ -418,7 +418,9 @@ function ClientScheduleInterview() {
       );
       formdata.append("source", item.source);
       formdata.append("cv", file);
-      formdata.append("gender", item.gender || "M");
+      if (item?.gender) {
+        formdata.append("gender", item.gender);
+      }
 
       if (data.remark) {
         formdata.append("remark", data.remark);
