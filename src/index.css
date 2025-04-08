@@ -118,6 +118,9 @@
 }
 
 .primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   padding-top: 5px;
@@ -144,16 +147,22 @@
 }
 
 .primary-button:disabled {
-  background-color: lightgray;
-  border: none !important;
+  background-color: #cac4d0 !important;
+  cursor: not-allowed !important;
+  border-color: #cac4d0 !important;
 }
 
 .primary-button:disabled:hover {
-  background-color: lightgray !important;
+  background-color: #cac4d0 !important;
+  cursor: not-allowed !important;
+  border-color: #cac4d0 !important;
   background-image: none !important;
 }
 
 .secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   padding-top: 5px;

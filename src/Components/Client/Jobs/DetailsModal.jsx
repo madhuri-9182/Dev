@@ -233,19 +233,16 @@ const DetailsModal = ({
               )}
             </div>
           </div>
-          <div className="flex justify-end items-center gap-2 mt-4 mb-2">
+          <div className="flex justify-end items-center gap-2 mt-6 mb-2">
             <button
               type="button"
-              className="px-6 py-[5px] rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-semibold cursor-pointer 
-                transition-all duration-300 ease-in-out 
-                hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6]"
+              className="secondary-button h-7"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
-              className="px-6 py-[5px] rounded-[100px] text-white bg-[#007AFF] border border-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] text-xs font-semibold cursor-pointer"
+              className="primary-button h-7"
               type="submit"
             >
               Save

@@ -49,16 +49,7 @@ const CurrentDues = ({
             type="button"
             onClick={onDownloadClick}
             disabled={isGeneratingPdf}
-            className={`
-              py-2 px-6 rounded-full text-xs font-semibold text-white h-[32px] 
-              bg-[#007AFF] transition-all duration-300 ease-in-out
-              hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] 
-              ${
-                isGeneratingPdf
-                  ? "opacity-70 cursor-not-allowed"
-                  : "cursor-pointer"
-              }
-            `}
+            className="primary-button h-8"
           >
             {isGeneratingPdf ? "Generating..." : "Download"}
           </button>

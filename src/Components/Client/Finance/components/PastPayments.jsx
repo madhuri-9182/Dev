@@ -123,12 +123,7 @@ const PastPayments = ({ theme, onDownloadClick }) => {
           <button
             onClick={() => onDownloadClick(dateRange)}
             disabled={true}
-            className={`
-              py-2 px-6 rounded-full text-xs font-semibold text-white h-[32px] 
-              bg-[#007AFF] transition-all duration-300 ease-in-out
-              hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB]
-              cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
-            `}
+            className="primary-button h-8"
           >
             Click to Download
           </button>

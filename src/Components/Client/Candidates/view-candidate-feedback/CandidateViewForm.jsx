@@ -100,7 +100,7 @@ const CandidateViewForm = ({ data }) => {
         <div className="w-20"></div>
         <button
           type="button"
-          className="w-[200px] bg-[#007AFF] text-white rounded-full h-[36px] text-xs font-medium text-center"
+          className="w-[200px] primary-button h-9"
           onClick={() => {
             navigate(`${location.pathname}/feedback`, {
               state: { data },

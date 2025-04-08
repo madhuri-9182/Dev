@@ -129,7 +129,7 @@ const CandidateFeedback = () => {
         <div className="mt-10 flex items-center justify-center">
           <button
             type="button"
-            className="w-[200px] bg-[#007AFF] text-white rounded-full h-[36px] text-xs font-medium text-center"
+            className="w-[200px] primary-button h-9"
             onClick={() => setIsModalOpen(true)}
             disabled={!state?.data}
           >

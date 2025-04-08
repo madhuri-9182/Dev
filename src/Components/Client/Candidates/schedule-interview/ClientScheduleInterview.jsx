@@ -558,9 +558,7 @@ function ClientScheduleInterview() {
                 <>
                   <button
                     type="button"
-                    className="py-2 rounded-[100px] text-[#65558F] border border-[#79747E] text-xs font-medium cursor-pointer 
-                    transition-all duration-300 ease-in-out 
-                    hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] w-36 flex items-center justify-center"
+                    className="secondary-button h-8 w-36"
                     onClick={handleDeleteCandidate}
                   >
                     Drop Candidate
@@ -591,12 +589,7 @@ function ClientScheduleInterview() {
                   !selectedWindow ||
                   isConfirmButtonDisabled()
                 }
-                className={`px-6 py-2 border rounded-[100px] text-white font-medium w-32 flex items-center justify-center uppercase text-xs ${
-                  selectedWindow &&
-                  !isConfirmButtonDisabled()
-                    ? "bg-[#007AFF] border-[#007AFF] hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer"
-                    : "bg-[#A0CFFF] border-[#A0CFFF] cursor-not-allowed"
-                }`}
+                className={`w-32 primary-button uppercase h-8`}
                 onClick={() => {
                   if (!selectedWindow) {
                     toast.error(

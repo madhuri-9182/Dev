@@ -455,9 +455,7 @@ const CalendarPopup = ({
         <button
           onClick={handleSaveEvent}
           disabled={isLoading}
-          className="p-1 px-4 rounded-full text-default font-medium text-white
-             bg-[#007AFF] transition-all duration-300 ease-in-out
-             hover:bg-gradient-to-r hover:from-[#007AFF] hover:to-[#005BBB] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="primary-button h-7"
         >
           {isLoading ? "Saving..." : "Save"}
         </button>
