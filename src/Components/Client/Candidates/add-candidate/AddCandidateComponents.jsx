@@ -62,7 +62,12 @@ export const ResumeTable = ({
   <div className="w-full mt-20 relative">
     {/* Fixed header */}
     <div className="sticky top-0 bg-white z-10 pb-3">
-      <div className="grid grid-cols-8 text-[#6B6F7B] font-bold text-2xs text-left">
+      {/* Adjust the entire grid based on isDiversityHiring */}
+      <div
+        className={`grid ${
+          isDiversityHiring ? "grid-cols-8" : "grid-cols-7"
+        } text-[#6B6F7B] font-bold text-2xs text-left`}
+      >
         <div className="px-3 col-span-1">Name</div>
         <div
           className={`px-3 col-span-1 flex items-center ${
@@ -91,12 +96,8 @@ export const ResumeTable = ({
         {isDiversityHiring && (
           <div className="px-3 col-span-1">Gender</div>
         )}
-        {/* Adjust column width based on whether gender is shown */}
-        <div
-          className={`px-3 ${
-            isDiversityHiring ? "col-span-1" : "col-span-2"
-          }`}
-        ></div>
+        {/* Action column is always col-span-1 now since we're adjusting the total grid columns */}
+        <div className="px-3 col-span-1"></div>
       </div>
       <hr className="w-full bg-[#F4F4F4] h-[1px] my-3" />
     </div>
@@ -399,8 +400,12 @@ const ResumeTableRow = ({
 
   return (
     <div className="mb-3">
-      {/* Main row with grid layout */}
-      <div className="grid grid-cols-8 text-2xs text-left items-center text-[#313A4E]">
+      {/* Main row with grid layout - adjust based on isDiversityHiring */}
+      <div
+        className={`grid ${
+          isDiversityHiring ? "grid-cols-8" : "grid-cols-7"
+        } text-2xs text-left items-center text-[#313A4E]`}
+      >
         {editingRowId === item.id ? (
           <>
             <div className="px-3 col-span-1">
@@ -566,14 +571,8 @@ const ResumeTableRow = ({
                 />
               </div>
             )}
-            {/* Adjust column width if gender is not shown */}
-            <div
-              className={`pl-3 flex items-center gap-2 ${
-                isDiversityHiring
-                  ? "col-span-1"
-                  : "col-span-2"
-              }`}
-            >
+            {/* Action buttons - always col-span-1 now */}
+            <div className="pl-3 flex items-center gap-2 col-span-1">
               <CloseCircle
                 size="18"
                 color="#555555"
@@ -662,14 +661,8 @@ const ResumeTableRow = ({
                   : "Not specified"}
               </div>
             )}
-            {/* Adjust column width if gender is not shown */}
-            <div
-              className={`pl-3 flex items-center gap-2 ${
-                isDiversityHiring
-                  ? "col-span-1"
-                  : "col-span-2"
-              }`}
-            >
+            {/* Action buttons - always col-span-1 now */}
+            <div className="pl-3 flex items-center gap-2 col-span-1">
               <Edit
                 size={18}
                 color="#595BD4"
