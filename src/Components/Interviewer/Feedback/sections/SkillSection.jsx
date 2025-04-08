@@ -40,7 +40,7 @@ const SkillsSection = ({
           onClick={() =>
             appendSkill({
               skillName: "",
-              score: 60,
+              score: 0,
               questions: [{ question: "", answer: "" }],
               summary: "",
             })

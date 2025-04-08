@@ -53,7 +53,7 @@ const DEFAULT_FORM_VALUES = {
   skills: [
     {
       skillName: "",
-      score: 60,
+      score: 0,
       questions: [{ question: "", answer: "" }],
       summary: "",
     },
@@ -84,7 +84,7 @@ const transformSkillsData = (skillsData) => {
 
       return {
         skillName,
-        score: parseInt(skillData.score, 10) || 60, // Default to 60 if parsing fails
+        score: parseInt(skillData.score, 10) || 0, // Default to 0 if parsing fails
         questions,
         summary: skillData.summary || "",
       };
@@ -341,8 +341,40 @@ const Feedback = () => {
     }
   }, [data, reset, getValues]);
 
+  // Validate that no skill has a score of 0
+  const validateSkillScores = (formData) => {
+    const invalidSkills = formData.skills.filter(
+      (skill) =>
+        skill.skillName &&
+        (skill.score === 0 || skill.score === "0")
+    );
+
+    if (invalidSkills.length > 0) {
+      // Set errors for each skill with score of 0
+      invalidSkills.forEach((skill, index) => {
+        setValue(`skills.${index}.score`, 0, {
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+      });
+
+      toast.error(
+        "All skills must have a score greater than 0"
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   // Form submission handler
   const onSubmit = (data) => {
+    // Validate skill scores
+    if (!validateSkillScores(data)) {
+      return;
+    }
+
     const transformedData = transformFormData(
       data,
       interviewId

@@ -62,7 +62,7 @@ FormRow.propTypes = {
 export const FormField = ({ label, children }) => {
   return (
     <div className="">
-      <label className="block mb-1 text-default font-medium">
+      <label className="block mb-1 text-default font-[550] required-field-label">
         {label}:
       </label>
       {children}
@@ -128,14 +128,14 @@ export const Select = React.forwardRef(
     ref
   ) => {
     // Find the selected option based on the form value
-    const selectedOption =
-      options.find((option) => option.id === value) ||
-      options[0];
+    const selectedOption = options.find(
+      (option) => option.id === value
+    );
 
     return (
       <FormField label={label}>
         <Listbox
-          value={selectedOption}
+          value={selectedOption || ""}
           onChange={(option) => {
             // Pass the id value to react-hook-form
             onChange(option.id);
@@ -148,7 +148,7 @@ export const Select = React.forwardRef(
               className="w-full px-3 py-2 text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
             >
               <span className="block truncate">
-                {selectedOption.name}
+                {selectedOption?.name || "Select an option"}
               </span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <ChevronDownIcon

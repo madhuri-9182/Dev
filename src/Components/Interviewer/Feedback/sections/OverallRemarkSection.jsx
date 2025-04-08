@@ -45,7 +45,7 @@ const OverallRemarkSection = ({
           />
         </div>
         <div className="mb-6">
-          <label className="block mb-1 font-medium text-default">
+          <label className="block mb-1 font-[550] text-default required-field-label">
             Overall Score
           </label>
           <input
