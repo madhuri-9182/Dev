@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Modal from "../../../../shared/Modal";
 import InterviewFeedbackPDF from "../../../../PDF Report/InterviewFeedbackPDF";
 import { useLocation } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { Alert, CircularProgress } from "@mui/material";
 import {
   createFileFromUrl,
   handleFileDownload,
@@ -144,24 +144,38 @@ const CandidateFeedback = () => {
         className="min-w-fit top-auto left-auto"
       >
         <div className="flex flex-row-reverse">
-          <button
-            disabled={isDownloading}
-            className="primary-button flex items-center justify-center"
-            onClick={handleDownload}
-          >
-            {isDownloading
-              ? "Downloading..."
-              : "Download PDF"}
-            {isDownloading && (
-              <CircularProgress
-                size={16}
-                sx={{
-                  color: "white",
-                  marginLeft: "5px",
-                }}
-              />
-            )}
-          </button>
+          {!state?.data?.pdf_file ? (
+            <Alert
+              severity="info"
+              sx={{
+                fontSize: "12px",
+                padding: "0 10px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              PDF will be available shortly.
+            </Alert>
+          ) : (
+            <button
+              disabled={isDownloading}
+              className="primary-button flex items-center justify-center"
+              onClick={handleDownload}
+            >
+              {isDownloading
+                ? "Downloading..."
+                : "Download PDF"}
+              {isDownloading && (
+                <CircularProgress
+                  size={16}
+                  sx={{
+                    color: "white",
+                    marginLeft: "5px",
+                  }}
+                />
+              )}
+            </button>
+          )}
         </div>
         <InterviewFeedbackPDF
           data={state?.data}
