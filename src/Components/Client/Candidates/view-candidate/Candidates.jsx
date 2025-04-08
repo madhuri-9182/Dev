@@ -231,7 +231,11 @@ function Candidates() {
           <CandidateFilters
             value={selectedStatus}
             onChange={setSelectedStatus}
-            options={[...CANDIDATE_STATUS]}
+            options={[
+              ...CANDIDATE_STATUS.filter(
+                (status) => status.id !== "CSCH"
+              ),
+            ]}
             placeholder="All Status"
             displayValue={
               CANDIDATE_STATUS.find(

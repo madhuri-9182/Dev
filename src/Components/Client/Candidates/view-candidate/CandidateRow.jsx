@@ -25,12 +25,14 @@ const CandidateRow = ({
         <div className="flex flex-col justify-start items-start gap-2">
           <div
             className={`text-xs font-bold text-[#056DDC] uppercase  ${
-              candidate?.status !== "SCH"
+              !["CSCH", "SCH"].includes(candidate?.status)
                 ? "hover:underline cursor-pointer"
                 : ""
             }`}
             onClick={() => {
-              if (candidate?.status === "SCH") {
+              if (
+                ["CSCH", "SCH"].includes(candidate?.status)
+              ) {
                 return;
               }
               if (candidate?.status === "NSCH") {
@@ -123,6 +125,8 @@ const StatusBadge = ({ status, candidateStatus }) => {
         return "bg-[#00ABF0] text-white";
       case "SCH":
         return "bg-[#DF8C0F] text-white";
+      case "CSCH":
+        return "bg-[#DF8C0F] text-white";
       default:
         return "bg-[#C4C4C4]";
     }
@@ -148,22 +152,19 @@ StatusBadge.propTypes = {
   candidateStatus: PropTypes.array,
 };
 
-const ScoreDisplay = ({ candidate, 
-  // onViewCandidate 
-}) => {
-  if (candidate.status === "SCH") {
-    // return (
-    //   <button
-    //     type="button"
-    //     className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center"
-    //     onClick={() => {
-    //       onViewCandidate(candidate);
-    //     }}
-    //   >
-    //     Reschedule
-    //   </button>
-    // );
-    return '-'
+const ScoreDisplay = ({ candidate, onViewCandidate }) => {
+  if (["CSCH", "SCH"].includes(candidate?.status)) {
+    return (
+      <button
+        type="button"
+        className="bg-[#E8DEF8] text-[#4A4459] text-xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center"
+        onClick={() => {
+          onViewCandidate(candidate);
+        }}
+      >
+        Reschedule
+      </button>
+    );
   }
 
   if (candidate.status === "NSCH") {
