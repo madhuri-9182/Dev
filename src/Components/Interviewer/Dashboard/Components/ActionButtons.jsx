@@ -1,7 +1,5 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { Tooltip, tooltipClasses } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import {
   ArrowSquareRight,
   Eye,
@@ -11,34 +9,7 @@ import {
 
 // Utilities
 import ViewModal from "./ViewModal";
-
-const LightTooltip = styled(({ className, ...props }) => (
-  <Tooltip
-    {...props}
-    classes={{ popper: className }}
-    slotProps={{
-      popper: {
-        modifiers: [
-          {
-            name: "offset",
-            options: {
-              offset: [0, -10],
-            },
-          },
-        ],
-      },
-    }}
-  />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.white,
-    color: "#056DDC",
-    boxShadow: theme.shadows[1],
-    fontSize: 11,
-    maxWidth: 200,
-    textAlign: "center",
-  },
-}));
+import { LightTooltip } from "../../../shared/LightTooltip";
 
 /**
  * Helper function to check if the meeting link should be enabled
@@ -81,7 +52,11 @@ const isMeetingLinkEnabled = (scheduledTimeStr) => {
  * buttons component for Action Buttons
  */
 const Button = ({ Icon, onClick, disabled, title }) => (
-  <LightTooltip title={title} placement="top">
+  <LightTooltip
+    title={title}
+    placement="top"
+    color="#056ddc"
+  >
     <button
       onClick={onClick}
       className="cursor-pointer w-6 h-6 flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-transparent disabled:text-[#171717] text-[#171717] hover:bg-[#056DDC] hover:text-white rounded-full"

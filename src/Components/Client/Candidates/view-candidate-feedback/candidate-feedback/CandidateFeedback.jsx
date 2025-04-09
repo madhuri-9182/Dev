@@ -6,12 +6,13 @@ import { useEffect, useState } from "react";
 import Modal from "../../../../shared/Modal";
 import InterviewFeedbackPDF from "../../../../PDF Report/InterviewFeedbackPDF";
 import { useLocation } from "react-router-dom";
-import { Alert, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import {
   createFileFromUrl,
   handleFileDownload,
 } from "../../../../../utils/util";
 import VideoPlayer from "./components/VideoPlayer";
+import { LightTooltip } from "../../../../shared/LightTooltip";
 
 const CandidateFeedback = () => {
   const {
@@ -143,19 +144,41 @@ const CandidateFeedback = () => {
         title="Feedback Report"
         className="min-w-fit top-auto left-auto"
       >
-        <div className="flex flex-row-reverse">
+        <div className="flex flex-row-reverse px-4">
           {!state?.data?.pdf_file ? (
-            <Alert
-              severity="info"
-              sx={{
-                fontSize: "12px",
-                padding: "0 10px",
-                display: "flex",
-                alignItems: "center",
+            <LightTooltip
+              title="PDF will be available shortly"
+              placement="bottom"
+              color="#056DDC"
+              className="cursor-not-allowed"
+              PopperProps={{
+                sx: {
+                  zIndex: 99999, // Ensure the tooltip is above other elements
+                },
               }}
             >
-              PDF will be available shortly.
-            </Alert>
+              <span>
+                {" "}
+                <button
+                  disabled={true} // Add disabled prop
+                  className="primary-button flex items-center justify-center opacity-70" // Add opacity to indicate disabled state
+                  type="button"
+                >
+                  {isDownloading
+                    ? "Downloading..."
+                    : "Download PDF"}
+                  {isDownloading && (
+                    <CircularProgress
+                      size={16}
+                      sx={{
+                        color: "white",
+                        marginLeft: "5px",
+                      }}
+                    />
+                  )}
+                </button>
+              </span>
+            </LightTooltip>
           ) : (
             <button
               disabled={isDownloading}

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import FinalSelectionDropdown from "./FinalSelectionDropdown";
+import { LightTooltip } from "../../../shared/LightTooltip";
 
 const CandidateRow = ({
   candidate,
@@ -155,15 +156,26 @@ StatusBadge.propTypes = {
 const ScoreDisplay = ({ candidate, onViewCandidate }) => {
   if (["CSCH", "SCH"].includes(candidate?.status)) {
     return (
-      <button
-        type="button"
-        className="text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
-        onClick={() => {
-          onViewCandidate(candidate);
-        }}
+      <LightTooltip
+        title="Currently in-development"
+        color="#4a4459"
+        placement="top"
+        className="cursor-not-allowed"
       >
-        Reschedule
-      </button>
+        <span>
+          {" "}
+          <button
+            type="button"
+            className="text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
+            onClick={() => {
+              onViewCandidate(candidate);
+            }}
+            disabled
+          >
+            Reschedule
+          </button>
+        </span>
+      </LightTooltip>
     );
   }
 

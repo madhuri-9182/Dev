@@ -18,36 +18,7 @@ import {
 } from "../../../Constants/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { Tooltip, tooltipClasses } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-const LightTooltip = styled(({ className, ...props }) => (
-  <Tooltip
-    {...props}
-    classes={{ popper: className }}
-    slotProps={{
-      popper: {
-        modifiers: [
-          {
-            name: "offset",
-            options: {
-              offset: [0, -10],
-            },
-          },
-        ],
-      },
-    }}
-  />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.white,
-    color: "#F59E0B",
-    boxShadow: theme.shadows[1],
-    fontSize: 11,
-    maxWidth: 200,
-    textAlign: "center",
-  },
-}));
+import { LightTooltip } from "../../../shared/LightTooltip";
 
 export const ResumeTable = ({
   data,
@@ -78,6 +49,7 @@ export const ResumeTable = ({
           <LightTooltip
             title={"Please review the experience values"}
             placement="top"
+            color="#F59E0B"
           >
             {!editingRowId && (
               <InfoCircle
