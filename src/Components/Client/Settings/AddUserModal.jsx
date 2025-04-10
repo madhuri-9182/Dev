@@ -235,7 +235,7 @@ const AddUserModal = ({
     () => [
       { id: "client_admin", name: "Admin" },
       { id: "client_user", name: "User" },
-      // { id: "agency", name: "Agency" },
+      { id: "agency", name: "Agency" },
     ],
     []
   );
@@ -429,49 +429,51 @@ const AddUserModal = ({
                 )}
               />
 
-              {accessibility === 'AGJ' && (
+              {accessibility === "AGJ" && (
                 <Controller
-                name="jobs_assigned"
-                control={control}
-                rules={{
-                  validate: (value) => {
-                    if (
-                      accessibility === "AGJ" &&
-                      (!value || value.length === 0)
-                    ) {
-                      return "At least one job must be assigned";
-                    }
-                    return true;
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    label="Jobs Assigned"
-                    error={errors.jobs_assigned?.message}
-                    required={accessibility === "AGJ"}
-                  >
-                    <CustomSelect
-                      type="jobs_assigned"
-                      placeholder="Select Jobs"
-                      value=""
-                      onChange={(e) => {
-                        const jobId = Number(
-                          e.target.value
-                        );
-                        if (!field.value.includes(jobId)) {
-                          const updatedJobs = [
-                            ...field.value,
-                            jobId,
-                          ];
-                          field.onChange(updatedJobs);
-                        }
-                      }}
-                      options={jobOptions}
-                      errors={errors}
-                    />
-                  </FormField>
-                )}
-              />
+                  name="jobs_assigned"
+                  control={control}
+                  rules={{
+                    validate: (value) => {
+                      if (
+                        accessibility === "AGJ" &&
+                        (!value || value.length === 0)
+                      ) {
+                        return "At least one job must be assigned";
+                      }
+                      return true;
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      label="Jobs Assigned"
+                      error={errors.jobs_assigned?.message}
+                      required={accessibility === "AGJ"}
+                    >
+                      <CustomSelect
+                        type="jobs_assigned"
+                        placeholder="Select Jobs"
+                        value=""
+                        onChange={(e) => {
+                          const jobId = Number(
+                            e.target.value
+                          );
+                          if (
+                            !field.value.includes(jobId)
+                          ) {
+                            const updatedJobs = [
+                              ...field.value,
+                              jobId,
+                            ];
+                            field.onChange(updatedJobs);
+                          }
+                        }}
+                        options={jobOptions}
+                        errors={errors}
+                      />
+                    </FormField>
+                  )}
+                />
               )}
             </div>
 
