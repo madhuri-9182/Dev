@@ -14,6 +14,7 @@ import {
   Personalcard,
   Lock,
   DocumentText,
+  Calendar2,
 } from "iconsax-react";
 
 export const EMAIL_REGEX =
@@ -142,6 +143,44 @@ export const AGENCY_NAVLINKS = [
     text: "Candidates",
     icon: Personalcard,
     link: "/agency/candidates",
+  },
+  {
+    text: "Terms & Conditions",
+    icon: DocumentText,
+    link: "/agency/tnc",
+  },
+  {
+    text: "Privacy Policy",
+    icon: Lock,
+    link: "/agency/privacy-policy",
+  },
+];
+
+export const INTERVIEWER_NAVLINKS = [
+  {
+    text: "Dashboard",
+    icon: Chart2,
+    link: "/interviewer/dashboard",
+  },
+  {
+    text: "Calendar",
+    icon: Calendar2,
+    link: "/interviewer/calendar",
+  },
+  // {
+  //   text: "Check Receivables",
+  //   icon: Cards,
+  //   link: "/interviewer/payments",
+  // },
+  {
+    text: "Terms & Conditions",
+    icon: DocumentText,
+    link: "/interviewer/tnc",
+  },
+  {
+    text: "Privacy Policy",
+    icon: Lock,
+    link: "/interviewer/privacy-policy",
   },
 ];
 

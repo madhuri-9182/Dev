@@ -1,16 +1,9 @@
-// src/components/interviewer/InterviewRecord.jsx
-import { useNavigate } from "react-router-dom";
-import {
-  useMutation,
-  useInfiniteQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 
 // API imports
-import axios from "../../../api/axios";
 import {
-  getGoogleEvents,
   getAcceptedInterviews,
   getInterviewHistory,
   getPendingFeedbackInterviews,
@@ -19,13 +12,11 @@ import useAuth from "../../../hooks/useAuth";
 
 // Component imports
 import Heading from "./Components/Heading";
-import Sidebar from "./Components/Sidebar";
 import Table from "./Components/Table";
 import VerificationAlert from "./Components/VerificationAlert";
 
 function InterviewRecord() {
   const { auth } = useAuth();
-  const navigate = useNavigate();
 
   // Create InView hooks for each table
   const [acceptedRef, isAcceptedInView] = useInView({
@@ -133,101 +124,68 @@ function InterviewRecord() {
     interviewHistoryQuery.data?.pages[0]?.count || 0;
 
   // Check if any query has failed with verification error
-  const hasVerificationError = 
-    (acceptedInterviewsQuery.data?.pages[0]?.status === "failed" && 
-     acceptedInterviewsQuery.data?.pages[0]?.message?.includes("please verify your email and phone")) ||
-    (pendingFeedbackQuery.data?.pages[0]?.status === "failed" && 
-     pendingFeedbackQuery.data?.pages[0]?.message?.includes("please verify your email and phone")) ||
-    (interviewHistoryQuery.data?.pages[0]?.status === "failed" && 
-     interviewHistoryQuery.data?.pages[0]?.message?.includes("please verify your email and phone"));
-
-  // Mutation for checking events API
-  const checkEventsMutation = useMutation({
-    mutationFn: getGoogleEvents,
-    onSuccess: (data) => {
-      if (data && data.status === "success") {
-        navigate("/interviewer/calendar");
-      } else {
-        handleBlockCalendar();
-      }
-    },
-    onError: (error) => {
-      console.error("Error checking events API:", error);
-      handleBlockCalendar();
-    },
-  });
-
-  const handleBlockCalendar = async () => {
-    try {
-      const response = await axios.get(
-        "/api/google-auth/init/"
-      );
-      if (response.data?.data?.url) {
-        window.location.href = response.data.data.url;
-      }
-    } catch (error) {
-      console.error(
-        "Error initializing Google Auth:",
-        error
-      );
-    }
-  };
-
-  const handleCalendarClick = () => {
-    checkEventsMutation.mutate();
-  };
+  const hasVerificationError =
+    (acceptedInterviewsQuery.data?.pages[0]?.status ===
+      "failed" &&
+      acceptedInterviewsQuery.data?.pages[0]?.message?.includes(
+        "please verify your email and phone"
+      )) ||
+    (pendingFeedbackQuery.data?.pages[0]?.status ===
+      "failed" &&
+      pendingFeedbackQuery.data?.pages[0]?.message?.includes(
+        "please verify your email and phone"
+      )) ||
+    (interviewHistoryQuery.data?.pages[0]?.status ===
+      "failed" &&
+      interviewHistoryQuery.data?.pages[0]?.message?.includes(
+        "please verify your email and phone"
+      ));
   return (
     <div className="flex h-full px-8 gap-x-5">
       {!hasVerificationError ? (
-        <>  
-        <div className="w-full pt-8 flex flex-col gap-y-5">
-        <div className="flex flex-col gap-y-3">
-          <Heading
-            title={"Accepted Interviews"}
-            count={acceptedCount}
-          />
-          <Table
-            query={acceptedInterviewsQuery}
-            data={acceptedInterviews}
-            loaderRef={acceptedRef}
-            title={"Accepted Interviews"}
-          />
-        </div>
+        <>
+          <div className="w-full pt-8 flex flex-col gap-y-5">
+            <div className="flex flex-col gap-y-3">
+              <Heading
+                title={"Accepted Interviews"}
+                count={acceptedCount}
+              />
+              <Table
+                query={acceptedInterviewsQuery}
+                data={acceptedInterviews}
+                loaderRef={acceptedRef}
+                title={"Accepted Interviews"}
+              />
+            </div>
 
-        <div className="flex flex-col gap-y-3">
-          <Heading
-            title={"Pending Feedback"}
-            count={pendingCount}
-          />
-          <Table
-            query={pendingFeedbackQuery}
-            data={pendingFeedback}
-            loaderRef={pendingRef}
-            title={"Pending Feedback"}
-          />
-        </div>
+            <div className="flex flex-col gap-y-3">
+              <Heading
+                title={"Pending Feedback"}
+                count={pendingCount}
+              />
+              <Table
+                query={pendingFeedbackQuery}
+                data={pendingFeedback}
+                loaderRef={pendingRef}
+                title={"Pending Feedback"}
+              />
+            </div>
 
-        <div className="flex flex-col gap-y-3">
-          <Heading
-            title={"Interview History"}
-            count={historyCount}
-          />
-          <Table
-            query={interviewHistoryQuery}
-            data={interviewHistory}
-            loaderRef={historyRef}
-            title={"Interview History"}
-          />
-        </div>
-      </div>
-
-      {/* Button Sidebar */}
-      <Sidebar
-        handleCalendarClick={handleCalendarClick}
-        isLoading={checkEventsMutation.isLoading}
-      />
+            <div className="flex flex-col gap-y-3">
+              <Heading
+                title={"Interview History"}
+                count={historyCount}
+              />
+              <Table
+                query={interviewHistoryQuery}
+                data={interviewHistory}
+                loaderRef={historyRef}
+                title={"Interview History"}
+              />
+            </div>
+          </div>
         </>
-      ): (
+      ) : (
         <VerificationAlert />
       )}
     </div>

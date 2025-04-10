@@ -7,12 +7,13 @@ import {
 import { ROLES } from "./Components/Constants/constants";
 // Interviewer Imports
 import {
-  Layout,
   CalendarComponent,
   InterviewRecord,
   Payments,
   Feedback,
   InterviewerConfirmation,
+  Layout,
+  InterviewerTermsAndConditions,
 } from "./Components";
 // Internal Imports
 import {
@@ -224,6 +225,14 @@ const router = createBrowserRouter(
                 element={<AgencyAddCandidate />}
               />
             </Route>
+            <Route
+              path="tnc"
+              element={<TermsAndConditions />}
+            />
+            <Route
+              path="privacy-policy"
+              element={<PrivacyPolicy />}
+            />
           </Route>
         </Route>
         {/* //Internal Routes */}
@@ -292,20 +301,38 @@ const router = createBrowserRouter(
             <RequireAuth allowedRoles={ROLES.INTERVIEWER} />
           }
         >
-          <Route path="interviewer" element={<Layout />}>
-            <Route
-              path="dashboard"
-              element={<InterviewRecord />}
-            />
-            <Route
-              path="calendar"
-              element={<CalendarComponent />}
-            />
-            <Route path="payments" element={<Payments />} />
-            <Route
-              path="feedback/:id"
-              element={<Feedback />}
-            />
+          <Route path="interviewer">
+            {/* Feedback route with its own layout */}
+            <Route element={<Layout />}>
+              <Route
+                path="feedback/:id"
+                element={<Feedback />}
+              />
+            </Route>
+
+            {/* Navigation layout routes */}
+            <Route element={<NavigationLayout />}>
+              <Route
+                path="dashboard"
+                element={<InterviewRecord />}
+              />
+              <Route
+                path="calendar"
+                element={<CalendarComponent />}
+              />
+              <Route
+                path="payments"
+                element={<Payments />}
+              />
+              <Route
+                path="tnc"
+                element={<InterviewerTermsAndConditions />}
+              />
+              <Route
+                path="privacy-policy"
+                element={<PrivacyPolicy />}
+              />
+            </Route>
           </Route>
         </Route>
       </Route>

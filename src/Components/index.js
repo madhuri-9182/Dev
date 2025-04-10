@@ -58,6 +58,7 @@ import InterviewRecord from "./Interviewer/Dashboard/InterviewRecord";
 import Payments from "./Interviewer/Payments";
 import Feedback from "./Interviewer/Feedback";
 import InterviewerConfirmation from "./Interviewer/confirmation/InterviewConfirmation";
+import InterviewerTermsAndConditions from "./Client/tnc/InterviewTnC";
 
 // shared imports
 import {
@@ -137,6 +138,7 @@ export {
   Payments,
   Feedback,
   InterviewerConfirmation,
+  InterviewerTermsAndConditions,
 };
 
 // Shared Exports

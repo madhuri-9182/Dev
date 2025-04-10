@@ -27,6 +27,7 @@ import {
   CLIENT_NAVLINKS,
   INTERNAL_NAVLINKS,
   AGENCY_NAVLINKS,
+  INTERVIEWER_NAVLINKS,
 } from "../Constants/constants";
 import { NavItemIcon } from "./NavItemIcon";
 import { SmsTracking } from "iconsax-react";
@@ -126,6 +127,11 @@ function NavigationLayout() {
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate();
 
+  // Check if user is an interviewer
+  const isInterviewer = ROLES.INTERVIEWER.includes(
+    auth?.role
+  );
+
   const fullName = auth?.name ? auth?.name : "User";
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -142,7 +148,79 @@ function NavigationLayout() {
     ? INTERNAL_NAVLINKS
     : ROLES.AGENCY.includes(auth?.role)
     ? AGENCY_NAVLINKS
+    : ROLES.INTERVIEWER.includes(auth?.role)
+    ? INTERVIEWER_NAVLINKS
     : [];
+
+  // When Calendar link is clicked for interviewer role
+  const handleCalendarLinkClick = async () => {
+    try {
+      // Import necessary modules only when needed (dynamic import)
+      const { getGoogleEvents } = await import(
+        "../Interviewer/api"
+      );
+      const axios = (await import("../../api/axios"))
+        .default;
+      const toast = (await import("react-hot-toast"))
+        .default;
+
+      try {
+        // Check if we can access Google Calendar events
+        const eventsResponse = await getGoogleEvents();
+        if (
+          eventsResponse &&
+          eventsResponse.status === "success"
+        ) {
+          navigate("/interviewer/calendar");
+        } else {
+          // If not, initiate Google auth flow
+          const authResponse = await axios.get(
+            "/api/google-auth/init/"
+          );
+          if (authResponse.data?.data?.url) {
+            window.location.href =
+              authResponse.data.data.url;
+          }
+        }
+      } catch (error) {
+        console.error("Error accessing calendar:", error);
+        // If API call fails, try to initiate Google auth flow
+        try {
+          const authResponse = await axios.get(
+            "/api/google-auth/init/"
+          );
+          if (authResponse.data?.data?.url) {
+            window.location.href =
+              authResponse.data.data.url;
+          }
+        } catch (authError) {
+          console.error(
+            "Error initializing Google Auth:",
+            authError
+          );
+          toast.error(
+            "Failed to connect to Google Calendar"
+          );
+        }
+      }
+    } catch (importError) {
+      console.error(
+        "Error importing modules:",
+        importError
+      );
+      // Fallback to direct navigation if imports fail
+      navigate("/interviewer/calendar");
+    }
+  };
+
+  const handleNavItemClick = (item) => {
+    // Special handling for Calendar link only when user is an interviewer
+    if (isInterviewer && item.text === "Calendar") {
+      handleCalendarLinkClick();
+    } else {
+      navigate(item.link);
+    }
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -263,7 +341,7 @@ function NavigationLayout() {
                     ? { justifyContent: "initial" }
                     : { justifyContent: "center" },
                 ]}
-                onClick={() => navigate(items.link)}
+                onClick={() => handleNavItemClick(items)}
                 className="cursor-pointer"
               >
                 <NavItemIcon

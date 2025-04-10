@@ -592,7 +592,7 @@ const CalendarComponent = () => {
   };
 
   return (
-    <div className="font-roboto max-w-full p-5 my-0 mx-auto">
+    <div className="font-roboto max-w-full my-0 mx-auto">
       {/* Toolbar */}
       <CalendarToolbar
         calendarTitle={calendarTitle}
