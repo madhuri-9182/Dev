@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, AlertTriangle, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -32,6 +32,7 @@ import TimeWindowSelector from "./components/TimeWindowSelector";
 import DropCandidateModal from "../components/DropCandidateModal";
 import TimeRemainingComponent from "./components/TimeRemainingComponent";
 import { Alert } from "@mui/material";
+import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 
 /**
  * Error modal component for scheduling errors
@@ -90,7 +91,7 @@ SchedulingErrorModal.propTypes = {
 function ClientScheduleInterview() {
   const { data: jobs } = useAllJobs();
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigateTo = useRoleBasedNavigate();
   const [file, setFile] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] =
     useState(false);
@@ -218,7 +219,7 @@ function ClientScheduleInterview() {
       toast.success(
         "Scheduling initiated successfully. You will be notified shortly."
       );
-      navigate("/client/candidates");
+      navigateTo("candidates");
     },
     onError: (error) => {
       let errorToShow = "Failed to schedule interview";
@@ -304,7 +305,7 @@ function ClientScheduleInterview() {
           setShowSchedulingErrorModal(true);
         }
       } else {
-        navigate("/client/candidates");
+        navigateTo("candidates");
       }
     },
     onError: (error) => {
@@ -345,7 +346,7 @@ function ClientScheduleInterview() {
     setShowSchedulingErrorModal(false);
     setSchedulingError(null);
     toast.success("Candidate saved successfully");
-    navigate("/client/candidates");
+    navigateTo("candidates");
   };
 
   // Handle form submission
@@ -357,7 +358,7 @@ function ClientScheduleInterview() {
     // Skip API call if no changes for existing candidate
     if (item?.id && !hasChanges && !scheduleNow) {
       toast.success("No changes to save");
-      navigate("/client/candidates");
+      navigateTo("candidates");
       return;
     }
 
@@ -391,7 +392,7 @@ function ClientScheduleInterview() {
       // No changes and not scheduling, just navigate away
       else {
         toast.info("No changes to save");
-        navigate("/client/candidates");
+        navigateTo("candidates");
       }
     } else {
       // New candidate: include all fields
@@ -443,7 +444,7 @@ function ClientScheduleInterview() {
         window.opener.removeCandidateFromData(key);
         window.close();
       } else {
-        navigate("/client/candidates");
+        navigateTo("candidates");
       }
     }
   };

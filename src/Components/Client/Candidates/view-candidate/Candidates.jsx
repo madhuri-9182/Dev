@@ -31,9 +31,11 @@ import {
 import useAllCandidates from "../../../../hooks/useFetchAllCandidates";
 import { CandidateFilters } from "./CandidateFilters";
 import AddButton from "../../../shared/AddButton";
+import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 
 function Candidates() {
   const { state } = useLocation();
+  const navigateTo = useRoleBasedNavigate();
 
   const navigate = useNavigate();
   const { data: candidates } = useAllCandidates();
@@ -125,8 +127,8 @@ function Candidates() {
         JSON.stringify(candidateData)
       );
 
-      const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
-      navigate(url);
+      const url = `candidates/schedule-interview?key=${uniqueKey}`;
+      navigateTo(url);
     } catch (error) {
       console.error(
         "Error processing candidate data:",

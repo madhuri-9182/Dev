@@ -2,6 +2,9 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import FinalSelectionDropdown from "./FinalSelectionDropdown";
 import { LightTooltip } from "../../../shared/LightTooltip";
+import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
+import useAuth from "../../../../hooks/useAuth";
+import { ROLES } from "../../../Constants/constants";
 
 const CandidateRow = ({
   candidate,
@@ -11,7 +14,7 @@ const CandidateRow = ({
 }) => {
   const { getRoleName, getSourceName, formatDate } =
     utilities;
-  const navigate = useNavigate();
+  const navigateTo = useRoleBasedNavigate();
 
   return (
     <div className="w-full flex items-center justify-evenly">
@@ -39,14 +42,11 @@ const CandidateRow = ({
               if (candidate?.status === "NSCH") {
                 onViewCandidate(candidate);
               } else {
-                navigate(
-                  `/client/candidates/${candidate.id}`,
-                  {
-                    state: {
-                      id: candidate?.interviews[0],
-                    },
-                  }
-                );
+                navigateTo(`candidates/${candidate.id}`, {
+                  state: {
+                    id: candidate?.interviews[0],
+                  },
+                });
               }
             }}
           >
@@ -193,6 +193,9 @@ ScoreDisplay.propTypes = {
 
 const EngagementButton = ({ candidate }) => {
   const navigate = useNavigate();
+  const { auth } = useAuth();
+  const isClient = ROLES.CLIENT.includes(auth?.role);
+  if (!isClient) return "-";
   return (
     <button
       className="bg-[#E8DEF8] text-[#4A4459] text-2xs py-2 px-3 rounded-[100px] font-medium transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-[#ECE8F2] hover:to-[#DCD6E6] cursor-pointer flex justify-center items-center"

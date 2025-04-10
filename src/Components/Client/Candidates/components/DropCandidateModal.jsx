@@ -8,11 +8,11 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { deleteCandidate } from "../api";
-import { useNavigate } from "react-router-dom";
+import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 
 const DropCandidateModal = ({ onClose, id }) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const navigateTo = useRoleBasedNavigate();
   const [selectedReason, setSelectedReason] = useState("");
 
   const deleteCandidateMutation = useMutation({
@@ -20,7 +20,7 @@ const DropCandidateModal = ({ onClose, id }) => {
     onSuccess: () => {
       toast.success("Candidate deleted successfully");
       queryClient.invalidateQueries("candidates");
-      navigate("/client/candidates");
+      navigateTo("candidates");
       onClose();
     },
     onError: () => {

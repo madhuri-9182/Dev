@@ -29,12 +29,7 @@ import {
   InternalAddInterviewer,
 } from "./Components";
 // Agency Imports
-import {
-  AgencyDashboard,
-  AgencyCandidates,
-  AgencyAddCandidate,
-  AgencyScheduleInterview,
-} from "./Components";
+import { AgencyDashboard } from "./Components";
 // Client Imports
 import {
   Dashboard,
@@ -212,18 +207,22 @@ const router = createBrowserRouter(
               element={<AgencyDashboard />}
             />
             <Route path="candidates">
+              <Route index element={<Candidates />} />
               <Route
-                path=""
-                element={<AgencyCandidates />}
+                path="add-candidate"
+                element={<ClientAddCandidate />}
               />
               <Route
                 path="schedule-interview"
-                element={<AgencyScheduleInterview />}
+                element={<ClientScheduleInterview />}
               />
-              <Route
-                path="addcandidate"
-                element={<AgencyAddCandidate />}
-              />
+              <Route path=":id">
+                <Route index element={<CandidateView />} />
+                <Route
+                  path="feedback"
+                  element={<CandidateFeedback />}
+                />
+              </Route>
             </Route>
             <Route
               path="tnc"

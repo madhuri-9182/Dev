@@ -15,10 +15,12 @@ import {
   EMAIL_REGEX,
   GENDERS,
   MOBILE_REGEX,
+  ROLES,
 } from "../../../Constants/constants";
-import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { LightTooltip } from "../../../shared/LightTooltip";
+import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
+import useAuth from "../../../../hooks/useAuth";
 
 export const ResumeTable = ({
   data,
@@ -117,7 +119,9 @@ const ResumeTableRow = ({
   selectedSpecialization,
   isDiversityHiring,
 }) => {
-  const navigate = useNavigate();
+  const { auth } = useAuth();
+  const navigateTo = useRoleBasedNavigate();
+  const isClient = ROLES.CLIENT.includes(auth?.role);
 
   // Initialize React Hook Form
   const {
@@ -328,11 +332,14 @@ const ResumeTableRow = ({
         uniqueKey,
         JSON.stringify(encodedData)
       );
-      const url = `/client/candidates/schedule-interview?key=${uniqueKey}`;
+      const url = `candidates/schedule-interview?key=${uniqueKey}`;
 
       // if data length is more than 1 then open in new tab, else open in same tab
       if (data.length > 1) {
-        const newTab = window.open(url, "_blank");
+        const newTab = window.open(
+          `${isClient ? "/client/" : "/agency/"}${url}`,
+          "_blank"
+        );
 
         // Check if the new tab was successfully opened
         if (newTab) {
@@ -343,7 +350,7 @@ const ResumeTableRow = ({
           }, 500);
         }
       } else {
-        navigate(url);
+        navigateTo(url);
       }
     }
   );
