@@ -360,9 +360,9 @@ export const JobCard = ({
 );
 
 JobCard.propTypes = {
-  job: PropTypes.object.isRequired,
-  onView: PropTypes.func.isRequired,
-  onArchive: PropTypes.func.isRequired,
-  onAddCandidate: PropTypes.func.isRequired,
+  job: PropTypes.object,
+  onView: PropTypes.func,
+  onArchive: PropTypes.func,
+  onAddCandidate: PropTypes.func,
   onEdit: PropTypes.func,
 };

@@ -16,8 +16,11 @@ import {
   SaveButton,
 } from "../../shared/SaveAndCancelButtons";
 import { getJobLabel } from "../../../utils/util";
+import useAuth from "../../../hooks/useAuth";
 
 const JobDetails = () => {
+  const { auth } = useAuth();
+  const isAgency = auth?.role === "agency";
   const navigate = useNavigate();
   const {
     formdata,
@@ -58,13 +61,19 @@ const JobDetails = () => {
   };
 
   const onSubmit = () => {
-    navigate("/client/jobs");
+    if (isAgency) {
+      navigate("/agency/dashboard");
+    } else {
+      navigate("/client/jobs");
+    }
   };
 
   const mutation = useMutation({
     mutationFn: isEdit ? updateJob : createJob,
     onSuccess: () => {
-      queryClient.invalidateQueries("jobs");
+      isAgency
+        ? queryClient.invalidateQueries("agency-jobs")
+        : queryClient.invalidateQueries("jobs");
       onSubmit();
       toast.success(
         isEdit
@@ -93,7 +102,7 @@ const JobDetails = () => {
     // Check if there are any changes
     if (!hasDataChanged()) {
       toast.success("No changes to save");
-      navigate("/client/jobs");
+      onSubmit();
       return;
     }
 
@@ -179,7 +188,7 @@ const JobDetails = () => {
 
     if (isEdit && formdataToSubmit.entries().next().done) {
       toast.success("No changes to save");
-      navigate("/client/jobs");
+      onSubmit();
       return;
     }
 

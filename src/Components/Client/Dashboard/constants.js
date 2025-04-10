@@ -66,6 +66,30 @@ export const MY_JOBS = [
   },
 ];
 
+export const MY_AGENCY_JOBS = [
+  {
+    label: "Total Candidates",
+    key: "total_candidates",
+    path: "/agency/candidates",
+  },
+  {
+    label: "Selected Candidates",
+    key: "selects",
+    path: "/agency/candidates",
+    state: {
+      status: "REC",
+    },
+  },
+  {
+    label: "Rejected Candidates",
+    key: "rejects",
+    path: "/agency/candidates",
+    state: {
+      status: "NREC",
+    },
+  },
+];
+
 export const ANALYTICS = [
   {
     label: "Companies with More Selects",

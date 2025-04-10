@@ -8,6 +8,7 @@ import {
 import { Outlet, useNavigate } from "react-router-dom";
 import { createFileFromUrl } from "../utils/util";
 import _ from "lodash";
+import useRoleBasedNavigate from "../hooks/useRoleBaseNavigate";
 
 const JobContext = createContext({});
 
@@ -50,7 +51,7 @@ const initialDetailsState = [
 ];
 
 export const JobProvider = () => {
-  const navigate = useNavigate();
+  const navigateTo = useRoleBasedNavigate();
   const [formdata, setFormdata] = useState(initialState);
   const [selectedData, setSelectedData] = useState({});
   const [originalFormData, setOriginalFormData] =
@@ -71,7 +72,7 @@ export const JobProvider = () => {
     if (data) {
       setSelectedData(data);
     }
-    navigate("/client/jobs/job-details");
+    navigateTo("jobs/job-details");
   };
 
   const reset = () => {
@@ -93,7 +94,7 @@ export const JobProvider = () => {
     } else {
       reset();
     }
-    navigate("/client/jobs/add-job");
+    navigateTo("jobs/add-job");
   };
 
   const handleArchiveModalOpen = (id) => {

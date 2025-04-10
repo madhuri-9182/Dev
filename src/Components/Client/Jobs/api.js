@@ -12,14 +12,14 @@ const getQueryParams = (params) => {
   const queryParams = {};
   queryParams.limit = 10;
   queryParams.offset = (params.page - 1) * 10;
-  if (params.job_ids.length) {
+  if (params.job_ids?.length) {
     queryParams.job_ids = params.job_ids.join(",");
   }
-  if (params.hiring_manager_ids.length) {
+  if (params.hiring_manager_ids?.length) {
     queryParams.hiring_manager_ids =
       params.hiring_manager_ids.join(",");
   }
-  if (params.recruiter_ids.length) {
+  if (params.recruiter_ids?.length) {
     queryParams.recruiter_ids =
       params.recruiter_ids.join(",");
   }

@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import DynamicMultiSelect from "../../../utils/DynamicMultiSelect";
 import { LogoutCurve } from "iconsax-react";
@@ -22,10 +21,11 @@ import {
   SaveButton,
 } from "../../shared/SaveAndCancelButtons";
 import { Loader2 } from "lucide-react";
+import useRoleBasedNavigate from "../../../hooks/useRoleBaseNavigate";
 
 const AddJob = () => {
   const { auth } = useAuth();
-  const navigate = useNavigate();
+  const navigateTo = useRoleBasedNavigate();
   const { formdata, setFormdata, isEdit } = useJobContext();
   const fileInputRef = useRef(null);
   const { data: users } = useAllUsers();
@@ -53,8 +53,13 @@ const AddJob = () => {
     },
   });
   const shouldBeDisabled =
-    auth?.role === "client_user" && isEdit;
-  const isClientUser = auth?.role === "client_user";
+    ["client_user", "agency"].includes(auth?.role) &&
+    isEdit;
+  const isClientUserOrAgency = [
+    "client_user",
+    "agency",
+  ].includes(auth?.role);
+  const isAgency = auth?.role === "agency";
 
   // Controlled values from form
   const selectedRecruiters = watch("recruiters") || [];
@@ -164,7 +169,7 @@ const AddJob = () => {
       job_description_file: data.jobDescriptionFile,
       is_diversity_hiring: data.isDiversityHiring,
     });
-    navigate("/client/jobs/job-details");
+    navigateTo("jobs/job-details");
   };
 
   const onBack = () => {
@@ -177,7 +182,9 @@ const AddJob = () => {
       localStorage.getItem("hasLoaded") !== "true";
 
     if (!isFirstLoad) {
-      navigate("/client/jobs");
+      isAgency
+        ? navigateTo("dashboard")
+        : navigateTo("jobs");
     } else {
       localStorage.setItem("hasLoaded", "true");
     }
@@ -185,7 +192,7 @@ const AddJob = () => {
     return () => {
       localStorage.removeItem("hasLoaded");
     };
-  }, [navigate]);
+  }, [navigateTo, isAgency]);
 
   // Initialize form with existing data
   useEffect(() => {
@@ -207,13 +214,13 @@ const AddJob = () => {
         handleFileUpload(formdata.job_description_file);
       }
       reset(resetData);
-      if (isClientUser) {
+      if (isClientUserOrAgency) {
         setHiringManagerName(formdata?.hiring_manager_name);
         setRecruiterNames(formdata?.recruiter_names);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formdata, reset, setValue, isClientUser]);
+  }, [formdata, reset, setValue, isClientUserOrAgency]);
 
   return (
     <div className="flex gap-x-14">
@@ -225,7 +232,7 @@ const AddJob = () => {
             >
               Job Role
             </label>
-            {isClientUser && isEdit ? (
+            {isClientUserOrAgency && isEdit ? (
               <div className="w-2/3 rounded-lg text-2xs py-2 px-3 border border-[#CAC4D0] bg-gray-100 opacity-70 cursor-not-allowed text-[#49454F]">
                 {JOB_NAMES.find(
                   (job) => job.id === watch("jobRole")
@@ -279,7 +286,7 @@ const AddJob = () => {
             >
               Assigned Recruiter
             </label>
-            {isClientUser && isEdit ? (
+            {isClientUserOrAgency && isEdit ? (
               <div className="w-2/3 rounded-lg text-2xs py-1 px-3 border border-[#CAC4D0] bg-gray-100 opacity-70 cursor-not-allowed">
                 <div className="flex flex-wrap gap-1">
                   {recruiterNames.length > 0 ? (
@@ -332,7 +339,7 @@ const AddJob = () => {
             >
               Hiring Manager
             </label>
-            {isClientUser && isEdit ? (
+            {isClientUserOrAgency && isEdit ? (
               <div className="w-2/3 rounded-lg text-2xs py-2 px-3 border border-[#CAC4D0] bg-gray-100 opacity-70 cursor-not-allowed text-[#49454F]">
                 {hiringManagerName ||
                   "No hiring manager assigned"}

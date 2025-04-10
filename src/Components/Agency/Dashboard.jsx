@@ -1,135 +1,282 @@
-import React,{useState} from 'react'
-
-
+import { useMemo } from "react";
+import { useJobContext } from "../../context/JobContext";
+import { fetchJobs } from "../Client/Jobs/api";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getErrorMessage,
+  getJobLabel,
+} from "../../utils/util";
+import {
+  ErrorState,
+  LoadingState,
+} from "../shared/loading-error-state";
+import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { JobCard } from "../Client/Jobs/JobListingComponents";
+import { Pagination } from "@mui/material";
+import Empty from "../shared/Empty";
+import ArchiveModal from "../Client/Jobs/ArchiveModal";
+import { fetchDashboardApi } from "../Client/Dashboard/api";
+import { MY_AGENCY_JOBS } from "../Client/Dashboard/constants";
+import PropTypes from "prop-types";
 
 function Dashboard() {
+  const { auth } = useAuth();
+  const navigate = useNavigate();
 
-  const [categories,setCategories] = useState([
-    { name: 'SDE-II', activeCount: 39 },
-    { name: 'SDE-III', activeCount: 22 },
-    { name: 'DevOps', activeCount: 15 },
-    {name:'QA-I',activeCount:32}
-  ]);
+  const {
+    currentPage,
+    handleAddJobClick,
+    handleShowJobDetails,
+    handleArchiveModalOpen,
+    handleChangePage,
+    isArchiveModalOpen,
+    setIsArchiveModalOpen,
+    archiveId,
+  } = useJobContext();
+
+  const handleArchiveModalClose = () =>
+    setIsArchiveModalOpen(false);
+
+  const handleAddCandidateClick = (job) => {
+    navigate("/agency/candidates/add-candidate", {
+      state: {
+        selectedJob: {
+          id: job.id,
+          name: job.name,
+          label: getJobLabel(job.name),
+          ...(job.specialization && {
+            function: job.specialization,
+          }),
+        },
+      },
+    });
+  };
+
+  const queryFilters = useMemo(() => {
+    return {
+      page: currentPage,
+    };
+  }, [currentPage]);
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["agency-jobs", queryFilters, auth],
+    queryFn: fetchJobs,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const {
+    data: dashboardData,
+    isLoading: isDashboardLoading,
+    isError: isDashboardError,
+    error: dashboardError,
+  } = useQuery({
+    queryKey: ["agency-dashboard", auth],
+    queryFn: fetchDashboardApi,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5,
+  });
+  console.log("dashboardData", dashboardData);
+
+  const pendingTasksItems =
+    dashboardData?.data?.job_role_aggregates?.map(
+      (job_role) => ({
+        label: getJobLabel(job_role.name),
+        value: job_role.count,
+      })
+    ) || [];
+
+  const pendingTasksCount = pendingTasksItems?.reduce(
+    (acc, item) => acc + item.value,
+    0
+  );
+
+  const myJobsItems = MY_AGENCY_JOBS.map((job) => ({
+    label: job.label,
+    value:
+      dashboardData?.data?.job_aggregates[job.key] || 0,
+    onClick: () => {
+      if (job?.state) {
+        navigate(job.path, { state: job.state });
+      } else {
+        navigate(job.path);
+      }
+    },
+  }));
+
+  if (isLoading || isDashboardLoading)
+    return <LoadingState />;
+  if (isError || isDashboardError)
+    return (
+      <ErrorState
+        message={getErrorMessage(error || dashboardError)}
+      />
+    );
+
+  const lightBg = "bg-[#E7E4E8CC]";
 
   return (
-    <div className='w-full'>
-      <div className='w-full flex gap-x-3'>
-        <div className='p-2 flex flex-col gap-y-3'>
-          <div>
-            <h1 className='text-sm font-bold'> My Jobs  <span className='text-white bg-[#056DDC] rounded-full p-1'>38</span></h1>
-          </div>
-          <div className='p-2 pl-3 w-[400px] h-[200px] bg-[#EBEBEB] grid grid-cols-3 gap-2 rounded-lg'>
-            <div className='p-1 flex flex-col items-start justify-center'>
-              <span className='text-sm text-left'>SDE II</span>
-              <span className='text-[24px] font-semibold'>3</span>
-            </div>
-            <div className='p-1 flex flex-col items-start justify-center'>
-              <span className=' text-sm'>SDE III</span>
-              <span className=' text-[24px] font-semibold'>7</span>
-            </div>
-            <div className='p-1 flex flex-col items-start justify-center'>
-              <span className=' text-sm'>SDET I</span>
-              <span className=' text-[24px] font-semibold'>5</span>
-            </div>
-            <div className='p-1 flex flex-col items-start justify-center'>
-              <span className='text-sm'>EM</span>
-              <span className='text-[24px] font-semibold'>9</span>
-            </div>
-            <div className='p-1 flex flex-col items-start justify-center'>
-              <span className='text-sm'>SDE I (Frontend)</span>
-              <span className='text-[24px] font-bold'>3</span>
-            </div>
-            <div className='p-1 flex flex-col items-start justify-center'>
-              <span className='text-sm'>SDE II (Frontend)</span>
-              <span className=' text-[24px] font-semibold'>3</span>
-            </div>
-            <div className='col-start-3 flex items-end justify-end'>
-              <h1 className='text-sm text-right text-[#007AFF] underline'>See All</h1>
-            </div>
-          </div>
+    <div className="w-full">
+      <div className="w-full flex gap-x-8 mb-5">
+        <div className="w-2/5 flex flex-col gap-y-5">
+          <CardHeader
+            title={"My Jobs"}
+            count={pendingTasksCount || 0}
+          />
+          <CardItems
+            items={pendingTasksItems}
+            bgColor={lightBg}
+            title="Pending Tasks"
+            customClass="h-36"
+          />
         </div>
-        <div className='p-2 w-3/4 flex flex-col gap-y-3'>
-          <div className='flex items-center justify-center'>
-            <div>
-              <div className='px-2 w-full'>
-                <h1 className='text-sm font-bold'>Details</h1>
-              </div>
-              <div className='p-2 max-w-max flex items-center justify-start gap-x-6'>
+        <div className="w-3/5 flex flex-col gap-y-5">
+          <div className="h-6 flex items-center">
+            <CardHeader title={"Details"} />
+          </div>
+          <div className="grid grid-cols-3 gap-x-3">
+            {myJobsItems.map((item, index) => {
+              // Determine background color based on index
+              const bgColor =
+                index === 0
+                  ? "bg-[#E5ECF6]"
+                  : index === 1
+                  ? "bg-[#E3F5FF]"
+                  : "bg-[#E5ECF6]";
 
-                <div className='pl-5 pt-5 pr-2 pb-2 h-[200px] w-[200px] bg-[#E5ECF6] rounded-lg flex flex-col justify-between'>
-                  <div className='flex flex-col'>
-                    <span className='text-sm'>Total Candidates</span>
-                    <span className='text-[24px] font-semibold'>650</span>
-                  </div>
-                  <div className=' flex items-end justify-end'>
-                    <h1 className='text-sm text-right text-[#007AFF] underline'>See All</h1>
-                  </div>
-                </div>
-                <div className='pl-5 pt-5 pr-2 pb-2 h-[200px] w-[200px] bg-[#E3F5FF] rounded-lg flex flex-col justify-between'>
-                  <div className='flex flex-col'>
-                    <span className='text-sm'>Selected Candidates</span>
-                    <span className='text-[24px] font-semibold'>400</span>
-                  </div>
-                  <div className=' flex items-end justify-end'>
-                    <h1 className='text-sm text-right text-[#007AFF] underline'>See All</h1>
-                  </div>
-                </div>
-                <div className='pl-5 pt-5 pr-2 pb-2 h-[200px] w-[200px] bg-[#E5ECF6] rounded-lg flex flex-col justify-between'>
-                  <div className='flex flex-col'>
-                    <span className='text-sm'>Rejected Candidates</span>
-                    <span className='text-[24px] font-semibold'>250</span>
-                  </div>
-                  <div className=' flex items-end justify-end'>
-                    <h1 className='text-sm text-right text-[#007AFF] underline'>See All</h1>
+              return (
+                <div
+                  key={index}
+                  onClick={() =>
+                    item.onClick && item.onClick()
+                  }
+                  className={`${bgColor} rounded-2xl shadow p-6 cursor-pointer transition-transform hover:scale-[1.02]`}
+                >
+                  <div className="h-36">
+                    <p className="text-[#333B69] font-medium text-2xs">
+                      {item.label}
+                    </p>
+                    {item.value !== undefined && (
+                      <p className="text-[#333B69] text-default font-bold mt-1">
+                        {item.value}
+                      </p>
+                    )}
                   </div>
                 </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      <div className="w-full space-y-2">
-      {categories.map((category, index) => (
-        <div key={index} className="px-4 w-full flex bg-[#EBEBEB] rounded-full">
-          {/* Left Section */}
-          <div className="px-2 py-1 w-[40%] flex items-center justify-center">
-            <div className="w-[30%]">
-              <span className="text-sm">{category.name}</span>
-            </div>
-            <div className="w-[70%] flex items-center justify-evenly">
-              <div>
-                <button
-                  className="px-6 py-2 max-w-max bg-[#E8DEF8] rounded-full text-sm text-[#4A4459] hover:bg-[#eef8de] hover:duration-150"
-                >
-                  + Add Candidate
-                </button>
-              </div>
-              <div>
-                <button
-                  className="px-4 py-2 max-w-max rounded-full text-[#4A4459] text-sm border-2 border-[#79747E] hover:bg-[#d2d2d2] hover:duration-150"
-                >
-                  + Archive
-                </button>
-              </div>
-            </div>
+      {data?.count ? (
+        <>
+          <div className="w-full flex flex-col gap-2">
+            {data?.results.map((job, index) => (
+              <JobCard
+                key={job.id || index}
+                job={job}
+                onView={handleShowJobDetails}
+                onEdit={handleAddJobClick}
+                onArchive={handleArchiveModalOpen}
+                onAddCandidate={handleAddCandidateClick}
+              />
+            ))}
           </div>
-          {/* Right Section */}
-          <div className="p-2 w-[60%] flex items-center justify-end group">
-            <div>
-              <span className="text-sm">
-                Active Candidates{' '}
-                <span className="ml-2 text-sm p-2 font-bold bg-gray-400 rounded-full group-hover:bg-[#056DDC] group-hover:text-white group-hover:duration-150">
-                  {category.activeCount}
-                </span>
-              </span>
-            </div>
-          </div>
+
+          <Pagination
+            count={Math.ceil(data?.count / 10)}
+            className="mt-4 flex justify-end"
+            onChange={(e, page) => handleChangePage(page)}
+            variant="outlined"
+            size="small"
+            shape="rounded"
+            page={currentPage}
+          />
+        </>
+      ) : (
+        <Empty description="No Jobs Found" />
+      )}
+      {isArchiveModalOpen && (
+        <ArchiveModal
+          isOpen={isArchiveModalOpen}
+          onClose={handleArchiveModalClose}
+          archiveId={archiveId}
+          fromJobDetails={false}
+        />
+      )}
+    </div>
+  );
+}
+
+export { Dashboard as AgencyDashboard };
+
+const CardHeader = ({ title, count = null }) => (
+  <div className="items-center gap-2 flex">
+    <p className="text-[#333B69] text-md font-semibold">
+      {title}
+    </p>
+    {count !== null && (
+      <span className="w-6 h-6 bg-[#056DDC] text-white text-default rounded-full flex items-center justify-center">
+        {count}
+      </span>
+    )}
+  </div>
+);
+
+const CardItems = ({
+  items,
+  bgColor,
+  textColor = "text-black",
+  customClass = "",
+  title = "",
+}) => (
+  <div
+    className={`shadow ${bgColor} p-6 xl:p-8 rounded-2xl`}
+  >
+    <div
+      className={` grid grid-cols-2 gap-x-16 xl:gap-x-20 gap-y-7 ${customClass} ${
+        title === "Pending Tasks" && items.length > 4
+          ? "overflow-auto hover-scrollbar"
+          : ""
+      }`}
+    >
+      {items.map((item, idx) => (
+        <div
+          key={idx}
+          className={`flex flex-col gap-1 ${textColor}`}
+        >
+          <p
+            className="text-2xs font-medium cursor-pointer hover:underline"
+            onClick={item.onClick}
+          >
+            {item.label}
+          </p>
+          {item.value !== undefined && (
+            <p className="text-xs font-bold">
+              {item.value}
+            </p>
+          )}
         </div>
       ))}
     </div>
-    </div>
-  )
-}
+  </div>
+);
 
-export { Dashboard as AgencyDashboard }
+CardHeader.propTypes = {
+  title: PropTypes.string,
+  count: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+};
+
+CardItems.propTypes = {
+  items: PropTypes.array,
+  bgColor: PropTypes.string,
+  textColor: PropTypes.string,
+  customClass: PropTypes.string,
+  title: PropTypes.string,
+};

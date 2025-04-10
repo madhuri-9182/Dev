@@ -204,10 +204,22 @@ const router = createBrowserRouter(
             path="agency"
             element={<NavigationLayout />}
           >
-            <Route
-              path="dashboard"
-              element={<AgencyDashboard />}
-            />
+            <Route path="" element={<JobProvider />}>
+              <Route
+                path="dashboard"
+                element={<AgencyDashboard />}
+              />
+              <Route path="jobs">
+                <Route
+                  path="add-job"
+                  element={<AddJob />}
+                />
+                <Route
+                  path="job-details"
+                  element={<JobDetails />}
+                />
+              </Route>
+            </Route>
             <Route path="candidates">
               <Route index element={<Candidates />} />
               <Route
