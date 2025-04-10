@@ -5,7 +5,11 @@ import { ROLES } from "../Constants/constants";
 const RootRoute = () => {
   const { auth } = useAuth();
 
-  if (ROLES.AGENCY.includes(auth?.role)) {
+  if (Object.keys(auth).length === 0) {
+    return (
+      <Navigate to={"/auth/signin/loginmail"} replace />
+    );
+  } else if (ROLES.AGENCY.includes(auth?.role)) {
     return <Navigate to="/agency/dashboard" replace />;
   } else if (ROLES.INTERNAL.includes(auth?.role)) {
     return <Navigate to="/internal/dashboard" replace />;
