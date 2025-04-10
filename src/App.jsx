@@ -74,11 +74,13 @@ import {
   Unauthorized,
   UnauthorizedLayout,
 } from "./Components";
+import RootRoute from "./Components/shared/RootRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route element={<PersistLogin />}>
+        <Route path="/" element={<RootRoute />} />
         {/* Authentication Routes */}
         <Route element={<AuthWrapper />}>
           <Route
