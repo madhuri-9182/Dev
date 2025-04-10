@@ -32,6 +32,7 @@ import {
 import { NavItemIcon } from "./NavItemIcon";
 import { SmsTracking } from "iconsax-react";
 import UserAvatar from "./UserAvatar";
+import TermsAndConditionsModal from "./TnCModal";
 
 const drawerWidth = 180;
 
@@ -122,9 +123,11 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 function NavigationLayout() {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [showTncModal, setShowTncModal] =
+    React.useState(false);
   const navigate = useNavigate();
 
   // Check if user is an interviewer
@@ -141,6 +144,22 @@ function NavigationLayout() {
     setOpen(false);
   };
   const location = useLocation();
+
+  React.useEffect(() => {
+    if (
+      auth?.accessToken &&
+      auth?.is_policy_and_tnc_accepted === false
+    ) {
+      setShowTncModal(true);
+    } else {
+      setShowTncModal(false);
+    }
+  }, [auth?.is_policy_and_tnc_accepted, auth?.accessToken]);
+
+  const handleTncAccept = (updatedAuth) => {
+    setAuth(updatedAuth);
+    setShowTncModal(false);
+  };
 
   const navItems = ROLES.CLIENT.includes(auth?.role)
     ? CLIENT_NAVLINKS
@@ -383,6 +402,12 @@ function NavigationLayout() {
         />
         <Outlet />
       </Box>
+      {showTncModal && (
+        <TermsAndConditionsModal
+          auth={auth}
+          onAccept={handleTncAccept}
+        />
+      )}
     </Box>
   );
 }

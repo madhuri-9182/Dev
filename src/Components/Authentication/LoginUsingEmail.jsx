@@ -64,9 +64,19 @@ const LoginUsingEmail = () => {
       ] = `Bearer ${accessToken}`;
       const role = data.data.role;
       const name = data.data.name;
+      const count = data.data.count;
+      const is_policy_and_tnc_accepted =
+        data.data.is_policy_and_tnc_accepted;
       const email = getValues("email");
 
-      setAuth({ email, accessToken, role, name });
+      setAuth({
+        email,
+        accessToken,
+        role,
+        name,
+        count,
+        is_policy_and_tnc_accepted,
+      });
       reset();
 
       toast.success("Logged in successfully");

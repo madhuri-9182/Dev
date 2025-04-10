@@ -7,8 +7,12 @@ const useRefreshToken = () => {
   const refresh = async () => {
     try {
       // Check if the current window endpoint matches verification/:id
-      if (window.location.pathname.startsWith('/verification/')) {
-        throw new Error('Moving to Verification page'); // Call logout function
+      if (
+        window.location.pathname.startsWith(
+          "/verification/"
+        )
+      ) {
+        throw new Error("Moving to Verification page"); // Call logout function
       }
 
       const response = await axios.post(
@@ -28,7 +32,17 @@ const useRefreshToken = () => {
       const role = response.data.data.role;
       const name = response.data.data.name;
       const email = response.data.data.email;
-      setAuth({ accessToken, role, name, email });
+      const count = response.data.data.count;
+      const is_policy_and_tnc_accepted =
+        response.data.data.is_policy_and_tnc_accepted;
+      setAuth({
+        accessToken,
+        role,
+        name,
+        email,
+        is_policy_and_tnc_accepted,
+        count,
+      });
       return response.data.access;
     } catch (error) {
       console.log(error);
