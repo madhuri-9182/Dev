@@ -5,19 +5,15 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import { ROLES } from "./Components/Constants/constants";
-import AuthWrapper from "./Components/Authentication/AuthWrapper";
-import UserActivation from "./Components/Client/UserActivation";
 // Interviewer Imports
 import {
   Layout,
   CalendarComponent,
   InterviewRecord,
   Payments,
+  Feedback,
+  InterviewerConfirmation,
 } from "./Components";
-import { Hello } from "./Components";
-import { InternalAddInterviewer } from "./Components/Internal/AddInterviewer";
-import InternalAddClient from "./Components/Internal/AddClient";
-import Feedback from "./Components/Interviewer/Feedback";
 // Internal Imports
 import {
   InternalDashboard,
@@ -28,6 +24,8 @@ import {
   InternalFinance,
   InternalEngagement,
   InternalMessages,
+  InternalAddClient,
+  InternalAddInterviewer,
 } from "./Components";
 // Agency Imports
 import {
@@ -47,36 +45,39 @@ import {
   Integration,
   Finance,
   Message,
+  TermsAndConditions,
+  PrivacyPolicy,
+  CandidateFeedback,
+  CandidateView,
+  JobDetails,
+  JobProvider,
+  AddJob,
+  ClientAddCandidate,
+  ClientScheduleInterview,
+  Engagement,
+  UserActivation,
 } from "./Components";
-import NavigationLayout from "./Components/shared/NavigationLayout";
 // Authentication Imports
 import {
   // SignIn,
+  VerificationEmail,
+  AuthWrapper,
   SignUp,
   ForgetPass,
   PasswordReset,
   SignUpSignInLayout,
-  // page,
   LoginUsingEmail,
   LoginUsingNumber,
   PersistLogin,
   RequireAuth,
 } from "./Components";
-import ClientAddCandidate from "./Components/Client/Candidates/add-candidate/AddCandidate";
-import ClientScheduleInterview from "./Components/Client/Candidates/schedule-interview/ClientScheduleInterview";
-import Engagement from "./Components/Client/Engagement/Engagement";
+// Shared Imports
 import {
-  Unauthorized,
   NotFound,
+  NavigationLayout,
+  Unauthorized,
   UnauthorizedLayout,
-} from "./Components/shared/unauthorized";
-import { JobProvider } from "./context/JobContext";
-import AddJob from "./Components/Client/Jobs/AddJob";
-import JobDetails from "./Components/Client/Jobs/JobDetails";
-import EmailVerification from "./Components/Authentication/EmailVerification";
-import InterviewerConfirmation from "./Components/Interviewer/confirmation/InterviewConfirmation";
-import CandidateView from "./Components/Client/Candidates/view-candidate-feedback/CandidateView";
-import CandidateFeedback from "./Components/Client/Candidates/view-candidate-feedback/candidate-feedback/CandidateFeedback";
+} from "./Components";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -108,17 +109,10 @@ const router = createBrowserRouter(
           </Route>
           <Route
             path="verification/:verification_data_uid"
-            element={<EmailVerification />}
+            element={<VerificationEmail />}
           />
         </Route>
         {/* User Routes */}
-        <Route
-          element={
-            <RequireAuth allowedRoles={ROLES.USER} />
-          }
-        >
-          <Route path="" element={<Hello />} />
-        </Route>
         {/* Client Activation Route */}
         <Route element={<SignUpSignInLayout />}>
           <Route
@@ -191,6 +185,14 @@ const router = createBrowserRouter(
             <Route
               path="engagement/*"
               element={<Engagement />}
+            />
+            <Route
+              path="tnc"
+              element={<TermsAndConditions />}
+            />
+            <Route
+              path="privacy-policy"
+              element={<PrivacyPolicy />}
             />
           </Route>
         </Route>

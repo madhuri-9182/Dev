@@ -12,6 +12,8 @@ import {
   People,
   ReceiptEdit,
   Personalcard,
+  Lock,
+  DocumentText,
 } from "iconsax-react";
 
 export const EMAIL_REGEX =
@@ -79,6 +81,16 @@ export const CLIENT_NAVLINKS = [
     text: "Engagement",
     icon: Share,
     link: "/client/engagement/dashboard",
+  },
+  {
+    text: "Terms & Conditions",
+    icon: DocumentText,
+    link: "/client/tnc",
+  },
+  {
+    text: "Privacy Policy",
+    icon: Lock,
+    link: "/client/privacy-policy",
   },
 ];
 

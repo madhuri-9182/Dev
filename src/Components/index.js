@@ -1,16 +1,15 @@
-import Hello from "./Hello";
-
-//SignIn-SignUp Imports
+// Authentication Imports
 import SignUpSignInLayout from "./Authentication/SignUpSignInLayout";
 import ForgetPass from "./Authentication/ForgetPass";
 import LoginUsingEmail from "./Authentication/LoginUsingEmail";
 import LoginUsingNumber from "./Authentication/LoginUsingNumber";
-// import page from "./Authentication/page";
 import PasswordReset from "./Authentication/PasswordReset";
 import SignIn from "./Authentication/SignIn";
 import SignUp from "./Authentication/SignUp";
 import PersistLogin from "./Authentication/PersistentLogin";
 import RequireAuth from "./Authentication/RequireAuth";
+import VerificationEmail from "./Authentication/EmailVerification";
+import AuthWrapper from "./Authentication/AuthWrapper";
 
 //Client Imports
 import Dashboard from "./Client/Dashboard/Dashboard";
@@ -22,6 +21,17 @@ import AnalyticsDateFilter from "./Client/Analytics/AnalyticsDateFilter";
 import Integration from "./Client/Integration";
 import Finance from "./Client/Finance";
 import Message from "./Client/Message";
+import TermsAndConditions from "./Client/tnc";
+import PrivacyPolicy from "./Client/PrivacyPolicy";
+import CandidateFeedback from "./Client/Candidates/view-candidate-feedback/candidate-feedback/CandidateFeedback";
+import CandidateView from "./Client/Candidates/view-candidate-feedback/CandidateView";
+import JobDetails from "./Client/Jobs/JobDetails";
+import AddJob from "./Client/Jobs/AddJob";
+import { JobProvider } from "../context/JobContext";
+import ClientScheduleInterview from "./Client/Candidates/schedule-interview/ClientScheduleInterview";
+import ClientAddCandidate from "./Client/Candidates/add-candidate/AddCandidate";
+import Engagement from "./Client/Engagement/Engagement";
+import UserActivation from "./Client/UserActivation";
 
 //Agency Imports
 import { AgencyDashboard } from "./Agency/Dashboard";
@@ -38,14 +48,26 @@ import { InternalAgreements } from "./Internal/Agreement";
 import { InternalFinance } from "./Internal/Finance";
 import { InternalEngagement } from "./Internal/Engagement";
 import { InternalMessages } from "./Internal/Messages";
+import { InternalAddInterviewer } from "./Internal/AddInterviewer";
+import InternalAddClient from "./Internal/AddClient";
 
 // Interviewer Imports
 import Layout from "./Interviewer/Layout";
 import CalendarComponent from "./Interviewer/Calendar";
 import InterviewRecord from "./Interviewer/Dashboard/InterviewRecord";
 import Payments from "./Interviewer/Payments";
+import Feedback from "./Interviewer/Feedback";
+import InterviewerConfirmation from "./Interviewer/confirmation/InterviewConfirmation";
 
-//SignIn-SignUp Exports
+// shared imports
+import {
+  Unauthorized,
+  UnauthorizedLayout,
+  NotFound,
+} from "./shared/unauthorized";
+import NavigationLayout from "./shared/NavigationLayout";
+
+// Authentication Exports
 export {
   SignIn,
   SignUp,
@@ -56,6 +78,8 @@ export {
   LoginUsingNumber,
   PersistLogin,
   RequireAuth,
+  AuthWrapper,
+  VerificationEmail,
 };
 
 //Client Exports
@@ -69,6 +93,17 @@ export {
   Integration,
   Finance,
   Message,
+  TermsAndConditions,
+  PrivacyPolicy,
+  CandidateFeedback,
+  CandidateView,
+  JobDetails,
+  JobProvider,
+  AddJob,
+  ClientAddCandidate,
+  ClientScheduleInterview,
+  Engagement,
+  UserActivation,
 };
 
 //Agency Exports
@@ -90,6 +125,8 @@ export {
   InternalFinance,
   InternalEngagement,
   InternalMessages,
+  InternalAddClient,
+  InternalAddInterviewer,
 };
 
 //Interviewer Exports
@@ -98,6 +135,14 @@ export {
   CalendarComponent,
   InterviewRecord,
   Payments,
+  Feedback,
+  InterviewerConfirmation,
 };
 
-export { Hello };
+// Shared Exports
+export {
+  Unauthorized,
+  UnauthorizedLayout,
+  NotFound,
+  NavigationLayout,
+};
