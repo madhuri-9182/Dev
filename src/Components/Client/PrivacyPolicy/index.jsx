@@ -1,9 +1,11 @@
+import { CompanyLogo } from "../../../assets";
+
 const PrivacyPolicy = () => {
   return (
     <div className="mx-auto p-6">
       <div className="flex items-center mb-8">
         <img
-          src="../../../../public/hiring-dog-logo.png"
+          src={CompanyLogo}
           alt="Hiringdog Logo"
           className="w-16 h-16 mr-4"
         />
