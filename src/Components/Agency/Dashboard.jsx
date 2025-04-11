@@ -224,10 +224,7 @@ const CardItems = ({
           key={idx}
           className={`flex flex-col gap-1 ${textColor}`}
         >
-          <p
-            className="text-2xs font-medium cursor-pointer hover:underline"
-            onClick={item.onClick}
-          >
+          <p className="text-2xs font-medium">
             {item.label}
           </p>
           {item.value !== undefined && (
