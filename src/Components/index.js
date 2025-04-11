@@ -35,9 +35,6 @@ import UserActivation from "./Client/UserActivation";
 
 //Agency Imports
 import { AgencyDashboard } from "./Agency/Dashboard";
-import { AgencyCandidates } from "./Agency/Candidates";
-import { AgencyAddCandidate } from "./Agency/AddCandidate";
-import { AgencyScheduleInterview } from "./Agency/ScheduleInterview";
 
 //Internal Imports
 import { InternalDashboard } from "./Internal/Dashboard";
@@ -108,12 +105,7 @@ export {
 };
 
 //Agency Exports
-export {
-  AgencyDashboard,
-  AgencyCandidates,
-  AgencyAddCandidate,
-  AgencyScheduleInterview,
-};
+export { AgencyDashboard };
 
 //Internal Exports
 

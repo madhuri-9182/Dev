@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import FinalSelectionDropdown from "./FinalSelectionDropdown";
 import { LightTooltip } from "../../../shared/LightTooltip";
-import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 import useAuth from "../../../../hooks/useAuth";
 import { ROLES } from "../../../Constants/constants";
 
@@ -14,7 +13,9 @@ const CandidateRow = ({
 }) => {
   const { getRoleName, getSourceName, formatDate } =
     utilities;
-  const navigateTo = useRoleBasedNavigate();
+  const navigate = useNavigate();
+  const { auth } = useAuth();
+  const isClient = ROLES.CLIENT.includes(auth?.role);
 
   return (
     <div className="w-full flex items-center justify-evenly">
@@ -42,11 +43,25 @@ const CandidateRow = ({
               if (candidate?.status === "NSCH") {
                 onViewCandidate(candidate);
               } else {
-                navigateTo(`candidates/${candidate.id}`, {
-                  state: {
-                    id: candidate?.interviews[0],
-                  },
-                });
+                if (isClient) {
+                  navigate(
+                    `/client/candidates/${candidate.id}`,
+                    {
+                      state: {
+                        id: candidate?.interviews[0],
+                      },
+                    }
+                  );
+                } else {
+                  navigate(
+                    `/agency/candidates/${candidate.id}`,
+                    {
+                      state: {
+                        id: candidate?.interviews[0],
+                      },
+                    }
+                  );
+                }
               }
             }}
           >
