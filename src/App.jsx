@@ -209,16 +209,6 @@ const router = createBrowserRouter(
                 path="dashboard"
                 element={<AgencyDashboard />}
               />
-              <Route path="jobs">
-                <Route
-                  path="add-job"
-                  element={<AddJob />}
-                />
-                <Route
-                  path="job-details"
-                  element={<JobDetails />}
-                />
-              </Route>
             </Route>
             <Route path="candidates">
               <Route index element={<Candidates />} />

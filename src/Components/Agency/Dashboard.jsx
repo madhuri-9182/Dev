@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { JobCard } from "../Client/Jobs/JobListingComponents";
 import { Pagination } from "@mui/material";
 import Empty from "../shared/Empty";
-import ArchiveModal from "../Client/Jobs/ArchiveModal";
 import { fetchDashboardApi } from "../Client/Dashboard/api";
 import { MY_AGENCY_JOBS } from "../Client/Dashboard/constants";
 import PropTypes from "prop-types";
@@ -24,19 +23,7 @@ function Dashboard() {
   const { auth } = useAuth();
   const navigate = useNavigate();
 
-  const {
-    currentPage,
-    handleAddJobClick,
-    handleShowJobDetails,
-    handleArchiveModalOpen,
-    handleChangePage,
-    isArchiveModalOpen,
-    setIsArchiveModalOpen,
-    archiveId,
-  } = useJobContext();
-
-  const handleArchiveModalClose = () =>
-    setIsArchiveModalOpen(false);
+  const { currentPage, handleChangePage } = useJobContext();
 
   const handleAddCandidateClick = (job) => {
     navigate("/agency/candidates/add-candidate", {
@@ -178,9 +165,6 @@ function Dashboard() {
               <JobCard
                 key={job.id || index}
                 job={job}
-                onView={handleShowJobDetails}
-                onEdit={handleAddJobClick}
-                onArchive={handleArchiveModalOpen}
                 onAddCandidate={handleAddCandidateClick}
               />
             ))}
@@ -198,14 +182,6 @@ function Dashboard() {
         </>
       ) : (
         <Empty description="No Jobs Found" />
-      )}
-      {isArchiveModalOpen && (
-        <ArchiveModal
-          isOpen={isArchiveModalOpen}
-          onClose={handleArchiveModalClose}
-          archiveId={archiveId}
-          fromJobDetails={false}
-        />
       )}
     </div>
   );
