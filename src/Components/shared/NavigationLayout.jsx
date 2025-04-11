@@ -134,6 +134,7 @@ function NavigationLayout() {
   const isInterviewer = ROLES.INTERVIEWER.includes(
     auth?.role
   );
+  const isInternal = ROLES.INTERNAL.includes(auth?.role);
 
   const fullName = auth?.name ? auth?.name : "User";
   const handleDrawerOpen = () => {
@@ -146,15 +147,21 @@ function NavigationLayout() {
   const location = useLocation();
 
   React.useEffect(() => {
-    if (
-      auth?.accessToken &&
-      auth?.is_policy_and_tnc_accepted === false
-    ) {
-      setShowTncModal(true);
-    } else {
-      setShowTncModal(false);
+    if (!isInternal) {
+      if (
+        auth?.accessToken &&
+        auth?.is_policy_and_tnc_accepted === false
+      ) {
+        setShowTncModal(true);
+      } else {
+        setShowTncModal(false);
+      }
     }
-  }, [auth?.is_policy_and_tnc_accepted, auth?.accessToken]);
+  }, [
+    auth?.is_policy_and_tnc_accepted,
+    auth?.accessToken,
+    isInternal,
+  ]);
 
   const handleTncAccept = (updatedAuth) => {
     setAuth(updatedAuth);
