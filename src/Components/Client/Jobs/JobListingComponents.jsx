@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import {
   getJobLabel,
@@ -15,6 +15,7 @@ import {
 import { IoCheckmark } from "react-icons/io5";
 import useAuth from "../../../hooks/useAuth";
 import { ROLES } from "../../Constants/constants";
+import JobViewModal from "../../Agency/JobViewModal";
 
 export const FilterListbox = ({
   value,
@@ -318,63 +319,94 @@ export const JobCard = ({
 }) => {
   const { auth } = useAuth();
   const isAgency = ROLES.AGENCY.includes(auth?.role);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+
+  const handleViewJob = () => {
+    if (isAgency) {
+      setViewModalOpen(true);
+    } else if (onView) {
+      onView(job);
+    }
+  };
+
   return (
-    <div className="rounded-2xl bg-[#EBEBEB80] flex justify-between items-center px-7 py-2">
-      <div className="flex items-center justify-between gap-3 w-3/4">
-        <div className="w-1/2">
-          <span
-            className={`${
-              isAgency
-                ? ""
-                : "hover:underline hover:font-semibold cursor-pointer"
-            } text-2xs uppercase `}
-            onClick={() => {
-              if (isAgency) return;
-              onEdit(job);
-            }}
-          >
-            {getJobLabel(job.name)} (
-            {getSpecialization(job.specialization)})
-          </span>
-        </div>
-        <div className="flex gap-4 w-1/2">
-          {!isAgency && (
+    <>
+      <div className="rounded-2xl bg-[#EBEBEB80] flex justify-between items-center px-7 py-2">
+        <div className="flex items-center justify-between gap-3 w-3/4">
+          <div className="w-1/2">
+            <span
+              className={`${
+                isAgency
+                  ? ""
+                  : "hover:underline hover:font-semibold cursor-pointer"
+              } text-2xs uppercase `}
+              onClick={() => {
+                if (isAgency) return;
+                onEdit && onEdit(job);
+              }}
+            >
+              {getJobLabel(job.name)} (
+              {getSpecialization(job.specialization)})
+            </span>
+          </div>
+          <div className="flex gap-4 w-1/2">
             <button
               className="text-2xs font-semibold w-20 py-1 tertiary-button"
-              onClick={() => onView(job)}
+              onClick={handleViewJob}
             >
               View
             </button>
-          )}
-          <button
-            className="text-2xs font-semibold w-36 py-1 tertiary-button"
-            onClick={() => onAddCandidate(job)}
-          >
-            + Add Candidate
-          </button>
-          {!isAgency && (
             <button
-              className={`text-2xs font-semibold border border-[#79747E] w-24 py-1 flex items-center justify-center rounded-[100px] bg-transparent text-[#65558F] hover:bg-gray-100 ${
-                job.reason_for_archived ? "invisible" : ""
-              }`}
-              onClick={() => onArchive(job.id)}
+              className="text-2xs font-semibold w-36 py-1 tertiary-button"
+              onClick={() =>
+                onAddCandidate && onAddCandidate(job)
+              }
             >
-              Archive
+              + Add Candidate
             </button>
-          )}
+            {!isAgency && onArchive && (
+              <button
+                className={`text-2xs font-semibold border border-[#79747E] w-24 py-1 flex items-center justify-center rounded-[100px] bg-transparent text-[#65558F] hover:bg-gray-100 ${
+                  job.reason_for_archived ? "invisible" : ""
+                }`}
+                onClick={() => onArchive(job.id)}
+              >
+                Archive
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-end items-center gap-2">
+          <p className="text-2xs font-medium">
+            Active Candidates
+          </p>
+          <div className="w-6 h-6 bg-[#979DA3] text-white text-[10px] font-medium rounded-full flex items-center justify-center">
+            {job.active_candidates}
+          </div>
         </div>
       </div>
-      <div className="flex justify-end items-center gap-2">
-        <p className="text-2xs font-medium">
-          Active Candidates
-        </p>
-        <div className="w-6 h-6 bg-[#979DA3] text-white text-[10px] font-medium rounded-full flex items-center justify-center">
-          {job.active_candidates}
-        </div>
-      </div>
-    </div>
+
+      {/* Job View Modal for Agency Users */}
+      {isAgency && (
+        <JobViewModal
+          job={job}
+          open={viewModalOpen}
+          onClose={() => setViewModalOpen(false)}
+        />
+      )}
+    </>
   );
 };
+
+JobCard.propTypes = {
+  job: PropTypes.object.isRequired,
+  onView: PropTypes.func,
+  onArchive: PropTypes.func,
+  onAddCandidate: PropTypes.func.isRequired,
+  onEdit: PropTypes.func,
+};
+
+export default JobCard;
 
 JobCard.propTypes = {
   job: PropTypes.object,

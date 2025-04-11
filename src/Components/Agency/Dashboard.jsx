@@ -65,7 +65,6 @@ function Dashboard() {
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 1000 * 60 * 5,
   });
-  console.log("dashboardData", dashboardData);
 
   const pendingTasksItems =
     dashboardData?.data?.job_role_aggregates?.map(
