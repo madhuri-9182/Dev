@@ -10,7 +10,7 @@ import {
   createFileFromUrl,
   getJobLabel,
   getSpecialization,
-} from "../../utils/util";
+} from "../../../utils/util";
 import { Eye } from "iconsax-react";
 
 const JobViewModal = ({ job, open, onClose }) => {

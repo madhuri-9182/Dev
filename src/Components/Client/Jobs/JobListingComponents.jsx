@@ -15,7 +15,7 @@ import {
 import { IoCheckmark } from "react-icons/io5";
 import useAuth from "../../../hooks/useAuth";
 import { ROLES } from "../../Constants/constants";
-import JobViewModal from "../../Agency/JobViewModal";
+import JobViewModal from "../../Agency/components/JobViewModal";
 
 export const FilterListbox = ({
   value,
