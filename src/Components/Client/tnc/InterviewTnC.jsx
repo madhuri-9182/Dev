@@ -27,7 +27,15 @@ const InterviewerTermsAndConditions = () => {
           {`These Terms and Conditions ("Terms") govern your use of the Hiringdog Interview Platform
           ("HDIP"), including websites, mobile applications, and any other digital platform (collectively the
           "Platform") as an Interviewer. These Terms should be read in conjunction with HDIP's Privacy Policy available at`}
-          <span className="text-blue-600 cursor-pointer">
+          <span
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() =>
+              window.open(
+                "https://hiringdog-assets.s3.ap-south-1.amazonaws.com/Privacy+Policy.pdf",
+                "_blank"
+              )
+            }
+          >
             {" "}
             [link]
           </span>
