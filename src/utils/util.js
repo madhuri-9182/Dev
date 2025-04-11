@@ -187,7 +187,9 @@ export const handleFileDownload = (file) => {
 export const getErrorMessage = (error) => {
   const errorMessage =
     error?.response?.data?.errors?.length > 0
-      ? error?.response?.data?.errors[0]
+      ? Array.isArray(error?.response?.data?.error)
+        ? error?.response?.data?.errors[0]
+        : error?.response?.data?.errors
       : error?.response?.data?.message
       ? error?.response?.data?.message
       : error?.message;
