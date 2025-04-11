@@ -64,7 +64,8 @@ const LoginUsingEmail = () => {
       ] = `Bearer ${accessToken}`;
       const role = data.data.role;
       const name = data.data.name;
-      const count = data.data.count;
+      const is_password_change =
+        data.data.is_password_change;
       const is_policy_and_tnc_accepted =
         data.data.is_policy_and_tnc_accepted;
       const email = getValues("email");
@@ -74,7 +75,7 @@ const LoginUsingEmail = () => {
         accessToken,
         role,
         name,
-        count,
+        is_password_change,
         is_policy_and_tnc_accepted,
       });
       reset();

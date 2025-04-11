@@ -32,7 +32,8 @@ const useRefreshToken = () => {
       const role = response.data.data.role;
       const name = response.data.data.name;
       const email = response.data.data.email;
-      const count = response.data.data.count;
+      const is_password_change =
+        response.data.data.is_password_change;
       const is_policy_and_tnc_accepted =
         response.data.data.is_policy_and_tnc_accepted;
       setAuth({
@@ -41,7 +42,7 @@ const useRefreshToken = () => {
         name,
         email,
         is_policy_and_tnc_accepted,
-        count,
+        is_password_change,
       });
       return response.data.access;
     } catch (error) {

@@ -143,7 +143,10 @@ export const MatchedPassword = ({
 };
 
 MatchedPassword.propTypes = {
-  isMatched: PropTypes.bool,
+  isMatched: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
   className: PropTypes.string,
 };
 

@@ -33,9 +33,11 @@ import { NavItemIcon } from "./NavItemIcon";
 import { SmsTracking } from "iconsax-react";
 import UserAvatar from "./UserAvatar";
 import TermsAndConditionsModal from "./TnCModal";
+import ChangePasswordModal from "./PasswordChangeModal";
 
 const drawerWidth = 180;
 
+// ...keep all other styling code unchanged...
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -128,6 +130,10 @@ function NavigationLayout() {
   const [open, setOpen] = React.useState(true);
   const [showTncModal, setShowTncModal] =
     React.useState(false);
+  const [
+    showChangePasswordModal,
+    setShowChangePasswordModal,
+  ] = React.useState(false);
   const navigate = useNavigate();
 
   // Check if user is an interviewer
@@ -148,17 +154,26 @@ function NavigationLayout() {
 
   React.useEffect(() => {
     if (!isInternal) {
-      if (
-        auth?.accessToken &&
-        auth?.is_policy_and_tnc_accepted === false
-      ) {
-        setShowTncModal(true);
-      } else {
-        setShowTncModal(false);
+      if (auth?.accessToken) {
+        // Check for Terms and Conditions first
+        if (auth?.is_policy_and_tnc_accepted === false) {
+          setShowTncModal(true);
+          setShowChangePasswordModal(false);
+        }
+        // If T&C accepted but password change required, show password modal
+        else if (auth?.is_password_change === false) {
+          setShowTncModal(false);
+          setShowChangePasswordModal(true);
+        } else {
+          // Both conditions satisfied, hide both modals
+          setShowTncModal(false);
+          setShowChangePasswordModal(false);
+        }
       }
     }
   }, [
     auth?.is_policy_and_tnc_accepted,
+    auth?.is_password_change,
     auth?.accessToken,
     isInternal,
   ]);
@@ -166,6 +181,16 @@ function NavigationLayout() {
   const handleTncAccept = (updatedAuth) => {
     setAuth(updatedAuth);
     setShowTncModal(false);
+
+    // After T&C acceptance, check if password change is required
+    if (updatedAuth?.is_password_change === false) {
+      setShowChangePasswordModal(true);
+    }
+  };
+
+  const handlePasswordChangeSuccess = () => {
+    // Update auth context (already done in the modal)
+    setShowChangePasswordModal(false);
   };
 
   const navItems = ROLES.CLIENT.includes(auth?.role)
@@ -409,10 +434,19 @@ function NavigationLayout() {
         />
         <Outlet />
       </Box>
+
+      {/* Terms and Conditions Modal */}
       {showTncModal && (
         <TermsAndConditionsModal
           auth={auth}
           onAccept={handleTncAccept}
+        />
+      )}
+
+      {/* Change Password Modal */}
+      {showChangePasswordModal && (
+        <ChangePasswordModal
+          onSuccess={handlePasswordChangeSuccess}
         />
       )}
     </Box>
