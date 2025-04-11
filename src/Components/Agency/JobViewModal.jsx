@@ -6,22 +6,25 @@ import {
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import DownloadIcon from "@mui/icons-material/Download";
 import {
   createFileFromUrl,
   getJobLabel,
   getSpecialization,
-  handleFileDownload,
 } from "../../utils/util";
+import { Eye } from "iconsax-react";
 
 const JobViewModal = ({ job, open, onClose }) => {
-  const handleDownloadJobDescription = async () => {
+  const handleViewDescription = async () => {
     // Check if job description file exists
     if (job?.job_description_file) {
       const file = await createFileFromUrl(
         job.job_description_file
       );
-      handleFileDownload(file);
+      // handleFileDownload(file);
+      const blobUrl = URL.createObjectURL(file);
+      window.open(blobUrl, "_blank");
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
     }
   };
 
@@ -83,11 +86,10 @@ const JobViewModal = ({ job, open, onClose }) => {
               </h3>
               {job?.job_description_file && (
                 <button
-                  onClick={handleDownloadJobDescription}
+                  onClick={handleViewDescription}
                   className="flex items-center justify-start gap-1 text-[#007aff] hover:text-[#005bbb] text-default font-medium w-fit"
                 >
-                  <DownloadIcon fontSize="small" />
-                  Download
+                  <Eye size={16} /> Click to View
                 </button>
               )}
             </div>
