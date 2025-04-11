@@ -193,8 +193,15 @@ function NavigationLayout() {
     setShowChangePasswordModal(false);
   };
 
+  const clientLinks =
+    auth?.role === "client_owner"
+      ? CLIENT_NAVLINKS
+      : CLIENT_NAVLINKS.filter(
+          (item) => item.text !== "Finance"
+        );
+
   const navItems = ROLES.CLIENT.includes(auth?.role)
-    ? CLIENT_NAVLINKS
+    ? clientLinks
     : ROLES.INTERNAL.includes(auth?.role)
     ? INTERNAL_NAVLINKS
     : ROLES.AGENCY.includes(auth?.role)
