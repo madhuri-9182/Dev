@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
 import toast from "react-hot-toast";
@@ -47,6 +47,21 @@ const JobDetails = () => {
     setEditDetail(null); // Reset edit state
     setDetailsModalOpen(true);
   };
+
+  useEffect(() => {
+    const isFirstLoad =
+      localStorage.getItem("hasLoaded") !== "true";
+
+    if (!isFirstLoad) {
+      navigate("/client/jobs");
+    } else {
+      localStorage.setItem("hasLoaded", "true");
+    }
+
+    return () => {
+      localStorage.removeItem("hasLoaded");
+    };
+  }, [navigate]);
 
   const handleEditDetail = (id) => {
     const selectedDetail = jobDetails.find(
