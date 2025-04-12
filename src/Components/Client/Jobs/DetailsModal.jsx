@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import toast from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import Modal from "../../shared/Modal";
+import { WEBSITE_REGEX } from "../../Constants/constants";
+import { AddCircle } from "iconsax-react";
+import { LightTooltip } from "../../shared/LightTooltip";
 
 // Keep original Label component
 const Label = ({ name, label }) => {
@@ -50,11 +53,17 @@ const DetailsModal = ({
   details,
   editDetail,
 }) => {
+  // State for links
+  const [links, setLinks] = useState([]);
+  const [currentLink, setCurrentLink] = useState("");
+  const [linkError, setLinkError] = useState("");
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
+    // watch,
   } = useForm({
     defaultValues: {
       detail: "",
@@ -63,23 +72,68 @@ const DetailsModal = ({
     },
   });
 
+  // Function to validate URL
+  const isValidUrl = (url) => {
+    return WEBSITE_REGEX.test(url);
+  };
+
+  // Function to add a link
+  const addLink = () => {
+    if (!currentLink.trim()) {
+      setLinkError("Link cannot be empty");
+      return;
+    }
+
+    if (!isValidUrl(currentLink)) {
+      setLinkError("Please enter a valid URL");
+      return;
+    }
+
+    setLinks([...links, currentLink]);
+    setCurrentLink("");
+    setLinkError("");
+  };
+
+  // Function to remove a link
+  const removeLink = (index) => {
+    const newLinks = [...links];
+    newLinks.splice(index, 1);
+    setLinks(newLinks);
+  };
+
   useEffect(() => {
     if (!isOpen) return;
 
     if (editDetail) {
+      // Extract links from guidelines if they exist
+      const guidelines = editDetail?.guidelines || "";
+      const guidelineItems = guidelines.split("\n");
+
+      const extractedLinks = [];
+      const normalGuidelines = [];
+
+      guidelineItems.forEach((item) => {
+        if (isValidUrl(item)) {
+          extractedLinks.push(item);
+        } else {
+          normalGuidelines.push(item);
+        }
+      });
+
       reset({
         detail: editDetail?.details || "",
         time: editDetail?.time?.replace("min", "") || "",
-        guidelines:
-          editDetail?.guidelines?.replace(/\n/g, ", ") ||
-          "",
+        guidelines: normalGuidelines.join(", "),
       });
+
+      setLinks(extractedLinks);
     } else {
       reset({
         detail: "",
         time: "",
         guidelines: "",
       });
+      setLinks([]);
     }
   }, [editDetail, isOpen, reset]);
 
@@ -88,7 +142,6 @@ const DetailsModal = ({
     let totalMinutes = 0;
 
     if (editDetail) {
-      // When editing, exclude the current item's time from the calculation
       totalMinutes =
         details.reduce(
           (sum, item) =>
@@ -99,7 +152,6 @@ const DetailsModal = ({
           0
         ) + parseInt(data.time);
     } else {
-      // When adding a new item, include all existing items plus the new one
       totalMinutes =
         details.reduce(
           (sum, item) => sum + parseInt(item.time),
@@ -112,11 +164,17 @@ const DetailsModal = ({
       return;
     }
 
+    // Combine guidelines text with links
+    const guidelinesArray = data.guidelines
+      ? data.guidelines.split(", ")
+      : [];
+    const allGuidelines = [...guidelinesArray, ...links];
+
     const newDetail = {
       id: editDetail ? editDetail.id : Date.now(),
       details: data.detail,
       time: `${data.time}min`,
-      guidelines: data.guidelines.split(", ").join("\n"),
+      guidelines: allGuidelines.join("\n"),
     };
 
     onSave(
@@ -135,8 +193,6 @@ const DetailsModal = ({
 
     onClose();
   };
-
-  // No custom button components - will use original button styles
 
   if (!isOpen) return null;
 
@@ -232,6 +288,77 @@ const DetailsModal = ({
                 </p>
               )}
             </div>
+
+            {/* New Links Section */}
+            <div className="space-y-1">
+              <Label name="links" label="Links" />
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter a URL"
+                  error={
+                    linkError
+                      ? { message: linkError }
+                      : null
+                  }
+                  value={currentLink}
+                  onChange={(e) =>
+                    setCurrentLink(e.target.value)
+                  }
+                />
+                <LightTooltip
+                  title="Click to Add Link"
+                  placement="top"
+                  color="#007AFF"
+                  PopperProps={{
+                    sx: {
+                      zIndex: 99999, // Ensure the tooltip is above other elements
+                    },
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="text-[#007AFF] rounded-lg text-2xs"
+                    onClick={addLink}
+                  >
+                    <AddCircle />
+                  </button>
+                </LightTooltip>
+              </div>
+              {linkError && (
+                <p className="text-[#B10E0EE5] text-[10px] mt-1">
+                  {linkError}
+                </p>
+              )}
+
+              {/* Display added links */}
+            </div>
+            {links.length > 0 && (
+              <div className="mt-4">
+                <p className="text-2xs font-bold text-[#6B6F7B]">
+                  Added Links:
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {links.map((link, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center justify-between text-2xs"
+                    >
+                      <span className="truncate max-w-[80%] text-blue-500">
+                        {link}
+                      </span>
+                      <button
+                        type="button"
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => removeLink(index)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <div className="flex justify-end items-center gap-2 mt-6 mb-2">
             <button

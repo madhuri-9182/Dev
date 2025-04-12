@@ -10,7 +10,10 @@ import {
 } from "@tanstack/react-query";
 import { createJob, updateJob } from "./api";
 import { useJobContext } from "../../../context/JobContext";
-import { JOB_TYPES } from "../../Constants/constants";
+import {
+  JOB_TYPES,
+  WEBSITE_REGEX,
+} from "../../Constants/constants";
 import {
   CancelButton,
   SaveButton,
@@ -42,6 +45,33 @@ const JobDetails = () => {
   const [detailsModalOpen, setDetailsModalOpen] =
     useState(false);
   const [editDetail, setEditDetail] = useState(null);
+
+  // URL regex pattern - utility function for checking valid URLs
+  const isValidUrl = (text) => {
+    return WEBSITE_REGEX.test(text);
+  };
+
+  // Function to render guideline text with clickable links
+  const renderGuideline = (text) => {
+    if (isValidUrl(text)) {
+      // Ensure the URL has http/https prefix
+      const url = text.startsWith("http")
+        ? text
+        : `https://${text}`;
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          {text}
+        </a>
+      );
+    }
+
+    return text;
+  };
 
   const handleAddDetail = () => {
     setEditDetail(null); // Reset edit state
@@ -344,7 +374,9 @@ const JobDetails = () => {
                     {row.guidelines
                       .split("\n")
                       .map((line, i) => (
-                        <li key={i}>{line}</li>
+                        <li key={i}>
+                          {renderGuideline(line)}
+                        </li>
                       ))}
                   </ul>
                 </div>
