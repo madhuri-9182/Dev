@@ -10,8 +10,30 @@ import {
   createFileFromUrl,
   getJobLabel,
   getSpecialization,
+  isValidUrl,
 } from "../../../utils/util";
 import { Eye } from "iconsax-react";
+
+// Function to render guideline text with clickable links
+const renderGuideline = (text) => {
+  if (isValidUrl(text)) {
+    // Ensure the URL has http/https prefix
+    const url = text.startsWith("http")
+      ? text
+      : `https://${text}`;
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:underline"
+      >
+        {text}
+      </a>
+    );
+  }
+  return text;
+};
 
 const JobViewModal = ({ job, open, onClose }) => {
   const handleViewDescription = async () => {
@@ -160,7 +182,9 @@ const JobViewModal = ({ job, open, onClose }) => {
                       {section.guidelines
                         .split("\n")
                         .map((line, i) => (
-                          <li key={i}>{line}</li>
+                          <li key={i}>
+                            {renderGuideline(line)}
+                          </li>
                         ))}
                     </ul>
                   </div>

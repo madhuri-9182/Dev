@@ -2,6 +2,7 @@ import pdfToText from "react-pdftotext";
 import {
   JOB_NAMES,
   SPECIALIZATIONS,
+  WEBSITE_REGEX,
 } from "../Components/Constants/constants";
 import axios, { axiosFile } from "../api/axios";
 
@@ -194,4 +195,8 @@ export const getErrorMessage = (error) => {
       ? error?.response?.data?.message
       : error?.message;
   return errorMessage;
+};
+
+export const isValidUrl = (text) => {
+  return WEBSITE_REGEX.test(text);
 };

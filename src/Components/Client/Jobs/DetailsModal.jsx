@@ -57,13 +57,15 @@ const DetailsModal = ({
   const [links, setLinks] = useState([]);
   const [currentLink, setCurrentLink] = useState("");
   const [linkError, setLinkError] = useState("");
+  // New state for combined validation error
+  const [combinedError, setCombinedError] = useState("");
 
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
-    // watch,
+    watch,
   } = useForm({
     defaultValues: {
       detail: "",
@@ -71,6 +73,9 @@ const DetailsModal = ({
       guidelines: "",
     },
   });
+
+  // Watch guidelines field value for validation
+  const guidelinesValue = watch("guidelines");
 
   // Function to validate URL
   const isValidUrl = (url) => {
@@ -92,6 +97,9 @@ const DetailsModal = ({
     setLinks([...links, currentLink]);
     setCurrentLink("");
     setLinkError("");
+
+    // Clear combined error when a link is added
+    setCombinedError("");
   };
 
   // Function to remove a link
@@ -99,6 +107,16 @@ const DetailsModal = ({
     const newLinks = [...links];
     newLinks.splice(index, 1);
     setLinks(newLinks);
+
+    // Check if we need to show combined error after link removal
+    if (
+      newLinks.length === 0 &&
+      (!guidelinesValue || !guidelinesValue.trim())
+    ) {
+      setCombinedError(
+        "At least one guideline or link is required"
+      );
+    }
   };
 
   useEffect(() => {
@@ -135,9 +153,24 @@ const DetailsModal = ({
       });
       setLinks([]);
     }
+
+    // Clear errors when modal opens
+    setCombinedError("");
+    setLinkError("");
   }, [editDetail, isOpen, reset]);
 
   const onSubmit = (data) => {
+    // First, validate that at least one of guidelines or links is not empty
+    if (
+      (!data.guidelines || !data.guidelines.trim()) &&
+      links.length === 0
+    ) {
+      setCombinedError(
+        "At least one guideline or link is required"
+      );
+      return;
+    }
+
     // Calculate total minutes with proper handling for edit case
     let totalMinutes = 0;
 
@@ -166,7 +199,9 @@ const DetailsModal = ({
 
     // Combine guidelines text with links
     const guidelinesArray = data.guidelines
-      ? data.guidelines.split(", ")
+      ? data.guidelines
+          .split(", ")
+          .filter((item) => item.trim() !== "")
       : [];
     const allGuidelines = [...guidelinesArray, ...links];
 
@@ -193,6 +228,20 @@ const DetailsModal = ({
 
     onClose();
   };
+
+  // Check combined validation when guidelines field changes
+  useEffect(() => {
+    if (
+      links.length === 0 &&
+      (!guidelinesValue || !guidelinesValue.trim())
+    ) {
+      setCombinedError(
+        "At least one guideline or link is required"
+      );
+    } else {
+      setCombinedError("");
+    }
+  }, [guidelinesValue, links]);
 
   if (!isOpen) return null;
 
@@ -267,18 +316,20 @@ const DetailsModal = ({
               <Controller
                 name="guidelines"
                 control={control}
-                rules={{
-                  required: "Guidelines are required",
-                }}
+                rules={
+                  {
+                    // Remove required validation as we'll handle it separately
+                  }
+                }
                 render={({ field }) => (
                   <Input
                     type="text"
                     placeholder="Guidelines (comma-separated)"
                     error={errors.guidelines}
                     value={field.value}
-                    onChange={(e) =>
-                      field.onChange(e.target.value)
-                    }
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                    }}
                   />
                 )}
               />
@@ -333,33 +384,38 @@ const DetailsModal = ({
 
               {/* Display added links */}
             </div>
-            {links.length > 0 && (
-              <div className="mt-4">
-                <p className="text-2xs font-bold text-[#6B6F7B]">
-                  Added Links:
-                </p>
-                <ul className="mt-1 space-y-1">
-                  {links.map((link, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center justify-between text-2xs"
-                    >
-                      <span className="truncate max-w-[80%] text-blue-500">
-                        {link}
-                      </span>
-                      <button
-                        type="button"
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => removeLink(index)}
-                      >
-                        Remove
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
+          {links.length > 0 && (
+            <div className="mt-2">
+              <p className="text-2xs font-bold text-[#6B6F7B]">
+                Added Links:
+              </p>
+              <ul className="mt-1 space-y-1">
+                {links.map((link, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between text-2xs"
+                  >
+                    <span className="truncate max-w-[80%] text-blue-500">
+                      {link}
+                    </span>
+                    <button
+                      type="button"
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => removeLink(index)}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {combinedError && (
+            <p className="text-[#B10E0EE5] text-[10px] mt-1">
+              {combinedError}
+            </p>
+          )}
           <div className="flex justify-end items-center gap-2 mt-6 mb-2">
             <button
               type="button"

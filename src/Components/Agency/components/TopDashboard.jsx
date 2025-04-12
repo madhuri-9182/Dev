@@ -34,9 +34,7 @@ const CardItems = ({
   customClass = "",
   title = "",
 }) => (
-  <div
-    className={`shadow ${bgColor} p-6 xl:p-8 rounded-2xl`}
-  >
+  <div className={`shadow ${bgColor} p-6 rounded-2xl`}>
     <div
       className={`grid grid-cols-2 gap-x-16 xl:gap-x-20 gap-y-7 ${customClass} ${
         title === "Pending Tasks" && items.length > 4
