@@ -528,13 +528,33 @@ const AddJob = () => {
               <DynamicMultiSelect
                 selectedValues={selectedEssentialSkills}
                 placeholder="Essential Skills"
-                setValue={(value) =>
-                  setValue(
-                    "essentialSkills",
-                    [...selectedEssentialSkills, value],
-                    { shouldValidate: true }
-                  )
-                }
+                setValue={(value) => {
+                  // Split the value by commas and trim each item
+                  const skillsArray = value
+                    .split(",")
+                    .map((skill) => skill.trim())
+                    .filter((skill) => skill !== ""); // Remove empty strings
+
+                  // Filter out skills that already exist in selectedEssentialSkills
+                  const newSkills = skillsArray.filter(
+                    (skill) =>
+                      !selectedEssentialSkills.includes(
+                        skill
+                      )
+                  );
+
+                  // Only add unique skills to the existing array
+                  if (newSkills.length > 0) {
+                    setValue(
+                      "essentialSkills",
+                      [
+                        ...selectedEssentialSkills,
+                        ...newSkills,
+                      ],
+                      { shouldValidate: true }
+                    );
+                  }
+                }}
               />
               {errors.essentialSkills && (
                 <p className="text-2xs text-[#B10E0EE5] mt-1">
