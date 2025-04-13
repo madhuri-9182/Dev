@@ -75,6 +75,7 @@ import {
   UnauthorizedLayout,
 } from "./Components";
 import RootRoute from "./Components/shared/RootRoute";
+import FAQ from "./Components/shared/FAQ";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -192,6 +193,7 @@ const router = createBrowserRouter(
               path="privacy-policy"
               element={<PrivacyPolicy />}
             />
+            <Route path="faq" element={<FAQ />} />
           </Route>
         </Route>
         {/* //Agency Routes */}
@@ -236,6 +238,7 @@ const router = createBrowserRouter(
               path="privacy-policy"
               element={<PrivacyPolicy />}
             />
+            <Route path="faq" element={<FAQ />} />
           </Route>
         </Route>
         {/* //Internal Routes */}
@@ -335,6 +338,7 @@ const router = createBrowserRouter(
                 path="privacy-policy"
                 element={<PrivacyPolicy />}
               />
+              <Route path="faq" element={<FAQ />} />
             </Route>
           </Route>
         </Route>
