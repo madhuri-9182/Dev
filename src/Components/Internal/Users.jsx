@@ -108,20 +108,20 @@ function Users() {
     }
   }, [selectedInternalClient, clientSetError, clientClearErrors]);
 
-  const validateClients = useCallback(() => {
-    if (selectedClients.length === 0) {
-      setError("client", { type: "manual", message: "Please select at least one Client." });
-    } else {
-      clearErrors("client");
-    }
-  }, [selectedClients, setError, clearErrors]);
+  // const validateClients = useCallback(() => {
+  //   if (selectedClients.length === 0) {
+  //     setError("client", { type: "manual", message: "Please select at least one Client." });
+  //   } else {
+  //     clearErrors("client");
+  //   }
+  // }, [selectedClients, setError, clearErrors]);
 
-  useEffect(() => {
-    // Revalidate, only if the user has interacted
-    if (hasInteracted.current) {
-      validateClients();
-    }
-  }, [selectedClients, validateClients]);
+  // useEffect(() => {
+  //   // Revalidate, only if the user has interacted
+  //   if (hasInteracted.current) {
+  //     validateClients();
+  //   }
+  // }, [selectedClients, validateClients]);
 
   useEffect(() => {
     // Revalidate if the user has interacted
@@ -212,7 +212,7 @@ function Users() {
       email: data.email,
       phone: "+91" + data.phone,
       role: data.access,
-      client_ids: selectedClients.map(client => client.id)
+      client_ids: selectedClients.length > 0 ? selectedClients.map(client => client.id) : []
     })
       .then(() => {
         toast.success("HDIP User created successfully", { position: "top-right" })
@@ -241,7 +241,11 @@ function Users() {
     if (data.email !== e?.item?.user?.email) payload.email = data.email;
     if (data.phone !== e?.item?.user?.phone?.slice(3)) payload.phone = "+91" + data.phone;
     if (data.access !== e?.item?.user?.role) payload.role = data.access;
-    if (selectedClients?.map(client => client.id) !== e?.item?.client?.map(client => client.id)) payload.client_ids = selectedClients?.map(client => client.id);
+    if (selectedClients?.length > 0 && 
+      JSON.stringify(selectedClients.map(client => client.id)) !== 
+      JSON.stringify(e?.item?.client?.map(client => client.id))) {
+    payload.client_ids = selectedClients.map(client => client.id);
+  }
 
     axios.patch(`/api/internal/hdip-user/${e?.item?.id}/`, payload)
       .then(() => {
@@ -646,7 +650,7 @@ function Users() {
               <Modal isOpen={addHdipUser} onClose={handleAddHdipUserClose} title="ADD HDIP USER" >
                 <form onSubmit={(e) => {
                   handleSubmit(onSubmitHdipUser)(e);
-                  validateClients();
+                  // validateClients();
                 }}>
                   <div className="flex flex-col custom_lg:gap-2 md:gap-y-0">
                     <div className="p-1 flex flex-col items-start justify-center">
@@ -703,7 +707,7 @@ function Users() {
                       {errors.phone && <span className="error-message">{errors.phone.message}</span>}
                     </div>
                     <div className="p-1 flex flex-col items-start justify-center">
-                      <label className="w-full text-sm font-medium text-[#6B6F7B] required-field-label">Client</label>
+                      <label className="w-full text-sm font-medium text-[#6B6F7B">Client</label>
                       <InfiniteScrollSelect
                         apiEndpoint={`/api/internal/organizations/`}
                         onSelect={(value) => {
@@ -785,7 +789,7 @@ function Users() {
                 e.index = index;
                 e.item = item;
                 handleSubmit(onEditHdipUser)(e);
-                validateClients();
+                // validateClients();
               }}>
                 <div
                   className={`${editHdipUser === index ? "bg-none border border-black" : "bg-[#EBEBEB]"} grid grid-cols-[1fr_1fr_2fr_1fr_1fr_0.5fr] mt-1 rounded-full items-center justify-center max-h-max min-h-[40px]`}
