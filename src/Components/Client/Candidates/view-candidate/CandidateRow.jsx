@@ -48,7 +48,7 @@ const CandidateRow = ({
                     `/client/candidates/${candidate.id}`,
                     {
                       state: {
-                        id: candidate?.interviews[0],
+                        id: candidate?.interviews[candidate?.interviews?.length - 1],
                       },
                     }
                   );
