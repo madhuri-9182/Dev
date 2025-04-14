@@ -21,6 +21,7 @@ import { useForm, Controller } from "react-hook-form";
 import { LightTooltip } from "../../../shared/LightTooltip";
 import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 import useAuth from "../../../../hooks/useAuth";
+import toast from "react-hot-toast";
 
 export const ResumeTable = ({
   data,
@@ -35,11 +36,9 @@ export const ResumeTable = ({
   <div className="w-full mt-20 relative">
     {/* Fixed header */}
     <div className="sticky top-0 bg-white z-10 pb-3">
-      {/* Adjust the entire grid based on isDiversityHiring */}
+      {/* Always use 8 columns since we're always showing gender now */}
       <div
-        className={`grid ${
-          isDiversityHiring ? "grid-cols-8" : "grid-cols-7"
-        } text-[#6B6F7B] font-bold text-2xs text-left`}
+        className="grid grid-cols-8 text-[#6B6F7B] font-bold text-2xs text-left"
       >
         <div className="px-3 col-span-1">Name</div>
         <div
@@ -66,11 +65,8 @@ export const ResumeTable = ({
         <div className="px-3 col-span-1">Email ID</div>
         <div className="px-3 col-span-1">Company</div>
         <div className="px-3 col-span-1">Designation</div>
-        {/* Only show Gender column if diversity hiring is enabled */}
-        {isDiversityHiring && (
-          <div className="px-3 col-span-1">Gender</div>
-        )}
-        {/* Action column is always col-span-1 now since we're adjusting the total grid columns */}
+        {/* Always show Gender column */}
+        <div className="px-3 col-span-1">Gender</div>
         <div className="px-3 col-span-1"></div>
       </div>
       <hr className="w-full bg-[#F4F4F4] h-[1px] my-3" />
@@ -89,7 +85,7 @@ export const ResumeTable = ({
           selectedSource={selectedSource}
           selectedRole={selectedRole}
           selectedSpecialization={selectedSpecialization}
-          isDiversityHiring={isDiversityHiring} // Pass isDiversityHiring to row
+          isDiversityHiring={isDiversityHiring}
         />
       ))}
     </div>
@@ -104,7 +100,7 @@ ResumeTable.propTypes = {
   selectedSource: PropTypes.string,
   selectedRole: PropTypes.number,
   selectedSpecialization: PropTypes.string,
-  isDiversityHiring: PropTypes.bool, // Add prop type for isDiversityHiring
+  isDiversityHiring: PropTypes.bool,
 };
 
 // Table row component
@@ -172,7 +168,7 @@ const ResumeTableRow = ({
     });
     // Validate after reset
     setTimeout(() => validateFields(true), 0);
-  }, [item.id, reset, isDiversityHiring]); // Add isDiversityHiring dependency
+  }, [item.id, reset, isDiversityHiring]);
 
   // Custom validation function similar to the original code
   const validateFields = (forceUpdate = false) => {
@@ -210,10 +206,10 @@ const ResumeTableRow = ({
         "Designation is required. Please fill manually to submit";
     }
 
-    // Only validate gender if diversity hiring is enabled
+    // Only validate gender as required if diversity hiring is enabled
     if (isDiversityHiring && !values.gender) {
       newValidationMessages.gender =
-        "Gender is required. Please fill manually to submit";
+        "Gender is required for diversity hiring. Please fill manually to submit";
     }
 
     if (
@@ -264,6 +260,11 @@ const ResumeTableRow = ({
   const saveEdit = handleSubmit((formData) => {
     if (!validateFields()) return;
 
+    if (isDiversityHiring && formData.gender === "M") {
+      toast.error("For diversity hiring, only Female and Others are allowed");
+      return;
+    }
+
     const updatedData = data.map((row) =>
       row.id === item.id
         ? {
@@ -276,10 +277,8 @@ const ResumeTableRow = ({
             current_company: formData.current_company,
             current_designation:
               formData.current_designation,
-            // Only update gender if diversity hiring is enabled
-            gender: isDiversityHiring
-              ? formData.gender
-              : row.gender,
+            // Always update gender now
+            gender: formData.gender,
           }
         : row
     );
@@ -290,6 +289,11 @@ const ResumeTableRow = ({
   const handleFormSubmit = handleSubmit(
     async (formData) => {
       if (!validateFields()) return;
+
+      if (isDiversityHiring && formData.gender === "M") {
+        toast.error("For diversity hiring, only Female and Others are allowed");
+        return;
+      }
 
       const selectedIData = data.find(
         (row) => row.id === item.id
@@ -311,10 +315,10 @@ const ResumeTableRow = ({
         role: selectedRole,
         specialization: selectedSpecialization,
         fileBase64,
+        // Always include gender in encodedData
+        gender: formData.gender,
       };
-      if (isDiversityHiring) {
-        encodedData.gender = formData.gender;
-      }
+      
       delete encodedData.id;
       delete encodedData.file;
 
@@ -379,11 +383,9 @@ const ResumeTableRow = ({
 
   return (
     <div className="mb-3">
-      {/* Main row with grid layout - adjust based on isDiversityHiring */}
+      {/* Main row with grid layout - always use 8 columns now */}
       <div
-        className={`grid ${
-          isDiversityHiring ? "grid-cols-8" : "grid-cols-7"
-        } text-2xs text-left items-center text-[#313A4E]`}
+        className="grid grid-cols-8 text-2xs text-left items-center text-[#313A4E]"
       >
         {editingRowId === item.id ? (
           <>
@@ -524,33 +526,31 @@ const ResumeTableRow = ({
                 )}
               />
             </div>
-            {/* Only show gender field if diversity hiring is enabled */}
-            {isDiversityHiring && (
-              <div className="px-3 col-span-1">
-                <Controller
-                  name="gender"
-                  control={control}
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
-                      onChange={(e) => {
-                        field.onChange(e);
-                        handleChange(e, "gender");
-                      }}
-                    >
-                      <option value="">Select</option>
-                      {GENDERS.map((gender, idx) => (
-                        <option key={idx} value={gender.id}>
-                          {gender.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                />
-              </div>
-            )}
-            {/* Action buttons - always col-span-1 now */}
+            {/* Always show gender field */}
+            <div className="px-3 col-span-1">
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    className="custom-select w-full px-2 py-1 border text-2xs font-medium bg-white text-[#6B6F7B] rounded"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      handleChange(e, "gender");
+                    }}
+                  >
+                    <option value="">Select</option>
+                    {GENDERS.map((gender, idx) => (
+                      <option key={idx} value={gender.id}>
+                        {gender.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              />
+            </div>
+            {/* Action buttons */}
             <div className="pl-3 flex items-center gap-2 col-span-1">
               <CloseCircle
                 size="18"
@@ -630,17 +630,15 @@ const ResumeTableRow = ({
             >
               {tableDataValues("current_designation")}
             </div>
-            {/* Only show gender column if diversity hiring is enabled */}
-            {isDiversityHiring && (
-              <div className="px-3 col-span-1">
-                {item.gender
-                  ? GENDERS.find(
-                      (gender) => gender.id === item.gender
-                    )?.name
-                  : "Not specified"}
-              </div>
-            )}
-            {/* Action buttons - always col-span-1 now */}
+            {/* Always show gender column */}
+            <div className="px-3 col-span-1">
+              {item.gender
+                ? GENDERS.find(
+                    (gender) => gender.id === item.gender
+                  )?.name
+                : "Not specified"}
+            </div>
+            {/* Action buttons */}
             <div className="pl-3 flex items-center gap-2 col-span-1">
               <Edit
                 size={18}
@@ -696,7 +694,7 @@ ResumeTableRow.propTypes = {
   selectedSource: PropTypes.string,
   selectedRole: PropTypes.number,
   selectedSpecialization: PropTypes.string,
-  isDiversityHiring: PropTypes.bool, // Add prop type for isDiversityHiring
+  isDiversityHiring: PropTypes.bool,
 };
 
 const Input = ({
