@@ -195,7 +195,10 @@ const JobDetails = () => {
         ([key, value]) => {
           // Skip other_details as we handle it separately
           if (key !== "other_details") {
-            if (
+            if (key === "is_diversity_hiring") {
+              // Convert boolean to "true" or "false" string explicitly
+              formdataToSubmit.append(key, value === true ? "true" : "false");
+            } else if (
               typeof value === "object" &&
               !Array.isArray(value) &&
               !(value instanceof File)
