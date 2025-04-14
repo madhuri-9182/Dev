@@ -201,7 +201,7 @@ export const INTERVIEWER_NAVLINKS = [
 ];
 
 export const USER_TYPE = {
-  client_owner: "Owner",
+  client_owner: "Super Admin",
   client_admin: "Admin",
   client_user: "User",
   agency: "Agency",

@@ -380,7 +380,7 @@ export const JobCard = ({
           <p className="text-2xs font-medium">
             Active Candidates
           </p>
-          <div className="w-6 h-6 bg-[#979DA3] text-white text-[10px] font-medium rounded-full flex items-center justify-center">
+          <div className="w-6 h-6 bg-[#9a9a9a] text-white text-default font-semibold rounded-full flex items-center justify-center">
             {job.active_candidates}
           </div>
         </div>
