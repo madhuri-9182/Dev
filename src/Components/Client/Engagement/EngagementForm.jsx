@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+
 import { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
@@ -23,19 +24,14 @@ import {
 } from "../../Constants/constants";
 import {
   createFileFromUrl,
-  getJobLabel,
 } from "../../../utils/util";
-import useAllJobs from "../../../hooks/useFetchAllJobs";
 
 const EngagementForm = ({
   setSelectedEngagement,
-  engagement,
 }) => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { data: jobsData } = useAllJobs();
-
   const {
     data,
     isPending,
@@ -73,7 +69,7 @@ const EngagementForm = ({
       offer_date: null,
       client_user_email: "",
       other_offer: false,
-      job_id: "",
+      job: '',
       client_user_name: "",
     },
     mode: "onChange",
@@ -107,7 +103,7 @@ const EngagementForm = ({
         "candidate_phone",
         "candidate_company",
         "notice_period",
-        "job_id",
+        "job",
         "client_user_name",
         "client_user_email",
       ];
@@ -161,7 +157,7 @@ const EngagementForm = ({
         "candidate_phone",
         "candidate_company",
         "notice_period",
-        "job_id",
+        "job",
         "client_user_name",
         "client_user_email",
       ];
@@ -195,7 +191,7 @@ const EngagementForm = ({
       "candidate_phone",
       "candidate_company",
       "notice_period",
-      "job_id",
+      "job",
       "client_user_name",
       "client_user_email",
     ];
@@ -486,16 +482,15 @@ const EngagementForm = ({
           />
 
           {/* Role Offer */}
-          <SelectField
-            name="job_id"
+               <InputField
+            name="job"
             control={control}
-            rules={{ required: "Role is required" }}
+            rules={{
+              required: "Role Offer is required",
+            }}
             label="Role Offer"
-            options={jobsData?.map((job) => ({
-              value: job.id,
-              label: getJobLabel(job.name),
-            }))}
-            placeholder="Select Role"
+            type="text"
+            placeholder="Role Offer"
             disabled={shouldFieldsBeDisabled}
             required={true}
           />
