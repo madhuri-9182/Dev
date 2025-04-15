@@ -159,6 +159,7 @@ const Feedback = () => {
     setValue,
     getValues,
     reset,
+    trigger,
   } = useForm({
     defaultValues: DEFAULT_FORM_VALUES,
     mode: "onSubmit",
@@ -231,7 +232,7 @@ const Feedback = () => {
     onError: (error) => {
       toast.error(
         `${
-          error.response.data.message
+          error.response?.data?.message
             ? error.response.data.message
             : `Error submitting feedback: ${
                 error.message || "Please try again"
@@ -382,6 +383,32 @@ const Feedback = () => {
     mutate({ id: interviewId, data: transformedData });
   };
 
+  // Manual submit handler with validation
+  const handleManualSubmit = async () => {
+    // First, trigger form validation
+    const isFormValid = await trigger();
+
+    // If form validation passes, then check skill scores
+    if (isFormValid) {
+      const values = getValues();
+      if (validateSkillScores(values)) {
+        const transformedData = transformFormData(
+          values,
+          interviewId
+        );
+        mutate({
+          id: interviewId,
+          data: transformedData,
+        });
+      }
+    } else {
+      // Show error toast if form validation fails
+      toast.error(
+        "Please fix form errors before submitting"
+      );
+    }
+  };
+
   // Utility function to add a question to a skill
   const addQuestion = (skillIndex) => {
     const currentSkill = getValues(`skills.${skillIndex}`);
@@ -459,24 +486,13 @@ const Feedback = () => {
         <div className="flex justify-end mt-6 ">
           <button
             type="button"
-            onClick={() => {
-              const values = getValues();
-              if (validateSkillScores(values)) {
-                const transformedData = transformFormData(
-                  values,
-                  interviewId
-                );
-                mutate({
-                  id: interviewId,
-                  data: transformedData,
-                });
-              }
-            }}
+            onClick={handleManualSubmit}
             className={`px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg ${
               isPending
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}
+            disabled={isPending}
           >
             {isPending
               ? "Submitting..."
