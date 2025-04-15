@@ -18,6 +18,7 @@ import {
   createFileFromUrl,
   getJobLabel,
   getErrorMessage,
+  getSpecialization,
 } from "../../../../utils/util";
 import { useDebounce } from "../../../../hooks/useDebounce";
 
@@ -27,6 +28,7 @@ import {
   CANDIDATE_SOURCE,
   CANDIDATE_STATUS,
   JOB_NAMES,
+  SPECIALIZATIONS,
 } from "../../../Constants/constants";
 import useAllCandidates from "../../../../hooks/useFetchAllCandidates";
 import { CandidateFilters } from "./CandidateFilters";
@@ -60,10 +62,11 @@ function Candidates() {
   const [selectedStatus, setSelectedStatus] =
     useState(status);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSpecialization, setSelectedSpecialization] = useState("");
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedRole, selectedStatus, searchQuery]);
+  }, [selectedRole, selectedStatus, searchQuery , selectedSpecialization]);
 
   // Debounce search query to prevent excessive API calls
   const debouncedSearchQuery = useDebounce(
@@ -80,6 +83,7 @@ function Candidates() {
         job_id: selectedRole,
         status: selectedStatus,
         q: debouncedSearchQuery,
+        specialization: selectedSpecialization
       },
     ],
     queryFn: getCandidates,
@@ -224,6 +228,25 @@ function Candidates() {
                       ?.name
                   )
                 : "All Roles"
+            }
+          />
+        </div>
+        <div className="min-w-40">
+          <CandidateFilters
+            value={selectedSpecialization}
+            onChange={setSelectedSpecialization}
+            options={[
+              { id: "", name: "Specialization" },
+              ...SPECIALIZATIONS,
+            ]}
+            placeholder="Specialization"
+            displayValue={
+              selectedSpecialization
+                ? getSpecialization(
+                    SPECIALIZATIONS.find((r) => r.id === selectedSpecialization)
+                      ?.name
+                  )
+                : "Specialization"
             }
           />
         </div>

@@ -48,6 +48,9 @@ const getQueryParams = (params) => {
   if (params.q) {
     queryParams.q = params.q;
   }
+  if(params.specialization){
+    queryParams.specialization = params.specialization
+  }
   return queryParams;
 };
 
