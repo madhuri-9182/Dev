@@ -163,6 +163,7 @@ const SkillItem = ({
             {...register(`skills.${skillIndex}.skillName`, {
               required: "Skill name is required",
             })}
+            maxLength={100}
           />
           {getErrorMessage(
             `skills.${skillIndex}.skillName`
@@ -258,6 +259,7 @@ const SkillItem = ({
           className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
           placeholder="Add Summary"
           rows={4}
+          maxLength={1000}
           {...register(`skills.${skillIndex}.summary`, {
             required: "Summary is required",
           })}
@@ -369,6 +371,7 @@ const QuestionAnswerPair = ({
           )}
           style={textareaStyle}
           onInput={(e) => autoResizeTextarea(e.target)}
+          maxLength={1000}
         />
         {getErrorMessage(
           `skills.${skillIndex}.questions.${questionIndex}.question`
@@ -409,6 +412,7 @@ const QuestionAnswerPair = ({
           )}
           style={textareaStyle}
           onInput={(e) => autoResizeTextarea(e.target)}
+          maxLength={5000}
         />
         {getErrorMessage(
           `skills.${skillIndex}.questions.${questionIndex}.answer`

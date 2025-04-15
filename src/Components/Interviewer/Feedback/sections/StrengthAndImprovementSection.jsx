@@ -22,6 +22,7 @@ const StrengthAndImprovementSection = ({
           required: "Candidate's strength is required",
         })}
         error={errors.strength}
+        maxLength={450}
       />
       <TextArea
         label="Improvement Points"
@@ -30,6 +31,7 @@ const StrengthAndImprovementSection = ({
           required: "Improvement points are required",
         })}
         error={errors.improvementPoints}
+        maxLength={450}
       />
     </FormSection>
   );
