@@ -58,8 +58,8 @@ const EventCard = React.memo(
           <IconButton
             style={{
               position: "absolute",
-              right: "2px",
-              top: "2px",
+              right: "4px",
+              top: "4px",
               color: "white",
               fontSize: "14px",
               zIndex: 5,
