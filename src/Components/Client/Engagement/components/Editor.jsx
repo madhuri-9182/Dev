@@ -109,6 +109,8 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
               color: "#0000008F",
               height: "100%",
               padding: "20px 5px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#fff",
             }}
             theme="bubble"
             value={initialValue}

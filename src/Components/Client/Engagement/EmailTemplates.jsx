@@ -84,7 +84,7 @@ function EmailTemplates() {
             innerRef={editorRef}
           />
 
-          <Box className="flex gap-2 mt-2 ml-auto justify-end">
+          <Box className="flex gap-2 mt-6 ml-auto justify-end">
             {hasChanges ? (
               <>
                 <Button

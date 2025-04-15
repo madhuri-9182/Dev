@@ -47,6 +47,7 @@ export const AddTemplateButton = ({
     <Button
       sx={{
         ...primaryButtonStyles,
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
       }}
       fullWidth
       variant="contained"

@@ -10,14 +10,14 @@ import React, { useState } from "react";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: "16px",
-  boxShadow: "none",
   padding: "0",
-  width: "max-content",
+  width: "100%",
   position: "relative",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
 }));
 
 const StyledCardActionArea = styled(CardActionArea)(({ theme }) => ({
-  width: "192px",
+  width: "100%",
   height: "64px",
   padding: "12px",
   overflow: "hidden",
