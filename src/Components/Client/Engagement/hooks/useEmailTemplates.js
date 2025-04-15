@@ -6,6 +6,7 @@ import {
   useUpdateEngagementTemplate,
 } from "../api";
 import { extractSubjectAndContent } from "../utils";
+import toast from "react-hot-toast";
 
 export const defaultEditorState = {
   id: 0,
@@ -97,6 +98,13 @@ export const useEmailTemplates = (editorRef) => {
   const addTemplate = async () => {
     const { subject, content: template_html_content } =
       extractSubjectAndContent(editorRef?.current?.value);
+      const isSubjectEmpty = !subject || subject.trim() === '' || subject.trim() === 'Subject';
+      const isContentEmpty = !template_html_content || template_html_content.trim() === '';
+
+      if (isSubjectEmpty || isContentEmpty) {
+        toast.error('Subject and content cannot be empty');
+        return
+      }
     const newData = {
       ...editorState,
       subject,

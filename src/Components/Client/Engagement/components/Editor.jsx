@@ -115,6 +115,11 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
             onChange={handleContentChange}
             modules={modules}
             ref={innerRef}
+            onFocus={()=> {
+              if (editorState.subject === "Subject") {
+                setEditorState((prev) => ({ ...prev, subject: " ", template_html_content: " " }));
+              }
+            }}
           />
         ),
         // eslint-disable-next-line react-hooks/exhaustive-deps

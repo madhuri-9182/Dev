@@ -11,14 +11,15 @@ export default Button;
 
 export const primaryButtonStyles = {
   backgroundColor: "#007AFF",
+  padding: '4px 32px',
   color: "white",
   boxShadow: "none",
   "& .MuiCircularProgress-root": {
     color: "white",
   },
   "&.Mui-disabled": {
-    opacity: 0.5,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#cac4d0",
+    cursor: 'not-allowed',
     color: "white",
   },
   "&.MuiButton-loading": {
@@ -28,6 +29,7 @@ export const primaryButtonStyles = {
 
 export const secondaryButtonStyles = {
   border: "1px solid red",
+  padding: '4px 32px',
   color: "red",
   boxShadow: "none",
   backgroundColor: "white",
@@ -47,7 +49,7 @@ export const secondaryButtonStyles = {
 export const tertiaryButtonStyles = {
   border: "1px solid #79747E",
   color: "#79747E",
-
+  padding: '4px 32px',
   boxShadow: "none",
   backgroundColor: "white",
   "&.MuiButton-loading": {
