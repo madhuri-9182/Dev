@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { Controller } from "react-hook-form";
-import { useEffect, useRef } from "react";
 import {
   PlusIcon,
   XCircleIcon,
@@ -30,7 +29,6 @@ const skillItemPropTypes = {
     ),
   }).isRequired,
   skillIndex: PropTypes.number.isRequired,
-  register: PropTypes.func.isRequired,
   control: PropTypes.object.isRequired,
   errors: PropTypes.object,
   addQuestion: PropTypes.func.isRequired,
@@ -41,16 +39,12 @@ const skillItemPropTypes = {
 const SkillItem = ({
   skillField,
   skillIndex,
-  register,
   control,
   errors,
   addQuestion,
   removeQuestion,
   removeSkill,
 }) => {
-  // Create refs for auto-resizing textareas
-  const textareaRefs = useRef({});
-
   // Function to adjust textarea height
   const autoResizeTextarea = (element) => {
     if (!element) return;
@@ -67,66 +61,6 @@ const SkillItem = ({
       TEXTAREA_CONFIG.MAX_HEIGHT_PX
     );
     element.style.height = `${newHeight}px`;
-  };
-
-  // Setup auto-resize for textareas
-  useEffect(() => {
-    const textareas = Object.values(textareaRefs.current);
-
-    // Add event listeners to all textareas
-    textareas.forEach((textarea) => {
-      if (!textarea) return;
-
-      // Initial resize
-      autoResizeTextarea(textarea);
-
-      // Create a named function for the event listener to use in cleanup
-      const resizeHandler = () =>
-        autoResizeTextarea(textarea);
-      textarea.addEventListener("input", resizeHandler);
-
-      // Store the handler on the element for cleanup
-      textarea._resizeHandler = resizeHandler;
-    });
-
-    // Cleanup function to remove listeners
-    return () => {
-      textareas.forEach((textarea) => {
-        if (textarea && textarea._resizeHandler) {
-          textarea.removeEventListener(
-            "input",
-            textarea._resizeHandler
-          );
-        }
-      });
-    };
-  }, [skillField.questions?.length]); // Re-run when questions change
-
-  // Helper for creating textarea refs
-  const createTextareaRef = (
-    fieldName,
-    required = true
-  ) => {
-    const refKey = fieldName.replace(/\./g, "_");
-
-    return (el) => {
-      // Store in our ref object
-      textareaRefs.current[refKey] = el;
-
-      if (!el) return;
-
-      // Register with react-hook-form
-      const refFn = register(fieldName, {
-        required: required
-          ? `${fieldName.split(".").pop()} is required`
-          : false,
-      }).ref;
-
-      if (refFn) refFn(el);
-
-      // Initial resize with small delay to ensure content is properly rendered
-      setTimeout(() => autoResizeTextarea(el), 0);
-    };
   };
 
   // Helper function to get error message
@@ -157,13 +91,18 @@ const SkillItem = ({
       <div className="flex justify-between items-center mb-4">
         {/* Skill name input */}
         <div className="w-1/3">
-          <input
-            className="w-full px-3 py-2 text-xs text-[#49454F] rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            placeholder="Skill Name"
-            {...register(`skills.${skillIndex}.skillName`, {
-              required: "Skill name is required",
-            })}
-            maxLength={100}
+          <Controller
+            control={control}
+            name={`skills.${skillIndex}.skillName`}
+            rules={{ required: "Skill name is required" }}
+            render={({ field }) => (
+              <input
+                className="w-full px-3 py-2 text-xs text-[#49454F] rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="Skill Name"
+                {...field}
+                maxLength={100}
+              />
+            )}
           />
           {getErrorMessage(
             `skills.${skillIndex}.skillName`
@@ -228,11 +167,12 @@ const SkillItem = ({
             key={`${skillField.id}-q-${questionIndex}`}
             skillIndex={skillIndex}
             questionIndex={questionIndex}
-            createTextareaRef={createTextareaRef}
-            autoResizeTextarea={autoResizeTextarea}
+            control={control}
+            errors={errors}
             getErrorMessage={getErrorMessage}
             removeQuestion={removeQuestion}
             textareaStyle={textareaStyle}
+            autoResizeTextarea={autoResizeTextarea}
             showRemoveButton={questionIndex > 0}
           />
         )
@@ -255,14 +195,19 @@ const SkillItem = ({
         <label className="block mb-1 font-[550] text-default">
           Summary:
         </label>
-        <textarea
-          className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
-          placeholder="Add Summary"
-          rows={4}
-          maxLength={1000}
-          {...register(`skills.${skillIndex}.summary`, {
-            required: "Summary is required",
-          })}
+        <Controller
+          control={control}
+          name={`skills.${skillIndex}.summary`}
+          rules={{ required: "Summary is required" }}
+          render={({ field }) => (
+            <textarea
+              className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+              placeholder="Add Summary"
+              rows={4}
+              maxLength={1000}
+              {...field}
+            />
+          )}
         />
         {getErrorMessage(
           `skills.${skillIndex}.summary`
@@ -344,15 +289,15 @@ const ScoreSlider = ({ value, onChange, hasError }) => {
   );
 };
 
-// Component for question and answer pair
+// Component for question and answer pair with Controller implementation
 const QuestionAnswerPair = ({
   skillIndex,
   questionIndex,
-  createTextareaRef,
-  autoResizeTextarea,
+  control,
   getErrorMessage,
   removeQuestion,
   textareaStyle,
+  autoResizeTextarea,
   showRemoveButton,
 }) => (
   <div className="mb-5">
@@ -362,16 +307,34 @@ const QuestionAnswerPair = ({
         {questionIndex + 1}.
       </span>
       <div className="w-full">
-        <textarea
-          className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
-          placeholder="Question"
-          rows={TEXTAREA_CONFIG.INITIAL_ROWS}
-          ref={createTextareaRef(
-            `skills.${skillIndex}.questions.${questionIndex}.question`
+        <Controller
+          control={control}
+          name={`skills.${skillIndex}.questions.${questionIndex}.question`}
+          rules={{ required: "Question is required" }}
+          render={({ field }) => (
+            <textarea
+              className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
+              placeholder="Question"
+              rows={TEXTAREA_CONFIG.INITIAL_ROWS}
+              style={textareaStyle}
+              maxLength={1000}
+              {...field}
+              ref={(el) => {
+                field.ref(el);
+                if (el) {
+                  // Initial resize with small delay
+                  setTimeout(
+                    () => autoResizeTextarea(el),
+                    0
+                  );
+                }
+              }}
+              onInput={(e) => {
+                field.onChange(e.target.value);
+                autoResizeTextarea(e.target);
+              }}
+            />
           )}
-          style={textareaStyle}
-          onInput={(e) => autoResizeTextarea(e.target)}
-          maxLength={1000}
         />
         {getErrorMessage(
           `skills.${skillIndex}.questions.${questionIndex}.question`
@@ -403,16 +366,34 @@ const QuestionAnswerPair = ({
         Ans.
       </span>
       <div className="w-full">
-        <textarea
-          className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
-          placeholder="Answer"
-          rows={TEXTAREA_CONFIG.INITIAL_ROWS}
-          ref={createTextareaRef(
-            `skills.${skillIndex}.questions.${questionIndex}.answer`
+        <Controller
+          control={control}
+          name={`skills.${skillIndex}.questions.${questionIndex}.answer`}
+          rules={{ required: "Answer is required" }}
+          render={({ field }) => (
+            <textarea
+              className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
+              placeholder="Answer"
+              rows={TEXTAREA_CONFIG.INITIAL_ROWS}
+              style={textareaStyle}
+              maxLength={5000}
+              {...field}
+              ref={(el) => {
+                field.ref(el);
+                if (el) {
+                  // Initial resize with small delay
+                  setTimeout(
+                    () => autoResizeTextarea(el),
+                    0
+                  );
+                }
+              }}
+              onInput={(e) => {
+                field.onChange(e.target.value);
+                autoResizeTextarea(e.target);
+              }}
+            />
           )}
-          style={textareaStyle}
-          onInput={(e) => autoResizeTextarea(e.target)}
-          maxLength={5000}
         />
         {getErrorMessage(
           `skills.${skillIndex}.questions.${questionIndex}.answer`
@@ -438,10 +419,11 @@ ScoreSlider.propTypes = {
 QuestionAnswerPair.propTypes = {
   skillIndex: PropTypes.number.isRequired,
   questionIndex: PropTypes.number.isRequired,
-  createTextareaRef: PropTypes.func.isRequired,
-  autoResizeTextarea: PropTypes.func.isRequired,
+  control: PropTypes.object.isRequired,
+  errors: PropTypes.object,
   getErrorMessage: PropTypes.func.isRequired,
   removeQuestion: PropTypes.func.isRequired,
   textareaStyle: PropTypes.object.isRequired,
+  autoResizeTextarea: PropTypes.func.isRequired,
   showRemoveButton: PropTypes.bool.isRequired,
 };
