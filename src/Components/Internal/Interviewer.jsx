@@ -14,6 +14,7 @@ import { Edit, Trash } from "iconsax-react";
 import { IoSearchSharp } from "react-icons/io5";
 import Modal from "../shared/Modal";
 import { formatExperienceFromYearsAndMonths } from "../../utils/util";
+import DynamicMultiSelect from "../../utils/DynamicMultiSelect";
 
 function Interviewer() {
   const [editUserOpen, setEditUserOpen] = useState(false);
@@ -22,7 +23,27 @@ function Interviewer() {
     email: "",
     phone: "",
     experience: "",
+    interviewer_level: "",
+    skills: [],
   });
+  const [itemsSkills, setItemsSkills] = useState([]);
+  const [
+    // eslint-disable-next-line no-unused-vars
+    selectedInterviewerLevel,
+    setSelectedInterviewerLevel,
+  ] = useState("");
+
+  const handleSkillSelection = (value) => {
+    if (value && !itemsSkills.includes(value)) {
+      setItemsSkills([...itemsSkills, value]);
+    }
+  };
+
+  const removeSkill = (skillToRemove) => {
+    setItemsSkills(
+      itemsSkills.filter((skill) => skill !== skillToRemove)
+    );
+  };
 
   const [items, setItems] = useState([]);
   const [summary, setSummary] = useState({ results: [] });
@@ -48,6 +69,7 @@ function Interviewer() {
     reset,
     setError,
     clearErrors,
+    setValue,
   } = useForm();
 
   const fetchData = useCallback(
@@ -184,14 +206,23 @@ function Interviewer() {
     )
       updatedData.total_experience_months =
         data.experience_months;
+    if (
+      data.interviewer_level !== editUser.interviewer_level
+    )
+      updatedData.interviewer_level =
+        data.interviewer_level;
     updatedData.assigned_domain_ids = items.join(",");
+
+    if (itemsSkills.length > 0) {
+      updatedData.skills = itemsSkills;
+    }
 
     setUpdateLoading(true);
     axios
       .patch(
         `/api/internal/interviewer/${editUser.id}/`,
         updatedData
-      ) // Use updatedData instead of data
+      )
       .then(() => {
         setSummary({
           results: [],
@@ -235,12 +266,15 @@ function Interviewer() {
       experience_months:
         interviewer.total_experience_months,
       role: interviewer.assigned_domains,
+      interviewer_level:
+        interviewer.interviewer_level || "",
     });
     setItems(
       interviewer?.assigned_domains?.map(
         (domain) => domain.id
       ) || []
     );
+    setItemsSkills(interviewer?.skills || []);
   };
 
   const handleEditUserClose = () => setEditUserOpen(false);
@@ -686,6 +720,44 @@ function Interviewer() {
                   </div>
                 </div>
               </div>
+
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">
+                  Interviewer Level
+                </label>
+                <select
+                  name="interviewer_level"
+                  {...register("interviewer_level", {
+                    required:
+                      "Please select an interviewer level.",
+                  })}
+                  onChange={(e) => {
+                    setSelectedInterviewerLevel(
+                      e.target.value
+                    );
+                    setValue(
+                      "interviewer_level",
+                      e.target.value
+                    );
+                  }}
+                  className="w-full h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+                  defaultValue={
+                    editUser.interviewer_level || ""
+                  }
+                >
+                  <option value="" disabled>
+                    Select Level
+                  </option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+                {errors.interviewer_level && (
+                  <span className="error-message">
+                    {errors.interviewer_level.message}
+                  </span>
+                )}
+              </div>
               <div className="p-1 flex flex-col items-start w-full">
                 <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">
                   Job Assigned
@@ -698,6 +770,63 @@ function Interviewer() {
                   handleSelection={handleSelection}
                   removeItem={removeItem}
                 />
+              </div>
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">
+                  Skills
+                </label>
+                <input
+                  type="hidden"
+                  {...register("skills", {
+                    validate: () =>
+                      itemsSkills.length > 0 ||
+                      "Please select at least one skill.",
+                  })}
+                />
+                <DynamicMultiSelect
+                  selectedValues={itemsSkills}
+                  setValue={handleSkillSelection}
+                  placeholder="Skills"
+                />
+                {errors.skills && (
+                  <span className="error-message">
+                    {errors.skills.message}
+                  </span>
+                )}
+                {itemsSkills?.length > 0 && (
+                  <div className="mt-[8px] w-full gap-x-4">
+                    <ul className="flex flex-wrap justify-start gap-2 items-center">
+                      {itemsSkills?.map((item, index) => (
+                        <li
+                          key={index}
+                          className="flex justify-center items-center h-[32px] border border-[#49454F] pl-1 pr-1 rounded-lg text-[#49454F]"
+                        >
+                          {item}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              removeSkill(item);
+                            }}
+                            className="pl-2"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z"
+                                fill="#49454F"
+                              />
+                            </svg>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex flex-row-reverse mt-2">

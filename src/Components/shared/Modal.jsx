@@ -2,14 +2,24 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { CloseSquare } from "iconsax-react";
 
-const Modal = ({ isOpen, onClose, title, className = "", children }) => {
+const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  className = "",
+  children,
+}) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
       <motion.div
         className={`bg-white rounded-lg shadow-lg w-[420px] p-4 absolute ${
-          title === "Add User" || title === "Edit User"
+          [
+            "Add User",
+            "Edit User",
+            "EDIT INTERVIEWER",
+          ].includes(title)
             ? "top-[10%]"
             : "top-[20%]"
         } left-[40%] transform -translate-x-1/2 overflow-y-auto max-h-[90vh] ${className}`}
