@@ -1,8 +1,11 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/display-name */
+/* eslint-disable no-unused-vars */
 import { Card, CardActionArea, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ItemTypes } from "../constants";
 import { useDrag } from "react-dnd";
-import { Edit, EditOutlined } from "@mui/icons-material";
+import { EditOutlined } from "@mui/icons-material";
 import React, { useState } from "react";
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -80,7 +83,7 @@ const EventCard = React.memo(
             <textarea
               type="text"
               value={title}
-              className="border-none h-full w-full color-white bg-transparent text-[12px] outline-none"
+              className="border-none h-full w-full color-white bg-transparent text-default outline-none"
               autoFocus
               onBlur={() => {
                 setEdit(false);
@@ -94,13 +97,15 @@ const EventCard = React.memo(
             />
           ) : (
             <Typography
-              fontSize={12}
+              fontSize={13}
               sx={{
                 display: "-webkit-box",
+                fontWeight: 700,
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
+                textAlign: "center",
               }}
             >
               {title}
