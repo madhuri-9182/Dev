@@ -13,8 +13,24 @@ import TableLoadingWrapper from "../../utils/TableLoadingWrapper";
 import { Edit, Trash } from "iconsax-react";
 import { IoSearchSharp } from "react-icons/io5";
 import Modal from "../shared/Modal";
-import { formatExperienceFromYearsAndMonths } from "../../utils/util";
+import {
+  createFileFromUrl,
+  formatExperienceFromYearsAndMonths,
+} from "../../utils/util";
 import DynamicMultiSelect from "../../utils/DynamicMultiSelect";
+import {
+  Mail,
+  StackedLineChart,
+  Phone,
+  Person,
+  Bolt,
+  Work,
+  Business,
+  CalendarMonth,
+  CalendarToday,
+  InsertDriveFile,
+  Edit as MaterialEdit,
+} from "@mui/icons-material";
 
 function Interviewer() {
   const [editUserOpen, setEditUserOpen] = useState(false);
@@ -55,6 +71,19 @@ function Interviewer() {
     strength: [],
     experience: [],
   });
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedInterviewer, setSelectedInterviewer] =
+    useState(null);
+
+  const handleViewInterviewer = (interviewer) => {
+    setSelectedInterviewer(interviewer);
+    setViewModalOpen(true);
+  };
+
+  const closeViewModal = () => {
+    setViewModalOpen(false);
+    setSelectedInterviewer(null);
+  };
 
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] =
@@ -536,7 +565,14 @@ function Interviewer() {
                     } h-[80px] border-b-2 text-xs`}
                   >
                     <td className="py-3 px-4 font-semibold">
-                      {user.name}
+                      <span
+                        className="cursor-pointer hover:text-indigo-600 hover:underline"
+                        onClick={() =>
+                          handleViewInterviewer(user)
+                        }
+                      >
+                        {user.name}
+                      </span>
                     </td>
                     <td className="py-3 px-4">
                       {user.email}
@@ -874,6 +910,308 @@ function Interviewer() {
               Confirm
             </button>
           </div>
+        </Modal>
+        {/* View Interviewer */}
+        <Modal
+          isOpen={viewModalOpen}
+          onClose={closeViewModal}
+          title="View Interviewer Details"
+          className="w-[500px] max-h-[75vh] top-auto"
+        >
+          {selectedInterviewer && (
+            <div className="space-y-4">
+              {/* Primary Details Section */}
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                  Personal Information
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-start">
+                    <Person
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Full Name
+                      </p>
+                      <p className="font-medium text-xs">
+                        {selectedInterviewer.name}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Mail
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Email
+                      </p>
+                      <a
+                        href={`mailto:${selectedInterviewer.email}`}
+                        className="text-blue-600 hover:underline text-xs"
+                      >
+                        {selectedInterviewer.email}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Phone
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Phone Number
+                      </p>
+                      <p className="font-medium text-xs">
+                        {selectedInterviewer.phone_number}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <StackedLineChart
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Interviewer Level
+                      </p>
+                      <p className="font-medium text-xs">
+                        {
+                          selectedInterviewer.interviewer_level
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Details */}
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                  Professional Information
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-start">
+                    <Bolt
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Strength
+                      </p>
+                      <p className="font-medium text-xs">
+                        {
+                          DOMAINS[
+                            selectedInterviewer.strength
+                          ]
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Business
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Current Company
+                      </p>
+                      <p className="font-medium text-xs">
+                        {
+                          selectedInterviewer.current_company
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Business
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Previous Company
+                      </p>
+                      <p className="font-medium text-xs">
+                        {
+                          selectedInterviewer.previous_company
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <Work
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Current Designation
+                      </p>
+                      <p className="font-medium text-xs">
+                        {
+                          selectedInterviewer.current_designation
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Experience Details */}
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                  Experience
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-start">
+                    <CalendarToday
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Total Experience
+                      </p>
+                      <p className="font-medium text-xs">
+                        {formatExperienceFromYearsAndMonths(
+                          selectedInterviewer.total_experience_years,
+                          selectedInterviewer.total_experience_months
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <CalendarMonth
+                      className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <div>
+                      <p className="text-[10px] text-gray-500">
+                        Interview Experience
+                      </p>
+                      <p className="font-medium text-xs">
+                        {formatExperienceFromYearsAndMonths(
+                          selectedInterviewer.interview_experience_years,
+                          selectedInterviewer.interview_experience_months
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Skills and Job Assignment */}
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                    Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedInterviewer.skills.map(
+                      (skill, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-md text-xs"
+                        >
+                          {skill}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                    Assigned Job Domains
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedInterviewer.assigned_domains.map(
+                      (domain, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs"
+                        >
+                          {domain.full_name}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Resume Link */}
+              {selectedInterviewer.cv && (
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                    Resume
+                  </h3>
+                  <div className="flex items-center">
+                    <InsertDriveFile
+                      className="text-indigo-500 mr-3 flex-shrink-0"
+                      size={14}
+                    />
+                    <span
+                      onClick={async () => {
+                        if (selectedInterviewer?.cv) {
+                          const file =
+                            await createFileFromUrl(
+                              selectedInterviewer?.cv
+                            );
+                          const blobUrl =
+                            URL.createObjectURL(file);
+                          window.open(blobUrl, "_blank");
+
+                          setTimeout(
+                            () =>
+                              URL.revokeObjectURL(blobUrl),
+                            5000
+                          );
+                        }
+                      }}
+                      className="text-blue-600 hover:underline text-xs cursor-pointer"
+                    >
+                      View Resume
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex justify-end mt-4">
+                <button
+                  className="primary-button"
+                  onClick={() => {
+                    closeViewModal();
+                    handleEditUserOpen(selectedInterviewer);
+                  }}
+                >
+                  Edit{" "}
+                  <MaterialEdit
+                    sx={{
+                      fontSize: 16,
+                      paddingBottom: "2px",
+                      paddingLeft: "2px",
+                    }}
+                  />
+                </button>
+              </div>
+            </div>
+          )}
         </Modal>
       </div>
     </div>
