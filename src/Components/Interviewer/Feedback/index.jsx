@@ -456,6 +456,33 @@ const Feedback = () => {
           remarkOptions={REMARK_OPTIONS}
           isPending={isPending}
         />
+        <div className="flex justify-end mt-6 ">
+          <button
+            type="button"
+            onClick={() => {
+              const values = getValues();
+              if (validateSkillScores(values)) {
+                const transformedData = transformFormData(
+                  values,
+                  interviewId
+                );
+                mutate({
+                  id: interviewId,
+                  data: transformedData,
+                });
+              }
+            }}
+            className={`px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg ${
+              isPending
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+          >
+            {isPending
+              ? "Submitting..."
+              : "Submit Feedback"}
+          </button>
+        </div>
       </form>
     </div>
   );

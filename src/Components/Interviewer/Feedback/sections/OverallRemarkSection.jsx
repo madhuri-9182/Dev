@@ -12,7 +12,6 @@ const OverallRemarkSection = ({
   register,
   errors,
   remarkOptions,
-  isPending,
 }) => {
   return (
     <FormSection
@@ -58,17 +57,6 @@ const OverallRemarkSection = ({
           />
         </div>
       </FormRow>
-
-      <div className="flex justify-end mt-6 ">
-        <button
-          type="submit"
-          className={`px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg ${
-            isPending ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {isPending ? "Submitting..." : "Submit Feedback"}
-        </button>
-      </div>
     </FormSection>
   );
 };
@@ -83,7 +71,6 @@ OverallRemarkSection.propTypes = {
       name: PropTypes.string.isRequired,
     })
   ).isRequired,
-  isPending: PropTypes.bool,
 };
 
 export default OverallRemarkSection;
