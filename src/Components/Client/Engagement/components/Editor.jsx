@@ -5,7 +5,7 @@ import "react-quill/dist/quill.bubble.css";
 import Button from "./Button";
 import { AttachFile } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import { joinContentAndSubject } from "../utils";
+import { extractSubjectAndContent, joinContentAndSubject } from "../utils";
 import { Trash } from "iconsax-react";
 
 const BlockEmbed = Quill.import("blots/block/embed");
@@ -67,8 +67,14 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
     onChange();
     const file = event.target.files[0];
     if (file) {
+      // Extract current content before updating state
+      const { subject, content: template_html_content } = 
+        extractSubjectAndContent(innerRef?.current?.value || initialValue);
+      
       setEditorState({
         ...editorState,
+        subject,
+        template_html_content,
         attachment: file,
       });
     }
