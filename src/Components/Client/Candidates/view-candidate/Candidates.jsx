@@ -28,7 +28,6 @@ import {
   CANDIDATE_SOURCE,
   CANDIDATE_STATUS,
   JOB_NAMES,
-  SPECIALIZATIONS,
 } from "../../../Constants/constants";
 import useAllCandidates from "../../../../hooks/useFetchAllCandidates";
 import { CandidateFilters } from "./CandidateFilters";
@@ -48,6 +47,18 @@ function Candidates() {
             JSON.stringify({
               id: candidate.designation.id,
               name: candidate.designation.name,
+            })
+          )
+        ),
+      ].map((str) => JSON.parse(str))
+    : [];
+
+      const specialization = candidates ? [
+        ...new Set(
+          candidates.map((candidate) =>
+            JSON.stringify({
+              id: candidate.specialization,
+              name: getSpecialization(candidate.specialization),
             })
           )
         ),
@@ -236,17 +247,17 @@ function Candidates() {
             value={selectedSpecialization}
             onChange={setSelectedSpecialization}
             options={[
-              { id: "", name: "Specialization" },
-              ...SPECIALIZATIONS,
+              { id: "", name: "All Specializations" },
+              ...specialization,
             ]}
-            placeholder="Specialization"
+            placeholder="All Specializations"
             displayValue={
               selectedSpecialization
                 ? getSpecialization(
-                    SPECIALIZATIONS.find((r) => r.id === selectedSpecialization)
+                    specialization.find((r) => r.id === selectedSpecialization)
                       ?.name
                   )
-                : "Specialization"
+                : "All Specializations"
             }
           />
         </div>
