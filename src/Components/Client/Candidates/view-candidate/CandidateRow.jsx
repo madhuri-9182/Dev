@@ -48,7 +48,9 @@ const CandidateRow = ({
                     `/client/candidates/${candidate.id}`,
                     {
                       state: {
-                        id: candidate?.interviews[candidate?.interviews?.length - 1],
+                        id: candidate?.interviews[
+                          candidate?.interviews?.length - 1
+                        ],
                       },
                     }
                   );
@@ -57,7 +59,9 @@ const CandidateRow = ({
                     `/agency/candidates/${candidate.id}`,
                     {
                       state: {
-                        id: candidate?.interviews[0],
+                        id: candidate?.interviews[
+                          candidate?.interviews?.length - 1
+                        ],
                       },
                     }
                   );
@@ -98,7 +102,9 @@ const CandidateRow = ({
 
         {/* Archive Option */}
         <div className="flex items-start justify-center py-1 text-2xs text-black">
-          {["REC", "NREC"].includes(candidate.status) ? (
+          {["REC", "NREC", "SNREC", "HREC"].includes(
+            candidate.status
+          ) ? (
             <FinalSelectionDropdown candidate={candidate} />
           ) : (
             "-"
