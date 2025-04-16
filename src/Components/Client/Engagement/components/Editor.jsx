@@ -5,7 +5,10 @@ import "react-quill/dist/quill.bubble.css";
 import Button from "./Button";
 import { AttachFile } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import { extractSubjectAndContent, joinContentAndSubject } from "../utils";
+import {
+  extractSubjectAndContent,
+  joinContentAndSubject,
+} from "../utils";
 import { Trash } from "iconsax-react";
 
 const BlockEmbed = Quill.import("blots/block/embed");
@@ -41,7 +44,12 @@ const modules = {
         if (this.quill) {
           const range = this.quill.getSelection();
           if (range) {
-            this.quill.insertEmbed(range.index, "divider", true, "user");
+            this.quill.insertEmbed(
+              range.index,
+              "divider",
+              true,
+              "user"
+            );
           }
         }
       },
@@ -52,7 +60,12 @@ const modules = {
   },
 };
 
-const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
+const Editor = ({
+  editorState,
+  setEditorState,
+  onChange,
+  innerRef,
+}) => {
   const fileInputRef = useRef(null);
 
   const handleContentChange = (v, d, source) => {
@@ -68,9 +81,11 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
     const file = event.target.files[0];
     if (file) {
       // Extract current content before updating state
-      const { subject, content: template_html_content } = 
-        extractSubjectAndContent(innerRef?.current?.value || initialValue);
-      
+      const { subject, content: template_html_content } =
+        extractSubjectAndContent(
+          innerRef?.current?.value || initialValue
+        );
+
       setEditorState({
         ...editorState,
         subject,
@@ -109,7 +124,8 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
               color: "#0000008F",
               height: "100%",
               padding: "20px 5px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
+              boxShadow:
+                "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
               backgroundColor: "#fff",
             }}
             theme="bubble"
@@ -117,9 +133,13 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
             onChange={handleContentChange}
             modules={modules}
             ref={innerRef}
-            onFocus={()=> {
+            onFocus={() => {
               if (editorState.subject === "Subject") {
-                setEditorState((prev) => ({ ...prev, subject: " ", template_html_content: " " }));
+                setEditorState((prev) => ({
+                  ...prev,
+                  subject: " ",
+                  template_html_content: " ",
+                }));
               }
             }}
           />
@@ -141,21 +161,21 @@ const Editor = ({ editorState, setEditorState, onChange, innerRef }) => {
           }}
           variant="outlined"
         >
-          {(() => {
-            const attachmentName = editorState.attachment
-              ? editorState.attachment.name
-                ? editorState.attachment.name
-                : editorState.attachment
-              : "Attachment";
-
-            return attachmentName.length > 30
-              ? "..." + attachmentName.substring(attachmentName.length - 27)
-              : attachmentName;
-          })()}
+          {editorState?.attachment
+            ? editorState?.attachment?.name
+              ? editorState?.attachment?.name
+              : editorState?.attachment
+                  ?.split("/")
+                  .pop()
+                  .split("?")[0]
+            : "Attachment"}
         </Button>
 
         {!!editorState.attachment && (
-          <IconButton size="small" onClick={removeAttachment}>
+          <IconButton
+            size="small"
+            onClick={removeAttachment}
+          >
             <Trash size="20" color="red" />
           </IconButton>
         )}
@@ -179,4 +199,4 @@ Editor.propTypes = {
   setEditorState: PropTypes.func,
   onChange: PropTypes.func,
   innerRef: PropTypes.any,
-}
+};

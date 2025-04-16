@@ -11,10 +11,11 @@ import { Box } from "@mui/material";
 import { useEventScheduler } from "./hooks/useEventScheduler";
 import { TemplateList } from "./components/TemplateList";
 import { WeeklySchedule } from "./components/WeeklySchedule";
-import { useNavigate } from "react-router-dom";
 
-function EventScheduler({ engagement, setSelectedEngagement }) {
-  const navigate = useNavigate();
+function EventScheduler({
+  engagement,
+  setSelectedEngagement,
+}) {
   const {
     templates,
     scheduledEventsPerWeek,
@@ -37,7 +38,9 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
     <div className=" flex flex-col ">
       <div>
         <CandidateTimeline
-          onStatusChange={(value) => updateEngagement({ status: value })}
+          onStatusChange={(value) =>
+            updateEngagement({ status: value })
+          }
           engagement={engagement}
           isUpdating={isUpdating}
         />
@@ -72,8 +75,11 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
             </Button>
 
             <Button
-              disabled={scheduledEventsPerWeek.some((event) =>
-                event.slots.some((slot) => slot?.template && !slot?.date)
+              disabled={scheduledEventsPerWeek.some(
+                (event) =>
+                  event.slots.some(
+                    (slot) => slot?.template && !slot?.date
+                  )
               )}
               sx={{
                 ...primaryButtonStyles,
@@ -91,7 +97,7 @@ function EventScheduler({ engagement, setSelectedEngagement }) {
               ...tertiaryButtonStyles,
               paddingBlock: 0.5,
             }}
-            onClick={() => navigate(-1)}
+            onClick={() => window.history.back()}
             disabled={isUpdatingSchedule}
           >
             Back

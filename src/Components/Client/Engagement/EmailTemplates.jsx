@@ -9,11 +9,9 @@ import { Box } from "@mui/material";
 import EventCard from "./components/EventCard";
 import { useEmailTemplates } from "./hooks/useEmailTemplates";
 import { AddTemplateButton } from "./components/AddTemplateButton";
-import { useNavigate } from "react-router-dom";
 
 function EmailTemplates() {
   const editorRef = useRef();
-  const navigate = useNavigate();
   const {
     templates,
     editorState,
@@ -35,7 +33,9 @@ function EmailTemplates() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">Loading...</div>
+      <div className="flex items-center justify-center h-full">
+        Loading...
+      </div>
     );
   }
 
@@ -48,7 +48,10 @@ function EmailTemplates() {
   }
 
   return (
-    <div style={{ height: "calc(100vh - 160px)" }} className="flex">
+    <div
+      style={{ height: "calc(100vh - 160px)" }}
+      className="flex"
+    >
       <div className="p-2 overflow-auto full-h min-w-[220px] mt-2">
         {templates?.map((template) => (
           <EventCard
@@ -71,7 +74,9 @@ function EmailTemplates() {
           editorState={editorState}
           hasChanges={hasChanges}
           selectTemplate={selectTemplate}
-          handleTemplateNameChange={handleTemplateNameChange}
+          handleTemplateNameChange={
+            handleTemplateNameChange
+          }
         />
       </div>
 
@@ -93,7 +98,9 @@ function EmailTemplates() {
                     paddingBlock: 0.5,
                   }}
                   onClick={() =>
-                    selectTemplate(isAddingNew ? null : selectedTemplate)
+                    selectTemplate(
+                      isAddingNew ? null : selectedTemplate
+                    )
                   }
                 >
                   Cancel
@@ -104,7 +111,11 @@ function EmailTemplates() {
                     paddingBlock: 0.5,
                     ...primaryButtonStyles,
                   }}
-                  onClick={isAddingNew ? addTemplate : updateTemplate}
+                  onClick={
+                    isAddingNew
+                      ? addTemplate
+                      : updateTemplate
+                  }
                   loading={isUpdating || isAdding}
                 >
                   Save
@@ -116,7 +127,7 @@ function EmailTemplates() {
                   ...tertiaryButtonStyles,
                   paddingBlock: 0.5,
                 }}
-                onClick={() => navigate(-1)}
+                onClick={() => window.history.back()}
               >
                 Back
               </Button>
