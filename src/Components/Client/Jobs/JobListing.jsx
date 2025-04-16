@@ -26,7 +26,14 @@ import Empty from "../../shared/Empty";
 // Sub-components
 
 // Main component
-const JobListing = ({ data, groupedJobs, hiringManagers, recruiters, filters, setFilters }) => {
+const JobListing = ({
+  data,
+  groupedJobs,
+  hiringManagers,
+  recruiters,
+  filters,
+  setFilters,
+}) => {
   const { auth } = useAuth();
   const { count, results } = data;
   const navigate = useNavigate();
@@ -53,6 +60,9 @@ const JobListing = ({ data, groupedJobs, hiringManagers, recruiters, filters, se
           label: getJobLabel(job.name),
           ...(job.specialization && {
             function: job.specialization,
+          }),
+          ...(job.is_diversity_hiring && {
+            is_diversity_hiring: job.is_diversity_hiring,
           }),
         },
       },
@@ -245,30 +255,30 @@ const JobListing = ({ data, groupedJobs, hiringManagers, recruiters, filters, se
 
       {/* Job List */}
       {count ? (
-         <>
-         <div className="w-full flex flex-col gap-2">
-           {results.map((job, index) => (
-             <JobCard
-               key={job.id || index}
-               job={job}
-               onView={handleShowJobDetails}
-               onEdit={handleAddJobClick}
-               onArchive={handleArchiveModalOpen}
-               onAddCandidate={handleAddCandidateClick}
-             />
-           ))}
-         </div>
- 
-         <Pagination
-           count={Math.ceil(count / 10)}
-           className="mt-4 flex justify-end"
-           onChange={(e, page) => handleChangePage(page)}
-           variant="outlined"
-           size="small"
-           shape="rounded"
-           page={currentPage}
-         />
-       </>  
+        <>
+          <div className="w-full flex flex-col gap-2">
+            {results.map((job, index) => (
+              <JobCard
+                key={job.id || index}
+                job={job}
+                onView={handleShowJobDetails}
+                onEdit={handleAddJobClick}
+                onArchive={handleArchiveModalOpen}
+                onAddCandidate={handleAddCandidateClick}
+              />
+            ))}
+          </div>
+
+          <Pagination
+            count={Math.ceil(count / 10)}
+            className="mt-4 flex justify-end"
+            onChange={(e, page) => handleChangePage(page)}
+            variant="outlined"
+            size="small"
+            shape="rounded"
+            page={currentPage}
+          />
+        </>
       ) : (
         <Empty description="No Jobs Found" />
       )}
