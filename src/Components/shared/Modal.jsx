@@ -22,7 +22,7 @@ const Modal = ({
           ].includes(title)
             ? "top-[10%]"
             : "top-[20%]"
-        } left-[40%] transform -translate-x-1/2 overflow-y-auto max-h-[90vh] ${className}`}
+        } left-[40%] transform -translate-x-1/2 overflow-y-auto max-h-[85vh] ${className}`}
         initial={{ opacity: 0, scale: 0.9 }} // Start hidden & small
         animate={{ opacity: 1, scale: 1 }} // Fully visible & normal size
         exit={{ opacity: 0, scale: 0.9 }} // Shrink and fade out
