@@ -94,7 +94,14 @@ const SkillItem = ({
           <Controller
             control={control}
             name={`skills.${skillIndex}.skillName`}
-            rules={{ required: "Skill name is required" }}
+            rules={{
+              required: "Skill name is required",
+              minLength: {
+                value: 3,
+                message:
+                  "Skill name must be at least 3 characters",
+              },
+            }}
             render={({ field }) => (
               <input
                 className="w-full px-3 py-2 text-xs text-[#49454F] rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
@@ -198,7 +205,14 @@ const SkillItem = ({
         <Controller
           control={control}
           name={`skills.${skillIndex}.summary`}
-          rules={{ required: "Summary is required" }}
+          rules={{
+            required: "Summary is required",
+            minLength: {
+              value: 10,
+              message:
+                "Skill name must be at least 10 characters",
+            },
+          }}
           render={({ field }) => (
             <textarea
               className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
@@ -310,7 +324,14 @@ const QuestionAnswerPair = ({
         <Controller
           control={control}
           name={`skills.${skillIndex}.questions.${questionIndex}.question`}
-          rules={{ required: "Question is required" }}
+          rules={{
+            required: "Question is required",
+            minLength: {
+              value: 10,
+              message:
+                "Skill name must be at least 10 characters",
+            },
+          }}
           render={({ field }) => (
             <textarea
               className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
@@ -369,7 +390,14 @@ const QuestionAnswerPair = ({
         <Controller
           control={control}
           name={`skills.${skillIndex}.questions.${questionIndex}.answer`}
-          rules={{ required: "Answer is required" }}
+          rules={{
+            required: "Answer is required",
+            minLength: {
+              value: 10,
+              message:
+                "Skill name must be at least 10 characters",
+            },
+          }}
           render={({ field }) => (
             <textarea
               className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
