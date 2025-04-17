@@ -19,7 +19,6 @@ import {
 } from "../../../Constants/constants";
 import { useForm, Controller } from "react-hook-form";
 import { LightTooltip } from "../../../shared/LightTooltip";
-import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 import useAuth from "../../../../hooks/useAuth";
 import toast from "react-hot-toast";
 
@@ -37,9 +36,7 @@ export const ResumeTable = ({
     {/* Fixed header */}
     <div className="sticky top-0 bg-white z-10 pb-3">
       {/* Always use 8 columns since we're always showing gender now */}
-      <div
-        className="grid grid-cols-8 text-[#6B6F7B] font-bold text-2xs text-left"
-      >
+      <div className="grid grid-cols-8 text-[#6B6F7B] font-bold text-2xs text-left">
         <div className="px-3 col-span-1">Name</div>
         <div
           className={`px-3 col-span-1 flex items-center ${
@@ -116,7 +113,6 @@ const ResumeTableRow = ({
   isDiversityHiring,
 }) => {
   const { auth } = useAuth();
-  const navigateTo = useRoleBasedNavigate();
   const isClient = ROLES.CLIENT.includes(auth?.role);
 
   // Initialize React Hook Form
@@ -261,7 +257,9 @@ const ResumeTableRow = ({
     if (!validateFields()) return;
 
     if (isDiversityHiring && formData.gender === "M") {
-      toast.error("For diversity hiring, only Female and Others are allowed");
+      toast.error(
+        "For diversity hiring, only Female and Others are allowed"
+      );
       return;
     }
 
@@ -291,7 +289,9 @@ const ResumeTableRow = ({
       if (!validateFields()) return;
 
       if (isDiversityHiring && formData.gender === "M") {
-        toast.error("For diversity hiring, only Female and Others are allowed");
+        toast.error(
+          "For diversity hiring, only Female and Others are allowed"
+        );
         return;
       }
 
@@ -318,7 +318,7 @@ const ResumeTableRow = ({
         // Always include gender in encodedData
         gender: formData.gender,
       };
-      
+
       delete encodedData.id;
       delete encodedData.file;
 
@@ -337,24 +337,18 @@ const ResumeTableRow = ({
         JSON.stringify(encodedData)
       );
       const url = `candidates/schedule-interview?key=${uniqueKey}`;
+      const newTab = window.open(
+        `${isClient ? "/client/" : "/agency/"}${url}`,
+        "_blank"
+      );
 
-      // if data length is more than 1 then open in new tab, else open in same tab
-      if (data.length > 1) {
-        const newTab = window.open(
-          `${isClient ? "/client/" : "/agency/"}${url}`,
-          "_blank"
-        );
-
-        // Check if the new tab was successfully opened
-        if (newTab) {
-          // Remove the candidate from the data after a slight delay
-          // to ensure the data is available in the new tab
-          setTimeout(() => {
-            window.removeCandidateFromData(uniqueKey);
-          }, 500);
-        }
-      } else {
-        navigateTo(url);
+      // Check if the new tab was successfully opened
+      if (newTab) {
+        // Remove the candidate from the data after a slight delay
+        // to ensure the data is available in the new tab
+        setTimeout(() => {
+          window.removeCandidateFromData(uniqueKey);
+        }, 500);
       }
     }
   );
@@ -384,9 +378,7 @@ const ResumeTableRow = ({
   return (
     <div className="mb-3">
       {/* Main row with grid layout - always use 8 columns now */}
-      <div
-        className="grid grid-cols-8 text-2xs text-left items-center text-[#313A4E]"
-      >
+      <div className="grid grid-cols-8 text-2xs text-left items-center text-[#313A4E]">
         {editingRowId === item.id ? (
           <>
             <div className="px-3 col-span-1">

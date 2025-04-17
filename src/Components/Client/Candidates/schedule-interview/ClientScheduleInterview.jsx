@@ -104,6 +104,12 @@ function ClientScheduleInterview() {
   const [candidateId, setCandidateId] = useState(null); // Track candidate ID for retry scenarios
   const [showAlert, setShowAlert] = useState(true);
 
+  // Check if window is opened in a new tab
+  const isNewTab = useMemo(
+    () => Boolean(window.opener),
+    []
+  );
+
   // Parse query parameters to get candidate data
   const queryParams = new URLSearchParams(location.search);
   const key = queryParams.get("key");
@@ -212,6 +218,27 @@ function ClientScheduleInterview() {
     getInterviewAvailability
   );
 
+  // Function to handle navigation or window closing based on whether it's a new tab
+  const handleNavigation = () => {
+    if (isNewTab) {
+      // If opened in a new tab, communicate with the opener window and close this tab
+      if (window.opener && !window.opener.closed && key) {
+        // Notify the opener to remove the candidate from its data
+        window.opener.removeCandidateFromData(key);
+        // Close this tab after a slight delay
+        setTimeout(() => {
+          window.close();
+        }, 500);
+      } else {
+        // If opener is not available, just close the window
+        window.close();
+      }
+    } else {
+      // If not in a new tab, just navigate to the candidates page
+      navigateTo("candidates");
+    }
+  };
+
   // API mutation for scheduling interview (improved error handling)
   const scheduleInterviewMutation = useMutation({
     mutationFn: scheduleInterview,
@@ -219,7 +246,7 @@ function ClientScheduleInterview() {
       toast.success(
         "Scheduling initiated successfully. You will be notified shortly."
       );
-      navigateTo("candidates");
+      handleNavigation();
     },
     onError: (error) => {
       let errorToShow = "Failed to schedule interview";
@@ -305,7 +332,7 @@ function ClientScheduleInterview() {
           setShowSchedulingErrorModal(true);
         }
       } else {
-        navigateTo("candidates");
+        handleNavigation();
       }
     },
     onError: (error) => {
@@ -346,7 +373,7 @@ function ClientScheduleInterview() {
     setShowSchedulingErrorModal(false);
     setSchedulingError(null);
     toast.success("Candidate saved successfully");
-    navigateTo("candidates");
+    handleNavigation();
   };
 
   // Handle form submission
@@ -358,7 +385,7 @@ function ClientScheduleInterview() {
     // Skip API call if no changes for existing candidate
     if (item?.id && !hasChanges && !scheduleNow) {
       toast.success("No changes to save");
-      navigateTo("candidates");
+      handleNavigation();
       return;
     }
 
@@ -392,7 +419,7 @@ function ClientScheduleInterview() {
       // No changes and not scheduling, just navigate away
       else {
         toast.info("No changes to save");
-        navigateTo("candidates");
+        handleNavigation();
       }
     } else {
       // New candidate: include all fields
@@ -440,9 +467,14 @@ function ClientScheduleInterview() {
     if (item?.id) {
       setOpenDeleteModal(true);
     } else {
-      if (window.opener) {
-        window.opener.removeCandidateFromData(key);
-        window.close();
+      if (isNewTab) {
+        // If in a new tab and candidate doesn't have an ID yet
+        if (window.opener) {
+          window.opener.removeCandidateFromData(key);
+          window.close();
+        } else {
+          window.close();
+        }
       } else {
         navigateTo("candidates");
       }
