@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import PropTypes from "prop-types";
 import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -491,18 +492,19 @@ function ClientScheduleInterview() {
       return false;
     }
 
-    // Parse the timestamp (handling ISO format with timezone)
-    const lastScheduledTime = new Date(
-      item.last_scheduled_initiate_time
-    );
-    const currentTime = new Date();
+    // // Parse the timestamp (handling ISO format with timezone)
+    // const lastScheduledTime = new Date(
+    //   item.last_scheduled_initiate_time
+    // );
+    // const currentTime = new Date();
 
     // Calculate difference in minutes
-    const diffInMs = currentTime - lastScheduledTime;
-    const diffInMinutes = diffInMs / (1000 * 60);
+    // const diffInMs = currentTime - lastScheduledTime;
+    // const diffInMinutes = diffInMs / (1000 * 60);
 
     // Return true if less than 70 minutes have passed (button should be disabled)
-    return diffInMinutes < 70;
+    // return diffInMinutes < 70;
+    return false;
   };
 
   const handleTimerComplete = () => {
@@ -618,8 +620,8 @@ function ClientScheduleInterview() {
               <button
                 type="button"
                 disabled={
-                  !selectedWindow ||
-                  isConfirmButtonDisabled()
+                  !selectedWindow
+                  // isConfirmButtonDisabled()
                 }
                 className={`w-32 primary-button uppercase h-8`}
                 onClick={() => {
@@ -654,10 +656,10 @@ function ClientScheduleInterview() {
                 )}
               </button>
             </div>
-            <TimeRemainingComponent
+            {/* <TimeRemainingComponent
               time={item?.last_scheduled_initiate_time}
               onTimerComplete={handleTimerComplete}
-            />
+            /> */}
           </form>
         </div>
       </div>
