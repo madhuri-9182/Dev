@@ -101,13 +101,17 @@ const SkillItem = ({
                 message:
                   "Skill name must be at least 2 characters",
               },
+              maxLength: {
+                value: 95,
+                message:
+                  "Skill name cannot be more than 100 characters",
+              },
             }}
             render={({ field }) => (
               <input
                 className="w-full px-3 py-2 text-xs text-[#49454F] rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 placeholder="Skill Name"
                 {...field}
-                maxLength={100}
               />
             )}
           />
@@ -212,13 +216,17 @@ const SkillItem = ({
               message:
                 "Summary must be at least 2 characters",
             },
+            maxLength: {
+              value: 950,
+              message:
+                "Summary cannot be more than 1000 characters",
+            },
           }}
           render={({ field }) => (
             <textarea
               className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
               placeholder="Add Summary"
               rows={4}
-              maxLength={1000}
               {...field}
             />
           )}
@@ -331,6 +339,11 @@ const QuestionAnswerPair = ({
               message:
                 "Question must be at least 2 characters",
             },
+            maxLength: {
+              value: 950,
+              message:
+                "Question cannot be more than 1000 characters",
+            },
           }}
           render={({ field }) => (
             <textarea
@@ -338,7 +351,6 @@ const QuestionAnswerPair = ({
               placeholder="Question"
               rows={TEXTAREA_CONFIG.INITIAL_ROWS}
               style={textareaStyle}
-              maxLength={1000}
               {...field}
               ref={(el) => {
                 field.ref(el);
@@ -397,6 +409,11 @@ const QuestionAnswerPair = ({
               message:
                 "Answer must be at least 2 characters",
             },
+            maxLength: {
+              value: 4900,
+              message:
+                "Answer cannot be more than 5000 characters",
+            },
           }}
           render={({ field }) => (
             <textarea
@@ -404,7 +421,6 @@ const QuestionAnswerPair = ({
               placeholder="Answer"
               rows={TEXTAREA_CONFIG.INITIAL_ROWS}
               style={textareaStyle}
-              maxLength={5000}
               {...field}
               ref={(el) => {
                 field.ref(el);

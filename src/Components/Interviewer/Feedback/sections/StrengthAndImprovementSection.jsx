@@ -20,6 +20,11 @@ const StrengthAndImprovementSection = ({
         placeholder="Please provide the Strength of the candidate"
         {...register("strength", {
           required: "Candidate's strength is required",
+          maxLength: {
+            value: 450,
+            message:
+              "Candidate's Strength cannot be more than 450 characters",
+          },
         })}
         error={errors.strength}
         maxLength={450}
@@ -29,6 +34,11 @@ const StrengthAndImprovementSection = ({
         placeholder="Please provide the Improvement point of the candidate"
         {...register("improvementPoints", {
           required: "Improvement points are required",
+          maxLength: {
+            value: 450,
+            message:
+              "Improvement points cannot be more than 450 characters",
+          },
         })}
         error={errors.improvementPoints}
         maxLength={450}
