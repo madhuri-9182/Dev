@@ -210,7 +210,7 @@ const SkillItem = ({
             minLength: {
               value: 10,
               message:
-                "Skill name must be at least 10 characters",
+                "Summary must be at least 10 characters",
             },
           }}
           render={({ field }) => (
@@ -329,7 +329,7 @@ const QuestionAnswerPair = ({
             minLength: {
               value: 10,
               message:
-                "Skill name must be at least 10 characters",
+                "Question must be at least 10 characters",
             },
           }}
           render={({ field }) => (
@@ -395,7 +395,7 @@ const QuestionAnswerPair = ({
             minLength: {
               value: 10,
               message:
-                "Skill name must be at least 10 characters",
+                "Answer must be at least 10 characters",
             },
           }}
           render={({ field }) => (
