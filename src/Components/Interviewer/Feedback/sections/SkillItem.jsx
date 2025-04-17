@@ -97,9 +97,9 @@ const SkillItem = ({
             rules={{
               required: "Skill name is required",
               minLength: {
-                value: 3,
+                value: 2,
                 message:
-                  "Skill name must be at least 3 characters",
+                  "Skill name must be at least 2 characters",
               },
             }}
             render={({ field }) => (
@@ -208,9 +208,9 @@ const SkillItem = ({
           rules={{
             required: "Summary is required",
             minLength: {
-              value: 10,
+              value: 2,
               message:
-                "Summary must be at least 10 characters",
+                "Summary must be at least 2 characters",
             },
           }}
           render={({ field }) => (
@@ -327,9 +327,9 @@ const QuestionAnswerPair = ({
           rules={{
             required: "Question is required",
             minLength: {
-              value: 10,
+              value: 2,
               message:
-                "Question must be at least 10 characters",
+                "Question must be at least 2 characters",
             },
           }}
           render={({ field }) => (
@@ -393,9 +393,9 @@ const QuestionAnswerPair = ({
           rules={{
             required: "Answer is required",
             minLength: {
-              value: 10,
+              value: 2,
               message:
-                "Answer must be at least 10 characters",
+                "Answer must be at least 2 characters",
             },
           }}
           render={({ field }) => (
