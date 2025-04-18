@@ -395,10 +395,98 @@ const Feedback = () => {
     return true;
   };
 
+  // Validate skill evaluations (both default and additional)
+  const validateSkillEvaluations = (formData) => {
+    let isValid = true;
+
+    // Check if communication rating is missing
+    if (!formData.skillEvaluation.communication) {
+      setValue("skillEvaluation.communication", "", {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+      isValid = false;
+    }
+
+    // Check if attitude rating is missing
+    if (!formData.skillEvaluation.attitude) {
+      setValue("skillEvaluation.attitude", "", {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+      isValid = false;
+    }
+
+    // Check additional skill evaluations
+    if (
+      formData.skillEvaluation.additional &&
+      formData.skillEvaluation.additional.length > 0
+    ) {
+      formData.skillEvaluation.additional.forEach(
+        (item, index) => {
+          if (!item.rating) {
+            setValue(
+              `skillEvaluation.additional.${index}.rating`,
+              "",
+              {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+              }
+            );
+            isValid = false;
+          }
+        }
+      );
+    }
+
+    if (!isValid) {
+      // Find and focus the first skill evaluation error
+      let firstErrorElement;
+
+      if (!formData.skillEvaluation.communication) {
+        firstErrorElement = document.querySelector(
+          '[data-error-key="skillEvaluation.communication"]'
+        );
+      } else if (!formData.skillEvaluation.attitude) {
+        firstErrorElement = document.querySelector(
+          '[data-error-key="skillEvaluation.attitude"]'
+        );
+      } else {
+        // Find the first additional skill with missing rating
+        const firstMissingIndex =
+          formData.skillEvaluation.additional.findIndex(
+            (item) => !item.rating
+          );
+        if (firstMissingIndex >= 0) {
+          firstErrorElement = document.querySelector(
+            `[data-error-key="skillEvaluation.additional.${firstMissingIndex}.rating"]`
+          );
+        }
+      }
+
+      if (firstErrorElement) {
+        scrollToAndFocusElement(firstErrorElement);
+      }
+
+      toast.error("Please rate all skill evaluations");
+      return false;
+    }
+
+    return true;
+  };
+
   // Form submission handler
   const onSubmit = (data) => {
     // Validate skill scores
     if (!validateSkillScores(data)) {
+      return;
+    }
+
+    // Validate skill evaluations
+    if (!validateSkillEvaluations(data)) {
       return;
     }
 
@@ -414,19 +502,29 @@ const Feedback = () => {
     // First, trigger form validation
     const isFormValid = await trigger();
 
-    // If form validation passes, then check skill scores
+    // If form validation passes, then check skill scores and evaluations
     if (isFormValid) {
       const values = getValues();
-      if (validateSkillScores(values)) {
-        const transformedData = transformFormData(
-          values,
-          interviewId
-        );
-        mutate({
-          id: interviewId,
-          data: transformedData,
-        });
+
+      // First validate skill scores
+      if (!validateSkillScores(values)) {
+        return;
       }
+
+      // Then validate skill evaluations
+      if (!validateSkillEvaluations(values)) {
+        return;
+      }
+
+      // If all validations pass, submit the form
+      const transformedData = transformFormData(
+        values,
+        interviewId
+      );
+      mutate({
+        id: interviewId,
+        data: transformedData,
+      });
     } else {
       // Use our custom error handler to focus on the first error
       handleErrors();
@@ -493,6 +591,7 @@ const Feedback = () => {
           control={control}
           setValue={setValue}
           errors={errors}
+          register={register}
         />
 
         <StrengthAndImprovementSection

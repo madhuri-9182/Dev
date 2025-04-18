@@ -11,6 +11,7 @@ const SkillEvaluationSection = ({
   control,
   setValue,
   errors,
+  register, // Add this prop to register form fields
 }) => {
   // Use fieldArray for dynamic skill evaluations
   const {
@@ -61,6 +62,32 @@ const SkillEvaluationSection = ({
     }
   }, [skillEvaluation]);
 
+  // Register validation for communication and attitude
+  useEffect(() => {
+    // Register required validation for default fields
+    register("skillEvaluation.communication", {
+      required: "Communication rating is required",
+    });
+    register("skillEvaluation.attitude", {
+      required: "Attitude rating is required",
+    });
+  }, [register]);
+
+  // Register validation for additional skills when they change
+  useEffect(() => {
+    if (evaluationFields && evaluationFields.length > 0) {
+      evaluationFields.forEach((field, index) => {
+        // Register required validation for each additional skill's rating
+        register(
+          `skillEvaluation.additional.${index}.rating`,
+          {
+            required: "Rating is required",
+          }
+        );
+      });
+    }
+  }, [evaluationFields, register]);
+
   const ratingOptions = [
     "Poor",
     "Average",
@@ -104,6 +131,16 @@ const SkillEvaluationSection = ({
           { name: newSkillName.trim(), rating: "" },
         ],
       }));
+
+      // Register validation for the new field immediately
+      const newIndex = evaluationFields.length;
+      register(
+        `skillEvaluation.additional.${newIndex}.rating`,
+        {
+          required: "Rating is required",
+        }
+      );
+
       setIsAddingSkill(false);
       setNewSkillName("");
     }
@@ -205,6 +242,22 @@ const SkillEvaluationSection = ({
     }
   };
 
+  // Helper to check if an element has an error
+  const hasError = (path) => {
+    if (!errors) return false;
+
+    // Split the path and traverse the errors object
+    const parts = path.split(".");
+    let current = errors;
+
+    for (const part of parts) {
+      if (!current[part]) return false;
+      current = current[part];
+    }
+
+    return true;
+  };
+
   return (
     <FormSection
       title="Skill Evaluation"
@@ -214,7 +267,11 @@ const SkillEvaluationSection = ({
       <div className="space-y-6">
         {/* Communication (default) */}
         <div
-          className="p-4 bg-white rounded-xl border border-gray-300"
+          className={`p-4 bg-white rounded-xl border ${
+            hasError("skillEvaluation.communication")
+              ? "border-[#B10E0EE5]"
+              : "border-gray-300"
+          }`}
           data-error-section="skillEvaluation.communication"
         >
           <h3 className="text-md font-semibold mb-2">
@@ -254,7 +311,7 @@ const SkillEvaluationSection = ({
               </button>
             ))}
           </div>
-          {errors.skillEvaluation?.communication && (
+          {errors?.skillEvaluation?.communication && (
             <div className="text-[#B10E0EE5] text-2xs mt-2">
               Communication rating is required
             </div>
@@ -263,7 +320,11 @@ const SkillEvaluationSection = ({
 
         {/* Attitude (default) */}
         <div
-          className="p-4 bg-white rounded-xl border-gray-300 border"
+          className={`p-4 bg-white rounded-xl border ${
+            hasError("skillEvaluation.attitude")
+              ? "border-[#B10E0EE5]"
+              : "border-gray-300"
+          }`}
           data-error-section="skillEvaluation.attitude"
         >
           <h3 className="text-md font-semibold mb-2">
@@ -301,7 +362,7 @@ const SkillEvaluationSection = ({
               </button>
             ))}
           </div>
-          {errors.skillEvaluation?.attitude && (
+          {errors?.skillEvaluation?.attitude && (
             <div className="text-[#B10E0EE5] text-2xs mt-2">
               Attitude rating is required
             </div>
@@ -312,7 +373,13 @@ const SkillEvaluationSection = ({
         {evaluationFields.map((field, index) => (
           <div
             key={field.id}
-            className="p-4 bg-white rounded-xl border-gray-300 border"
+            className={`p-4 bg-white rounded-xl border ${
+              hasError(
+                `skillEvaluation.additional.${index}.rating`
+              )
+                ? "border-[#B10E0EE5]"
+                : "border-gray-300"
+            }`}
             data-error-section={`skillEvaluation.additional.${index}`}
           >
             {editingIndex === index ? (
@@ -400,7 +467,13 @@ const SkillEvaluationSection = ({
                             ? "white"
                             : "#00000099",
                       }}
-                      className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
+                      className={`px-6 py-2 text-default rounded-md hover:bg-gray-300 ${
+                        hasError(
+                          `skillEvaluation.additional.${index}.rating`
+                        )
+                          ? "ring-1 ring-[#B10E0EE5]"
+                          : ""
+                      }`}
                       onClick={() =>
                         handleRatingClick(
                           "additional",
@@ -414,8 +487,9 @@ const SkillEvaluationSection = ({
                     </button>
                   ))}
                 </div>
-                {errors.skillEvaluation?.additional?.[index]
-                  ?.rating && (
+                {errors?.skillEvaluation?.additional?.[
+                  index
+                ]?.rating && (
                   <div className="text-[#B10E0EE5] text-2xs mt-2">
                     Rating is required
                   </div>
@@ -482,6 +556,7 @@ SkillEvaluationSection.propTypes = {
   control: PropTypes.object.isRequired,
   setValue: PropTypes.func.isRequired,
   errors: PropTypes.object,
+  register: PropTypes.func.isRequired, // Add this prop type
 };
 
 export default SkillEvaluationSection;
