@@ -13,6 +13,9 @@ import {
 } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+// Import our custom hook for error handling
+import { useFormErrorHandler } from "./hooks/useErrorFormHandler";
+
 import {
   getCandidateFeedback,
   updateCandidateFeedback,
@@ -162,8 +165,12 @@ const Feedback = () => {
     trigger,
   } = useForm({
     defaultValues: DEFAULT_FORM_VALUES,
-    mode: "onSubmit",
+    mode: "onChange",
   });
+
+  // Use our custom error handling hook
+  const { handleErrors, scrollToAndFocusElement } =
+    useFormErrorHandler(errors);
 
   // Set up field array for skills
   const {
@@ -360,6 +367,25 @@ const Feedback = () => {
         });
       });
 
+      // Find and focus the first invalid skill score
+      if (invalidSkills.length > 0) {
+        // Get the index of the first invalid skill
+        const firstInvalidIndex = formData.skills.findIndex(
+          (skill) =>
+            skill.skillName &&
+            (skill.score === 0 || skill.score === "0")
+        );
+
+        // Find and focus the score element
+        const scoreElement = document.querySelector(
+          `[data-error-key="skills.${firstInvalidIndex}.score"]`
+        );
+
+        if (scoreElement) {
+          scrollToAndFocusElement(scoreElement);
+        }
+      }
+
       toast.error(
         "All skills must have a score greater than 0"
       );
@@ -402,10 +428,8 @@ const Feedback = () => {
         });
       }
     } else {
-      // Show error toast if form validation fails
-      toast.error(
-        "Please fix form errors before submitting"
-      );
+      // Use our custom error handler to focus on the first error
+      handleErrors();
     }
   };
 

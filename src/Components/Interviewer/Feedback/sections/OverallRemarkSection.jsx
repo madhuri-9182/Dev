@@ -32,6 +32,7 @@ const OverallRemarkSection = ({
                 <Select
                   label="Overall Remark"
                   options={remarkOptions}
+                  data-error-key="overallRemark"
                   {...field}
                 />
                 {errors.overallRemark && (
@@ -51,6 +52,7 @@ const OverallRemarkSection = ({
             type="number"
             className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 outline-none bg-[#b0b0b03a] opacity-50 cursor-not-allowed"
             readOnly
+            data-error-key="score"
             {...register("score", {
               required: "Score is required",
             })}

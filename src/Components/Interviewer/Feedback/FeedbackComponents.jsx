@@ -77,12 +77,17 @@ FormField.propTypes = {
 
 export const Input = React.forwardRef(
   ({ label, placeholder, error, ...props }, ref) => {
+    // Extract the name from props for data attributes
+    const { name } = props;
+
     return (
       <FormField label={label}>
         <input
           ref={ref}
           className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none disabled:cursor-not-allowed disabled:bg-[#b0b0b03a] disabled:opacity-50"
           placeholder={placeholder}
+          // Add data attribute for error handling
+          data-error-key={name}
           {...props}
         />
         {error && (
@@ -99,10 +104,14 @@ Input.propTypes = {
   label: PropTypes.string,
   placeholder: PropTypes.string,
   error: PropTypes.object,
+  name: PropTypes.string,
 };
 
 export const TextArea = React.forwardRef(
   ({ label, placeholder, error, ...props }, ref) => {
+    // Extract the name from props for data attributes
+    const { name } = props;
+
     return (
       <FormField label={label}>
         <textarea
@@ -110,6 +119,8 @@ export const TextArea = React.forwardRef(
           className="w-full px-3 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
           placeholder={placeholder}
           rows={4}
+          // Add data attribute for error handling
+          data-error-key={name}
           {...props}
         />
         {error && (
@@ -122,11 +133,21 @@ export const TextArea = React.forwardRef(
   }
 );
 
+TextArea.propTypes = {
+  label: PropTypes.string,
+  placeholder: PropTypes.string,
+  error: PropTypes.object,
+  name: PropTypes.string,
+};
+
 export const Select = React.forwardRef(
   (
     { label, options, error, value, onChange, ...props },
     ref
   ) => {
+    // Extract the name from props for data attributes
+    const { name } = props;
+
     // Find the selected option based on the form value
     const selectedOption = options.find(
       (option) => option.id === value
@@ -146,6 +167,8 @@ export const Select = React.forwardRef(
             <Listbox.Button
               ref={ref}
               className="w-full px-3 py-2 text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
+              // Add data attribute for error handling
+              data-error-key={name}
             >
               <span className="block truncate">
                 {selectedOption?.name || "Select an option"}
@@ -204,3 +227,12 @@ export const Select = React.forwardRef(
     );
   }
 );
+
+Select.propTypes = {
+  label: PropTypes.string,
+  options: PropTypes.array,
+  error: PropTypes.object,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  name: PropTypes.string,
+};

@@ -86,7 +86,10 @@ const SkillItem = ({
   };
 
   return (
-    <div className="bg-[#E8F0F5] p-6 rounded-lg mb-6">
+    <div
+      className="bg-[#E8F0F5] p-6 rounded-lg mb-6"
+      data-error-section={`skills.${skillIndex}`}
+    >
       {/* Header with skill name and score */}
       <div className="flex justify-between items-center mb-4">
         {/* Skill name input */}
@@ -111,6 +114,7 @@ const SkillItem = ({
               <input
                 className="w-full px-3 py-2 text-xs text-[#49454F] rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 placeholder="Skill Name"
+                data-error-key={`skills.${skillIndex}.skillName`}
                 {...field}
               />
             )}
@@ -146,6 +150,7 @@ const SkillItem = ({
                         ? true
                         : false
                     }
+                    errorKey={`skills.${skillIndex}.score`}
                   />
                 )}
               />
@@ -227,6 +232,7 @@ const SkillItem = ({
               className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
               placeholder="Add Summary"
               rows={4}
+              data-error-key={`skills.${skillIndex}.summary`}
               {...field}
             />
           )}
@@ -248,7 +254,12 @@ const SkillItem = ({
 export default SkillItem;
 
 // Component for the score slider
-const ScoreSlider = ({ value, onChange, hasError }) => {
+const ScoreSlider = ({
+  value,
+  onChange,
+  hasError,
+  errorKey,
+}) => {
   // Calculate the color based on the current value
   const trackColor = hasError
     ? "#ffb4b4"
@@ -296,6 +307,7 @@ const ScoreSlider = ({ value, onChange, hasError }) => {
           }
           className="absolute w-full h-5 opacity-0 cursor-pointer z-20"
           aria-label="Skill proficiency score"
+          data-error-key={errorKey}
         />
       </div>
 
@@ -351,6 +363,7 @@ const QuestionAnswerPair = ({
               placeholder="Question"
               rows={TEXTAREA_CONFIG.INITIAL_ROWS}
               style={textareaStyle}
+              data-error-key={`skills.${skillIndex}.questions.${questionIndex}.question`}
               {...field}
               ref={(el) => {
                 field.ref(el);
@@ -421,6 +434,7 @@ const QuestionAnswerPair = ({
               placeholder="Answer"
               rows={TEXTAREA_CONFIG.INITIAL_ROWS}
               style={textareaStyle}
+              data-error-key={`skills.${skillIndex}.questions.${questionIndex}.answer`}
               {...field}
               ref={(el) => {
                 field.ref(el);
@@ -459,6 +473,7 @@ ScoreSlider.propTypes = {
   value: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   hasError: PropTypes.bool,
+  errorKey: PropTypes.string,
 };
 QuestionAnswerPair.propTypes = {
   skillIndex: PropTypes.number.isRequired,

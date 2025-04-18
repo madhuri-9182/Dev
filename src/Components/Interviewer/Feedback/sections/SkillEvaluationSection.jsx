@@ -213,7 +213,10 @@ const SkillEvaluationSection = ({
     >
       <div className="space-y-6">
         {/* Communication (default) */}
-        <div className="p-4 bg-white rounded-xl border border-gray-300">
+        <div
+          className="p-4 bg-white rounded-xl border border-gray-300"
+          data-error-section="skillEvaluation.communication"
+        >
           <h3 className="text-md font-semibold mb-2">
             Communication
           </h3>
@@ -245,6 +248,7 @@ const SkillEvaluationSection = ({
                     rating
                   )
                 }
+                data-error-key="skillEvaluation.communication"
               >
                 {rating}
               </button>
@@ -258,7 +262,10 @@ const SkillEvaluationSection = ({
         </div>
 
         {/* Attitude (default) */}
-        <div className="p-4 bg-white rounded-xl border-gray-300 border">
+        <div
+          className="p-4 bg-white rounded-xl border-gray-300 border"
+          data-error-section="skillEvaluation.attitude"
+        >
           <h3 className="text-md font-semibold mb-2">
             Attitude
           </h3>
@@ -288,6 +295,7 @@ const SkillEvaluationSection = ({
                     rating
                   )
                 }
+                data-error-key="skillEvaluation.attitude"
               >
                 {rating}
               </button>
@@ -305,6 +313,7 @@ const SkillEvaluationSection = ({
           <div
             key={field.id}
             className="p-4 bg-white rounded-xl border-gray-300 border"
+            data-error-section={`skillEvaluation.additional.${index}`}
           >
             {editingIndex === index ? (
               /* Editing mode */
@@ -399,6 +408,7 @@ const SkillEvaluationSection = ({
                           rating
                         )
                       }
+                      data-error-key={`skillEvaluation.additional.${index}.rating`}
                     >
                       {rating}
                     </button>
