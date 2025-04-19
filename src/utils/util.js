@@ -143,7 +143,7 @@ export const processFileUrl = (url) => {
 };
 
 export const createFileFromUrl = async (url) => {
-  const axiosToUse = url.includes("?X-Amz-Algorithm")
+  const axiosToUse = url?.includes("?X-Amz-Algorithm")
     ? axiosFile
     : axios;
   const response = await axiosToUse.get(url, {

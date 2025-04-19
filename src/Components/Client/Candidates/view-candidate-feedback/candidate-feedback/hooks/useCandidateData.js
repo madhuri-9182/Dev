@@ -20,6 +20,8 @@ export const useCandidateData = () => {
       skillsCount: 0,
       skillsData: {},
       recording_link: "",
+      attachment: "",
+      link: "",
     };
   }
 
@@ -74,5 +76,7 @@ export const useCandidateData = () => {
         .length || 0,
     skillsData: data?.skill_based_performance || {},
     recording_link: data?.recording_link,
+    attachment: data?.attachment,
+    link: data?.link,
   };
 };

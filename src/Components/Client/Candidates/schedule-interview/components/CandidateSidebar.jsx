@@ -39,9 +39,10 @@ function CandidateSidebar({
     },
     {
       label: "Source",
-      value: CANDIDATE_SOURCE.find(
-        (source) => source.id === candidate?.source
-      )?.name,
+      value:
+        CANDIDATE_SOURCE.find(
+          (source) => source.id === candidate?.source
+        )?.name || "Internal",
     },
   ];
 
