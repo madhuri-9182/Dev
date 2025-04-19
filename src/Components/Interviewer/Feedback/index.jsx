@@ -36,6 +36,7 @@ import SkillsSection from "./sections/SkillSection";
 import SkillEvaluationSection from "./sections/SkillEvaluationSection";
 import StrengthAndImprovementSection from "./sections/StrengthAndImprovementSection";
 import OverallRemarkSection from "./sections/OverallRemarkSection";
+import ResourcesSection from "./sections/ResourcesSection"; // Import our new section
 import { REMARK_OPTIONS } from "../../Constants/constants";
 
 // Initial form state
@@ -71,6 +72,10 @@ const DEFAULT_FORM_VALUES = {
   improvementPoints: "",
   overallRemark: "",
   score: 0,
+  resources: {
+    file: null,
+    link: "",
+  },
 };
 
 // Utility functions
@@ -96,6 +101,16 @@ const transformSkillsData = (skillsData) => {
 };
 
 const transformFormData = (formData, interviewId) => {
+  // Create a new FormData instance
+  const formDataObject = new FormData();
+
+  // Add interview ID
+  formDataObject.append(
+    "interview_id",
+    String(interviewId)
+  );
+
+  // Transform skill-based performance
   const skill_based_performance = {};
 
   formData.skills.forEach((skill) => {
@@ -113,6 +128,12 @@ const transformFormData = (formData, interviewId) => {
       };
     }
   });
+
+  // Add skill-based performance as JSON string
+  formDataObject.append(
+    "skill_based_performance",
+    JSON.stringify(skill_based_performance)
+  );
 
   // Transform skill evaluation data
   const skill_evaluation = {
@@ -135,15 +156,43 @@ const transformFormData = (formData, interviewId) => {
     });
   }
 
-  return {
-    interview_id: Number(interviewId),
-    skill_based_performance,
-    skill_evaluation,
-    strength: formData.strength,
-    improvement_points: formData.improvementPoints,
-    overall_remark: formData.overallRemark,
-    overall_score: Number(formData.score),
-  };
+  // Add skill evaluation as JSON string
+  formDataObject.append(
+    "skill_evaluation",
+    JSON.stringify(skill_evaluation)
+  );
+
+  // Add other form fields - ensure all values are strings
+  formDataObject.append(
+    "strength",
+    formData.strength || ""
+  );
+  formDataObject.append(
+    "improvement_points",
+    formData.improvementPoints || ""
+  );
+  formDataObject.append(
+    "overall_remark",
+    formData.overallRemark || ""
+  );
+  formDataObject.append(
+    "overall_score",
+    String(formData.score || 0)
+  );
+
+  // Add the file if it exists
+  if (formData.resources.file) {
+    formDataObject.append(
+      "attachment",
+      formData.resources.file
+    );
+  }
+
+  // Add the link if it exists
+  if (formData.resources.link) {
+    formDataObject.append("link", formData.resources.link);
+  }
+  return formDataObject;
 };
 
 // Main Form Component
@@ -163,6 +212,7 @@ const Feedback = () => {
     getValues,
     reset,
     trigger,
+    watch,
   } = useForm({
     defaultValues: DEFAULT_FORM_VALUES,
     mode: "onChange",
@@ -311,6 +361,10 @@ const Feedback = () => {
           responseData?.skill_evaluation
         );
 
+      // Check if there's an attachment
+      const attachmentUrl =
+        responseData?.attachment || null;
+
       // Reset the form with all values
       reset({
         candidateDetails: {
@@ -345,6 +399,11 @@ const Feedback = () => {
           responseData?.improvement_points || "",
         overallRemark: responseData?.overall_remark || "",
         score: responseData?.overall_score || 0,
+        resources: {
+          file: null, // We'll load this using the createFileFromUrl function
+          link: responseData?.link || "",
+        },
+        attachmentUrl: attachmentUrl, // Store the attachment URL to be processed
       });
     }
   }, [data, reset, getValues]);
@@ -565,7 +624,10 @@ const Feedback = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 my-14">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
+      >
         <CandidateDetailsSection
           register={register}
           errors={errors}
@@ -605,6 +667,14 @@ const Feedback = () => {
           errors={errors}
           remarkOptions={REMARK_OPTIONS}
           isPending={isPending}
+        />
+        <ResourcesSection
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          trigger={trigger}
+          watch={watch}
+          getValues={getValues}
         />
         <div className="flex justify-end mt-6 ">
           <button
