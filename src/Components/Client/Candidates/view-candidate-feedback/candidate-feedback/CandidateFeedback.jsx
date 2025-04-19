@@ -36,36 +36,10 @@ const CandidateFeedback = () => {
     isAttachmentDownloading,
     setIsAttachmentDownloading,
   ] = useState(false);
-  const [recordingLink, setRecordingLink] = useState("");
-  const [recordingLoading, setRecordingLoading] =
-    useState(false);
-  const [recordingError, setRecordingError] =
-    useState(null);
   const [attachmentFile, setAttachmentFile] =
     useState(null);
   const [attachmentError, setAttachmentError] =
     useState(null);
-
-  useEffect(() => {
-    const fetchRecordingLink = async (url) => {
-      try {
-        setRecordingLoading(true);
-        const file = await createFileFromUrl(url);
-        setRecordingLink(file);
-        return file;
-      } catch (error) {
-        console.error("Error fetching recording:", error);
-        setRecordingError("Failed to load recording.");
-        return null;
-      } finally {
-        setRecordingLoading(false);
-      }
-    };
-
-    if (recording_link) {
-      fetchRecordingLink(recording_link);
-    }
-  }, [recording_link]);
 
   useEffect(() => {
     const fetchAttachment = async (url) => {
@@ -164,20 +138,7 @@ const CandidateFeedback = () => {
           </div>
           <div className="w-[50%] min-w-[400px] max-w-[530px]">
             <div className="w-full h-[300px]">
-              {recordingLoading ? (
-                <div className="h-full flex items-center justify-center">
-                  <CircularProgress
-                    size={40}
-                    sx={{ color: "#007AFF" }}
-                  />
-                </div>
-              ) : recordingError ? (
-                <div className="h-full flex items-center justify-center text-red-500">
-                  {recordingError}
-                </div>
-              ) : (
-                <VideoPlayer file={recordingLink} />
-              )}
+              <VideoPlayer url={recording_link} />
             </div>
             {/* Additional Resources Section */}
             {(attachment || link) && (
@@ -327,7 +288,7 @@ const CandidateFeedback = () => {
         </div>
         <InterviewFeedbackPDF
           data={state?.data}
-          recording_link={recordingLink}
+          recording_link={recording_link}
         />
       </Modal>
     </div>

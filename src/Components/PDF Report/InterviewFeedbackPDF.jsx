@@ -291,7 +291,7 @@ const InterviewFeedbackPDF = ({ data, recording_link }) => {
             ))}
           </div>
           <div className="py-[18px] pl-[10px] w-80 h-40">
-            <VideoPlayer file={recording_link} />
+            <VideoPlayer url={recording_link} />
           </div>
         </div>
 

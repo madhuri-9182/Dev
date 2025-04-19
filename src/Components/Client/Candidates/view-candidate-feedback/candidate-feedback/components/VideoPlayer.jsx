@@ -1,52 +1,58 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-const VideoPlayer = ({ file }) => {
+const VideoPlayer = ({ url }) => {
   const videoRef = useRef(null);
-  const [videoUrl, setVideoUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (file) {
-      try {
-        // Create a URL for the file object
-        const url = URL.createObjectURL(file);
-        setVideoUrl(url);
-        setIsLoading(false);
-
-        // Clean up the URL when component unmounts
-        return () => {
-          URL.revokeObjectURL(url);
-        };
-      } catch (err) {
-        console.error("Error creating video URL:", err);
-        setError("Failed to load video");
-        setIsLoading(false);
-      }
+  const processVideoUrl = (url) => {
+    if (url && url.includes("?X-Amz-Algorithm")) {
+      // It's an S3 pre-signed URL - use it directly
+      return url;
+    } else if (url) {
+      // Add localhost:8000 prefix for non-S3 URLs
+      return `http://localhost:8000${
+        url.startsWith("/") ? "" : "/"
+      }${url}`;
     }
-  }, [file]);
+    return null;
+  };
+
+  const handleLoadedData = () => {
+    setIsLoading(false);
+  };
 
   return (
-    <div className="w-full rounded-lg flex items-center justify-center">
-      {isLoading ? (
-        <div className="animate-spin rounded-full mt-8 h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : videoUrl ? (
-        <video
-          ref={videoRef}
-          className="w-full h-full object-contain border-2 border-[#49454f] rounded-lg"
-          controls
-          autoPlay={false}
-          src={videoUrl}
-        >
-          Your browser does not support the video tag.
-        </video>
-      ) : (
-        <p className="text-gray-500">
-          No video file selected
+    <div className="w-full rounded-lg flex items-center justify-center relative">
+      {!url ? (
+        <p className="text-red-500 text-xs mt-10">
+          No video available for this candidate.
         </p>
+      ) : (
+        <>
+          {isLoading && (
+            <div className="mt-10 flex items-center justify-center z-10 bg-gray-100 bg-opacity-50 rounded-lg">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          )}
+          <video
+            ref={videoRef}
+            className={`w-full h-full object-contain border-2 border-[#49454f] rounded-lg ${
+              isLoading ? "hidden" : ""
+            }`}
+            controls
+            autoPlay={false}
+            src={url ? processVideoUrl(url) : ""}
+            onError={(e) => {
+              console.error("Video playback error:", e);
+              videoRef.current.src = ""; // Clear the source on error
+            }}
+            preload="metadata"
+            onLoadedData={handleLoadedData}
+          >
+            Your browser does not support the video tag.
+          </video>
+        </>
       )}
     </div>
   );
@@ -55,8 +61,5 @@ const VideoPlayer = ({ file }) => {
 export default VideoPlayer;
 
 VideoPlayer.propTypes = {
-  file: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.instanceOf(File),
-  ]),
+  url: PropTypes.string,
 };
