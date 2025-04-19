@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import {
   getErrorMessage,
   getJobLabel,
@@ -12,6 +13,27 @@ import { fetchDashboardApi } from "../../Client/Dashboard/api";
 import { MY_AGENCY_JOBS } from "../../Client/Dashboard/constants";
 import useAuth from "../../../hooks/useAuth";
 import PropTypes from "prop-types";
+
+// Add styles for the carousel animations
+const animationStyles = `
+.slide-from-right {
+  animation: slideFromRight 300ms ease-in-out;
+}
+
+.slide-from-left {
+  animation: slideFromLeft 300ms ease-in-out;
+}
+
+@keyframes slideFromRight {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes slideFromLeft {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+`;
 
 // Extracted and reused card components
 const CardHeader = ({ title, count = null }) => (
@@ -27,42 +49,191 @@ const CardHeader = ({ title, count = null }) => (
   </div>
 );
 
-const CardItems = ({
+// Component for displaying card items with carousel - 6 items per page (3x2 grid)
+const CarouselCardItems = ({
   items,
   bgColor,
   textColor = "text-black",
   customClass = "",
-  title = "",
-}) => (
-  <div className={`shadow ${bgColor} p-6 rounded-2xl`}>
+  itemsPerPage = 6,
+}) => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationClass, setAnimationClass] = useState("");
+  const [displayedPage, setDisplayedPage] = useState(0);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+
+  // Get items for a specific page
+  const getPageItems = (pageNum) => {
+    const startIndex = pageNum * itemsPerPage;
+    return items.slice(
+      startIndex,
+      startIndex + itemsPerPage
+    );
+  };
+
+  // Handle page change
+  const changePage = (newPage) => {
+    if (newPage === currentPage || isAnimating) return;
+    setIsAnimating(true);
+
+    if (newPage > currentPage) {
+      // Going to next page (slide from right to left)
+      setAnimationClass("slide-from-right");
+    } else {
+      // Going to previous page (slide from left to right)
+      setAnimationClass("slide-from-left");
+    }
+
+    // Set page that will be shown during animation
+    setDisplayedPage(newPage);
+
+    // Small delay to allow animation to complete
+    setTimeout(() => {
+      setCurrentPage(newPage);
+      setIsAnimating(false);
+      setAnimationClass("");
+    }, 300);
+  };
+
+  // Next and previous page handlers
+  const goToNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      changePage(currentPage + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 0) {
+      changePage(currentPage - 1);
+    }
+  };
+
+  // Determine which page to show
+  const pageToShow = isAnimating
+    ? displayedPage
+    : currentPage;
+  const currentItems = getPageItems(pageToShow);
+
+  return (
     <div
-      className={`grid grid-cols-2 gap-x-16 xl:gap-x-20 gap-y-7 ${customClass} ${
-        title === "Pending Tasks" && items.length > 4
-          ? "overflow-auto hover-scrollbar"
-          : ""
-      }`}
+      className={`shadow ${bgColor} p-6 rounded-2xl relative`}
     >
-      {items.map((item, idx) => (
+      <div className="relative overflow-hidden">
         <div
-          key={idx}
-          className={`flex flex-col gap-1 ${textColor}`}
+          className={`grid grid-cols-2 gap-x-16 xl:gap-x-20 gap-y-5 ${customClass} ${animationClass}`}
+          style={{
+            minHeight: "120px",
+          }} /* Ensure consistent height */
         >
-          <p
-            className="text-2xs font-medium cursor-pointer hover:underline"
-            onClick={item.onClick}
-          >
-            {item.label}
-          </p>
-          {item.value !== undefined && (
-            <p className="text-xs font-bold">
-              {item.value}
-            </p>
-          )}
+          {currentItems.map((item, idx) => (
+            <div
+              key={`${pageToShow}-${idx}`}
+              className={`flex flex-col gap-1 ${textColor}`}
+            >
+              <p
+                className="text-2xs font-medium cursor-pointer hover:underline"
+                onClick={item.onClick}
+              >
+                {item.label}
+              </p>
+              {item.value !== undefined && (
+                <p className="text-xs font-bold">
+                  {item.value}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* Navigation controls */}
+      {totalPages > 1 && (
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center items-center gap-1 px-6">
+          {/* Left arrow button */}
+          <button
+            onClick={goToPrevPage}
+            disabled={currentPage === 0}
+            className={`flex items-center justify-center h-6 w-6 ${
+              currentPage === 0
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+            aria-label="Previous page"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={
+                textColor === "text-white"
+                  ? "white"
+                  : "#333B69"
+              }
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          {/* Pagination dots */}
+          <div className="flex justify-center gap-1">
+            {Array.from({ length: totalPages }).map(
+              (_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => changePage(idx)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    pageToShow === idx
+                      ? "bg-[#056DDC] w-4"
+                      : "bg-gray-300"
+                  }`}
+                  aria-label={`Go to page ${idx + 1}`}
+                />
+              )
+            )}
+          </div>
+
+          {/* Right arrow button */}
+          <button
+            onClick={goToNextPage}
+            disabled={currentPage === totalPages - 1}
+            className={`flex items-center justify-center h-6 w-6 ${
+              currentPage === totalPages - 1
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+            aria-label="Next page"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={
+                textColor === "text-white"
+                  ? "white"
+                  : "#333B69"
+              }
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 function TopDashboard({ onJobRoleSelect }) {
   const { auth } = useAuth();
@@ -118,16 +289,24 @@ function TopDashboard({ onJobRoleSelect }) {
 
   return (
     <div className="w-full flex gap-x-8 mb-5">
+      {/* Add the animation styles to the document */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: animationStyles,
+        }}
+      />
+
       <div className="w-2/5 flex flex-col gap-y-5">
         <CardHeader
           title={"My Jobs"}
           count={pendingTasksCount || 0}
         />
-        <CardItems
+        <CarouselCardItems
           items={pendingTasksItems}
           bgColor={lightBg}
           title="Pending Tasks"
-          customClass="h-36"
+          customClass="h-40"
+          itemsPerPage={6}
         />
       </div>
       <div className="w-3/5 flex flex-col gap-y-5">
@@ -152,7 +331,7 @@ function TopDashboard({ onJobRoleSelect }) {
                 }
                 className={`${bgColor} rounded-2xl shadow p-6 cursor-pointer transition-transform hover:scale-[1.02]`}
               >
-                <div className="h-36">
+                <div className="h-40">
                   <p className="text-[#333B69] font-medium text-2xs">
                     {item.label}
                   </p>
@@ -183,12 +362,13 @@ CardHeader.propTypes = {
   ]),
 };
 
-CardItems.propTypes = {
+CarouselCardItems.propTypes = {
   items: PropTypes.array,
   bgColor: PropTypes.string,
   textColor: PropTypes.string,
   customClass: PropTypes.string,
   title: PropTypes.string,
+  itemsPerPage: PropTypes.number,
 };
 
 export default TopDashboard;

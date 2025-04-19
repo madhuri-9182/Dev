@@ -46,6 +46,9 @@ function DashboardJobListing({ jobStatus }) {
           ...(job.specialization && {
             function: job.specialization,
           }),
+          ...(job.is_diversity_hiring && {
+            is_diversity_hiring: job.is_diversity_hiring,
+          }),
         },
       },
     });
