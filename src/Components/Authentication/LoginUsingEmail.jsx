@@ -87,18 +87,38 @@ const LoginUsingEmail = () => {
         ([_, roles]) => roles.includes(role)
       )?.[0];
 
-      const isAccessiblePath =
-        userMainRole &&
-        location.state?.from?.pathname &&
-        location.state.from.pathname.includes(
-          userMainRole.toLowerCase()
-        );
+      // Determine where to redirect the user
+      let redirectPath;
 
-      const from = isAccessiblePath
-        ? location.state.from.pathname
-        : ROLES_REDIRECTS[userMainRole];
+      // Check if we have a stored location from RequireAuth that's not the root path
+      if (
+        location.state?.from &&
+        location.state.from.pathname !== "/"
+      ) {
+        const requestedPath = location.state.from.pathname;
 
-      navigate(from, { replace: true });
+        // Check if the user has permission to access the requested path
+        // This checks if the path includes the user's role (e.g., /client/ for CLIENT role)
+        const isPathAuthorized =
+          userMainRole &&
+          (requestedPath
+            .toLowerCase()
+            .includes(userMainRole.toLowerCase()) ||
+            checkPathPermissions(requestedPath, role));
+
+        if (isPathAuthorized) {
+          // If authorized, redirect to the original page
+          redirectPath = requestedPath;
+        } else {
+          // If not authorized, redirect to role-appropriate dashboard
+          redirectPath = ROLES_REDIRECTS[userMainRole];
+        }
+      } else {
+        // If no specific page or it was the root path, redirect to role-appropriate dashboard
+        redirectPath = ROLES_REDIRECTS[userMainRole];
+      }
+
+      navigate(redirectPath, { replace: true });
     },
     onError: (error) => {
       if (!error?.response) {
@@ -112,6 +132,28 @@ const LoginUsingEmail = () => {
       }
     },
   });
+
+  const checkPathPermissions = (path, userRole) => {
+    const pathPermissions = {
+      "/agency/": ["AGENCY"],
+      "/client/": ["CLIENT"],
+      "/interviewer/": ["INTERVIEWER"],
+      "/internal/": ["INTERNAL"],
+    };
+
+    for (const [pathPrefix, allowedRoles] of Object.entries(
+      pathPermissions
+    )) {
+      if (
+        path.startsWith(pathPrefix) &&
+        !allowedRoles.includes(userRole)
+      ) {
+        return false; // User doesn't have permission
+      }
+    }
+
+    return true;
+  };
 
   // Initialize email field once when component mounts
   useEffect(() => {
