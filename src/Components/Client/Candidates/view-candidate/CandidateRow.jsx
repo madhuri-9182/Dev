@@ -175,10 +175,12 @@ StatusBadge.propTypes = {
 };
 
 const ScoreDisplay = ({ candidate, onViewCandidate }) => {
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
   if (["CSCH", "SCH"].includes(candidate?.status)) {
     return (
       <LightTooltip
-        title="Currently in-development"
+        // title="Currently in-development"
         color="#4a4459"
         placement="top"
         className="cursor-not-allowed"
@@ -191,7 +193,7 @@ const ScoreDisplay = ({ candidate, onViewCandidate }) => {
             onClick={() => {
               onViewCandidate(candidate);
             }}
-            disabled
+            disabled={!isLocalhost}
           >
             Reschedule
           </button>
