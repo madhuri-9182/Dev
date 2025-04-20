@@ -76,6 +76,7 @@ import {
 } from "./Components";
 import RootRoute from "./Components/shared/RootRoute";
 import FAQ from "./Components/shared/FAQ";
+import Recording from "./Components/recording";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -242,6 +243,11 @@ const router = createBrowserRouter(
           </Route>
         </Route>
         {/* //Internal Routes */}
+        <Route element={<RequireAuth allowedRoles={[...ROLES.AGENCY, ...ROLES.CLIENT]} />}>
+          <Route element={<Layout />}>
+            <Route path="recording/:id" element={<Recording />} />
+          </Route>
+        </Route>
         <Route
           element={
             <RequireAuth allowedRoles={ROLES.INTERNAL} />

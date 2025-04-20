@@ -142,7 +142,7 @@ const CandidateFeedback = () => {
             </div>
             {/* Additional Resources Section */}
             {(attachment || link) && (
-              <div className="mt-6 mx-6 px-4 py-3 border border-gray-200 rounded-lg">
+              <div className="mt-6 px-4 py-3 border border-gray-200 rounded-lg">
                 <h3 className="text-md text-[#6B6F7B] font-semibold mb-4">
                   Additional Resources
                 </h3>
