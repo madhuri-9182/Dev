@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import PropTypes from "prop-types";
 import Button, { primaryButtonStyles } from "./Button";
 import EventCard from "./EventCard";
@@ -10,20 +9,8 @@ export const AddTemplateButton = ({
   hasChanges,
   selectTemplate,
   handleTemplateNameChange,
+  createNewTemplate,
 }) => {
-  useEffect(() => {
-    if (isAddingNew) {
-      selectTemplate({
-        template_name: "",
-        subject: "Subject",
-        template_html_content: "Content",
-        attachment: null,
-        id: -1,
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAddingNew]);
-
   if (isAddingNew) {
     return (
       <EventCard
@@ -47,11 +34,12 @@ export const AddTemplateButton = ({
     <Button
       sx={{
         ...primaryButtonStyles,
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
+        boxShadow:
+          "0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1)",
       }}
       fullWidth
       variant="contained"
-      onClick={() => setIsAddingNew(true)}
+      onClick={createNewTemplate} // Use the new function instead
     >
       Add Template
     </Button>
@@ -65,4 +53,5 @@ AddTemplateButton.propTypes = {
   hasChanges: PropTypes.bool,
   selectTemplate: PropTypes.func,
   handleTemplateNameChange: PropTypes.func,
-}
+  createNewTemplate: PropTypes.func, // Added new prop
+};

@@ -1,5 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import {
   useAddEngagementTemplate,
   useEngagementTemplates,
@@ -34,14 +39,43 @@ Once again, welcome aboard! We're excited to have you as part of the [Your Compa
     "Welcome to [Your Company Name] – We're Excited to Have You [CANDIDATE'S FIRST NAME]!",
 };
 
+// New default state for a new template
+export const newTemplateDefault = {
+  template_name: "",
+  subject: "Subject",
+  template_html_content: "Content",
+  attachment: null,
+  id: -1,
+};
+
 export const useEmailTemplates = (editorRef) => {
-  const { data, isLoading, isError } = useEngagementTemplates({});
+  const { data, isLoading, isError } =
+    useEngagementTemplates({});
   const _templates = data?.results || [];
-  const [editorState, setEditorState] = useState(defaultEditorState);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [editorState, setEditorState] = useState(
+    defaultEditorState
+  );
+  const [selectedTemplate, setSelectedTemplate] =
+    useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [templates, setTemplates] = useState([]);
+  // Store draft template separately
+  const [draftTemplate, setDraftTemplate] = useState(
+    newTemplateDefault
+  );
+
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [
+    pendingTemplateSelection,
+    setPendingTemplateSelection,
+  ] = useState(null);
+
+  // Use this ref to track if a save operation is in progress
+  const saveInProgress = useRef(false);
+  // Use this ref to store the next template to select after saving
+  const nextTemplateAfterSave = useRef(null);
 
   const { mutate: updateMutation, isPending: isUpdating } =
     useUpdateEngagementTemplate();
@@ -49,7 +83,7 @@ export const useEmailTemplates = (editorRef) => {
     useAddEngagementTemplate();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && _templates.length > 0) {
       selectTemplate({ ..._templates[0] });
     }
   }, [isLoading]);
@@ -60,23 +94,152 @@ export const useEmailTemplates = (editorRef) => {
     }
   }, [_templates.length]);
 
-  const selectTemplate = useCallback((template) => {
-    setHasChanges(false);
-    setSelectedTemplate(template);
-    if (template) {
-      setEditorState({ ...template });
-    } else {
-      setIsAddingNew(false);
-    }
-  }, []);
+  // Handle dialog close
+  const handleDialogClose = (continueWithSelection) => {
+    setDialogOpen(false);
 
-  const handleTemplateNameChange = useCallback((value) => {
+    if (continueWithSelection && pendingTemplateSelection) {
+      // Process the template switch since user confirmed
+      processTemplateSelection(pendingTemplateSelection);
+    }
+
+    setPendingTemplateSelection(null);
+  };
+
+  // Process the actual template selection after confirmation or if no confirmation needed
+  const processTemplateSelection = useCallback(
+    (template) => {
+      setHasChanges(false);
+      setSelectedTemplate(template);
+
+      if (template) {
+        if (template.id === -1) {
+          // For a new template, use the draft state
+          setIsAddingNew(true);
+          setEditorState({ ...draftTemplate });
+        } else {
+          // For existing template
+          setIsAddingNew(false);
+          setEditorState({ ...template });
+        }
+      } else {
+        setIsAddingNew(false);
+      }
+    },
+    [draftTemplate]
+  );
+
+  // Modified to handle unsaved changes using dialog
+  const selectTemplate = useCallback(
+    (template) => {
+      // If a save operation is in progress, store this template to select after saving
+      if (saveInProgress.current) {
+        nextTemplateAfterSave.current = template;
+        return;
+      }
+
+      // If we have unsaved changes and trying to select a different template
+      if (
+        hasChanges &&
+        template &&
+        selectedTemplate &&
+        template.id !== selectedTemplate.id
+      ) {
+        // Show dialog instead of browser alert
+        setPendingTemplateSelection(template);
+        setDialogOpen(true);
+      } else {
+        // No changes or same template, proceed directly
+        processTemplateSelection(template);
+      }
+    },
+    [hasChanges, selectedTemplate, processTemplateSelection]
+  );
+
+  // New function to create a new template
+  const createNewTemplate = useCallback(() => {
+    // If a save operation is in progress, store the new template default to select after saving
+    if (saveInProgress.current) {
+      nextTemplateAfterSave.current = newTemplateDefault;
+      return;
+    }
+
+    // If we have unsaved changes, confirm first
+    if (hasChanges) {
+      setPendingTemplateSelection(newTemplateDefault);
+      setDialogOpen(true);
+      return;
+    }
+
+    // Reset draft template
+    setDraftTemplate({ ...newTemplateDefault });
+    setIsAddingNew(true);
+    setSelectedTemplate(newTemplateDefault);
+    setEditorState({ ...newTemplateDefault });
+    setHasChanges(false);
+  }, [hasChanges]);
+
+  const handleTemplateNameChange = useCallback(
+    (value) => {
+      setHasChanges(true);
+
+      if (isAddingNew) {
+        // Update both draft and editor state for new template
+        setDraftTemplate((prev) => ({
+          ...prev,
+          template_name: value,
+        }));
+      }
+
+      setEditorState((prev) => ({
+        ...prev,
+        template_name: value,
+      }));
+    },
+    [isAddingNew]
+  );
+
+  // Update function to handle editor changes
+  const handleEditorChange = useCallback(() => {
     setHasChanges(true);
-    setEditorState((prev) => ({ ...prev, template_name: value }));
-  }, []);
+
+    if (isAddingNew && editorRef?.current?.value) {
+      // If we're editing a new template, update the draft too
+      const { subject, content: template_html_content } =
+        extractSubjectAndContent(editorRef.current.value);
+
+      setDraftTemplate((prev) => ({
+        ...prev,
+        subject,
+        template_html_content,
+      }));
+    }
+  }, [isAddingNew, editorRef]);
+
+  // Function to call after successful save
+  const afterSaveSuccess = useCallback(
+    (message) => {
+      toast.success(message);
+      setHasChanges(false);
+
+      // If there's a pending template selection after save, process it
+      if (nextTemplateAfterSave.current) {
+        processTemplateSelection(
+          nextTemplateAfterSave.current
+        );
+        nextTemplateAfterSave.current = null;
+      }
+
+      // Mark save as complete
+      saveInProgress.current = false;
+    },
+    [processTemplateSelection]
+  );
 
   const updateTemplate = async () => {
-    setHasChanges(false);
+    // Mark save operation as in progress
+    saveInProgress.current = true;
+
     const { subject, content: template_html_content } =
       extractSubjectAndContent(editorRef?.current?.value);
     const updatedData = {
@@ -84,35 +247,88 @@ export const useEmailTemplates = (editorRef) => {
       subject,
       template_html_content,
     };
+
+    // Update the templates array
     setTemplates((prev) => {
       const updatedTemplateIndex = prev.findIndex(
         (template) => template.id === selectedTemplate.id
       );
-      prev[updatedTemplateIndex] = { ...selectedTemplate, ...updatedData };
-
+      prev[updatedTemplateIndex] = {
+        ...selectedTemplate,
+        ...updatedData,
+      };
       return [...prev];
     });
-    updateMutation(updatedData);
+
+    // Send the update to the server
+    updateMutation(updatedData, {
+      onSuccess: () => {
+        afterSaveSuccess("Template updated successfully");
+      },
+      onError: (error) => {
+        toast.error("Failed to update template");
+        console.error("Update template error:", error);
+        saveInProgress.current = false;
+      },
+    });
   };
 
   const addTemplate = async () => {
+    // Mark save operation as in progress
+    saveInProgress.current = true;
+
     const { subject, content: template_html_content } =
       extractSubjectAndContent(editorRef?.current?.value);
-      const isSubjectEmpty = !subject || subject.trim() === '' || subject.trim() === 'Subject';
-      const isContentEmpty = !template_html_content || template_html_content.trim() === '';
+    const isSubjectEmpty =
+      !subject ||
+      subject.trim() === "" ||
+      subject.trim() === "Subject";
+    const isContentEmpty =
+      !template_html_content ||
+      template_html_content.trim() === "";
 
-      if (isSubjectEmpty || isContentEmpty) {
-        toast.error('Subject and content cannot be empty');
-        return
-      }
+    if (isSubjectEmpty || isContentEmpty) {
+      toast.error("Subject and content cannot be empty");
+      saveInProgress.current = false;
+      return;
+    }
+
     const newData = {
       ...editorState,
       subject,
       template_html_content,
     };
-    const newTemplate = await addMutation(newData);
-    selectTemplate(newTemplate);
-    setIsAddingNew(false);
+
+    try {
+      const newTemplate = await addMutation(newData);
+
+      // Set hasChanges to false first to avoid the dialog
+      setHasChanges(false);
+      setIsAddingNew(false);
+
+      // Reset draft template after successful save
+      setDraftTemplate({ ...newTemplateDefault });
+
+      // If the user has already tried to select another template while saving
+      if (nextTemplateAfterSave.current) {
+        processTemplateSelection(
+          nextTemplateAfterSave.current
+        );
+        nextTemplateAfterSave.current = null;
+      } else {
+        // Otherwise select the newly created template
+        processTemplateSelection(newTemplate);
+      }
+
+      toast.success("Template created successfully");
+
+      // Mark save as complete
+      saveInProgress.current = false;
+    } catch (error) {
+      toast.error("Failed to save template");
+      console.error("Add template error:", error);
+      saveInProgress.current = false;
+    }
   };
 
   return {
@@ -125,12 +341,18 @@ export const useEmailTemplates = (editorRef) => {
     isAddingNew,
     setIsAddingNew,
     selectTemplate,
+    createNewTemplate,
     handleTemplateNameChange,
+    handleEditorChange,
     updateTemplate,
     addTemplate,
     isLoading,
     isError,
     isUpdating,
     isAdding,
+    // Dialog related
+    dialogOpen,
+    setDialogOpen,
+    handleDialogClose,
   };
 };

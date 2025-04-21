@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import EventCard from "./components/EventCard";
 import { useEmailTemplates } from "./hooks/useEmailTemplates";
 import { AddTemplateButton } from "./components/AddTemplateButton";
+import DiscardChangesDialog from "./components/DiscardChangesDialog";
 
 function EmailTemplates() {
   const editorRef = useRef();
@@ -18,17 +19,21 @@ function EmailTemplates() {
     setEditorState,
     selectedTemplate,
     hasChanges,
-    setHasChanges,
     isAddingNew,
     setIsAddingNew,
     selectTemplate,
+    createNewTemplate,
     handleTemplateNameChange,
+    handleEditorChange,
     updateTemplate,
     addTemplate,
     isLoading,
     isError,
     isUpdating,
     isAdding,
+    // Dialog related
+    dialogOpen,
+    handleDialogClose,
   } = useEmailTemplates(editorRef);
 
   if (isLoading) {
@@ -77,6 +82,7 @@ function EmailTemplates() {
           handleTemplateNameChange={
             handleTemplateNameChange
           }
+          createNewTemplate={createNewTemplate}
         />
       </div>
 
@@ -85,7 +91,7 @@ function EmailTemplates() {
           <Editor
             editorState={editorState}
             setEditorState={setEditorState}
-            onChange={() => setHasChanges(true)}
+            onChange={handleEditorChange} // Use the new handler that updates draft
             innerRef={editorRef}
           />
 
@@ -135,6 +141,13 @@ function EmailTemplates() {
           </Box>
         </div>
       )}
+
+      {/* Discard Changes Dialog */}
+      <DiscardChangesDialog
+        open={dialogOpen}
+        onClose={() => handleDialogClose(false)}
+        onDiscard={() => handleDialogClose(true)}
+      />
     </div>
   );
 }
