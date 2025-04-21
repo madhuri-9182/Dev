@@ -65,7 +65,7 @@ CurrentDues.propTypes = {
   isLoading: PropTypes.bool,
   isFetchingNextPage: PropTypes.bool,
   hasNextPage: PropTypes.bool,
-  scrollRef: PropTypes.object,
+  scrollRef: PropTypes.any,
   onDownloadClick: PropTypes.func.isRequired,
   isGeneratingPdf: PropTypes.bool,
 };

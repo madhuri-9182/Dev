@@ -4,6 +4,7 @@ import { createTheme } from "@mui/material/styles";
 import { Warning2 } from "iconsax-react";
 import { CompanyLogo } from "../../../assets/index";
 import useAuth from "../../../hooks/useAuth";
+import toast from "react-hot-toast";
 import {
   LoadingState,
   ErrorState,
@@ -18,6 +19,9 @@ import {
 } from "./hooks/useFinanceData";
 import { usePdfGenerator } from "./hooks/usePdfGenerator";
 
+// API imports
+import { getFinance } from "./api";
+
 // Components
 import LastMonthAlert from "./components/LastMonthAlert";
 import CurrentDues from "./components/CurrentDues";
@@ -31,6 +35,8 @@ const Finance = () => {
   // State
   const [showDuesAlert, setShowDuesAlert] = useState(true);
   const [isLastMonthModalOpen, setIsLastMonthModalOpen] =
+    useState(false);
+  const [isPastPaymentsLoading, setIsPastPaymentsLoading] =
     useState(false);
 
   // Auth check
@@ -139,6 +145,7 @@ const Finance = () => {
     isGeneratingPdf,
     generateCurrentMonthPdf,
     generateLastMonthPdf,
+    generateCustomDateRangePdf,
   } = usePdfGenerator(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -201,12 +208,59 @@ const Finance = () => {
   };
 
   // Handler for past payments download
-  const handlePastPaymentsDownload = (dateRange) => {
-    console.log(
-      "Downloading past payments for range:",
-      dateRange
-    );
-    // Implementation would go here
+  const handlePastPaymentsDownload = async (dateRange) => {
+    // Set loading state to true
+    setIsPastPaymentsLoading(true);
+
+    try {
+      // Call the finance API with properly named date filters
+      const response = await getFinance({
+        page: 1,
+        param: {
+          from_date: dateRange.from,
+          to_date: dateRange.to,
+        },
+      });
+
+      // Check if there are results
+      if (
+        !response.results ||
+        response.results.length === 0
+      ) {
+        // Show error toast if no data
+        toast.error(
+          "No results found for the selected time period"
+        );
+      } else {
+        // Calculate total amount for PDF
+        const pdfTotalAmount = response.results.reduce(
+          (sum, item) => {
+            return (
+              sum + (parseFloat(item.client_amount) || 0)
+            );
+          },
+          0
+        );
+
+        // Generate PDF with the custom data
+        generateCustomDateRangePdf(
+          response.results,
+          pdfTotalAmount,
+          CompanyLogo,
+          dateRange.from,
+          dateRange.to
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching past payments:", error);
+      toast.error(
+        "Failed to download payments: " +
+          getErrorMessage(error)
+      );
+    } finally {
+      // Reset loading state
+      setIsPastPaymentsLoading(false);
+    }
   };
 
   // Access control check
@@ -253,10 +307,13 @@ const Finance = () => {
           isGeneratingPdf={isGeneratingPdf}
         />
 
-        {/* Past Payments Section */}
+        {/* Past Payments Section - Pass loading state */}
         <PastPayments
           theme={theme}
           onDownloadClick={handlePastPaymentsDownload}
+          isLoading={
+            isPastPaymentsLoading || isGeneratingPdf
+          }
         />
       </div>
 

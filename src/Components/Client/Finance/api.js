@@ -11,15 +11,25 @@ export const getFinance = async ({
   page = 1,
   param = {},
 }) => {
+  const params = {
+    limit: 10,
+    offset: (page - 1) * 10,
+  };
+
+  if (param?.finance_month) {
+    params.finance_month = param.finance_month;
+  }
+  if (param?.from_date) {
+    params.start_date = param.from_date;
+  }
+  if (param?.to_date) {
+    params.end_date = param.to_date;
+  }
   try {
     const response = await axios.get(
       "/api/client/finance/",
       {
-        params: {
-          limit: 10,
-          offset: (page - 1) * 10,
-          finance_month: param.finance_month,
-        },
+        params,
       }
     );
     return response.data;

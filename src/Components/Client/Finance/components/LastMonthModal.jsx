@@ -143,7 +143,7 @@ LastMonthModal.propTypes = {
   hasLastMonthModalNextPage: PropTypes.bool,
   lastMonthModalError: PropTypes.object,
   isLastMonthModalError: PropTypes.bool,
-  lastMonthRef: PropTypes.object,
+  lastMonthRef: PropTypes.any,
   generateLastMonthPdf: PropTypes.func,
   isGeneratingPdf: PropTypes.bool,
 };

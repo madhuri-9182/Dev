@@ -99,7 +99,7 @@ FinanceTable.propTypes = {
   isLoading: PropTypes.bool,
   isFetchingNextPage: PropTypes.bool,
   hasNextPage: PropTypes.bool,
-  infiniteScrollRef: PropTypes.object,
+  infiniteScrollRef: PropTypes.any,
 };
 
 export default FinanceTable;

@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   generateCurrentMonthPdf,
   generateLastMonthPdf,
+  generateCustomDateRangePdf,
 } from "../utils/pdfGenerator";
 
 /**
@@ -104,9 +105,50 @@ export const usePdfGenerator = (fetchRemainingPages) => {
     }
   };
 
+  /**
+   * Generates a PDF for custom date range finance data
+   * @param {Array} data - Finance data for the date range
+   * @param {number} totalAmount - Total amount to display
+   * @param {string} logoPath - Path to company logo
+   * @param {string} startDate - Start date in DD/MM/YYYY format
+   * @param {string} endDate - End date in DD/MM/YYYY format
+   */
+  const generateCustomDateRangePdfHandler = async (
+    data,
+    totalAmount,
+    logoPath,
+    startDate,
+    endDate
+  ) => {
+    setIsGeneratingPdf(true);
+    try {
+      // Generate the PDF directly with the provided data
+      // No need to fetch all pages since we're using the API response directly
+      await generateCustomDateRangePdf(
+        data,
+        totalAmount,
+        logoPath,
+        startDate,
+        endDate
+      );
+    } catch (error) {
+      console.error(
+        "Error generating custom date range PDF:",
+        error
+      );
+      alert(
+        "Error generating PDF. Check console for details."
+      );
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   return {
     isGeneratingPdf,
     generateCurrentMonthPdf: generateCurrentMonthPdfHandler,
     generateLastMonthPdf: generateLastMonthPdfHandler,
+    generateCustomDateRangePdf:
+      generateCustomDateRangePdfHandler,
   };
 };

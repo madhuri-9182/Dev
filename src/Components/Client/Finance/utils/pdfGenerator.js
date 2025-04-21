@@ -241,3 +241,55 @@ export const generateLastMonthPdf = async (
     return false;
   }
 };
+
+/**
+ * Generates a PDF for custom date range finance data
+ * @param {Array} data - Finance data for the date range
+ * @param {number} totalAmount - Total amount to display
+ * @param {string} logoPath - Path to company logo
+ * @param {string} startDate - Start date in DD/MM/YYYY format
+ * @param {string} endDate - End date in DD/MM/YYYY format
+ */
+export const generateCustomDateRangePdf = async (
+  data,
+  totalAmount,
+  logoPath,
+  startDate,
+  endDate
+) => {
+  try {
+    // Create PDF document
+    const doc = new jsPDF();
+
+    // Format title with date range
+    const title = `Past Payments (${startDate} - ${endDate})`;
+
+    // Add header
+    await addPdfHeader(
+      doc,
+      title,
+      startDate,
+      endDate,
+      totalAmount,
+      logoPath
+    );
+
+    // Create table data and add table
+    const tableData = createTableData(data);
+    addTableToPdf(doc, tableData);
+
+    // Save the PDF with date range in filename
+    const startDateFormatted = startDate.replace(
+      /\//g,
+      "-"
+    );
+    const endDateFormatted = endDate.replace(/\//g, "-");
+    doc.save(
+      `past_payments_${startDateFormatted}_to_${endDateFormatted}.pdf`
+    );
+    return true;
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    return false;
+  }
+};
