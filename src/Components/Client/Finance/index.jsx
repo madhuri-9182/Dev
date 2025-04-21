@@ -19,6 +19,10 @@ import {
 } from "./hooks/useFinanceData";
 import { usePdfGenerator } from "./hooks/usePdfGenerator";
 
+// Import the PDF generation function directly for past payments
+// This avoids using the hook's shared loading state
+import { generateCustomDateRangePdf } from "./utils/pdfGenerator";
+
 // API imports
 import { getFinance } from "./api";
 
@@ -140,12 +144,11 @@ const Finance = () => {
     lastMonthModalError,
   } = useLastMonthModalData(isLastMonthModalOpen);
 
-  // PDF generation hooks
+  // PDF generation hooks - ONLY for current month and last month
   const {
     isGeneratingPdf,
     generateCurrentMonthPdf,
     generateLastMonthPdf,
-    generateCustomDateRangePdf,
   } = usePdfGenerator(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -207,9 +210,9 @@ const Finance = () => {
     );
   };
 
-  // Handler for past payments download
+  // Handler for past payments download - With completely independent PDF generation
   const handlePastPaymentsDownload = async (dateRange) => {
-    // Set loading state to true
+    // Set our own, independent loading state to true
     setIsPastPaymentsLoading(true);
 
     try {
@@ -221,7 +224,6 @@ const Finance = () => {
           to_date: dateRange.to,
         },
       });
-
       // Check if there are results
       if (
         !response.results ||
@@ -242,14 +244,20 @@ const Finance = () => {
           0
         );
 
-        // Generate PDF with the custom data
-        generateCustomDateRangePdf(
-          response.results,
-          pdfTotalAmount,
-          CompanyLogo,
-          dateRange.from,
-          dateRange.to
-        );
+        // Call the PDF generation function directly instead of using the hook
+        // This ensures completely independent loading state
+        try {
+          await generateCustomDateRangePdf(
+            response.results,
+            pdfTotalAmount,
+            CompanyLogo,
+            dateRange.from,
+            dateRange.to
+          );
+        } catch (pdfError) {
+          console.error("Error generating PDF:", pdfError);
+          toast.error("Failed to generate PDF");
+        }
       }
     } catch (error) {
       console.error("Error fetching past payments:", error);
@@ -258,7 +266,7 @@ const Finance = () => {
           getErrorMessage(error)
       );
     } finally {
-      // Reset loading state
+      // Reset our own loading state
       setIsPastPaymentsLoading(false);
     }
   };
@@ -307,13 +315,11 @@ const Finance = () => {
           isGeneratingPdf={isGeneratingPdf}
         />
 
-        {/* Past Payments Section - Pass loading state */}
+        {/* Past Payments Section - Completely independent loading state */}
         <PastPayments
           theme={theme}
           onDownloadClick={handlePastPaymentsDownload}
-          isLoading={
-            isPastPaymentsLoading || isGeneratingPdf
-          }
+          isLoading={isPastPaymentsLoading}
         />
       </div>
 
