@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import FinalSelectionDropdown from "./FinalSelectionDropdown";
-import { LightTooltip } from "../../../shared/LightTooltip";
 import useAuth from "../../../../hooks/useAuth";
 import { ROLES } from "../../../Constants/constants";
 
@@ -175,30 +174,17 @@ StatusBadge.propTypes = {
 };
 
 const ScoreDisplay = ({ candidate, onViewCandidate }) => {
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
   if (["CSCH", "SCH"].includes(candidate?.status)) {
     return (
-      <LightTooltip
-        // title="Currently in-development"
-        color="#4a4459"
-        placement="top"
-        className="cursor-not-allowed"
+      <button
+        type="button"
+        className="text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
+        onClick={() => {
+          onViewCandidate(candidate);
+        }}
       >
-        <span>
-          {" "}
-          <button
-            type="button"
-            className="text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
-            onClick={() => {
-              onViewCandidate(candidate);
-            }}
-            disabled={!isLocalhost}
-          >
-            Reschedule
-          </button>
-        </span>
-      </LightTooltip>
+        Reschedule
+      </button>
     );
   }
 
