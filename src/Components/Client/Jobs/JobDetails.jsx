@@ -20,6 +20,7 @@ import {
   isValidUrl,
 } from "../../../utils/util";
 import useAuth from "../../../hooks/useAuth";
+import { LoadingState } from "../../shared/loading-error-state";
 
 const JobDetails = () => {
   const { auth } = useAuth();
@@ -37,6 +38,7 @@ const JobDetails = () => {
     setJobDetails,
     haveDetailsChanged,
     processJobDetailsForSubmission,
+    isLoading,
   } = useJobContext();
 
   const queryClient = useQueryClient();
@@ -45,8 +47,11 @@ const JobDetails = () => {
   const [detailsModalOpen, setDetailsModalOpen] =
     useState(false);
   const [editDetail, setEditDetail] = useState(null);
+
   // Function to render guideline text with clickable links
   const renderGuideline = (text) => {
+    if (!text) return "";
+
     if (isValidUrl(text)) {
       // Ensure the URL has http/https prefix
       const url = text.startsWith("http")
@@ -197,7 +202,10 @@ const JobDetails = () => {
           if (key !== "other_details") {
             if (key === "is_diversity_hiring") {
               // Convert boolean to "true" or "false" string explicitly
-              formdataToSubmit.append(key, value === true ? "true" : "false");
+              formdataToSubmit.append(
+                key,
+                value === true ? "true" : "false"
+              );
             } else if (
               typeof value === "object" &&
               !Array.isArray(value) &&
@@ -242,6 +250,34 @@ const JobDetails = () => {
       : mutation.mutate(formdataToSubmit);
   };
 
+  // Check if we have any data loaded
+  const hasFormData =
+    formdata &&
+    Object.keys(formdata).length > 0 &&
+    formdata.name;
+
+  // Show loading state while data is being fetched
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  // Show error state if no data is loaded after loading completes
+  if (!isLoading && !hasFormData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <p className="text-red-500">
+          No job data available. Please try again.
+        </p>
+        <button
+          onClick={onBack}
+          className="mt-4 px-4 py-2 bg-[#007AFF] text-white rounded-lg"
+        >
+          Back to Jobs
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="py-7 px-0 w-full">
@@ -252,7 +288,7 @@ const JobDetails = () => {
             </label>
             <input
               type="text"
-              value={getJobLabel(formdata.name)}
+              value={getJobLabel(formdata.name) || ""}
               readOnly
               className={inputClassName}
             />

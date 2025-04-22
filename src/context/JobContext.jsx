@@ -5,7 +5,7 @@ import {
   createContext,
   useEffect,
 } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { createFileFromUrl } from "../utils/util";
 import _ from "lodash";
 import useRoleBasedNavigate from "../hooks/useRoleBaseNavigate";
@@ -51,6 +51,7 @@ const initialDetailsState = [
 ];
 
 export const JobProvider = () => {
+  const navigate = useNavigate();
   const navigateTo = useRoleBasedNavigate();
   const [formdata, setFormdata] = useState(initialState);
   const [selectedData, setSelectedData] = useState({});
@@ -60,6 +61,7 @@ export const JobProvider = () => {
   const [archiveId, setArchiveId] = useState(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] =
     useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Add state for job details to persist across navigation
   const [jobDetails, setJobDetails] = useState(
@@ -68,13 +70,7 @@ export const JobProvider = () => {
   const [initialJobDetails, setInitialJobDetails] =
     useState([]);
 
-  const handleShowJobDetails = (data) => {
-    if (data) {
-      setSelectedData(data);
-    }
-    navigateTo("jobs/job-details");
-  };
-
+  // Complete reset function to clear all job-related state
   const reset = () => {
     setFormdata(initialState);
     setSelectedData({});
@@ -83,17 +79,47 @@ export const JobProvider = () => {
     setInitialJobDetails([]);
   };
 
+  // Clear only form data but keep selected data
+  const clearFormData = () => {
+    setFormdata(initialState);
+    setOriginalFormData(null);
+    setJobDetails(initialDetailsState);
+    setInitialJobDetails([]);
+  };
+
+  const handleShowJobDetails = (data) => {
+    if (!data) return;
+
+    // Set loading state
+    setIsLoading(true);
+
+    // Clear form data but keep the selected data
+    clearFormData();
+
+    // Set the new job data
+    setSelectedData(data);
+
+    // Navigate to job details
+    navigateTo("jobs/job-details");
+  };
+
   const handleAddJobClick = (data) => {
+    // Set loading state if there's job data
     const isEdit =
       data &&
       typeof data === "object" &&
       !data.nativeEvent &&
       Object.keys(data).length !== 0;
+
     if (isEdit) {
+      setIsLoading(true);
+      clearFormData();
       setSelectedData(data);
     } else {
+      // For new job, just reset everything
       reset();
     }
+
     navigateTo("jobs/add-job");
   };
 
@@ -165,57 +191,64 @@ export const JobProvider = () => {
   };
 
   useEffect(() => {
-    if (isEdit) {
-      async function handleFileConversion(selectedData) {
-        if (
-          !selectedData ||
-          !selectedData.job_description_file
-        ) {
-          console.error(
-            "Job description file path is missing"
-          );
+    // If there's no edit mode or no selected data, finish loading
+    if (!isEdit || Object.keys(selectedData).length === 0) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Load job data only when we have a valid selected job
+    const loadJobData = async () => {
+      try {
+        if (!selectedData.job_description_file) {
+          console.log("No job description file");
+          setIsLoading(false);
           return;
         }
-        const file = await createFileFromUrl(
-          selectedData.job_description_file
-        );
 
-        if (file) {
-          return file;
+        // Handle file conversion (if needed)
+        let file = null;
+        try {
+          file = await createFileFromUrl(
+            selectedData.job_description_file
+          );
+        } catch (fileError) {
+          console.error(
+            "Error converting file:",
+            fileError
+          );
+          // Continue even if file conversion fails
         }
-      }
-      const fetchFile = async () => {
-        const file = await handleFileConversion(
-          selectedData
-        );
 
+        // Normalize data for the form
         const normalizedData = {
           ...selectedData,
           hiring_manager_id:
             selectedData.hiring_manager?.id,
-          recruiter_ids: selectedData.clients.map(
-            (client) => client.id
-          ),
-          recruiter_names: selectedData.clients.map(
-            (client) => client.name
-          ),
+          recruiter_ids:
+            selectedData.clients?.map(
+              (client) => client.id
+            ) || [],
+          recruiter_names:
+            selectedData.clients?.map(
+              (client) => client.name
+            ) || [],
           hiring_manager_name:
             selectedData.hiring_manager?.name,
           total_positions: String(
-            selectedData.total_positions
+            selectedData.total_positions || ""
           ),
-          job_description_file: file, // Now it's a resolved File object
-          // Explicitly include is_diversity_hiring with proper type conversion
+          job_description_file: file,
           is_diversity_hiring: Boolean(
             selectedData.is_diversity_hiring
           ),
         };
 
+        // Update form data and original data for comparison
         setFormdata(normalizedData);
-        // Store original data for comparison
         setOriginalFormData(_.cloneDeep(normalizedData));
 
-        // Process job details from other_details
+        // Process job details
         if (selectedData.other_details) {
           try {
             const parsedDetails =
@@ -250,11 +283,17 @@ export const JobProvider = () => {
             );
           }
         }
-      };
-      fetchFile();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedData]);
+      } catch (error) {
+        console.error("Error loading job data:", error);
+      } finally {
+        // Always set loading to false when done
+        setIsLoading(false);
+      }
+    };
+
+    // Start loading job data
+    loadJobData();
+  }, [selectedData, isEdit]);
 
   // Create a function to get changes between original and current formdata
   const getChangedFields = () => {
@@ -323,6 +362,8 @@ export const JobProvider = () => {
         handleAddJobClick,
         isEdit,
         reset,
+        isLoading,
+        setIsLoading,
         // Job details state and functions
         jobDetails,
         setJobDetails,

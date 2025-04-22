@@ -22,11 +22,13 @@ import {
 } from "../../shared/SaveAndCancelButtons";
 import { Loader2 } from "lucide-react";
 import useRoleBasedNavigate from "../../../hooks/useRoleBaseNavigate";
+import { LoadingState } from "../../shared/loading-error-state";
 
 const AddJob = () => {
   const { auth } = useAuth();
   const navigateTo = useRoleBasedNavigate();
-  const { formdata, setFormdata, isEdit } = useJobContext();
+  const { formdata, setFormdata, isEdit, isLoading } =
+    useJobContext();
   const fileInputRef = useRef(null);
   const { data: users } = useAllUsers();
 
@@ -61,7 +63,6 @@ const AddJob = () => {
   const selectedHiringManager = watch("hiringManager");
   const selectedEssentialSkills =
     watch("essentialSkills") || [];
-  // const isDiversityHiring = watch("isDiversityHiring");
 
   // State for dropdown open/close
   const [isJobRoleDropdownOpen, setIsJobRoleDropdownOpen] =
@@ -80,18 +81,22 @@ const AddJob = () => {
   ] = useState(false);
   const [resumeUploadLoading, setResumeUploadLoading] =
     useState(false);
+  const [formInitialized, setFormInitialized] =
+    useState(false);
 
   // Filter users for recruiters and hiring managers
-  const filteredRecruiters = users?.filter(
-    (user) => user.id !== selectedHiringManager
-  );
+  const filteredRecruiters =
+    users?.filter(
+      (user) => user.id !== selectedHiringManager
+    ) || [];
 
-  const filteredHiringManagers = users?.filter(
-    (user) =>
-      !selectedRecruiters.some(
-        (recruiter) => recruiter === user.id
-      )
-  );
+  const filteredHiringManagers =
+    users?.filter(
+      (user) =>
+        !selectedRecruiters.some(
+          (recruiter) => recruiter === user.id
+        )
+    ) || [];
 
   const [hiringManagerName, setHiringManagerName] =
     useState("");
@@ -189,7 +194,13 @@ const AddJob = () => {
 
   // Initialize form with existing data
   useEffect(() => {
-    if (Object.keys(formdata).length > 0) {
+    // If we're in edit mode and we have data in formdata
+    if (
+      isEdit &&
+      Object.keys(formdata).length > 0 &&
+      formdata.name
+    ) {
+      console.log("Initializing form with data", formdata);
       const resetData = {
         jobRole: formdata.name || "",
         jobId: formdata.job_id || "",
@@ -198,22 +209,68 @@ const AddJob = () => {
         totalPositions: formdata.total_positions || "",
         specialization: formdata.specialization || null,
         essentialSkills: formdata.mandatory_skills || [],
-        isDiversityHiring:
-          formdata.is_diversity_hiring || false,
+        isDiversityHiring: !!formdata.is_diversity_hiring,
       };
+
       if (formdata.job_description_file instanceof File) {
         resetData.jobDescriptionFile =
           formdata.job_description_file;
         handleFileUpload(formdata.job_description_file);
       }
+
       reset(resetData);
+      setFormInitialized(true);
+
       if (isClientUser) {
-        setHiringManagerName(formdata?.hiring_manager_name);
-        setRecruiterNames(formdata?.recruiter_names);
+        setHiringManagerName(
+          formdata.hiring_manager_name || ""
+        );
+        setRecruiterNames(formdata.recruiter_names || []);
       }
+    } else if (!isEdit) {
+      // For new job creation, start with empty form
+      reset({
+        jobRole: "",
+        jobId: "",
+        recruiters: [],
+        hiringManager: null,
+        totalPositions: "",
+        specialization: null,
+        jobDescriptionFile: null,
+        essentialSkills: [],
+        isDiversityHiring: false,
+      });
+      setFormInitialized(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formdata, reset, setValue, isClientUser]);
+  }, [formdata, reset, setValue, isClientUser, isEdit]);
+
+  // Check if we have necessary form data
+  const hasFormData = isEdit
+    ? formInitialized && formdata && formdata.name
+    : true;
+
+  // Show loading state while data is being fetched
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  // Show error state if no data is loaded after loading completes
+  if (isEdit && !hasFormData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <p className="text-red-500">
+          No job data available. Please try again.
+        </p>
+        <button
+          onClick={onBack}
+          className="mt-4 px-4 py-2 bg-[#007AFF] text-white rounded-lg"
+        >
+          Back to Jobs
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-x-14">
@@ -267,7 +324,7 @@ const AddJob = () => {
                   placeholder="Optional"
                   className={inputClassName}
                   onChange={field.onChange}
-                  value={field.value}
+                  value={field.value || ""}
                 />
               )}
             />
@@ -386,7 +443,7 @@ const AddJob = () => {
                       : ""
                   }`}
                   onChange={field.onChange}
-                  value={field.value}
+                  value={field.value || ""}
                 />
               )}
             />
@@ -421,16 +478,6 @@ const AddJob = () => {
               )}
             />
           </div>
-
-          {/* <div className={formRowClassName}>
-          <label className={labelClassName}>
-            IC/Manager
-          </label>
-          <select style={styles.select}>
-            <option value="IC">IC</option>
-            <option value="Manager">Manager</option>
-          </select>
-        </div> */}
 
           <div className={formRowClassName}>
             <label
@@ -504,7 +551,7 @@ const AddJob = () => {
                   rows={5}
                   placeholder="Paste Job Description Here"
                   readOnly
-                  value={field.value}
+                  value={field.value || ""}
                 />
               )}
             />
@@ -594,7 +641,7 @@ const AddJob = () => {
                 }) => (
                   <input
                     type="checkbox"
-                    checked={value}
+                    checked={value || false}
                     onChange={onChange}
                     disabled={shouldBeDisabled}
                     className="h-4 w-4 rounded border-gray-300 text-[#007AFF] focus:ring-[#007AFF] mr-2 cursor-pointer"
