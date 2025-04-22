@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import { createTheme } from "@mui/material/styles";
 import { Warning2 } from "iconsax-react";
@@ -43,13 +43,25 @@ const Finance = () => {
   const [isPastPaymentsLoading, setIsPastPaymentsLoading] =
     useState(false);
 
+  // Ref to track if we've already tried to fetch next page
+  const fetchingRef = useRef(false);
+
   // Auth check
   const { auth } = useAuth();
 
-  // Intersection observer hooks for infinite scrolling
-  const { ref, inView } = useInView({ threshold: 0 });
+  // Intersection observer hooks for infinite scrolling with threshold and rootMargin
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: "200px 0px",
+    delay: 300, // Add a slight delay to prevent multiple rapid triggers
+  });
+
   const { ref: lastMonthRef, inView: lastMonthInView } =
-    useInView({ threshold: 0 });
+    useInView({
+      threshold: 0,
+      rootMargin: "200px 0px",
+      delay: 300,
+    });
 
   // Custom theme for Material UI components
   const theme = createTheme({
@@ -159,8 +171,20 @@ const Finance = () => {
 
   // Fetch next page when scrolling into view for current dues
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    // Only fetch if inView AND hasNextPage AND not already fetching AND not already tried fetching
+    if (
+      inView &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      !fetchingRef.current
+    ) {
+      fetchingRef.current = true;
+      fetchNextPage().finally(() => {
+        // Reset the fetchingRef after a short delay to prevent excessive calls
+        setTimeout(() => {
+          fetchingRef.current = false;
+        }, 500);
+      });
     }
   }, [
     inView,
@@ -169,15 +193,32 @@ const Finance = () => {
     isFetchingNextPage,
   ]);
 
+  // Reset the fetchingRef when hasNextPage changes to false
+  useEffect(() => {
+    if (!hasNextPage) {
+      fetchingRef.current = false;
+    }
+  }, [hasNextPage]);
+
+  // Ref to track if we've already tried to fetch next page for last month
+  const lastMonthFetchingRef = useRef(false);
+
   // Fetch next page for last month modal when scrolling
   useEffect(() => {
     if (
       lastMonthInView &&
       hasLastMonthModalNextPage &&
       !isLastMonthModalFetchingNextPage &&
-      isLastMonthModalOpen
+      isLastMonthModalOpen &&
+      !lastMonthFetchingRef.current
     ) {
-      fetchLastMonthModalNextPage();
+      lastMonthFetchingRef.current = true;
+      fetchLastMonthModalNextPage().finally(() => {
+        // Reset the lastMonthFetchingRef after a short delay
+        setTimeout(() => {
+          lastMonthFetchingRef.current = false;
+        }, 500);
+      });
     }
   }, [
     lastMonthInView,
@@ -186,6 +227,13 @@ const Finance = () => {
     isLastMonthModalFetchingNextPage,
     isLastMonthModalOpen,
   ]);
+
+  // Reset the lastMonthFetchingRef when hasLastMonthModalNextPage changes to false
+  useEffect(() => {
+    if (!hasLastMonthModalNextPage) {
+      lastMonthFetchingRef.current = false;
+    }
+  }, [hasLastMonthModalNextPage]);
 
   // Toggle last month modal
   const toggleLastMonthModal = () => {

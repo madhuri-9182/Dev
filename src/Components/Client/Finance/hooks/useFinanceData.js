@@ -23,15 +23,40 @@ export const useCurrentFinanceData = () => {
     queryKey: ["finance"],
     queryFn: ({ pageParam = 1 }) =>
       getFinance({ page: pageParam }),
-    getNextPageParam: (lastPage) => {
-      // If the total count is greater than the current offset + limit, there are more pages
-      const currentItemCount =
-        (lastPage.offset || 0) + lastPage.results.length;
-      if (currentItemCount < lastPage.count) {
-        return lastPage.offset / 10 + 2; // Next page number
+    getNextPageParam: (lastPage, allPages) => {
+      // Ensure offset is a valid number
+      const offset =
+        typeof lastPage.offset === "number"
+          ? lastPage.offset
+          : 0;
+
+      // Calculate total items fetched so far across all pages
+      const totalItemsFetched = allPages.reduce(
+        (total, page) => total + page.results.length,
+        0
+      );
+
+      // If we've fetched everything, don't request more
+      if (totalItemsFetched >= lastPage.count) {
+        return undefined;
       }
-      return undefined;
+
+      // Calculate next page number based on total fetched
+      const nextPage =
+        Math.floor(totalItemsFetched / 10) + 1;
+
+      // Add a safety check to prevent duplicate API calls
+      // If the next offset would be the same as the current one, return undefined
+      if (nextPage * 10 - 10 === offset) {
+        return undefined;
+      }
+
+      return nextPage;
     },
+    // Add this option to prevent excessive refetching
+    refetchOnWindowFocus: false,
+    // Set a reasonable number of retry attempts
+    retry: 1,
   });
 
   // Calculate total amount
@@ -79,6 +104,7 @@ export const useLastMonthFinanceData = () => {
   } = useQuery({
     queryKey: ["lastMonthFinance"],
     queryFn: () => getLastMonthFinance(),
+    refetchOnWindowFocus: false,
   });
 
   // Check if there are pending dues from last month
@@ -132,15 +158,39 @@ export const useLastMonthModalData = (isModalOpen) => {
         page: pageParam,
         param: { finance_month: "last_month" },
       }),
-    getNextPageParam: (lastPage) => {
-      const currentItemCount =
-        (lastPage.offset || 0) + lastPage.results.length;
-      if (currentItemCount < lastPage.count) {
-        return lastPage.offset / 10 + 2;
+    getNextPageParam: (lastPage, allPages) => {
+      // Ensure offset is a valid number
+      const offset =
+        typeof lastPage.offset === "number"
+          ? lastPage.offset
+          : 0;
+
+      // Calculate total items fetched so far across all pages
+      const totalItemsFetched = allPages.reduce(
+        (total, page) => total + page.results.length,
+        0
+      );
+
+      // If we've fetched everything, don't request more
+      if (totalItemsFetched >= lastPage.count) {
+        return undefined;
       }
-      return undefined;
+
+      // Calculate next page number based on total fetched
+      const nextPage =
+        Math.floor(totalItemsFetched / 10) + 1;
+
+      // Add a safety check to prevent duplicate API calls
+      // If the next offset would be the same as the current one, return undefined
+      if (nextPage * 10 - 10 === offset) {
+        return undefined;
+      }
+
+      return nextPage;
     },
     enabled: isModalOpen, // Only fetch when modal is open
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   // Calculate total amount for last month modal
