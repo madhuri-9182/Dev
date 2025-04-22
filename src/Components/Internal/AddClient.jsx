@@ -23,6 +23,7 @@ function AddClient() {
     }), [state]);
 
     const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
+    const formInitialized = useRef(false); // Ref to track if form has been initialized with existing data
     const { register, handleSubmit, formState: { errors }, setError, clearErrors, setValue } = useForm();
 
     // POC form using React Hook Form
@@ -36,7 +37,7 @@ function AddClient() {
 
     // Fetch client data if in edit mode
     useEffect(() => {
-        if (clientData) {
+        if (clientData && !formInitialized.current) {
             // Prefill form data
             setValue("name", clientData?.name);
             setValue("website", clientData?.website);
@@ -57,38 +58,54 @@ function AddClient() {
                 }));
                 setRows(formattedPocs);
             }
+
+            // Mark form as initialized with data
+            formInitialized.current = true;
+            
+            // Clear any pre-existing errors for fields populated with valid data
+            if (clientData?.assigned_to?.id) {
+                clearErrors("assigned_to");
+            }
+            
+            if (clientData?.points_of_contact && clientData?.points_of_contact.length > 0) {
+                clearErrors("poc");
+            }
         }
-    }, [clientData, setValue]);
+    }, [clientData, setValue, clearErrors]);
 
     const validateAssignTo = useCallback(() => {
         if (!assignedTo) {
             setError("assigned_to", { type: "manual", message: "Please select a user." });
+            return false;
         } else {
             clearErrors("assigned_to");
+            return true;
         }
     }, [assignedTo, setError, clearErrors]);
 
     const validatePOC = useCallback(() => {
         if (rows?.length === 0) {
             setError("poc", { type: "manual", message: "Please add at least one point of contact." });
+            return false;
         } else {
             clearErrors("poc");
+            return true;
         }
     }, [rows, setError, clearErrors]);
 
     useEffect(() => {
-        // Revalidate if the user has interacted
-        if (hasInteracted.current) {
+        // Only validate if form has been interacted with or if we're in edit mode and form is initialized
+        if (hasInteracted.current || (isEditing && formInitialized.current)) {
             validateAssignTo();
         }
-    }, [assignedTo, validateAssignTo]);
+    }, [assignedTo, validateAssignTo, isEditing]);
 
     useEffect(() => {
-        // Revalidate if the user has interacted
-        if (hasInteracted.current) {
+        // Only validate if form has been interacted with or if we're in edit mode and form is initialized
+        if (hasInteracted.current || (isEditing && formInitialized.current)) {
             validatePOC();
         }
-    }, [rows, validatePOC]);
+    }, [rows, validatePOC, isEditing]);
 
     const handleOpenPocDialog = (e, row = null, index = null) => {
         e.preventDefault();
@@ -134,44 +151,78 @@ function AddClient() {
             }]);
         }
         handleClosePocDialog();
+        hasInteracted.current = true; // Mark form as interacted with when POCs are added/edited
     };
 
     const handleDeletePoc = (e, index) => {
         e.preventDefault();
         setRows((prevRows) => prevRows.filter((_, idx) => idx !== index));
+        hasInteracted.current = true; // Mark form as interacted with when POCs are deleted
     };
 
     const onSubmit = async (data) => {
+        // Run validations first
+        const isAssignToValid = validateAssignTo();
+        const isPocValid = validatePOC();
+        
+        if (!isAssignToValid || !isPocValid) {
+            return; // Stop submission if validations fail
+        }
+        
         try {
             setLoading(true);
-            const payload = {
-                // Only include fields that have changed
-            };
-
-            // Check for changes and add to payload
-            if (data.name !== clientData?.name) payload.name = data.name;
-            if (data.website !== clientData?.website) payload.website = data.website;
-            if (data.domain !== clientData?.domain) payload.domain = data.domain;
-            if (data.gstin !== clientData?.gstin) payload.gstin = data.gstin;
-            if (data.pan !== clientData?.pan) payload.pan = data.pan;
-            if (data.client_level !== clientData?.client_level?.toString()) payload.client_level = parseInt(data.client_level);
-            if (data.is_signed !== clientData?.is_signed) payload.is_signed = data.is_signed === "true";
-            if (data.address !== clientData?.address) payload.address = data.address;
-            if (assignedTo !== clientData?.assigned_to?.id) payload.assigned_to = assignedTo;
-
-            // Check for changes in points of contact
-            payload.points_of_contact = rows.map(row => ({ ...row, phone: `+91${row.phone}` }));
-
+            
+            // Format POCs with country code
+            const formattedPocs = rows.map(row => ({ 
+                name: row.name, 
+                email: row.email, 
+                phone: row.phone.startsWith('+91') ? row.phone : `+91${row.phone}` 
+            }));
+            
             if (isEditing && clientData?.id) {
                 // Use PATCH for updating
+                let payload = {};
+                
+                // Only add these fields if they have changed
+                if (data.name !== clientData?.name) payload.name = data.name;
+                if (data.website !== clientData?.website) payload.website = data.website;
+                if (data.domain !== clientData?.domain) payload.domain = data.domain;
+                if (data.gstin !== clientData?.gstin) payload.gstin = data.gstin;
+                if (data.pan !== clientData?.pan) payload.pan = data.pan;
+                if (data.client_level !== clientData?.client_level?.toString()) {
+                    payload.client_level = parseInt(data.client_level);
+                }
+                if (data.is_signed !== String(clientData?.is_signed)) {
+                    payload.is_signed = data.is_signed === "true";
+                }
+                if (data.address !== clientData?.address) payload.address = data.address;
+                
+                // Always include assigned_to and points_of_contact in the payload
+                payload.assigned_to = assignedTo;
+                payload.points_of_contact = formattedPocs;
+                
                 await axios.patch(`/api/internal/internal-client/${clientData?.id}/`, payload);
                 toast.success("Client updated successfully", { position: "top-right" });
             } else {
                 // Use POST for creating
+                const payload = {
+                    // Always include these required fields in a new client
+                    name: data.name,
+                    website: data.website,
+                    domain: data.domain,
+                    gstin: data.gstin,
+                    pan: data.pan,
+                    client_level: parseInt(data.client_level),
+                    is_signed: data.is_signed === "true",
+                    address: data.address,
+                    assigned_to: assignedTo,
+                    points_of_contact: formattedPocs
+                };
+                
                 await axios.post("/api/internal/internal-client/", payload);
                 toast.success("Client added successfully", { position: "top-right" });
             }
-
+    
             navigate("/internal/clients");
         } catch (error) {
             let errorMessages;
@@ -186,15 +237,18 @@ function AddClient() {
         }
     };
 
+    const handleFormSubmit = (e) => {
+        hasInteracted.current = true; // Mark as interacted during submission attempt
+        
+        // Run validations and then submit
+        handleSubmit(onSubmit)(e);
+    };
+
     return (
         <React.Fragment>
             <div>
                 {location.pathname === "/internal/clients/addclient" && (
-                    <form onSubmit={(e) => {
-                        handleSubmit(onSubmit)(e);
-                        validateAssignTo();
-                        validatePOC();
-                    }}>
+                    <form onSubmit={handleFormSubmit}>
                         <div>
                             <div className="text-xl font-bold mb-6">{isEditing ? "Edit Client" : "Add Client"}</div>
                             <ul className="flex flex-col gap-y-2">
@@ -318,12 +372,14 @@ function AddClient() {
                                             onSelect={(value) => {
                                                 setAssignedTo(value?.id);
                                                 hasInteracted.current = true; // Mark as interacted
+                                                clearErrors("assigned_to"); // Clear error when value is selected
                                             }}
                                             optionLabel='name'
                                             placeholder='Select User'
                                             className="text-[12px] h-[32px] min-w-[360px] text-center justify-center"
                                             dropdownClassName="text-[12px]"
                                             defaultValue={clientData?.assigned_to}
+                                            initialValue={clientData?.assigned_to?.id}
                                         />
                                         {errors.assigned_to && <span className="error-message">{errors.assigned_to.message}</span>}
                                     </div>
