@@ -75,7 +75,6 @@ import {
   UnauthorizedLayout,
 } from "./Components";
 import RootRoute from "./Components/shared/RootRoute";
-import FAQ from "./Components/shared/FAQ";
 import Recording from "./Components/recording";
 
 const router = createBrowserRouter(
@@ -194,7 +193,6 @@ const router = createBrowserRouter(
               path="privacy-policy"
               element={<PrivacyPolicy />}
             />
-            <Route path="faq" element={<FAQ />} />
           </Route>
         </Route>
         {/* //Agency Routes */}
@@ -239,13 +237,24 @@ const router = createBrowserRouter(
               path="privacy-policy"
               element={<PrivacyPolicy />}
             />
-            <Route path="faq" element={<FAQ />} />
           </Route>
         </Route>
         {/* //Internal Routes */}
-        <Route element={<RequireAuth allowedRoles={[...ROLES.AGENCY, ...ROLES.CLIENT]} />}>
+        <Route
+          element={
+            <RequireAuth
+              allowedRoles={[
+                ...ROLES.AGENCY,
+                ...ROLES.CLIENT,
+              ]}
+            />
+          }
+        >
           <Route element={<Layout />}>
-            <Route path="recording/:id" element={<Recording />} />
+            <Route
+              path="recording/:id"
+              element={<Recording />}
+            />
           </Route>
         </Route>
         <Route
@@ -344,7 +353,6 @@ const router = createBrowserRouter(
                 path="privacy-policy"
                 element={<PrivacyPolicy />}
               />
-              <Route path="faq" element={<FAQ />} />
             </Route>
           </Route>
         </Route>

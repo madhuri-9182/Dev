@@ -15,7 +15,6 @@ import {
   Lock,
   DocumentText,
   Calendar2,
-  MessageQuestion,
 } from "iconsax-react";
 
 export const EMAIL_REGEX =
@@ -94,11 +93,6 @@ export const CLIENT_NAVLINKS = [
     icon: Lock,
     link: "/client/privacy-policy",
   },
-  {
-    text: "FAQ",
-    icon: MessageQuestion,
-    link: "/client/faq",
-  },
 ];
 
 export const INTERNAL_NAVLINKS = [
@@ -160,11 +154,6 @@ export const AGENCY_NAVLINKS = [
     icon: Lock,
     link: "/agency/privacy-policy",
   },
-  {
-    text: "FAQ",
-    icon: MessageQuestion,
-    link: "/agency/faq",
-  },
 ];
 
 export const INTERVIEWER_NAVLINKS = [
@@ -192,11 +181,6 @@ export const INTERVIEWER_NAVLINKS = [
     text: "Privacy Policy",
     icon: Lock,
     link: "/interviewer/privacy-policy",
-  },
-  {
-    text: "FAQ",
-    icon: MessageQuestion,
-    link: "/interviewer/faq",
   },
 ];
 
