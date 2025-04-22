@@ -408,8 +408,8 @@ export const hasDataToGeneratePdf = (
   rejectedCandidates
 ) => {
   return (
-    selectedCandidates?.length > 0 ||
-    rejectedCandidates?.length > 0
+    (selectedCandidates && selectedCandidates.length > 0) ||
+    (rejectedCandidates && rejectedCandidates.length > 0)
   );
 };
 

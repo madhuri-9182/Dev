@@ -4,7 +4,6 @@ import {
   hasDataToGeneratePdf,
 } from "./analyticsReportGenerator";
 import toast from "react-hot-toast";
-import { CompanyLogo } from "../../../assets";
 
 /**
  * Custom hook for generating analytics PDF reports
@@ -39,6 +38,7 @@ export const useAnalyticsPdfGenerator = () => {
    * @param {string} startDate - Start date in YYYY-MM-DD format
    * @param {string} endDate - End date in YYYY-MM-DD format
    * @param {string} logoPath - Optional path to company logo
+   * @returns {Promise<boolean>} True if PDF generation was successful
    */
   const generateAnalyticsReport = async (
     analyticsData,
@@ -47,7 +47,7 @@ export const useAnalyticsPdfGenerator = () => {
     rejectedCandidates,
     startDate,
     endDate,
-    logoPath = CompanyLogo // Default logo path, adjust as needed
+    logoPath
   ) => {
     setIsGeneratingPdf(true);
 

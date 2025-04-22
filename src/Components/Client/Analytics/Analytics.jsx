@@ -16,12 +16,25 @@ import {
   MdOutlineFileDownload,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useAnalyticsPdfGenerator } from "./useAnalyticsPdfGenerator";
+import axios from "../../../api/axios";
+import { CompanyLogo } from "../../../assets";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
+
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
+};
 
 // Reusable role card component
 const RoleCard = ({
   role,
   onViewClick,
   onDownloadClick,
+  isDownloading,
 }) => (
   <div className="rounded-2xl flex justify-between items-center px-7 py-2 shadow bg-[#EBEBEB80]">
     <span className="text-2xs uppercase">
@@ -39,10 +52,15 @@ const RoleCard = ({
       <button
         type="button"
         onClick={() => onDownloadClick(role?.id)}
-        className="text-2xs font-semibold border border-[#79747E] w-28 py-1 flex items-center justify-center rounded-[100px] bg-transparent text-[#65558F] hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 transition-all"
+        disabled={isDownloading}
+        className="text-2xs font-semibold border border-[#79747E] w-28 py-1 flex items-center justify-center rounded-[100px] bg-transparent text-[#65558F] hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 transition-all disabled:opacity-70 disabled:hover:bg-transparent"
       >
-        <MdOutlineFileDownload className="mr-2 text-sm" />{" "}
-        Download
+        {isDownloading ? (
+          <Loader2 className="animate-spin text-sm mr-2 w-3 h-3" />
+        ) : (
+          <MdOutlineFileDownload className="text-sm mr-2" />
+        )}{" "}
+        {isDownloading ? "Downloading..." : "Download"}
       </button>
     </div>
   </div>
@@ -52,6 +70,7 @@ RoleCard.propTypes = {
   role: PropTypes.object,
   onViewClick: PropTypes.func,
   onDownloadClick: PropTypes.func,
+  isDownloading: PropTypes.bool,
 };
 
 const Analytics = () => {
@@ -66,6 +85,47 @@ const Analytics = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedDateRange, setSelectedDateRange] =
     useState("7days");
+  const [downloadingJobs, setDownloadingJobs] = useState(
+    {}
+  );
+  const { generateAnalyticsReport } =
+    useAnalyticsPdfGenerator();
+
+  // Calculate date range based on selection
+  const calculateDates = (range) => {
+    const today = new Date();
+    const endDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+
+    let startDate;
+    switch (range) {
+      case "7days":
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+        break;
+      case "30days":
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 30);
+        break;
+      case "6months":
+        startDate = new Date(today);
+        startDate.setMonth(today.getMonth() - 6);
+        break;
+      case "1year":
+        startDate = new Date(today);
+        startDate.setFullYear(today.getFullYear() - 1);
+        break;
+      default:
+        // Default to 7 days if no range or invalid range
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+        break;
+    }
+
+    return {
+      startDate: startDate.toISOString().split("T")[0],
+      endDate,
+    };
+  };
 
   const groupedJobs = useMemo(() => {
     if (!allJobs) return {};
@@ -120,8 +180,107 @@ const Analytics = () => {
     });
   };
 
-  const handleDownloadClick = (id) => {
-    console.log(`Download report for ${id}`);
+  const handleDownloadClick = async (id) => {
+    try {
+      // Set this job as downloading
+      setDownloadingJobs((prev) => ({
+        ...prev,
+        [id]: true,
+      }));
+
+      // Calculate date range based on selection
+      const { startDate, endDate } = calculateDates(
+        selectedDateRange
+      );
+
+      // Format dates for API
+      const formattedStartDate = formatDate(startDate);
+      const formattedEndDate = formatDate(endDate);
+
+      // Fetch analytics data for this job
+      const response = await axios.get(
+        `/api/client/candidate-analysis/${id}`,
+        {
+          params: {
+            from_date: formattedStartDate,
+            to_date: formattedEndDate,
+          },
+        }
+      );
+
+      const analyticsData = response.data.data;
+      if (!analyticsData) {
+        throw new Error("No data available");
+      }
+
+      // Format data for PDF generation
+      const selectedCandidates = Object.entries(
+        analyticsData?.selected_candidates || {}
+      ).map(([company, value]) => ({
+        company,
+        percentage: value,
+      }));
+
+      const rejectedCandidates = Object.entries(
+        analyticsData?.rejected_candidates || {}
+      ).map(([company, value]) => ({
+        company,
+        percentage: value,
+      }));
+
+      // Format the status info entries
+      const statusInfoEntries = [
+        {
+          label: "Total Candidates",
+          value:
+            analyticsData?.status_info.total_candidates,
+        },
+        {
+          label: "Total Interviews",
+          value:
+            analyticsData?.status_info.total_interviews,
+        },
+        {
+          label: "Top Performers",
+          value: analyticsData?.status_info.top_performers,
+        },
+        {
+          label: "Good Candidates",
+          value: analyticsData?.status_info.good_candidates,
+        },
+        {
+          label: "Rejected",
+          value: analyticsData?.status_info.rejected,
+        },
+        {
+          label: "Declined by Candidate",
+          value:
+            analyticsData.status_info.declined_by_candidate,
+        },
+      ];
+
+      // Generate the PDF
+      await generateAnalyticsReport(
+        analyticsData,
+        statusInfoEntries,
+        selectedCandidates,
+        rejectedCandidates,
+        startDate,
+        endDate,
+        CompanyLogo
+      );
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      toast.error(
+        error.message || "Failed to download report"
+      );
+    } finally {
+      // Clear downloading state for this job
+      setDownloadingJobs((prev) => ({
+        ...prev,
+        [id]: false,
+      }));
+    }
   };
 
   const jobRoles = jobOptions.map((option) => ({
@@ -175,6 +334,9 @@ const Analytics = () => {
             role={role}
             onViewClick={handleViewClick}
             onDownloadClick={handleDownloadClick}
+            isDownloading={
+              downloadingJobs[role.id] || false
+            }
           />
         ))}
       </div>
