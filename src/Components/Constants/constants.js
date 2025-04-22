@@ -15,6 +15,7 @@ import {
   Lock,
   DocumentText,
   Calendar2,
+  Book1,
 } from "iconsax-react";
 
 export const EMAIL_REGEX =
@@ -92,6 +93,11 @@ export const CLIENT_NAVLINKS = [
     text: "Privacy Policy",
     icon: Lock,
     link: "/client/privacy-policy",
+  },
+  {
+    text: "Manual",
+    icon: Book1,
+    link: "/client/manual",
   },
 ];
 

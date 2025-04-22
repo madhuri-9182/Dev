@@ -32,6 +32,7 @@ import ClientScheduleInterview from "./Client/Candidates/schedule-interview/Clie
 import ClientAddCandidate from "./Client/Candidates/add-candidate/AddCandidate";
 import Engagement from "./Client/Engagement/Engagement";
 import UserActivation from "./Client/UserActivation";
+import ClientManual from "./Client/Manual";
 
 //Agency Imports
 import { AgencyDashboard } from "./Agency/Dashboard";
@@ -102,6 +103,7 @@ export {
   ClientScheduleInterview,
   Engagement,
   UserActivation,
+  ClientManual,
 };
 
 //Agency Exports

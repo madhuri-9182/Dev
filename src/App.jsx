@@ -52,6 +52,7 @@ import {
   ClientScheduleInterview,
   Engagement,
   UserActivation,
+  ClientManual,
 } from "./Components";
 // Authentication Imports
 import {
@@ -192,6 +193,10 @@ const router = createBrowserRouter(
             <Route
               path="privacy-policy"
               element={<PrivacyPolicy />}
+            />
+            <Route
+              path="manual"
+              element={<ClientManual />}
             />
           </Route>
         </Route>
