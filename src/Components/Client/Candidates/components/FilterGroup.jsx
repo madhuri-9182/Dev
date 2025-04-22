@@ -10,7 +10,7 @@ export const FilterGroup = ({
   disabled = false, // Add disabled prop with default value
 }) => (
   <div className="flex items-center gap-3">
-        <span className="text-2xs font-semibold w-14 min-w-14">
+        <span className="text-2xs font-semibold w-16 min-w-16">
           {label}
         </span>
         <div className="flex items-center gap-2 flex-wrap">
@@ -46,7 +46,7 @@ export const FilterGroup = ({
               )}
               {label === "Role"
                 ? `${getJobLabel(option.name)} ( ${getSpecialization(option.specialization)})`
-                : option.name}
+                : label==='Roles' ? `${getJobLabel(option.name)}` : option.name}
             </button>
           ))}
         </div>
@@ -59,6 +59,7 @@ FilterGroup.propTypes = {
   selectedOption: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
+    PropTypes.array
   ]),
   onSelect: PropTypes.func,
   disabled: PropTypes.bool, // Add PropType for disabled

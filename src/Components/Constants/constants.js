@@ -16,6 +16,7 @@ import {
   DocumentText,
   Calendar2,
   Book1,
+  ChartSquare,
 } from "iconsax-react";
 
 export const EMAIL_REGEX =
@@ -64,11 +65,11 @@ export const CLIENT_NAVLINKS = [
     icon: Profile2User,
     link: "/client/candidates",
   },
-  // {
-  //   text: "Analytics",
-  //   icon: ChartSquare,
-  //   link: "/client/analytics",
-  // },
+  {
+    text: "Analytics",
+    icon: ChartSquare,
+    link: "/client/analytics",
+  },
   // {
   //   text: "Integration",
   //   icon: Setting,

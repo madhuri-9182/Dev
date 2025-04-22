@@ -172,7 +172,7 @@ const router = createBrowserRouter(
             <Route path="analytics">
               <Route index element={<Analytics />} />
               <Route
-                path="filter"
+                path=":id"
                 element={<AnalyticsDateFilter />}
               />
             </Route>
