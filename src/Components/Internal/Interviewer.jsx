@@ -41,6 +41,7 @@ function Interviewer() {
     experience: "",
     interviewer_level: "",
     skills: [],
+    strength: "",
   });
   const [itemsSkills, setItemsSkills] = useState([]);
   const [
@@ -48,6 +49,8 @@ function Interviewer() {
     selectedInterviewerLevel,
     setSelectedInterviewerLevel,
   ] = useState("");
+  // eslint-disable-next-line no-unused-vars
+  const [selectedStrength, setSelectedStrength] = useState("");
 
   const handleSkillSelection = (value) => {
     if (value && !itemsSkills.includes(value)) {
@@ -240,6 +243,8 @@ function Interviewer() {
     )
       updatedData.interviewer_level =
         data.interviewer_level;
+    if (data.strength !== editUser.strength)
+      updatedData.strength = data.strength;
     updatedData.assigned_domain_ids = items.join(",");
 
     if (itemsSkills.length > 0) {
@@ -287,6 +292,7 @@ function Interviewer() {
   const handleEditUserOpen = (interviewer) => {
     setEditUserOpen(true);
     setEditUser(interviewer);
+    setSelectedStrength(interviewer.strength);
     reset({
       name: interviewer.name,
       email: interviewer.email,
@@ -297,6 +303,7 @@ function Interviewer() {
       role: interviewer.assigned_domains,
       interviewer_level:
         interviewer.interviewer_level || "",
+      strength: interviewer.strength,
     });
     setItems(
       interviewer?.assigned_domains?.map(
@@ -794,6 +801,42 @@ function Interviewer() {
                   </span>
                 )}
               </div>
+
+              {/* Added Strength Field */}
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">
+                  Strength
+                </label>
+                <select
+                  name="strength"
+                  {...register("strength", {
+                    required: "Please select a strength.",
+                  })}
+                  onChange={(e) => {
+                    setSelectedStrength(e.target.value);
+                    setValue("strength", e.target.value);
+                  }}
+                  className="w-full h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+                  defaultValue={editUser.strength || ""}
+                >
+                  <option value="" disabled>
+                    Select Strength
+                  </option>
+                  {Object.entries(DOMAINS).map(
+                    ([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    )
+                  )}
+                </select>
+                {errors.strength && (
+                  <span className="error-message">
+                    {errors.strength.message}
+                  </span>
+                )}
+              </div>
+
               <div className="p-1 flex flex-col items-start w-full">
                 <label className="w-full font-medium text-[#6B6F7B] text-[12px] required-field-label">
                   Job Assigned
