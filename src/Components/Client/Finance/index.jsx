@@ -426,7 +426,7 @@ const Finance = () => {
     );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="px-6 pb-6 pt-1 max-w-7xl mx-auto">
       {/* Alert for pending last month dues */}
       {hasPendingLastMonthDues && (
         <LastMonthAlert
