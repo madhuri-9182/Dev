@@ -6,13 +6,18 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useQuery } from "@tanstack/react-query";
 import {
   ThemeProvider,
   createTheme,
 } from "@mui/material/styles";
 import { Calendar } from "iconsax-react";
-// Import Calendar icon - assuming you have a similar icon library
-// If you don't have iconsax-react, you can use another icon or create a simple calendar icon component
+import axios from "../../../api/axios";
+import {
+  ErrorState,
+  LoadingState,
+} from "../../shared/loading-error-state";
+import { getErrorMessage } from "../../../utils/util";
 
 // Status info card
 const StatusCard = ({ label, value }) => (
@@ -147,6 +152,7 @@ const EnhancedDateInput = ({ value, onChange, isFrom }) => {
               value={value ? dayjs(value) : null}
               onChange={(date) => handleDateChange(date)}
               closeOnSelect
+              disableFuture
               format="DD MMM YYYY"
               slotProps={{
                 textField: {
@@ -213,9 +219,10 @@ EnhancedDateInput.propTypes = {
 
 const AnalyticsDetail = () => {
   const { state } = useLocation();
-  console.log(state?.range, "range");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [datesInitialized, setDatesInitialized] =
+    useState(false);
 
   // Function to calculate dates based on range
   const calculateDates = (range) => {
@@ -253,50 +260,65 @@ const AnalyticsDetail = () => {
     };
   };
 
+  // Effect to initialize dates only once
   useEffect(() => {
+    // If dates are already initialized, exit early
+    if (datesInitialized) return;
+
+    // Initialize dates based on range
+    let dates;
     if (state?.range) {
-      const dates = calculateDates(state.range);
-      setStartDate(dates.startDate);
-      setEndDate(dates.endDate);
+      dates = calculateDates(state.range);
     } else {
       // Fallback to default dates if no range is provided
-      const dates = calculateDates("7days");
-      setStartDate(dates.startDate);
-      setEndDate(dates.endDate);
+      dates = calculateDates("7days");
     }
-  }, [state?.range]);
+    setStartDate(dates.startDate);
+    setEndDate(dates.endDate);
+    setDatesInitialized(true);
+  }, [state?.range, datesInitialized]);
 
-  // Example data - in a real application this would come from an API
-  const sampleData = {
-    status: "success",
-    message: "Analytics data retrieved successfully.",
-    data: {
-      status_info: {
-        total_candidates: 10,
-        total_interviews: 3,
-        top_performers: 1,
-        good_candidates: 0,
-        rejected: 1,
-        declined_by_candidate: 0,
-        male_count: 10,
-        female_count: 0,
-      },
-      selected_candidates: {
-        "JP Morgan": 10,
-        Dildo: 10,
-      },
-      rejected_candidates: {
-        "Enalo Technologies Pvt. Ltd.": 10,
-      },
-      ratio_details: {
-        selection_ratio: "3:10",
-        selection_ratio_for_diversity: "10:0",
-        total_male_vs_female: "10:0",
-      },
+  function formatDate(dateString) {
+    if (!dateString) return "";
+
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  }
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["analytics", startDate, endDate, state?.id],
+    queryFn: async () => {
+      const formattedStartDate = formatDate(startDate);
+      const formattedEndDate = formatDate(endDate);
+      const response = await axios.get(
+        `/api/client/candidate-analysis/${state?.id}`,
+        {
+          params: {
+            from_date: formattedStartDate,
+            to_date: formattedEndDate,
+          },
+        }
+      );
+      return response.data;
     },
+  });
+
+  // Custom date update functions
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+    // No need to set datesInitialized here as it's already true
   };
 
-  const analyticsData = sampleData.data;
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+    // No need to set datesInitialized here as it's already true
+  };
+
+  if (isLoading) return <LoadingState />;
+  if (isError)
+    return <ErrorState message={getErrorMessage(error)} />;
+
+  const analyticsData = data?.data;
 
   const selectedCandidates = Object.entries(
     analyticsData.selected_candidates || {}
@@ -349,14 +371,14 @@ const AnalyticsDetail = () => {
           <div className="flex items-center ">
             <EnhancedDateInput
               value={startDate}
-              onChange={setStartDate}
+              onChange={handleStartDateChange}
               isFrom={true}
             />
             {/* Vertical separator */}
             <div className="h-12 w-px bg-gray-300"></div>
             <EnhancedDateInput
               value={endDate}
-              onChange={setEndDate}
+              onChange={handleEndDateChange}
               isFrom={false}
             />
           </div>
@@ -402,7 +424,7 @@ const AnalyticsDetail = () => {
               />
             ))}
             {selectedCandidates.length === 0 && (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-gray-500 text-center py-4 text-sm">
                 No data available
               </p>
             )}
@@ -425,7 +447,7 @@ const AnalyticsDetail = () => {
               />
             ))}
             {rejectedCandidates.length === 0 && (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-gray-500 text-center py-4 text-sm">
                 No data available
               </p>
             )}
