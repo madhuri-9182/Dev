@@ -18,6 +18,8 @@ import {
   LoadingState,
 } from "../../shared/loading-error-state";
 import { getErrorMessage } from "../../../utils/util";
+import { useAnalyticsPdfGenerator } from "./useAnalyticsPdfGenerator";
+import { CompanyLogo } from "../../../assets";
 
 // Status info card
 const StatusCard = ({ label, value }) => (
@@ -223,6 +225,8 @@ const AnalyticsDetail = () => {
   const [endDate, setEndDate] = useState("");
   const [datesInitialized, setDatesInitialized] =
     useState(false);
+  const { isGeneratingPdf, generateAnalyticsReport } =
+    useAnalyticsPdfGenerator();
 
   // Function to calculate dates based on range
   const calculateDates = (range) => {
@@ -301,6 +305,7 @@ const AnalyticsDetail = () => {
       );
       return response.data;
     },
+    enabled: !!startDate && !!endDate && !!state?.id,
   });
 
   // Custom date update functions
@@ -314,6 +319,71 @@ const AnalyticsDetail = () => {
     // No need to set datesInitialized here as it's already true
   };
 
+  // Handle PDF generation when download button is clicked
+  const handleDownloadReport = async () => {
+    if (!data?.data) {
+      console.error("No data available for PDF generation");
+      return;
+    }
+
+    const analyticsData = data?.data;
+    const logoPath = CompanyLogo; // Replace with your actual logo path
+
+    // Format the data for PDF generation
+    const selectedCandidates = Object.entries(
+      analyticsData?.selected_candidates || {}
+    ).map(([company, value]) => ({
+      company,
+      percentage: value,
+    }));
+
+    const rejectedCandidates = Object.entries(
+      analyticsData?.rejected_candidates || {}
+    ).map(([company, value]) => ({
+      company,
+      percentage: value,
+    }));
+
+    // Format the status info entries
+    const statusInfoEntries = [
+      {
+        label: "Total Candidates",
+        value: analyticsData?.status_info.total_candidates,
+      },
+      {
+        label: "Total Interviews",
+        value: analyticsData?.status_info.total_interviews,
+      },
+      {
+        label: "Top Performers",
+        value: analyticsData?.status_info.top_performers,
+      },
+      {
+        label: "Good Candidates",
+        value: analyticsData?.status_info.good_candidates,
+      },
+      {
+        label: "Rejected",
+        value: analyticsData?.status_info.rejected,
+      },
+      {
+        label: "Declined by Candidate",
+        value:
+          analyticsData.status_info.declined_by_candidate,
+      },
+    ];
+
+    await generateAnalyticsReport(
+      analyticsData,
+      statusInfoEntries,
+      selectedCandidates,
+      rejectedCandidates,
+      startDate,
+      endDate,
+      logoPath
+    );
+  };
+
   if (isLoading) return <LoadingState />;
   if (isError)
     return <ErrorState message={getErrorMessage(error)} />;
@@ -321,14 +391,14 @@ const AnalyticsDetail = () => {
   const analyticsData = data?.data;
 
   const selectedCandidates = Object.entries(
-    analyticsData.selected_candidates || {}
+    analyticsData?.selected_candidates || {}
   ).map(([company, value]) => ({
     company,
     percentage: value,
   }));
 
   const rejectedCandidates = Object.entries(
-    analyticsData.rejected_candidates || {}
+    analyticsData?.rejected_candidates || {}
   ).map(([company, value]) => ({
     company,
     percentage: value,
@@ -338,28 +408,28 @@ const AnalyticsDetail = () => {
   const statusInfoEntries = [
     {
       label: "Total Candidates",
-      value: analyticsData.status_info.total_candidates,
+      value: analyticsData?.status_info.total_candidates,
     },
     {
       label: "Total Interviews",
-      value: analyticsData.status_info.total_interviews,
+      value: analyticsData?.status_info.total_interviews,
     },
     {
       label: "Top Performers",
-      value: analyticsData.status_info.top_performers,
+      value: analyticsData?.status_info.top_performers,
     },
     {
       label: "Good Candidates",
-      value: analyticsData.status_info.good_candidates,
+      value: analyticsData?.status_info.good_candidates,
     },
     {
       label: "Rejected",
-      value: analyticsData.status_info.rejected,
+      value: analyticsData?.status_info.rejected,
     },
     {
       label: "Declined by Candidate",
       value:
-        analyticsData.status_info.declined_by_candidate,
+        analyticsData?.status_info.declined_by_candidate,
     },
   ];
 
@@ -383,9 +453,15 @@ const AnalyticsDetail = () => {
             />
           </div>
 
-          <button className="primary-button gap-x-2 ml-4">
+          <button
+            className="primary-button gap-x-2 ml-4"
+            onClick={handleDownloadReport}
+            disabled={isGeneratingPdf}
+          >
             <MdOutlineFileDownload className="text-base" />
-            Download Report
+            {isGeneratingPdf
+              ? "Generating..."
+              : "Download Report"}
           </button>
         </div>
       </div>
@@ -463,21 +539,21 @@ const AnalyticsDetail = () => {
             <RatioCard
               title="Selection Ratio"
               value={
-                analyticsData.ratio_details
+                analyticsData?.ratio_details
                   .selection_ratio || "N/A"
               }
             />
             <RatioCard
               title="Selection Ratio for Diversity"
               value={
-                analyticsData.ratio_details
+                analyticsData?.ratio_details
                   .selection_ratio_for_diversity || "N/A"
               }
             />
             <RatioCard
               title="Total Male vs Female Profiles"
               value={
-                analyticsData.ratio_details
+                analyticsData?.ratio_details
                   .total_male_vs_female || "N/A"
               }
             />
