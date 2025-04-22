@@ -173,6 +173,197 @@ const InterviewerTermsAndConditions = () => {
         </div>
       </div>
 
+      {/* Section: Feedback Submission Timelines and Penalty Clause */}
+      <div className="mb-4 border-b border-gray-200 pb-2">
+        <div className="mb-2">
+          <h3 className="text-sm font-semibold text-red-600">
+            FEEDBACK SUBMISSION TIMELINES AND PENALTY CLAUSE
+          </h3>
+        </div>
+        <div className="mt-2 text-gray-800">
+          <h4 className="text-xs font-semibold mb-2 text-red-600">
+            AI Feedback Generation Process
+          </h4>
+          <p className="my-2 text-xs text-red-600">
+            The Hiringdog Interview Platform (HDIP) utilizes
+            AI to generate structured feedback forms based
+            on the interview recordings. This process
+            generally takes up to 100 minutes post-interview
+            completion. Once the AI-generated feedback form
+            is ready, the interviewer receives an email
+            notification.
+          </p>
+
+          <h4 className="text-xs font-semibold mb-2 mt-3 text-red-600">
+            Required Feedback Submission Timeline
+          </h4>
+          <p className="my-2 text-xs font-medium text-red-600">
+            Interviewers are requested to submit their final
+            feedback{" "}
+            <span className="text-red-600 font-semibold">
+              within one (1) hour
+            </span>{" "}
+            of receiving the AI-generated form to ensure a
+            prompt and high-quality experience for the
+            candidate and client.
+          </p>
+
+          <h4 className="text-xs font-semibold mb-2 mt-3 text-red-600">
+            Penalty for Delay in Feedback Submission
+          </h4>
+          <p className="my-2 text-xs text-red-600">
+            Any delay in submitting the feedback beyond the
+            permitted window will result in a{" "}
+            <span className="text-red-600 font-semibold">
+              monetary penalty
+            </span>
+            {`, which will be deducted from the interviewer's
+            payout. This clause is enforced to ensure timely
+            delivery to clients, as delays may result in
+            penalties being levied on HDIP.`}
+          </p>
+
+          <h4 className="text-xs font-semibold mb-2 mt-3 text-red-600">
+            Penalty Structure
+          </h4>
+          <p className="my-2 text-xs text-red-600">
+            The applicable penalties based on the time delay
+            post-AI feedback generation are as follows:
+          </p>
+          <div className="overflow-x-auto my-3">
+            <table className="min-w-full bg-white border border-gray-700 text-xs">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-700 px-3 py-2 text-left text-gray-800">
+                    Delay Duration (Post AI Feedback
+                    Generation)
+                  </th>
+                  <th className="border border-gray-700 px-3 py-2 text-left text-gray-800">
+                    Penalty Amount (INR)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="bg-green-100">
+                  <td className="border border-gray-700 px-3 py-2">
+                    AI + 60 Minutes
+                  </td>
+                  <td className="border border-gray-700 px-3 py-2">
+                    ₹0
+                  </td>
+                </tr>
+                <tr className="bg-red-100">
+                  <td className="border border-gray-700 px-3 py-2">
+                    1 – 2 Hours
+                  </td>
+                  <td className="border border-gray-700 px-3 py-2 text-red-600">
+                    ₹100
+                  </td>
+                </tr>
+                <tr className="bg-red-100">
+                  <td className="border border-gray-700 px-3 py-2">
+                    2 – 3 Hours
+                  </td>
+                  <td className="border border-gray-700 px-3 py-2 text-red-600">
+                    ₹300
+                  </td>
+                </tr>
+                <tr className="bg-red-100">
+                  <td className="border border-gray-700 px-3 py-2">
+                    3 – 5 Hours
+                  </td>
+                  <td className="border border-gray-700 px-3 py-2 text-red-600">
+                    ₹500
+                  </td>
+                </tr>
+                <tr className="bg-red-100">
+                  <td className="border border-gray-700 px-3 py-2">
+                    5 – 8 Hours
+                  </td>
+                  <td className="border border-gray-700 px-3 py-2 text-red-600">
+                    ₹700
+                  </td>
+                </tr>
+                <tr className="bg-red-100">
+                  <td className="border border-gray-700 px-3 py-2">
+                    8+ Hours
+                  </td>
+                  <td className="border border-gray-700 px-3 py-2 text-red-600">
+                    ₹1000
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 className="text-xs font-semibold mb-2 mt-3 text-red-600">
+            Special Timing Consideration for Late Evening
+            Interviews
+          </h4>
+          <p className="my-2 text-xs text-red-600">
+            If the interview ends after 8:30 PM, the time
+            window between 11:00 PM and 9:00 AM is
+            considered a grace period and is excluded from
+            the feedback delay calculation. The feedback
+            time will be counted starting from 9:00 AM the
+            following day.
+          </p>
+
+          <h4 className="text-xs font-semibold mb-2 mt-3 text-red-600">
+            Examples:
+          </h4>
+          <p className="my-2 text-xs font-semibold text-red-600">
+            Scenario 1:
+          </p>
+          <ul className="list-disc pl-8 text-xs text-red-600">
+            <li className="mb-1">
+              Interview ends at 8:00 PM
+            </li>
+            <li className="mb-1">
+              AI feedback form is generated by 10:00 PM
+            </li>
+            <li className="mb-1">
+              The first hour post-feedback generation (AI +
+              60 mins) = 10:00 PM – 11:00 PM
+            </li>
+            <li className="mb-1">
+              The next penalty bracket (1–2 hrs) = 9:00 AM –
+              10:00 AM (next day), and so on.
+            </li>
+          </ul>
+
+          <p className="my-2 text-xs font-semibold mt-3 text-red-600">
+            Scenario 2:
+          </p>
+          <ul className="list-disc pl-8 text-xs text-red-600">
+            <li className="mb-1">
+              Interview ends at 10:00 PM
+            </li>
+            <li className="mb-1">
+              AI feedback form is generated at 12:00 AM
+            </li>
+            <li className="mb-1">
+              AI + 60 mins will be counted from 9:00 AM –
+              10:00 AM (next day)
+            </li>
+            <li className="mb-1">
+              1–2 hours delay will be counted as 10:00 AM –
+              11:00 AM, and so on.
+            </li>
+          </ul>
+
+          <h4 className="text-xs font-semibold mb-2 mt-3 text-red-600">
+            Acknowledgment and Acceptance
+          </h4>
+          <p className="my-2 text-xs text-red-600">
+            By signing this agreement, the interviewer
+            acknowledges the importance of timely feedback
+            submission and agrees to the penalty terms
+            outlined above.
+          </p>
+        </div>
+      </div>
+
       {/* Section 5 */}
       <div className="mb-4 border-b border-gray-200 pb-2">
         <div className="mb-2">
