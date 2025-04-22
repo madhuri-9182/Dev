@@ -1,4 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { useInView } from "react-intersection-observer";
 import { createTheme } from "@mui/material/styles";
 import { Warning2 } from "iconsax-react";
@@ -20,7 +25,6 @@ import {
 import { usePdfGenerator } from "./hooks/usePdfGenerator";
 
 // Import the PDF generation function directly for past payments
-// This avoids using the hook's shared loading state
 import { generateCustomDateRangePdf } from "./utils/pdfGenerator";
 
 // API imports
@@ -32,10 +36,21 @@ import CurrentDues from "./components/CurrentDues";
 import PastPayments from "./components/PastPayments";
 import LastMonthModal from "./components/LastMonthModal";
 
+// InView options for better performance
+const INVIEW_OPTIONS = {
+  threshold: 0,
+  rootMargin: "300px 0px", // Load more data earlier
+  delay: 300, // Debounce observation
+  triggerOnce: false,
+};
+
 /**
  * Finance component - main entry point for the finance module
  */
 const Finance = () => {
+  // Auth check
+  const { auth } = useAuth();
+
   // State
   const [showDuesAlert, setShowDuesAlert] = useState(true);
   const [isLastMonthModalOpen, setIsLastMonthModalOpen] =
@@ -43,25 +58,38 @@ const Finance = () => {
   const [isPastPaymentsLoading, setIsPastPaymentsLoading] =
     useState(false);
 
-  // Ref to track if we've already tried to fetch next page
-  const fetchingRef = useRef(false);
-
-  // Auth check
-  const { auth } = useAuth();
-
-  // Intersection observer hooks for infinite scrolling with threshold and rootMargin
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin: "200px 0px",
-    delay: 300, // Add a slight delay to prevent multiple rapid triggers
+  // Refs for debouncing fetches
+  const fetchingRef = useRef({
+    current: false,
+    timeout: null,
+  });
+  const lastMonthFetchingRef = useRef({
+    current: false,
+    timeout: null,
   });
 
+  // Cleanup function for fetch timeouts
+  const cleanupFetchTimeouts = useCallback(() => {
+    if (fetchingRef.current.timeout) {
+      clearTimeout(fetchingRef.current.timeout);
+      fetchingRef.current.timeout = null;
+    }
+
+    if (lastMonthFetchingRef.current.timeout) {
+      clearTimeout(lastMonthFetchingRef.current.timeout);
+      lastMonthFetchingRef.current.timeout = null;
+    }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return cleanupFetchTimeouts;
+  }, [cleanupFetchTimeouts]);
+
+  // Intersection observer hooks for infinite scrolling
+  const { ref, inView } = useInView(INVIEW_OPTIONS);
   const { ref: lastMonthRef, inView: lastMonthInView } =
-    useInView({
-      threshold: 0,
-      rootMargin: "200px 0px",
-      delay: 300,
-    });
+    useInView(INVIEW_OPTIONS);
 
   // Custom theme for Material UI components
   const theme = createTheme({
@@ -122,7 +150,6 @@ const Finance = () => {
 
   // Get current finance data
   const {
-    // data,
     displayData,
     totalAmount,
     isLoading,
@@ -135,17 +162,16 @@ const Finance = () => {
 
   // Get last month finance data for alert
   const {
-    // lastMonthData,
     hasPendingLastMonthDues,
     lastMonthDueAmount,
     lastMonthName,
     isLastMonthLoading,
     isLastMonthError,
+    lastMonthError,
   } = useLastMonthFinanceData();
 
   // Get last month detailed data for modal
   const {
-    // lastMonthModalData,
     lastMonthDisplayData,
     lastMonthModalTotalAmount,
     isLastMonthModalLoading,
@@ -169,155 +195,212 @@ const Finance = () => {
     return false;
   });
 
-  // Fetch next page when scrolling into view for current dues
-  useEffect(() => {
-    // Only fetch if inView AND hasNextPage AND not already fetching AND not already tried fetching
+  // Safely fetch next page with debouncing
+  const safelyFetchNextPage = useCallback(() => {
     if (
-      inView &&
-      hasNextPage &&
-      !isFetchingNextPage &&
-      !fetchingRef.current
+      !hasNextPage ||
+      isFetchingNextPage ||
+      fetchingRef.current.current
     ) {
-      fetchingRef.current = true;
-      fetchNextPage().finally(() => {
-        // Reset the fetchingRef after a short delay to prevent excessive calls
-        setTimeout(() => {
-          fetchingRef.current = false;
+      return;
+    }
+
+    fetchingRef.current.current = true;
+
+    fetchNextPage()
+      .catch((err) => {
+        console.error("Error fetching next page:", err);
+      })
+      .finally(() => {
+        // Reset the fetching state after a delay to prevent excessive calls
+        if (fetchingRef.current.timeout) {
+          clearTimeout(fetchingRef.current.timeout);
+        }
+
+        fetchingRef.current.timeout = setTimeout(() => {
+          fetchingRef.current.current = false;
+          fetchingRef.current.timeout = null;
         }, 500);
       });
-    }
-  }, [
-    inView,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  ]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  // Reset the fetchingRef when hasNextPage changes to false
-  useEffect(() => {
-    if (!hasNextPage) {
-      fetchingRef.current = false;
-    }
-  }, [hasNextPage]);
-
-  // Ref to track if we've already tried to fetch next page for last month
-  const lastMonthFetchingRef = useRef(false);
-
-  // Fetch next page for last month modal when scrolling
-  useEffect(() => {
+  // Safely fetch next page for last month with debouncing
+  const safelyFetchLastMonthNextPage = useCallback(() => {
     if (
-      lastMonthInView &&
-      hasLastMonthModalNextPage &&
-      !isLastMonthModalFetchingNextPage &&
-      isLastMonthModalOpen &&
-      !lastMonthFetchingRef.current
+      !hasLastMonthModalNextPage ||
+      isLastMonthModalFetchingNextPage ||
+      lastMonthFetchingRef.current.current ||
+      !isLastMonthModalOpen
     ) {
-      lastMonthFetchingRef.current = true;
-      fetchLastMonthModalNextPage().finally(() => {
-        // Reset the lastMonthFetchingRef after a short delay
-        setTimeout(() => {
-          lastMonthFetchingRef.current = false;
-        }, 500);
-      });
+      return;
     }
+
+    lastMonthFetchingRef.current.current = true;
+
+    fetchLastMonthModalNextPage()
+      .catch((err) => {
+        console.error(
+          "Error fetching next page for last month:",
+          err
+        );
+      })
+      .finally(() => {
+        // Reset the fetching state after a delay to prevent excessive calls
+        if (lastMonthFetchingRef.current.timeout) {
+          clearTimeout(
+            lastMonthFetchingRef.current.timeout
+          );
+        }
+
+        lastMonthFetchingRef.current.timeout = setTimeout(
+          () => {
+            lastMonthFetchingRef.current.current = false;
+            lastMonthFetchingRef.current.timeout = null;
+          },
+          500
+        );
+      });
   }, [
-    lastMonthInView,
     fetchLastMonthModalNextPage,
     hasLastMonthModalNextPage,
     isLastMonthModalFetchingNextPage,
     isLastMonthModalOpen,
   ]);
 
+  // Fetch next page when scrolling into view for current dues
+  useEffect(() => {
+    if (inView) {
+      safelyFetchNextPage();
+    }
+  }, [inView, safelyFetchNextPage]);
+
+  // Reset the fetchingRef when hasNextPage changes to false
+  useEffect(() => {
+    if (!hasNextPage) {
+      fetchingRef.current.current = false;
+    }
+  }, [hasNextPage]);
+
+  // Fetch next page for last month modal when scrolling
+  useEffect(() => {
+    if (lastMonthInView) {
+      safelyFetchLastMonthNextPage();
+    }
+  }, [lastMonthInView, safelyFetchLastMonthNextPage]);
+
   // Reset the lastMonthFetchingRef when hasLastMonthModalNextPage changes to false
   useEffect(() => {
     if (!hasLastMonthModalNextPage) {
-      lastMonthFetchingRef.current = false;
+      lastMonthFetchingRef.current.current = false;
     }
   }, [hasLastMonthModalNextPage]);
 
-  // Toggle last month modal
-  const toggleLastMonthModal = () => {
+  // Toggle last month modal with proper cleanup
+  const toggleLastMonthModal = useCallback(() => {
     setIsLastMonthModalOpen((prev) => !prev);
-  };
+
+    // Reset fetching state when closing modal
+    if (isLastMonthModalOpen) {
+      lastMonthFetchingRef.current.current = false;
+      if (lastMonthFetchingRef.current.timeout) {
+        clearTimeout(lastMonthFetchingRef.current.timeout);
+        lastMonthFetchingRef.current.timeout = null;
+      }
+    }
+  }, [isLastMonthModalOpen]);
 
   // Handler for generating current month PDF
-  const handleGenerateCurrentMonthPdf = () => {
+  const handleGenerateCurrentMonthPdf = useCallback(() => {
     generateCurrentMonthPdf(
       displayData,
       totalAmount,
       CompanyLogo
     );
-  };
+  }, [displayData, generateCurrentMonthPdf, totalAmount]);
 
   // Handler for generating last month PDF
-  const handleGenerateLastMonthPdf = () => {
+  const handleGenerateLastMonthPdf = useCallback(() => {
     generateLastMonthPdf(
       lastMonthDisplayData,
       lastMonthModalTotalAmount,
       CompanyLogo
     );
-  };
+  }, [
+    generateLastMonthPdf,
+    lastMonthDisplayData,
+    lastMonthModalTotalAmount,
+  ]);
 
-  // Handler for past payments download - With completely independent PDF generation
-  const handlePastPaymentsDownload = async (dateRange) => {
-    // Set our own, independent loading state to true
-    setIsPastPaymentsLoading(true);
+  // Handler for past payments download - With improved error handling
+  const handlePastPaymentsDownload = useCallback(
+    async (dateRange) => {
+      if (isPastPaymentsLoading) {
+        return; // Prevent multiple concurrent downloads
+      }
 
-    try {
-      // Call the finance API with properly named date filters
-      const response = await getFinance({
-        page: 1,
-        param: {
-          from_date: dateRange.from,
-          to_date: dateRange.to,
-        },
-      });
-      // Check if there are results
-      if (
-        !response.results ||
-        response.results.length === 0
-      ) {
-        // Show error toast if no data
-        toast.error(
-          "No results found for the selected time period"
-        );
-      } else {
+      // Validate date range
+      if (!dateRange?.from || !dateRange?.to) {
+        toast.error("Please select valid date range");
+        return;
+      }
+
+      setIsPastPaymentsLoading(true);
+
+      try {
+        // Call the finance API with properly named date filters
+        const response = await getFinance({
+          page: 1,
+          param: {
+            from_date: dateRange.from,
+            to_date: dateRange.to,
+          },
+        });
+
+        // Check if there are results
+        if (
+          !response?.results ||
+          response.results.length === 0
+        ) {
+          toast.error(
+            "No results found for the selected time period"
+          );
+          return;
+        }
+
         // Calculate total amount for PDF
         const pdfTotalAmount = response.results.reduce(
           (sum, item) => {
-            return (
-              sum + (parseFloat(item.client_amount) || 0)
-            );
+            const amount = parseFloat(item?.client_amount);
+            return sum + (isNaN(amount) ? 0 : amount);
           },
           0
         );
 
-        // Call the PDF generation function directly instead of using the hook
-        // This ensures completely independent loading state
-        try {
-          await generateCustomDateRangePdf(
-            response.results,
-            pdfTotalAmount,
-            CompanyLogo,
-            dateRange.from,
-            dateRange.to
-          );
-        } catch (pdfError) {
-          console.error("Error generating PDF:", pdfError);
-          toast.error("Failed to generate PDF");
-        }
+        // Generate PDF
+        await generateCustomDateRangePdf(
+          response.results,
+          pdfTotalAmount,
+          CompanyLogo,
+          dateRange.from,
+          dateRange.to
+        );
+
+        toast.success("PDF generated successfully");
+      } catch (error) {
+        console.error(
+          "Error with past payments download:",
+          error
+        );
+        toast.error(
+          "Failed to download payments: " +
+            getErrorMessage(error)
+        );
+      } finally {
+        setIsPastPaymentsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching past payments:", error);
-      toast.error(
-        "Failed to download payments: " +
-          getErrorMessage(error)
-      );
-    } finally {
-      // Reset our own loading state
-      setIsPastPaymentsLoading(false);
-    }
-  };
+    },
+    [isPastPaymentsLoading]
+  );
 
   // Access control check
   if (auth?.role !== "client_owner") {
@@ -331,11 +414,16 @@ const Finance = () => {
     );
   }
 
-  // Loading and error states
+  // Loading and error states with better error display
   if (isLoading || isLastMonthLoading)
     return <LoadingState />;
-  if (isError && isLastMonthError)
-    return <ErrorState message={getErrorMessage(error)} />;
+
+  if (isError || isLastMonthError)
+    return (
+      <ErrorState
+        message={getErrorMessage(error || lastMonthError)}
+      />
+    );
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
