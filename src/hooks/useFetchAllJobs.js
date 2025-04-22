@@ -37,8 +37,9 @@ const useAllJobs = () => {
   return useQuery({
     queryKey: ["all-jobs", auth],
     queryFn: fetchAllJobs,
-    staleTime: 1000 * 60 * 5, // Cache the data for 5 minutes
+    staleTime: 1000 * 60 * 4, // Cache the data for 5 minutes
     refetchOnWindowFocus: false, // Prevent refetching on window focus
+    refetchInterval: 1000 * 60 * 4,
   });
 };
 

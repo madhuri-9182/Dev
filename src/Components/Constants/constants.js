@@ -95,7 +95,7 @@ export const CLIENT_NAVLINKS = [
     link: "/client/privacy-policy",
   },
   {
-    text: "Manual",
+    text: "User Manual",
     icon: Book1,
     link: "/client/manual",
   },
