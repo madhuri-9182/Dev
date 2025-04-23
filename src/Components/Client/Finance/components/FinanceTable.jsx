@@ -7,6 +7,17 @@ import {
 } from "../utils/formatters";
 import Empty from "../../../shared/Empty";
 
+const formatYearsAndMonths = (years, months) => {
+  if (years === undefined || months === undefined)
+    return "N/A";
+
+  // Calculate the decimal representation of years with months
+  const decimalYears = years + months / 12;
+
+  // Format to 2 decimal places
+  return `${decimalYears.toFixed(2)} Years`;
+};
+
 /**
  * Reusable finance data table component (memoized)
  */
@@ -17,6 +28,7 @@ const FinanceTable = memo(
     isFetchingNextPage = false,
     hasNextPage = false,
     infiniteScrollRef,
+    isPastPaymentsTable,
   }) => {
     // Track the data length to detect duplicates (for debugging)
     const prevDataLength = useRef(0);
@@ -53,7 +65,9 @@ const FinanceTable = memo(
       tableRow: (index) =>
         `${
           index % 2 === 1
-            ? "bg-[#e5ecf6d4] border-y border-[#0000001A]"
+            ? isPastPaymentsTable
+              ? "bg-[#FFC7001F] border-y border-[#0000001A]"
+              : "bg-[#e5ecf6d4] border-y border-[#0000001A]"
             : ""
         } 
        grid grid-cols-[2.5fr_2.5fr_2.5fr_2.5fr_2fr]`,
@@ -110,10 +124,10 @@ const FinanceTable = memo(
                       "N/A"}
                   </td>
                   <td className={tableStyles.standard}>
-                    {item.candidate?.year !== undefined &&
-                    item.candidate?.month !== undefined
-                      ? `${item.candidate.year}.${item.candidate.month} Years`
-                      : "N/A"}
+                    {formatYearsAndMonths(
+                      item.candidate?.year,
+                      item.candidate?.month
+                    )}
                   </td>
                   <td className={tableStyles.standard}>
                     {item.scheduled_time
@@ -154,6 +168,7 @@ FinanceTable.propTypes = {
   isFetchingNextPage: PropTypes.bool,
   hasNextPage: PropTypes.bool,
   infiniteScrollRef: PropTypes.any,
+  isPastPaymentsTable: PropTypes.bool,
 };
 
 export default FinanceTable;

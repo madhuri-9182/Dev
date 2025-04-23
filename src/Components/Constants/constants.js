@@ -174,11 +174,11 @@ export const INTERVIEWER_NAVLINKS = [
     icon: Calendar2,
     link: "/interviewer/calendar",
   },
-  // {
-  //   text: "Check Receivables",
-  //   icon: Cards,
-  //   link: "/interviewer/payments",
-  // },
+  {
+    text: "Check Receivables",
+    icon: Cards,
+    link: "/interviewer/finance",
+  },
   {
     text: "Terms & Conditions",
     icon: DocumentText,
