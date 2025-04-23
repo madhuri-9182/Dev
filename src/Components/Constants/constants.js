@@ -83,7 +83,7 @@ export const CLIENT_NAVLINKS = [
   {
     text: "Engagement",
     icon: Share,
-    link: "/client/engagement/dashboard",
+    link: "/client/engagement/",
   },
   {
     text: "Terms & Conditions",
