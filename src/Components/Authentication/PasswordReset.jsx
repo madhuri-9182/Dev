@@ -72,12 +72,27 @@ const PasswordReset = () => {
       setSuccess(true);
     },
     onError: (error) => {
-      if (!error?.response) {
-        toast.error("No Server Response");
-      } else if (error.response?.status === 404) {
-        toast.error(error.response.data.errors[0]);
+      if (error.response?.data?.errors) {
+        // Check if errors is a string or an object
+        if (
+          typeof error.response.data.errors === "string"
+        ) {
+          // If it's a string, show that directly
+          toast.error(error.response.data.errors);
+        } else {
+          // If it's an object, use the existing logic
+          const errorMessage = Object.values(
+            error.response.data.errors
+          ).flat();
+          if (errorMessage.length > 0) {
+            toast.error(errorMessage[0]);
+          }
+        }
       } else {
-        toast.error("Password reset failed");
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to process user data"
+        );
       }
     },
   });
