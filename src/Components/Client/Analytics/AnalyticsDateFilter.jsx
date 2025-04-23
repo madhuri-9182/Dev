@@ -20,6 +20,7 @@ import {
 import { getErrorMessage } from "../../../utils/util";
 import { useAnalyticsPdfGenerator } from "./useAnalyticsPdfGenerator";
 import { CompanyLogo } from "../../../assets";
+import Empty from "../../shared/Empty";
 
 // Status info card
 const StatusCard = ({ label, value }) => (
@@ -502,11 +503,7 @@ const AnalyticsDetail = () => {
                 index={index}
               />
             ))}
-            {selectedCandidates.length === 0 && (
-              <p className="text-gray-500 text-center py-4 text-sm">
-                No data available
-              </p>
-            )}
+            {selectedCandidates.length === 0 && <Empty />}
           </div>
         </div>
 
@@ -525,11 +522,7 @@ const AnalyticsDetail = () => {
                 index={index}
               />
             ))}
-            {rejectedCandidates.length === 0 && (
-              <p className="text-gray-500 text-center py-4 text-sm">
-                No data available
-              </p>
-            )}
+            {rejectedCandidates.length === 0 && <Empty />}
           </div>
         </div>
 
