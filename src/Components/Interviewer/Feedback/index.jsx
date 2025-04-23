@@ -213,6 +213,7 @@ const Feedback = () => {
     reset,
     trigger,
     watch,
+    clearErrors,
   } = useForm({
     defaultValues: DEFAULT_FORM_VALUES,
     mode: "onChange",
@@ -605,16 +606,39 @@ const Feedback = () => {
 
   // Utility function to remove a question from a skill
   const removeQuestion = (skillIndex, questionIndex) => {
+    // First explicitly clear errors for the question being removed
+    // This prevents errors from "sticking" to the next question
+    clearErrors(
+      `skills.${skillIndex}.questions.${questionIndex}`
+    );
+
+    // Get the current skill data
     const currentSkill = getValues(`skills.${skillIndex}`);
     const updatedQuestions = [...currentSkill.questions];
+
+    // Remove the question
     updatedQuestions.splice(questionIndex, 1);
 
+    // Create updated skill with removed question
     const updatedSkill = {
       ...currentSkill,
       questions: updatedQuestions,
     };
 
+    // Update the skill in the form state
     updateSkill(skillIndex, updatedSkill);
+
+    // Clear any errors that might have been shifted to wrong positions
+    // This ensures a clean error state after question removal
+    updatedQuestions.forEach((_, idx) => {
+      // Only clear errors for indices at or above the removed question
+      // as those are the ones that shifted position
+      if (idx >= questionIndex) {
+        clearErrors(
+          `skills.${skillIndex}.questions.${idx}`
+        );
+      }
+    });
   };
 
   // Loading and error states

@@ -6,35 +6,11 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { getColorForValue } from "../utils";
-import {
-  useEffect,
-  useRef,
-  memo,
-  useState,
-  useCallback,
-} from "react";
+import { useState } from "react";
 
-// Constants for textarea sizing
-const TEXTAREA_CONFIG = {
-  MIN_HEIGHT: "3.2rem",
-  MIN_HEIGHT_PX: 48, // ~2rem
-  MAX_HEIGHT_PX: 80, // ~5rem
-  INITIAL_ROWS: 2,
-};
-
-// Prop types definition for better readability
+// Simplified prop types
 const skillItemPropTypes = {
-  skillField: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    skillName: PropTypes.string,
-    score: PropTypes.number,
-    questions: PropTypes.arrayOf(
-      PropTypes.shape({
-        question: PropTypes.string,
-        answer: PropTypes.string,
-      })
-    ),
-  }).isRequired,
+  skillField: PropTypes.object.isRequired,
   skillIndex: PropTypes.number.isRequired,
   control: PropTypes.object.isRequired,
   errors: PropTypes.object,
@@ -52,75 +28,11 @@ const SkillItem = ({
   removeQuestion,
   removeSkill,
 }) => {
-  // Ref to track the skill item container for scroll position restoration
-  const skillContainerRef = useRef(null);
-
-  // Store scroll position before DOM updates
-  const scrollPositionRef = useRef(0);
-
-  // Track which questions were recently added to only resize those
-  const [
-    lastAddedQuestionIndex,
-    setLastAddedQuestionIndex,
-  ] = useState(null);
-
-  // Save scroll position before adding/removing questions
-  const saveScrollPosition = () => {
-    if (skillContainerRef.current) {
-      scrollPositionRef.current = window.scrollY;
-    }
-  };
-
-  // Restore scroll position after DOM updates
-  const restoreScrollPosition = () => {
-    window.scrollTo({
-      top: scrollPositionRef.current,
-      behavior: "auto", // Using "auto" instead of "smooth" to prevent additional visual changes
-    });
-  };
-
-  // Function to adjust textarea height with optimizations - memoized to prevent recreating on every render
-  const autoResizeTextarea = useCallback(
-    (element, force = false) => {
-      if (!element) return;
-
-      // Skip resizing for textareas that don't need it
-      if (
-        !force &&
-        element.dataset.heightCalculated === "true"
-      ) {
-        return;
-      }
-
-      // Reset height to calculate the proper scrollHeight
-      element.style.height = TEXTAREA_CONFIG.MIN_HEIGHT;
-
-      // Calculate new height based on scrollHeight (clamped between min and max)
-      const newHeight = Math.min(
-        Math.max(
-          element.scrollHeight,
-          TEXTAREA_CONFIG.MIN_HEIGHT_PX
-        ),
-        TEXTAREA_CONFIG.MAX_HEIGHT_PX
-      );
-
-      // Only update if height actually changed
-      if (parseInt(element.style.height) !== newHeight) {
-        element.style.height = `${newHeight}px`;
-      }
-
-      // Mark this textarea as having its height calculated
-      element.dataset.heightCalculated = "true";
-    },
-    []
-  );
-
-  // Helper function to get error message
+  // Helper function to get error message from nested errors object
   const getErrorMessage = (path) => {
     const parts = path.split(".");
     let error = errors;
 
-    // Navigate through the error object based on the path
     for (const part of parts) {
       if (!error || !error[part]) return null;
       error = error[part];
@@ -129,54 +41,9 @@ const SkillItem = ({
     return error.message;
   };
 
-  // Common textarea style with transition for smooth height changes
-  const textareaStyle = {
-    minHeight: TEXTAREA_CONFIG.MIN_HEIGHT,
-    maxHeight: `${TEXTAREA_CONFIG.MAX_HEIGHT_PX}px`,
-    whiteSpace: "normal",
-    overflowWrap: "break-word",
-    transition: "height 150ms ease-out", // Smooth transition for height changes
-  };
-
-  // Clear the last added question index whenever questions change
-  useEffect(() => {
-    if (lastAddedQuestionIndex !== null) {
-      // Reset the last added question index after a short delay
-      const timeoutId = setTimeout(() => {
-        setLastAddedQuestionIndex(null);
-      }, 300); // Delay should be longer than transition time
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [
-    lastAddedQuestionIndex,
-    skillField.questions?.length,
-  ]);
-
-  // Wrapped add/remove functions to preserve scroll position and track changes
-  const handleAddQuestion = (index) => {
-    saveScrollPosition();
-    addQuestion(index);
-    // Set the last added question index to the new one
-    setLastAddedQuestionIndex(
-      skillField.questions?.length || 0
-    );
-    // Restore scroll after DOM update
-    setTimeout(restoreScrollPosition, 0);
-  };
-
-  const handleRemoveQuestion = (skillIdx, questionIdx) => {
-    saveScrollPosition();
-    removeQuestion(skillIdx, questionIdx);
-    // No need to recalculate heights when removing - existing textareas stay the same
-    // Restore scroll after DOM update
-    setTimeout(restoreScrollPosition, 0);
-  };
-
   return (
     <div
-      ref={skillContainerRef}
-      className="bg-[#E8F0F5] p-6 rounded-lg mb-6 transition-all duration-150 ease-out"
+      className="bg-[#E8F0F5] p-6 rounded-lg mb-6"
       data-error-section={`skills.${skillIndex}`}
     >
       {/* Header with skill name and score */}
@@ -218,6 +85,7 @@ const SkillItem = ({
             </span>
           )}
         </div>
+
         {/* Score slider and remove button */}
         <div className="">
           <div className="flex items-center">
@@ -265,26 +133,19 @@ const SkillItem = ({
         </div>
       </div>
 
-      {/* Questions container with smooth transition */}
-      <div className="questions-container transition-all duration-150 ease-out">
+      {/* Questions container */}
+      <div className="questions-container">
         {skillField.questions?.map(
           (question, questionIndex) => (
-            <MemoizedQuestionAnswerPair
+            <QuestionAnswerPair
               key={`${skillField.id}-q-${questionIndex}`}
               skillIndex={skillIndex}
               questionIndex={questionIndex}
               control={control}
               errors={errors}
               getErrorMessage={getErrorMessage}
-              removeQuestion={handleRemoveQuestion}
-              textareaStyle={textareaStyle}
-              autoResizeTextarea={autoResizeTextarea}
+              removeQuestion={removeQuestion}
               showRemoveButton={questionIndex > 0}
-              isNewlyAdded={
-                questionIndex === lastAddedQuestionIndex
-              }
-              questionText={question.question || ""}
-              answerText={question.answer || ""}
             />
           )
         )}
@@ -295,7 +156,7 @@ const SkillItem = ({
         <button
           type="button"
           className="rounded-full bg-gray-800 p-2 hover:opacity-90"
-          onClick={() => handleAddQuestion(skillIndex)}
+          onClick={() => addQuestion(skillIndex)}
           aria-label="Add question"
         >
           <PlusIcon className="w-5 h-5 text-white" />
@@ -347,16 +208,13 @@ const SkillItem = ({
   );
 };
 
-export default SkillItem;
-
-// Component for the score slider
+// Component for the score slider - simplified
 const ScoreSlider = ({
   value,
   onChange,
   hasError,
   errorKey,
 }) => {
-  // Calculate the color based on the current value
   const trackColor = hasError
     ? "#ffb4b4"
     : getColorForValue(value);
@@ -419,142 +277,41 @@ const ScoreSlider = ({
   );
 };
 
-// Component for question and answer pair with Controller implementation
+// Simplified question and answer component
 const QuestionAnswerPair = ({
   skillIndex,
   questionIndex,
   control,
   getErrorMessage,
   removeQuestion,
-  textareaStyle,
-  // autoResizeTextarea,
   showRemoveButton,
-  isNewlyAdded,
-  questionText,
-  answerText,
 }) => {
-  // Refs for the textareas
-  const questionTextareaRef = useRef(null);
-  const answerTextareaRef = useRef(null);
+  const [textareaHeight, setTextareaHeight] = useState({
+    question: "3.2rem",
+    answer: "3.2rem",
+  });
 
-  // Cache for storing calculated heights by text content
-  const questionHeightCache = useRef(new Map());
-  const answerHeightCache = useRef(new Map());
+  // Simple autosize function
+  const handleTextareaChange = (field, type) => (e) => {
+    const { value } = e.target;
+    field.onChange(value);
 
-  // Refs to track previous content
-  const prevQuestionContent = useRef(questionText);
-  const prevAnswerContent = useRef(answerText);
+    // Reset height to recalculate
+    e.target.style.height = "3.2rem";
 
-  // Custom resize function that uses cache
-  const resizeWithCache = useCallback(
-    (element, content, cache) => {
-      if (!element) return;
-
-      // If we have a cached height for this exact content, use it
-      if (cache.current.has(content)) {
-        const cachedHeight = cache.current.get(content);
-        if (element.style.height !== cachedHeight) {
-          element.style.height = cachedHeight;
-        }
-        return;
-      }
-
-      // Otherwise, calculate height
-      element.style.height = TEXTAREA_CONFIG.MIN_HEIGHT;
-
-      const newHeight = Math.min(
-        Math.max(
-          element.scrollHeight,
-          TEXTAREA_CONFIG.MIN_HEIGHT_PX
-        ),
-        TEXTAREA_CONFIG.MAX_HEIGHT_PX
-      );
-
-      const heightString = `${newHeight}px`;
-      element.style.height = heightString;
-
-      // Store in cache for future use
-      cache.current.set(content, heightString);
-    },
-    []
-  );
-
-  // Effect to handle initial resize - only if content changed or first render
-  useEffect(() => {
-    // Only resize if content changed or is newly added
-    if (
-      isNewlyAdded ||
-      questionText !== prevQuestionContent.current ||
-      answerText !== prevAnswerContent.current
-    ) {
-      // Update the question textarea if needed
-      if (
-        questionTextareaRef.current &&
-        (isNewlyAdded ||
-          questionText !== prevQuestionContent.current)
-      ) {
-        resizeWithCache(
-          questionTextareaRef.current,
-          questionText,
-          questionHeightCache
-        );
-        prevQuestionContent.current = questionText;
-      }
-
-      // Update the answer textarea if needed
-      if (
-        answerTextareaRef.current &&
-        (isNewlyAdded ||
-          answerText !== prevAnswerContent.current)
-      ) {
-        resizeWithCache(
-          answerTextareaRef.current,
-          answerText,
-          answerHeightCache
-        );
-        prevAnswerContent.current = answerText;
-      }
-    }
-  }, [
-    isNewlyAdded,
-    questionText,
-    answerText,
-    resizeWithCache,
-  ]);
-
-  // Custom onChange handlers to update height only when content changes
-  const handleQuestionChange = (onChange) => (e) => {
-    const newValue = e.target.value;
-    onChange(newValue);
-
-    // Only resize if content actually changed
-    if (newValue !== prevQuestionContent.current) {
-      resizeWithCache(
-        e.target,
-        newValue,
-        questionHeightCache
-      );
-      prevQuestionContent.current = newValue;
-    }
-  };
-
-  const handleAnswerChange = (onChange) => (e) => {
-    const newValue = e.target.value;
-    onChange(newValue);
-
-    // Only resize if content actually changed
-    if (newValue !== prevAnswerContent.current) {
-      resizeWithCache(
-        e.target,
-        newValue,
-        answerHeightCache
-      );
-      prevAnswerContent.current = newValue;
-    }
+    // Set new height based on scrollHeight
+    const newHeight = Math.min(
+      Math.max(e.target.scrollHeight, 48),
+      80
+    );
+    setTextareaHeight((prev) => ({
+      ...prev,
+      [type]: `${newHeight}px`,
+    }));
   };
 
   return (
-    <div className="mb-5 question-answer-container transition-all duration-150 ease-out">
+    <div className="mb-5">
       {/* Question input */}
       <div className="flex items-start">
         <span className="font-[550] mr-4 text-default w-6 mt-2">
@@ -581,19 +338,19 @@ const QuestionAnswerPair = ({
               <textarea
                 className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
                 placeholder="Question"
-                rows={TEXTAREA_CONFIG.INITIAL_ROWS}
-                style={textareaStyle}
-                data-error-key={`skills.${skillIndex}.questions.${questionIndex}.question`}
-                value={field.value || ""}
-                onChange={handleQuestionChange(
-                  field.onChange
-                )}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={(el) => {
-                  field.ref && field.ref(el);
-                  questionTextareaRef.current = el;
+                rows={2}
+                style={{
+                  minHeight: "3.2rem",
+                  height: textareaHeight.question,
+                  maxHeight: "80px",
+                  transition: "height 150ms ease-out",
                 }}
+                data-error-key={`skills.${skillIndex}.questions.${questionIndex}.question`}
+                {...field}
+                onChange={handleTextareaChange(
+                  field,
+                  "question"
+                )}
               />
             )}
           />
@@ -647,19 +404,19 @@ const QuestionAnswerPair = ({
               <textarea
                 className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
                 placeholder="Answer"
-                rows={TEXTAREA_CONFIG.INITIAL_ROWS}
-                style={textareaStyle}
-                data-error-key={`skills.${skillIndex}.questions.${questionIndex}.answer`}
-                value={field.value || ""}
-                onChange={handleAnswerChange(
-                  field.onChange
-                )}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={(el) => {
-                  field.ref && field.ref(el);
-                  answerTextareaRef.current = el;
+                rows={2}
+                style={{
+                  minHeight: "3.2rem",
+                  height: textareaHeight.answer,
+                  maxHeight: "80px",
+                  transition: "height 150ms ease-out",
                 }}
+                data-error-key={`skills.${skillIndex}.questions.${questionIndex}.answer`}
+                {...field}
+                onChange={handleTextareaChange(
+                  field,
+                  "answer"
+                )}
               />
             )}
           />
@@ -678,31 +435,6 @@ const QuestionAnswerPair = ({
   );
 };
 
-// Memoized version of QuestionAnswerPair to prevent unnecessary re-renders
-const MemoizedQuestionAnswerPair = memo(
-  QuestionAnswerPair,
-  (prevProps, nextProps) => {
-    // Only re-render if one of these essential props changed
-    return (
-      prevProps.questionIndex === nextProps.questionIndex &&
-      prevProps.skillIndex === nextProps.skillIndex &&
-      prevProps.isNewlyAdded === nextProps.isNewlyAdded &&
-      prevProps.questionText === nextProps.questionText &&
-      prevProps.answerText === nextProps.answerText &&
-      prevProps.showRemoveButton ===
-        nextProps.showRemoveButton &&
-      JSON.stringify(
-        prevProps.errors?.skills?.[prevProps.skillIndex]
-          ?.questions?.[prevProps.questionIndex]
-      ) ===
-        JSON.stringify(
-          nextProps.errors?.skills?.[nextProps.skillIndex]
-            ?.questions?.[nextProps.questionIndex]
-        )
-    );
-  }
-);
-
 // Assign prop types
 SkillItem.propTypes = skillItemPropTypes;
 ScoreSlider.propTypes = {
@@ -718,12 +450,7 @@ QuestionAnswerPair.propTypes = {
   errors: PropTypes.object,
   getErrorMessage: PropTypes.func.isRequired,
   removeQuestion: PropTypes.func.isRequired,
-  textareaStyle: PropTypes.object.isRequired,
-  autoResizeTextarea: PropTypes.func.isRequired,
   showRemoveButton: PropTypes.bool.isRequired,
-  isNewlyAdded: PropTypes.bool,
-  questionText: PropTypes.string,
-  answerText: PropTypes.string,
 };
-MemoizedQuestionAnswerPair.propTypes =
-  QuestionAnswerPair.propTypes;
+
+export default SkillItem;
