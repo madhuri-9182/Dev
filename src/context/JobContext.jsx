@@ -4,6 +4,7 @@ import {
   useContext,
   createContext,
   useEffect,
+  useCallback,
 } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { createFileFromUrl } from "../utils/util";
@@ -71,66 +72,72 @@ export const JobProvider = () => {
     useState([]);
 
   // Complete reset function to clear all job-related state
-  const reset = () => {
+  const reset = useCallback(() => {
     setFormdata(initialState);
     setSelectedData({});
     setOriginalFormData(null);
     setJobDetails(initialDetailsState);
     setInitialJobDetails([]);
-  };
+  }, []);
 
   // Clear only form data but keep selected data
-  const clearFormData = () => {
+  const clearFormData = useCallback(() => {
     setFormdata(initialState);
     setOriginalFormData(null);
     setJobDetails(initialDetailsState);
     setInitialJobDetails([]);
-  };
+  }, []);
 
-  const handleShowJobDetails = (data) => {
-    if (!data) return;
+  const handleShowJobDetails = useCallback(
+    (data) => {
+      if (!data) return;
 
-    // Set loading state
-    setIsLoading(true);
-
-    // Clear form data but keep the selected data
-    clearFormData();
-
-    // Set the new job data
-    setSelectedData(data);
-
-    // Navigate to job details
-    navigateTo("jobs/job-details");
-  };
-
-  const handleAddJobClick = (data) => {
-    // Set loading state if there's job data
-    const isEdit =
-      data &&
-      typeof data === "object" &&
-      !data.nativeEvent &&
-      Object.keys(data).length !== 0;
-
-    if (isEdit) {
+      // Set loading state
       setIsLoading(true);
+
+      // Clear form data but keep the selected data
       clearFormData();
+
+      // Set the new job data
       setSelectedData(data);
-    } else {
-      // For new job, just reset everything
-      reset();
-    }
 
-    navigateTo("jobs/add-job");
-  };
+      // Navigate to job details
+      navigateTo("jobs/job-details");
+    },
+    [clearFormData, navigateTo]
+  );
 
-  const handleArchiveModalOpen = (id) => {
+  const handleAddJobClick = useCallback(
+    (data) => {
+      // Set loading state if there's job data
+      const isEdit =
+        data &&
+        typeof data === "object" &&
+        !data.nativeEvent &&
+        Object.keys(data).length !== 0;
+
+      if (isEdit) {
+        setIsLoading(true);
+        clearFormData();
+        setSelectedData(data);
+      } else {
+        // For new job, just reset everything
+        reset();
+      }
+
+      navigateTo("jobs/add-job");
+    },
+    [clearFormData, navigateTo, reset]
+  );
+
+  const handleArchiveModalOpen = useCallback((id) => {
     setArchiveId(id);
     setIsArchiveModalOpen(true);
-  };
+  }, []);
 
-  const handleChangePage = (page) => {
+  const handleChangePage = useCallback((page) => {
     setCurrentPage(page);
-  };
+  }, []);
 
   const isEdit =
     selectedData &&
@@ -139,12 +146,12 @@ export const JobProvider = () => {
     Object.keys(selectedData).length !== 0;
 
   // Function to handle detail changes to persist across navigation
-  const handleAddDetail = (newDetails) => {
+  const handleAddDetail = useCallback((newDetails) => {
     setJobDetails(newDetails);
-  };
+  }, []);
 
   // Function to check if job details have changed
-  const haveDetailsChanged = () => {
+  const haveDetailsChanged = useCallback(() => {
     if (initialJobDetails.length !== jobDetails.length)
       return true;
 
@@ -188,43 +195,56 @@ export const JobProvider = () => {
     }
 
     return false;
-  };
+  }, [initialJobDetails, jobDetails]);
 
+  // Process job details on edit mode
   useEffect(() => {
-    // If there's no edit mode or no selected data, finish loading
+    // Avoid running this effect during initial render or when not in edit mode
     if (!isEdit || Object.keys(selectedData).length === 0) {
       setIsLoading(false);
       return;
     }
 
-    // Load job data only when we have a valid selected job
-    const loadJobData = async () => {
+    let isMounted = true;
+    let loadingTimeout;
+
+    // Set a safety timeout to ensure loading state is eventually cleared
+    loadingTimeout = setTimeout(() => {
+      if (isMounted && isLoading) {
+        console.warn(
+          "Loading timeout reached - forcing completion"
+        );
+        setIsLoading(false);
+      }
+    }, 10000);
+
+    // Process the job data
+    const processJobData = async () => {
       try {
-        if (!selectedData.job_description_file) {
-          console.log("No job description file");
-          setIsLoading(false);
-          return;
-        }
-
-        // Handle file conversion (if needed)
         let file = null;
-        try {
-          file = await createFileFromUrl(
-            selectedData.job_description_file
-          );
-        } catch (fileError) {
-          console.error(
-            "Error converting file:",
-            fileError
-          );
-          // Continue even if file conversion fails
+
+        // Only attempt to load the file if we have a URL and component is still mounted
+        if (
+          selectedData.job_description_file &&
+          isMounted
+        ) {
+          try {
+            file = await createFileFromUrl(
+              selectedData.job_description_file
+            );
+          } catch (error) {
+            console.error("Error loading file:", error);
+            // Continue without the file
+          }
         }
 
-        // Normalize data for the form
+        if (!isMounted) return;
+
+        // Prepare normalized data
         const normalizedData = {
           ...selectedData,
           hiring_manager_id:
-            selectedData.hiring_manager?.id,
+            selectedData.hiring_manager?.id || "",
           recruiter_ids:
             selectedData.clients?.map(
               (client) => client.id
@@ -234,7 +254,7 @@ export const JobProvider = () => {
               (client) => client.name
             ) || [],
           hiring_manager_name:
-            selectedData.hiring_manager?.name,
+            selectedData.hiring_manager?.name || "",
           total_positions: String(
             selectedData.total_positions || ""
           ),
@@ -244,17 +264,34 @@ export const JobProvider = () => {
           ),
         };
 
-        // Update form data and original data for comparison
+        // Set form data and original data in one batch to reduce renders
         setFormdata(normalizedData);
         setOriginalFormData(_.cloneDeep(normalizedData));
 
         // Process job details
         if (selectedData.other_details) {
           try {
-            const parsedDetails =
+            let parsedDetails = [];
+
+            if (
               typeof selectedData.other_details === "string"
-                ? JSON.parse(selectedData.other_details)
-                : selectedData.other_details;
+            ) {
+              try {
+                parsedDetails = JSON.parse(
+                  selectedData.other_details
+                );
+              } catch (error) {
+                console.error(
+                  "Invalid JSON in other_details:",
+                  error
+                );
+                parsedDetails = [];
+              }
+            } else if (
+              Array.isArray(selectedData.other_details)
+            ) {
+              parsedDetails = selectedData.other_details;
+            }
 
             if (
               Array.isArray(parsedDetails) &&
@@ -265,9 +302,9 @@ export const JobProvider = () => {
                   ...detail,
                   id:
                     detail.id || Date.now() + Math.random(),
-                  time: detail.time.endsWith("min")
+                  time: detail.time?.endsWith("min")
                     ? detail.time
-                    : `${detail.time}min`,
+                    : `${detail.time || "5"}min`,
                 })
               );
 
@@ -275,28 +312,53 @@ export const JobProvider = () => {
               setInitialJobDetails(
                 _.cloneDeep(detailsWithIds)
               );
+            } else {
+              setJobDetails(initialDetailsState);
+              setInitialJobDetails(
+                _.cloneDeep(initialDetailsState)
+              );
             }
           } catch (error) {
             console.error(
-              "Error parsing other_details:",
+              "Error processing other_details:",
               error
             );
+            setJobDetails(initialDetailsState);
+            setInitialJobDetails(
+              _.cloneDeep(initialDetailsState)
+            );
           }
+        } else {
+          setJobDetails(initialDetailsState);
+          setInitialJobDetails(
+            _.cloneDeep(initialDetailsState)
+          );
         }
       } catch (error) {
-        console.error("Error loading job data:", error);
+        console.error(
+          "Error in job data processing:",
+          error
+        );
       } finally {
-        // Always set loading to false when done
-        setIsLoading(false);
+        // Only update loading state if component is still mounted
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    // Start loading job data
-    loadJobData();
-  }, [selectedData, isEdit]);
+    // Start processing
+    processJobData();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      clearTimeout(loadingTimeout);
+    };
+  }, [selectedData, isEdit, isLoading]);
 
   // Create a function to get changes between original and current formdata
-  const getChangedFields = () => {
+  const getChangedFields = useCallback(() => {
     if (!isEdit || !originalFormData) return formdata;
 
     const changes = {};
@@ -325,10 +387,10 @@ export const JobProvider = () => {
     });
 
     return changes;
-  };
+  }, [formdata, isEdit, originalFormData]);
 
   // Process details for submission
-  const processJobDetailsForSubmission = () => {
+  const processJobDetailsForSubmission = useCallback(() => {
     return jobDetails.map((detail) => {
       const detailCopy = { ...detail };
       detailCopy.time = detailCopy.time.replace(
@@ -338,7 +400,7 @@ export const JobProvider = () => {
       delete detailCopy.id;
       return detailCopy;
     });
-  };
+  }, [jobDetails]);
 
   return (
     <JobContext.Provider

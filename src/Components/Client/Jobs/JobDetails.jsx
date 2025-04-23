@@ -41,12 +41,38 @@ const JobDetails = () => {
     isLoading,
   } = useJobContext();
 
+  // Use a single state for tracking whether data is ready to show
+  const [isDataReady, setIsDataReady] = useState(false);
+
   const queryClient = useQueryClient();
   const [archiveModalOpen, setArchiveModalOpen] =
     useState(false);
   const [detailsModalOpen, setDetailsModalOpen] =
     useState(false);
   const [editDetail, setEditDetail] = useState(null);
+
+  // Set up a safety timeout for loading
+  useEffect(() => {
+    let timeoutId;
+
+    if (isLoading) {
+      // Reset data ready state when loading starts
+      setIsDataReady(false);
+
+      // Set up a safety timeout
+      timeoutId = setTimeout(() => {
+        console.warn("Loading safety timeout reached");
+        setIsDataReady(true); // Force show the component even if loading is stuck
+      }, 10000);
+    } else {
+      // When loading is complete, we're ready to show data
+      setIsDataReady(true);
+    }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isLoading]);
 
   // Function to render guideline text with clickable links
   const renderGuideline = (text) => {
@@ -254,15 +280,15 @@ const JobDetails = () => {
   const hasFormData =
     formdata &&
     Object.keys(formdata).length > 0 &&
-    formdata.name;
+    (formdata.name || formdata.job_id);
 
-  // Show loading state while data is being fetched
-  if (isLoading) {
+  // Simple loading state while we're waiting
+  if (isLoading && !isDataReady) {
     return <LoadingState />;
   }
 
   // Show error state if no data is loaded after loading completes
-  if (!isLoading && !hasFormData) {
+  if (isDataReady && !hasFormData) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <p className="text-red-500">
