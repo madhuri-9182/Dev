@@ -323,7 +323,7 @@ const LoginUsingEmail = () => {
             </button>{" "}
           </div>
 
-          <div className="mb-12 mt-10">
+          <div className="mb-8 mt-10">
             <SubmitButton
               disabled={loginMutation.isPending}
               label={
@@ -342,6 +342,25 @@ const LoginUsingEmail = () => {
               label={"Login Using SSO"}
               onClick={() => {}}
             /> */}
+          </div>
+          <div className="flex items-center justify-center gap-x-2 mb-4 text-gray-500">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://drive.google.com/file/d/1WkvKoQVen74LG8NerP9YyPcSczcVS9LI/view?usp=sharing"
+              className="text-xs font-medium hover:text-gray-700 transition-colors"
+            >
+              Terms & Conditions
+            </a>
+            <div className="h-4 w-px bg-gray-400"></div>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://drive.google.com/file/d/1WkvKoQVen74LG8NerP9YyPcSczcVS9LI/view?usp=sharing"
+              className="text-xs font-medium hover:text-gray-700 transition-colors"
+            >
+              Privacy Policy
+            </a>
           </div>
         </form>
       </div>
