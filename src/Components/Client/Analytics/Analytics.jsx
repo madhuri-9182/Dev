@@ -44,7 +44,7 @@ const RoleCard = ({
     <div className="flex gap-x-2 items-center">
       <button
         type="button"
-        onClick={() => onViewClick(role?.id)}
+        onClick={() => onViewClick(role)}
         className="text-2xs font-semibold w-24 py-1 tertiary-button"
       >
         <MdOutlineWbSunny className="text-sm mr-2" /> View
@@ -171,11 +171,15 @@ const Analytics = () => {
     });
   }, [allJobs, selectedRole]);
 
-  const handleViewClick = (id) => {
-    navigate(`/client/analytics/${id}`, {
+  const handleViewClick = (role) => {
+    navigate(`/client/analytics/${role?.id}`, {
       state: {
-        id: id,
+        id: role?.id,
         range: selectedDateRange,
+        jobName: getJobLabel(role?.name),
+        specialization: getSpecialization(
+          role?.specialization
+        ),
       },
     });
   };

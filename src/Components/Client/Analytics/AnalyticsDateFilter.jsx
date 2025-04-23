@@ -436,7 +436,10 @@ const AnalyticsDetail = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 pb-8 pt-2 overflow-y-auto">
       {/* Header with enhanced date filters and download button */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-end mb-16">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-16">
+        <h2 className="text-base font-semibold text-[#49454F]">
+          {state?.jobName} ({state?.specialization})
+        </h2>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex items-center ">
             <EnhancedDateInput
