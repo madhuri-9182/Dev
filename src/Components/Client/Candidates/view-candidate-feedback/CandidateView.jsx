@@ -24,6 +24,13 @@ const CandidateView = () => {
 
   useEffect(() => {
     const fetchResume = async (cv) => {
+      if (
+        !cv ||
+        typeof cv !== "string" ||
+        cv.trim() === ""
+      ) {
+        return null;
+      }
       const file = await createFileFromUrl(cv);
       return file;
     };
