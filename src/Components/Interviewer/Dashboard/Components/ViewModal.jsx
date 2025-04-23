@@ -1,8 +1,32 @@
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { CloseSquare } from "iconsax-react";
+import { isValidUrl } from "../../../../utils/util";
 
 const ViewModal = ({ isOpen, onClose, details }) => {
+  const renderGuideline = (text) => {
+    if (!text) return "";
+
+    if (isValidUrl(text)) {
+      // Ensure the URL has http/https prefix
+      const url = text.startsWith("http")
+        ? text
+        : `https://${text}`;
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          {text}
+        </a>
+      );
+    }
+
+    return text;
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
@@ -48,7 +72,9 @@ const ViewModal = ({ isOpen, onClose, details }) => {
                   {detail.guidelines
                     .split("\n")
                     .map((line, i) => (
-                      <li key={i}>{line}</li>
+                      <li key={i}>
+                        {renderGuideline(line)}
+                      </li>
                     ))}
                 </ul>
               </div>
