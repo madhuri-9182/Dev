@@ -6,6 +6,8 @@ import Skill from "./Skill.svg";
 import User from "./User.svg";
 import CompanyLogo from "./hiring-dog-logo.png";
 import Resources from "./Resources.svg";
+import ClientManualPDF from "./Client_Manual.pdf";
+import InterviewerManualPDF from "./Interviewer_Manual.pdf";
 
 export {
   Questions,
@@ -16,4 +18,6 @@ export {
   User,
   CompanyLogo,
   Resources,
+  ClientManualPDF,
+  InterviewerManualPDF,
 };

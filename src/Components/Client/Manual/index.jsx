@@ -1,5 +1,8 @@
+import { ClientManualPDF } from "../../../assets";
+import PDFViewer from "../../shared/PDFViewer";
+
 const ClientManual = () => {
-  return <div>index</div>;
+  return <PDFViewer pdfFile={ClientManualPDF} />;
 };
 
 export default ClientManual;

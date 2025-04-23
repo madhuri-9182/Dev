@@ -189,6 +189,11 @@ export const INTERVIEWER_NAVLINKS = [
     icon: Lock,
     link: "/interviewer/privacy-policy",
   },
+  {
+    text: "User Manual",
+    icon: Book1,
+    link: "/interviewer/manual",
+  },
 ];
 
 export const USER_TYPE = {

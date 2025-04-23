@@ -14,6 +14,8 @@ import {
   InterviewerConfirmation,
   Layout,
   InterviewerTermsAndConditions,
+  InterviewerFinance,
+  InterviewerManual,
 } from "./Components";
 // Internal Imports
 import {
@@ -334,6 +336,10 @@ const router = createBrowserRouter(
                 path="feedback/:id"
                 element={<Feedback />}
               />
+              <Route
+                element={<InterviewerFinance />}
+                path="finance"
+              />
             </Route>
 
             {/* Navigation layout routes */}
@@ -357,6 +363,10 @@ const router = createBrowserRouter(
               <Route
                 path="privacy-policy"
                 element={<PrivacyPolicy />}
+              />
+              <Route
+                path="manual"
+                element={<InterviewerManual />}
               />
             </Route>
           </Route>

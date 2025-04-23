@@ -8,14 +8,33 @@ import {
 
 // Default query options to maintain consistency
 const DEFAULT_QUERY_OPTIONS = {
-  refetchOnWindowFocus: false,
+  refetchOnWindowFocus: true,
   retry: 1,
-  staleTime: 5 * 60 * 1000, // 5 minutes
-  cacheTime: 10 * 60 * 1000, // 10 minutes
 };
 
 const createPaginationHandler = (pageSize = 10) => {
-  return (lastPage, allPages) => {
+  /**
+   * Creates a pagination handler function for determining the next page
+   * to be fetched in an infinite query. The function checks the validity
+   * of the response data and ensures that all required properties are
+   * present. It calculates the total number of items fetched so far and
+   * determines whether more data is available to fetch. If there is more
+   * data, it calculates the next page number based on the total items
+   * fetched and the specified page size. A safety check is included to
+   * prevent duplicate API calls by ensuring the next offset is different
+   * from the current one.
+   *
+   * @param {number} pageSize - The number of items per page.
+   * @returns {Function} A function that calculates the next page number
+   * or returns undefined if no more data is available or if a duplicate
+   * API call is detected.
+   */
+
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /*******  0ceab566-9e12-466d-9df9-a3432eec8bc0  *******/ return (
+    lastPage,
+    allPages
+  ) => {
     // Validate response data
     if (!lastPage || typeof lastPage !== "object") {
       console.error(
