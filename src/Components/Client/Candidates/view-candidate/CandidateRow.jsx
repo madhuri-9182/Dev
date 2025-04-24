@@ -22,7 +22,7 @@ const CandidateRow = ({
         className="w-full grid gap-x-5 py-2"
         style={{
           gridTemplateColumns:
-            "1.2fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1.2fr",
+            "1fr 0.8fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr",
         }}
       >
         {/* Name and Status */}
@@ -77,7 +77,7 @@ const CandidateRow = ({
         </div>
 
         {/* Role */}
-        <div className="flex items-start justify-start py-1 text-2xs text-black">
+        <div className="flex items-start justify-center py-1 text-2xs text-black">
           {getRoleName(candidate.designation?.name)}
         </div>
 
