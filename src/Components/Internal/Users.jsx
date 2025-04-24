@@ -27,6 +27,10 @@ function Users() {
   const [selectedInternalClient, setSelectedInternalClient] = useState({});
   const { auth } = useAuth();
   const clientsRef = useRef();
+  
+  // New state variables for tracking which row is saving
+  const [savingClientIndex, setSavingClientIndex] = useState(null);
+  const [savingHdipIndex, setSavingHdipIndex] = useState(null);
 
   const { register, handleSubmit, reset, getValues, formState: { errors } } = useForm();
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
@@ -236,6 +240,7 @@ function Users() {
 
   const onEditHdipUser = (data, e) => {
     setSavingHdip(true);
+    setSavingHdipIndex(e.index); // Track which row is saving
     let payload = {};
     if (data.name !== e?.item?.name) payload.name = data.name;
     if (data.email !== e?.item?.user?.email) payload.email = data.email;
@@ -251,6 +256,7 @@ function Users() {
       .then(() => {
         toast.success("HDIP User updated successfully", { position: "top-right" })
         setSavingHdip(false);
+        setSavingHdipIndex(null); // Clear the saving index
         toggleSaveHdipUser()
         setHdipUsers(prevState => {
           const newState = [...prevState];
@@ -264,6 +270,7 @@ function Users() {
       })
       .catch(error => {
         setSavingHdip(false);
+        setSavingHdipIndex(null); // Clear the saving index
         if (error.response.data.errors) {
           const errorMessages = Object.entries(error.response.data.errors).map(([key, value]) => `${key}: ${value.join(', ')}`).join(', ');
           toast.error(errorMessages, { position: "top-right" });
@@ -302,6 +309,7 @@ function Users() {
 
   const onEditClientUser = (data, e) => {
     setSavingClient(true);
+    setSavingClientIndex(e.index); // Track which row is saving
     let payload = {};
     if (data.name !== e?.item?.name) payload.name = data.name;
     if (data.email !== e?.item?.user?.email) payload.email = data.email;
@@ -314,6 +322,7 @@ function Users() {
       .then(() => {
         toast.success("Client User updated successfully", { position: "top-right" })
         setSavingClient(false);
+        setSavingClientIndex(null); // Clear the saving index
         toggleSaveClientUser()
         setClientUsers(prevState => {
           const newState = [...prevState];
@@ -328,6 +337,7 @@ function Users() {
       })
       .catch(error => {
         setSavingClient(false);
+        setSavingClientIndex(null); // Clear the saving index
         if (error.response.data.errors) {
           const errorMessages = Object.entries(error.response.data.errors).map(([key, value]) => `${key}: ${value.join(', ')}`).join(', ');
           toast.error(errorMessages, { position: "top-right" });
@@ -615,9 +625,25 @@ function Users() {
                         className='flex items-center justify-center gap-x-2'
                       >
                         <button
-                          className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
+                          className={`py-1 rounded-lg font-bold ${
+                            (savingClient && savingClientIndex === index) 
+                              ? 'bg-[#cac4d0] cursor-not-allowed px-4' 
+                              : 'bg-[#056DDC] px-2'
+                          } text-white`}
                           type="submit"
-                        >Save</button>
+                          disabled={savingClient && savingClientIndex === index}
+                        >
+                          {savingClient && savingClientIndex === index ? (
+                            <CircularProgress
+                              size={16}
+                              sx={{
+                                color: "white",
+                              }}
+                            />
+                          ) : (
+                            "Save"
+                          )}
+                        </button>
                         <button
                           onClick={() => { toggleSaveClientUser() }}
                         >
@@ -914,9 +940,25 @@ function Users() {
                         className='flex items-center justify-center gap-x-2'
                       >
                         <button
-                          className='py-1 px-2 rounded-lg font-bold bg-[#056DDC] text-white'
+                          className={`py-1 rounded-lg font-bold ${
+                            (savingHdip && savingHdipIndex === index) 
+                               ? 'bg-[#cac4d0] cursor-not-allowed px-4' 
+                              : 'bg-[#056DDC] px-2'
+                          } text-white`}
                           type="submit"
-                        >Save</button>
+                          disabled={savingHdip && savingHdipIndex === index}
+                        >
+                          {savingHdip && savingHdipIndex === index ? (
+                            <CircularProgress
+                              size={16}
+                              sx={{
+                                color: "white",
+                              }}
+                            />
+                          ) : (
+                            "Save"
+                          )}
+                        </button>
                         <button
                           onClick={() => { toggleSaveHdipUser() }}
                         >
