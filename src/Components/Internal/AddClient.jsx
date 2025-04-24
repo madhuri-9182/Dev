@@ -54,7 +54,8 @@ function AddClient() {
                 const formattedPocs = clientData?.points_of_contact.map(poc => ({
                     name: poc.name,
                     email: poc.email,
-                    phone: poc.phone ? poc.phone.replace('+91', '') : ''
+                    phone: poc.phone ? poc.phone.replace('+91', '') : '',
+                    id: poc.id
                 }));
                 setRows(formattedPocs);
             }
@@ -172,12 +173,21 @@ function AddClient() {
         try {
             setLoading(true);
             
-            // Format POCs with country code
-            const formattedPocs = rows.map(row => ({ 
-                name: row.name, 
-                email: row.email, 
-                phone: row.phone.startsWith('+91') ? row.phone : `+91${row.phone}` 
-            }));
+            const formattedPocs = rows.map((row) => {
+                const formattedPoc = {
+                  name: row.name,
+                  email: row.email,
+                  phone: row.phone.startsWith("+91")
+                    ? row.phone
+                    : `+91${row.phone}`,
+                };
+                
+                if (row.id) {
+                  formattedPoc.poc_id = row.id;
+                }
+                
+                return formattedPoc;
+              });
             
             if (isEditing && clientData?.id) {
                 // Use PATCH for updating
