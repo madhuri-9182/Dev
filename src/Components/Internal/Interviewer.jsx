@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
-import { DOMAINS } from "../Constants/constants";
+import { DOMAINS, SPECIALIZATIONS } from "../Constants/constants";
 import { debounce } from "lodash";
 import { CircularProgress } from "@mui/material";
 import * as XLSX from "xlsx";
@@ -326,13 +326,10 @@ function Interviewer() {
     setItems(items.filter((item) => item !== ItemToRemove));
   };
 
-  const STRENGTHS = [
-    { label: "Backend", value: "backend" },
-    { label: "Frontend", value: "frontend" },
-    { label: "DevOps", value: "devops" },
-    { label: "AI/ML", value: "aiml" },
-    { label: "Testing", value: "testing" },
-  ];
+  const STRENGTHS = SPECIALIZATIONS?.map((item)=> ({
+    label: item.name,
+    value: item.id,
+  }))
 
   const EXPERIENCES = [
     { label: "0-4 Years", value: "0-4" },
