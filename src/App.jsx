@@ -76,6 +76,7 @@ import {
   NavigationLayout,
   Unauthorized,
   UnauthorizedLayout,
+  UnprotectedLayout,
 } from "./Components";
 import RootRoute from "./Components/shared/RootRoute";
 import Recording from "./Components/recording";
@@ -381,6 +382,20 @@ const router = createBrowserRouter(
         <Route
           path="/confirmation/:id"
           element={<InterviewerConfirmation />}
+        />
+      </Route>
+      <Route path="" element={<UnprotectedLayout />}>
+        <Route
+          path="client-tnc"
+          element={<TermsAndConditions />}
+        />
+        <Route
+          path="interviewer-tnc"
+          element={<InterviewerTermsAndConditions />}
+        />
+        <Route
+          path="privacy-policy"
+          element={<PrivacyPolicy />}
         />
       </Route>
     </Route>

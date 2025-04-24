@@ -67,6 +67,7 @@ import {
   NotFound,
 } from "./shared/unauthorized";
 import NavigationLayout from "./shared/NavigationLayout";
+import UnprotectedLayout from "./shared/UnprotectedLayout";
 
 // Authentication Exports
 export {
@@ -145,4 +146,5 @@ export {
   UnauthorizedLayout,
   NotFound,
   NavigationLayout,
+  UnprotectedLayout,
 };

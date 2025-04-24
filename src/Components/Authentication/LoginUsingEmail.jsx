@@ -347,7 +347,7 @@ const LoginUsingEmail = () => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://drive.google.com/file/d/1WkvKoQVen74LG8NerP9YyPcSczcVS9LI/view?usp=sharing"
+              href="/client-tnc"
               className="text-xs font-medium hover:text-gray-700 transition-colors"
             >
               Terms & Conditions
@@ -356,7 +356,7 @@ const LoginUsingEmail = () => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://drive.google.com/file/d/1WkvKoQVen74LG8NerP9YyPcSczcVS9LI/view?usp=sharing"
+              href="/privacy-policy"
               className="text-xs font-medium hover:text-gray-700 transition-colors"
             >
               Privacy Policy
