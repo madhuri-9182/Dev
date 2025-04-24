@@ -82,10 +82,10 @@ const DEFAULT_FORM_VALUES = {
 const transformSkillsData = (skillsData) => {
   if (!skillsData) return [];
 
-  return Object.entries(skillsData).map(
+  return Object.entries(skillsData)?.map(
     ([skillName, skillData]) => {
       // Transform questions array to match the expected format
-      const questions = skillData.questions.map((q) => ({
+      const questions = skillData.questions?.map((q) => ({
         question: q.que || "",
         answer: q.ans || "",
       }));
