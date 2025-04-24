@@ -28,7 +28,7 @@ function Users() {
   const { auth } = useAuth();
   const clientsRef = useRef();
 
-  const { register, handleSubmit, reset, setError, clearErrors, getValues, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, getValues, formState: { errors } } = useForm();
   const { register: clientRegister, handleSubmit: clientHandleSubmit, reset: clientReset, setError: clientSetError, clearErrors: clientClearErrors, getValues: clientGetValues, formState: { errors: clientErrors } } = useForm();
   const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
 
@@ -569,32 +569,44 @@ function Users() {
                   <div className="px-3 py-1 w-auto">
                     {editClientUser === index ?
                       <>
-                        <select
-                          defaultValue={item?.user?.role}
-                          className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black`}
-                          {...clientRegister("role", { required: "Please select role." })}
-                        >
-                          <option disabled value="">Select</option>
-                          <option value="client_user" className="text-black">Client User</option>
-                          <option value={"client_admin"} className="text-black">Client Admin</option>
-                        </select>
-                        {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
+                        {item?.user?.role === "client_owner" ? (
+                          <div className="p-1 text-xs border border-gray-300 rounded-md text-black opacity-50 text-center cursor-not-allowed">Super Admin</div>
+                        ) : (
+                          <>
+                            <select
+                              defaultValue={item?.user?.role}
+                              className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black`}
+                              {...clientRegister("role", { required: "Please select role." })}
+                            >
+                              <option disabled value="">Select</option>
+                              <option value="client_user" className="text-black">Client User</option>
+                              <option value={"client_admin"} className="text-black">Client Admin</option>
+                            </select>
+                            {clientErrors.role && <span className="error-message">{clientErrors.role.message}</span>}
+                          </>
+                        )}
                       </>
                       : USER_TYPE[item?.user?.role]}
                   </div>
                   <div className="px-3 py-1 w-auto">
                     {editClientUser === index ?
                       <>
-                        <select
-                          defaultValue={item?.accessibility}
-                          className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black}`}
-                          {...clientRegister("accessibility", { required: "Please select access." })}
-                        >
-                          <option value="" disabled>Select Access</option>
-                          <option value="AJ" className="text-black">All Jobs</option>
-                          <option value="AGJ" className="text-black">Assigned Jobs</option>
-                        </select>
-                        {clientErrors.accessibility && <span className="error-message">{clientErrors.accessibility.message}</span>}
+                        {item?.user?.role === "client_owner" ? (
+                          <div className="p-1 text-xs border border-gray-300 rounded-md text-black opacity-50 text-center cursor-not-allowed">{ACCESSIBILITY[item?.accessibility]}</div>
+                        ) : (
+                          <>
+                            <select
+                              defaultValue={item?.accessibility}
+                              className={`w-full p-1 text-xs border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-black}`}
+                              {...clientRegister("accessibility", { required: "Please select access." })}
+                            >
+                              <option value="" disabled>Select Access</option>
+                              <option value="AJ" className="text-black">All Jobs</option>
+                              <option value="AGJ" className="text-black">Assigned Jobs</option>
+                            </select>
+                            {clientErrors.accessibility && <span className="error-message">{clientErrors.accessibility.message}</span>}
+                          </>
+                        )}
                       </> : ACCESSIBILITY[item?.accessibility]}
                   </div>
                   <div className="px-4 py-1 w-full flex items-center justify-center">
