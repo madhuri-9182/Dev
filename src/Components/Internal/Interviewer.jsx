@@ -225,7 +225,7 @@ function Interviewer() {
     if (data.email !== editUser.email)
       updatedData.email = data.email;
     if (data.phone !== editUser.phone_number?.slice(3))
-      updatedData.phone_number = data.phone; // Adjusted to match API
+      updatedData.phone_number = `+91${data.phone}`
     if (
       data.experience_years !==
       editUser.total_experience_years
