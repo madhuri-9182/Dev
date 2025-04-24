@@ -85,14 +85,21 @@ const transformSkillsData = (skillsData) => {
   return Object.entries(skillsData)?.map(
     ([skillName, skillData]) => {
       // Transform questions array to match the expected format
-      const questions = skillData.questions?.map((q) => ({
-        question: q.que || "",
-        answer: q.ans || "",
-      }));
+      let questions = [];
+      
+      if (skillData.questions && skillData.questions.length > 0) {
+        questions = skillData.questions.map((q) => ({
+          question: q.que || "",
+          answer: q.ans || "",
+        }));
+      } else {
+        // If no questions exist, add one empty question-answer pair
+        questions = [{ question: "", answer: "" }];
+      }
 
       return {
         skillName,
-        score: parseInt(skillData.score, 10) || 0, // Default to 0 if parsing fails
+        score: parseInt(skillData.score, 10) || 0,
         questions,
         summary: skillData.summary || "",
       };
