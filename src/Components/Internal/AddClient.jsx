@@ -15,6 +15,7 @@ function AddClient() {
     const [loading, setLoading] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [assignedTo, setAssignedTo] = useState("");
+    const [originalPocs, setOriginalPocs] = useState({});
     const navigate = useNavigate();
     const location = useLocation();
     const { state } = location;
@@ -59,6 +60,17 @@ function AddClient() {
                     id: poc.id
                 }));
                 setRows(formattedPocs);
+                
+                // Store original POC data for comparison
+                const originalData = {};
+                clientData.points_of_contact.forEach(poc => {
+                    originalData[poc.id] = {
+                        name: poc.name,
+                        email: poc.email,
+                        phone: poc.phone ? poc.phone.replace('+91', '') : ''
+                    };
+                });
+                setOriginalPocs(originalData);
             }
 
             // Mark form as initialized with data
@@ -138,7 +150,8 @@ function AddClient() {
                     return {
                         name: data.pocName,
                         phone: data.pocPhone,
-                        email: data.pocEmail
+                        email: data.pocEmail,
+                        id: row.id // Preserve the ID for edited entries
                     };
                 }
                 return row;
@@ -185,6 +198,32 @@ function AddClient() {
                 
                 if (row.id) {
                   formattedPoc.poc_id = row.id;
+                  
+                  // Check if this is an edited POC and determine which fields changed
+                  if (originalPocs[row.id]) {
+                    const original = originalPocs[row.id];
+                    const editedFields = [];
+                    
+                    // Compare name
+                    if (row.name !== original.name) {
+                        editedFields.push('name');
+                    }
+                    
+                    // Compare email
+                    if (row.email !== original.email) {
+                        editedFields.push('email');
+                    }
+                    
+                    // Compare phone
+                    if (row.phone !== original.phone) {
+                        editedFields.push('phone');
+                    }
+                    
+                    // Add edited_field array if there are changes
+                    if (editedFields.length > 0) {
+                        formattedPoc.edited_field = editedFields;
+                    }
+                  }
                 }
                 
                 return formattedPoc;
