@@ -62,7 +62,7 @@ function ForgetPass() {
     <div className="w-full mt-[10%]">
       <div className="flex items-center justify-center">
         <form
-          className="p-2 w-[75%] h-[441px]"
+          className="p-2 w-[75%] h-80 sm:h-[350px]"
           onSubmit={handleSubmit(onSubmit)}
         >
           <p className="ml-[3%] mb-7 w-full mt-1 text-default font-medium font-outfit text-label">
