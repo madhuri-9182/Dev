@@ -1,4 +1,4 @@
-// sections/SkillEvaluationSection.jsx
+// SkillEvaluationSection.jsx - Responsive skill evaluation
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useWatch, useFieldArray } from "react-hook-form";
@@ -11,7 +11,7 @@ const SkillEvaluationSection = ({
   control,
   setValue,
   errors,
-  register, // Add this prop to register form fields
+  register,
 }) => {
   // Use fieldArray for dynamic skill evaluations
   const {
@@ -28,8 +28,7 @@ const SkillEvaluationSection = ({
   const [isAddingSkill, setIsAddingSkill] = useState(false);
   const [newSkillName, setNewSkillName] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
-  const [editingSkillName, setEditingSkillName] =
-    useState("");
+  const [editingSkillName, setEditingSkillName] = useState("");
 
   // State to store rating selections for UI
   const [ratingSelections, setRatingSelections] = useState({
@@ -47,7 +46,6 @@ const SkillEvaluationSection = ({
   // Set the initial values from the form
   useEffect(() => {
     if (skillEvaluation) {
-      // Update UI state for default evaluations
       setRatingSelections((prev) => ({
         ...prev,
         communication: skillEvaluation.communication,
@@ -64,7 +62,6 @@ const SkillEvaluationSection = ({
 
   // Register validation for communication and attitude
   useEffect(() => {
-    // Register required validation for default fields
     register("skillEvaluation.communication", {
       required: "Communication rating is required",
     });
@@ -77,23 +74,14 @@ const SkillEvaluationSection = ({
   useEffect(() => {
     if (evaluationFields && evaluationFields.length > 0) {
       evaluationFields.forEach((field, index) => {
-        // Register required validation for each additional skill's rating
-        register(
-          `skillEvaluation.additional.${index}.rating`,
-          {
-            required: "Rating is required",
-          }
-        );
+        register(`skillEvaluation.additional.${index}.rating`, {
+          required: "Rating is required",
+        });
       });
     }
   }, [evaluationFields, register]);
 
-  const ratingOptions = [
-    "Poor",
-    "Average",
-    "Good",
-    "Excellent",
-  ];
+  const ratingOptions = ["Poor", "Average", "Good", "Excellent"];
 
   // Get background color based on rating
   const getRatingColor = (rating) => {
@@ -111,13 +99,12 @@ const SkillEvaluationSection = ({
     }
   };
 
-  // Start adding a new custom skill evaluation
+  // Event handlers
   const handleAddSkillClick = () => {
     setIsAddingSkill(true);
     setNewSkillName("");
   };
 
-  // Save the new skill evaluation
   const handleSaveNewSkill = () => {
     if (newSkillName.trim()) {
       appendEvaluation({
@@ -132,33 +119,26 @@ const SkillEvaluationSection = ({
         ],
       }));
 
-      // Register validation for the new field immediately
       const newIndex = evaluationFields.length;
-      register(
-        `skillEvaluation.additional.${newIndex}.rating`,
-        {
-          required: "Rating is required",
-        }
-      );
+      register(`skillEvaluation.additional.${newIndex}.rating`, {
+        required: "Rating is required",
+      });
 
       setIsAddingSkill(false);
       setNewSkillName("");
     }
   };
 
-  // Cancel adding new skill
   const handleCancelAddSkill = () => {
     setIsAddingSkill(false);
     setNewSkillName("");
   };
 
-  // Start editing a skill
   const handleEditSkill = (index) => {
     setEditingIndex(index);
     setEditingSkillName(evaluationFields[index].name);
   };
 
-  // Save edited skill
   const handleSaveEditSkill = (index) => {
     if (editingSkillName.trim()) {
       const updatedField = {
@@ -167,9 +147,7 @@ const SkillEvaluationSection = ({
       };
       updateEvaluation(index, updatedField);
 
-      const updatedAdditional = [
-        ...ratingSelections.additional,
-      ];
+      const updatedAdditional = [...ratingSelections.additional];
       updatedAdditional[index] = {
         ...updatedAdditional[index],
         name: editingSkillName.trim(),
@@ -185,18 +163,14 @@ const SkillEvaluationSection = ({
     }
   };
 
-  // Cancel editing skill
   const handleCancelEditSkill = () => {
     setEditingIndex(null);
     setEditingSkillName("");
   };
 
-  // Handle removing a custom skill evaluation
   const handleRemoveEvaluation = (index) => {
     removeEvaluation(index);
-    const updatedAdditional = [
-      ...ratingSelections.additional,
-    ];
+    const updatedAdditional = [...ratingSelections.additional];
     updatedAdditional.splice(index, 1);
     setRatingSelections((prev) => ({
       ...prev,
@@ -204,7 +178,6 @@ const SkillEvaluationSection = ({
     }));
   };
 
-  // Set rating for a skill evaluation
   const handleRatingClick = (type, index, rating) => {
     if (type === "communication") {
       setValue("skillEvaluation.communication", rating, {
@@ -223,14 +196,10 @@ const SkillEvaluationSection = ({
         attitude: rating,
       }));
     } else if (type === "additional") {
-      setValue(
-        `skillEvaluation.additional.${index}.rating`,
-        rating,
-        { shouldValidate: true }
-      );
-      const updatedAdditional = [
-        ...ratingSelections.additional,
-      ];
+      setValue(`skillEvaluation.additional.${index}.rating`, rating, {
+        shouldValidate: true,
+      });
+      const updatedAdditional = [...ratingSelections.additional];
       updatedAdditional[index] = {
         ...updatedAdditional[index],
         rating,
@@ -242,11 +211,9 @@ const SkillEvaluationSection = ({
     }
   };
 
-  // Helper to check if an element has an error
   const hasError = (path) => {
     if (!errors) return false;
 
-    // Split the path and traverse the errors object
     const parts = path.split(".");
     let current = errors;
 
@@ -264,7 +231,7 @@ const SkillEvaluationSection = ({
       subtitle="Please Evaluate Candidate's skill"
       icon={Skill}
     >
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-6">
         {/* Communication (default) */}
         <div
           className={`p-4 bg-white rounded-xl border ${
@@ -274,37 +241,29 @@ const SkillEvaluationSection = ({
           }`}
           data-error-section="skillEvaluation.communication"
         >
-          <h3 className="text-md font-semibold mb-2">
+          <h3 className="text-sm lg:text-md font-semibold mb-2">
             Communication
           </h3>
-          <p className="text-gray-600 mb-2 text-default">
+          <p className="text-gray-600 mb-2 text-xs lg:text-default">
             How would you like to rate?
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 lg:gap-3">
             {ratingOptions.map((rating) => (
               <button
                 key={rating}
                 type="button"
                 style={{
                   backgroundColor:
-                    ratingSelections.communication ===
-                    rating
+                    ratingSelections.communication === rating
                       ? getRatingColor(rating)
                       : "#D9D9D9",
                   color:
-                    ratingSelections.communication ===
-                    rating
+                    ratingSelections.communication === rating
                       ? "white"
                       : "#00000099",
                 }}
-                className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
-                onClick={() =>
-                  handleRatingClick(
-                    "communication",
-                    null,
-                    rating
-                  )
-                }
+                className="px-4 lg:px-6 py-2 text-xs lg:text-default rounded-md hover:bg-gray-300 flex-1 lg:flex-none min-w-[70px]"
+                onClick={() => handleRatingClick("communication", null, rating)}
                 data-error-key="skillEvaluation.communication"
               >
                 {rating}
@@ -327,13 +286,11 @@ const SkillEvaluationSection = ({
           }`}
           data-error-section="skillEvaluation.attitude"
         >
-          <h3 className="text-md font-semibold mb-2">
-            Attitude
-          </h3>
-          <p className="text-gray-600 text-default mb-2">
+          <h3 className="text-sm lg:text-md font-semibold mb-2">Attitude</h3>
+          <p className="text-gray-600 text-xs lg:text-default mb-2">
             How would you like to rate?
           </p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-2 lg:gap-4">
             {ratingOptions.map((rating) => (
               <button
                 key={rating}
@@ -344,18 +301,10 @@ const SkillEvaluationSection = ({
                       ? getRatingColor(rating)
                       : "#D9D9D9",
                   color:
-                    ratingSelections.attitude === rating
-                      ? "white"
-                      : "#00000099",
+                    ratingSelections.attitude === rating ? "white" : "#00000099",
                 }}
-                className="px-6 py-2 text-default rounded-md hover:bg-gray-300"
-                onClick={() =>
-                  handleRatingClick(
-                    "attitude",
-                    null,
-                    rating
-                  )
-                }
+                className="px-4 lg:px-6 py-2 text-xs lg:text-default rounded-md hover:bg-gray-300 flex-1 lg:flex-none min-w-[70px]"
+                onClick={() => handleRatingClick("attitude", null, rating)}
                 data-error-key="skillEvaluation.attitude"
               >
                 {rating}
@@ -374,9 +323,7 @@ const SkillEvaluationSection = ({
           <div
             key={field.id}
             className={`p-4 bg-white rounded-xl border ${
-              hasError(
-                `skillEvaluation.additional.${index}.rating`
-              )
+              hasError(`skillEvaluation.additional.${index}.rating`)
                 ? "border-[#B10E0EE5]"
                 : "border-gray-300"
             }`}
@@ -388,25 +335,21 @@ const SkillEvaluationSection = ({
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
-                    className="flex-grow p-2 border border-gray-300 rounded-md text-default text-[#49454F]"
+                    className="flex-grow p-2 border border-gray-300 rounded-md text-xs lg:text-default text-[#49454F]"
                     placeholder="Enter skill name"
                     value={editingSkillName}
-                    onChange={(e) =>
-                      setEditingSkillName(e.target.value)
-                    }
+                    onChange={(e) => setEditingSkillName(e.target.value)}
                   />
                   <button
                     type="button"
-                    className=" text-green-600 hover:text-green-800 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
-                    onClick={() =>
-                      handleSaveEditSkill(index)
-                    }
+                    className="text-green-600 hover:text-green-800 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                    onClick={() => handleSaveEditSkill(index)}
                   >
                     <Check size={20} />
                   </button>
                   <button
                     type="button"
-                    className=" text-red-500 hover:text-red-700 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                    className="text-red-500 hover:text-red-700 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
                     onClick={handleCancelEditSkill}
                   >
                     <X size={20} />
@@ -421,13 +364,13 @@ const SkillEvaluationSection = ({
             ) : (
               /* Display mode */
               <div className="flex justify-between items-center mb-2">
-                <h3 className="text-md font-semibold">
+                <h3 className="text-sm lg:text-md font-semibold">
                   {field.name}
                 </h3>
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    className="text-blue-500 hover:text-blue-700 "
+                    className="text-blue-500 hover:text-blue-700"
                     onClick={() => handleEditSkill(index)}
                   >
                     <Edit size={18} />
@@ -435,9 +378,7 @@ const SkillEvaluationSection = ({
                   <button
                     type="button"
                     className="text-red-500 hover:text-red-700"
-                    onClick={() =>
-                      handleRemoveEvaluation(index)
-                    }
+                    onClick={() => handleRemoveEvaluation(index)}
                   >
                     <Trash size={18} />
                   </button>
@@ -447,49 +388,37 @@ const SkillEvaluationSection = ({
 
             {editingIndex !== index && (
               <>
-                <p className="text-gray-600 text-default mb-2">
+                <p className="text-gray-600 text-xs lg:text-default mb-2">
                   How would you like to rate?
                 </p>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-2 lg:gap-4">
                   {ratingOptions.map((rating) => (
                     <button
                       key={rating}
                       type="button"
                       style={{
                         backgroundColor:
-                          ratingSelections.additional[index]
-                            ?.rating === rating
+                          ratingSelections.additional[index]?.rating === rating
                             ? getRatingColor(rating)
                             : "#D9D9D9",
                         color:
-                          ratingSelections.additional[index]
-                            ?.rating === rating
+                          ratingSelections.additional[index]?.rating === rating
                             ? "white"
                             : "#00000099",
                       }}
-                      className={`px-6 py-2 text-default rounded-md hover:bg-gray-300 ${
-                        hasError(
-                          `skillEvaluation.additional.${index}.rating`
-                        )
+                      className={`px-4 lg:px-6 py-2 text-xs lg:text-default rounded-md hover:bg-gray-300 flex-1 lg:flex-none min-w-[70px] ${
+                        hasError(`skillEvaluation.additional.${index}.rating`)
                           ? "ring-1 ring-[#B10E0EE5]"
                           : ""
                       }`}
-                      onClick={() =>
-                        handleRatingClick(
-                          "additional",
-                          index,
-                          rating
-                        )
-                      }
+                      onClick={() => handleRatingClick("additional", index, rating)}
                       data-error-key={`skillEvaluation.additional.${index}.rating`}
                     >
                       {rating}
                     </button>
                   ))}
                 </div>
-                {errors?.skillEvaluation?.additional?.[
-                  index
-                ]?.rating && (
+                {errors?.skillEvaluation?.additional?.[index]?.rating && (
                   <div className="text-[#B10E0EE5] text-2xs mt-2">
                     Rating is required
                   </div>
@@ -505,23 +434,21 @@ const SkillEvaluationSection = ({
             <div className="flex items-center gap-2 mb-2">
               <input
                 type="text"
-                className="flex-grow p-2 border border-gray-300 rounded-md text-default text-[#49454F]"
+                className="flex-grow p-2 border border-gray-300 rounded-md text-xs lg:text-default text-[#49454F]"
                 placeholder="Enter skill name (e.g. Leadership, Problem Solving)"
                 value={newSkillName}
-                onChange={(e) =>
-                  setNewSkillName(e.target.value)
-                }
+                onChange={(e) => setNewSkillName(e.target.value)}
               />
               <button
                 type="button"
-                className=" text-green-600 hover:text-green-800 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                className="text-green-600 hover:text-green-800 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
                 onClick={handleSaveNewSkill}
               >
                 <Check size={16} />
               </button>
               <button
                 type="button"
-                className=" text-red-500 hover:text-red-700 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
+                className="text-red-500 hover:text-red-700 w-8 h-8 flex items-center justify-center hover:bg-[#f6f6f6] rounded-full"
                 onClick={handleCancelAddSkill}
               >
                 <X size={16} />
@@ -540,7 +467,7 @@ const SkillEvaluationSection = ({
           <div className="flex justify-end">
             <button
               type="button"
-              className="px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg"
+              className="px-6 py-2 text-xs sm:text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg w-full sm:w-auto"
               onClick={handleAddSkillClick}
             >
               <span>Add Skill Evaluation</span>
@@ -556,7 +483,7 @@ SkillEvaluationSection.propTypes = {
   control: PropTypes.object.isRequired,
   setValue: PropTypes.func.isRequired,
   errors: PropTypes.object,
-  register: PropTypes.func.isRequired, // Add this prop type
+  register: PropTypes.func.isRequired,
 };
 
 export default SkillEvaluationSection;

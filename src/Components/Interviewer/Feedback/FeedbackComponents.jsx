@@ -1,3 +1,4 @@
+// FeedbackComponents.jsx - Responsive form components
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Listbox, Transition } from "@headlessui/react";
@@ -10,7 +11,7 @@ import {
   Loader,
 } from "lucide-react";
 
-// Reusable Form Components
+// Reusable Form Components with responsive design
 export const FormSection = ({
   title,
   subtitle,
@@ -18,17 +19,17 @@ export const FormSection = ({
   children,
 }) => {
   return (
-    <div className="grid grid-cols-[3.5fr_8.5fr] mb-10">
-      <div className="flex justify-between">
-        <div className="flex flex-col gap-y-1 mr-3">
+    <div className="grid grid-cols-1 lg:grid-cols-[3.5fr_8.5fr] mb-8 lg:mb-10">
+      <div className="flex flex-col lg:flex-row lg:justify-between mb-4 lg:mb-0">
+        <div className="flex flex-col gap-y-1 lg:mr-3">
           <h2 className="text-lg font-bold bg-gradient-to-r from-black to-[#E41616] text-transparent bg-clip-text">
             {title}
           </h2>
-          <p className="text-[#000000A1] text-sm mb-6">
+          <p className="text-[#000000A1] text-sm lg:mb-6">
             {subtitle}
           </p>
         </div>
-        <div className="flex flex-col items-center pr-8">
+        <div className="hidden lg:flex flex-col items-center pr-8">
           <div className="bg-[#E6D3D3] rounded-full p-2 w-12 h-12 flex items-center justify-center">
             <img
               src={icon}
@@ -41,7 +42,7 @@ export const FormSection = ({
         </div>
       </div>
       <div className="flex-1">
-        <div className="space-y-6">{children}</div>
+        <div className="space-y-4 lg:space-y-6">{children}</div>
       </div>
     </div>
   );
@@ -56,7 +57,7 @@ FormSection.propTypes = {
 
 export const FormRow = ({ children }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-x-10">
       {children}
     </div>
   );
@@ -73,10 +74,10 @@ export const FormField = ({
 }) => {
   return (
     <div className="">
-      <label className="block mb-1 text-default font-[550] required-field-label">
+      <label className="block mb-1 text-sm lg:text-default font-[550] required-field-label">
         {label}:
         {optional && (
-          <span className="text-gray-500 font-normal ml-1 text-sm">
+          <span className="text-gray-500 font-normal ml-1 text-xs lg:text-sm">
             (Optional)
           </span>
         )}
@@ -97,16 +98,14 @@ export const Input = React.forwardRef(
     { label, placeholder, error, optional, ...props },
     ref
   ) => {
-    // Extract the name from props for data attributes
     const { name } = props;
 
     return (
       <FormField label={label} optional={optional}>
         <input
           ref={ref}
-          className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none disabled:cursor-not-allowed disabled:bg-[#b0b0b03a] disabled:opacity-50"
+          className="w-full px-3 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none disabled:cursor-not-allowed disabled:bg-[#b0b0b03a] disabled:opacity-50"
           placeholder={placeholder}
-          // Add data attribute for error handling
           data-error-key={name}
           {...props}
         />
@@ -130,17 +129,15 @@ Input.propTypes = {
 
 export const TextArea = React.forwardRef(
   ({ label, placeholder, error, ...props }, ref) => {
-    // Extract the name from props for data attributes
     const { name } = props;
 
     return (
       <FormField label={label}>
         <textarea
           ref={ref}
-          className="w-full px-3 py-2 text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
+          className="w-full px-3 py-2 text-sm lg:text-default rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
           placeholder={placeholder}
           rows={4}
-          // Add data attribute for error handling
           data-error-key={name}
           {...props}
         />
@@ -166,10 +163,7 @@ export const Select = React.forwardRef(
     { label, options, error, value, onChange, ...props },
     ref
   ) => {
-    // Extract the name from props for data attributes
     const { name } = props;
-
-    // Find the selected option based on the form value
     const selectedOption = options.find(
       (option) => option.id === value
     );
@@ -179,7 +173,6 @@ export const Select = React.forwardRef(
         <Listbox
           value={selectedOption || ""}
           onChange={(option) => {
-            // Pass the id value to react-hook-form
             onChange(option.id);
           }}
           {...props}
@@ -187,8 +180,7 @@ export const Select = React.forwardRef(
           <div className="relative">
             <Listbox.Button
               ref={ref}
-              className="w-full px-3 py-2 text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
-              // Add data attribute for error handling
+              className="w-full px-3 py-2 text-sm lg:text-default text-left rounded-md border border-gray-300 focus:border-blue-500 outline-none text-[#49454F]"
               data-error-key={name}
             >
               <span className="block truncate">
@@ -258,7 +250,7 @@ Select.propTypes = {
   name: PropTypes.string,
 };
 
-// New FileUpload component
+// FileUpload component with responsive design
 export const FileUpload = React.forwardRef(
   (
     {
@@ -274,27 +266,22 @@ export const FileUpload = React.forwardRef(
   ) => {
     const [file, setFile] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
-    const [internalError, setInternalError] =
-      useState(null);
+    const [internalError, setInternalError] = useState(null);
     const fileInputRef = React.useRef(null);
     const { name } = props;
 
-    // Handle the initial file load from props when component mounts
     useEffect(() => {
-      // If we have a file from form control, use it
       if (props.value instanceof File) {
         setFile(props.value);
         const url = URL.createObjectURL(props.value);
         setFileUrl(url);
 
-        // Cleanup function to revoke object URL
         return () => {
           if (url) URL.revokeObjectURL(url);
         };
       }
     }, [props.value]);
 
-    // Clear internal error state when the error prop changes to null/undefined
     useEffect(() => {
       if (!error && internalError) {
         setInternalError(null);
@@ -304,19 +291,16 @@ export const FileUpload = React.forwardRef(
     const handleFileChange = (event) => {
       const selectedFile = event.target.files[0];
 
-      // Clean up previous URL if it exists
       if (fileUrl) {
         URL.revokeObjectURL(fileUrl);
       }
 
       setFile(selectedFile);
 
-      // Create a URL for the file to make it viewable
       if (selectedFile) {
         try {
           const url = URL.createObjectURL(selectedFile);
           setFileUrl(url);
-          // Clear any internal error state
           setInternalError(null);
         } catch (err) {
           console.error("Error creating object URL:", err);
@@ -327,28 +311,24 @@ export const FileUpload = React.forwardRef(
         setFileUrl(null);
       }
 
-      // Call the original onChange with the selected file
       if (onChange) {
         onChange(selectedFile);
       }
     };
 
     const handleRemoveFile = () => {
-      // Revoke the object URL to avoid memory leaks
       if (fileUrl) {
         URL.revokeObjectURL(fileUrl);
       }
 
       setFile(null);
       setFileUrl(null);
-      setInternalError(null); // Clear any errors when file is removed
+      setInternalError(null);
 
-      // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
 
-      // Call the original onChange with null to clear the value
       if (onChange) {
         onChange(null);
       }
@@ -358,21 +338,14 @@ export const FileUpload = React.forwardRef(
       fileInputRef.current.click();
     };
 
-    // Determine what filename to display
-    const displayFileName = file
-      ? file.name
-      : defaultFileName;
-
-    // Use internal error state if it exists, otherwise use the passed error prop
-    const displayError = internalError
-      ? { message: internalError }
-      : error;
+    const displayFileName = file ? file.name : defaultFileName;
+    const displayError = internalError ? { message: internalError } : error;
 
     return (
       <div className="mb-4">
-        <label className="block mb-1 text-default font-[550] required-field-label">
+        <label className="block mb-1 text-sm lg:text-default font-[550] required-field-label">
           {label}:
-          <span className="text-gray-500 font-normal ml-1 text-sm">
+          <span className="text-gray-500 font-normal ml-1 text-xs lg:text-sm">
             (Optional)
           </span>
         </label>
@@ -380,7 +353,6 @@ export const FileUpload = React.forwardRef(
         <div className="flex flex-col space-y-3">
           <input
             ref={(element) => {
-              // Set both refs - the forwarded ref and our local ref
               if (ref) {
                 if (typeof ref === "function") {
                   ref(element);
@@ -398,23 +370,17 @@ export const FileUpload = React.forwardRef(
             {...props}
           />
 
-          {/* Upload button row */}
           <div>
             <button
               type="button"
               onClick={handleButtonClick}
               disabled={isLoading}
-              className={`px-4 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex items-center text-default ${
-                isLoading
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
+              className={`px-4 py-2 text-sm lg:text-default bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex items-center ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
               {isLoading ? (
-                <Loader
-                  size={16}
-                  className="mr-2 animate-spin"
-                />
+                <Loader size={16} className="mr-2 animate-spin" />
               ) : (
                 <Upload size={16} className="mr-2" />
               )}
@@ -426,34 +392,29 @@ export const FileUpload = React.forwardRef(
             </button>
           </div>
 
-          {/* File display row with link */}
           {(file || (displayFileName && !isLoading)) && (
             <div className="flex items-center py-2 px-3 bg-gray-50 rounded-md border border-gray-100">
               <div className="flex-1 flex flex-col">
                 <div className="flex items-center">
-                  <FileText
-                    size={16}
-                    className="text-gray-500 mr-2"
-                  />
+                  <FileText size={16} className="text-gray-500 mr-2" />
                   {fileUrl ? (
                     <a
                       href={fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm font-medium truncate max-w-[90%]"
+                      className="text-blue-600 hover:underline text-xs lg:text-sm font-medium truncate max-w-[90%]"
                     >
                       {displayFileName}
                     </a>
                   ) : (
-                    <span className="text-sm truncate max-w-[90%] text-[#49454F]">
+                    <span className="text-xs lg:text-sm truncate max-w-[90%] text-[#49454F]">
                       {displayFileName}
                     </span>
                   )}
                 </div>
                 {file && (
                   <span className="text-xs text-gray-500 ml-6">
-                    {(file.size / 1024 / 1024).toFixed(2)}{" "}
-                    MB
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
                   </span>
                 )}
               </div>
@@ -477,8 +438,7 @@ export const FileUpload = React.forwardRef(
           )}
 
           <p className="text-xs text-gray-500">
-            Maximum file size: 10MB. Supported formats: PDF,
-            DOC, DOCX, JPG, PNG
+            Maximum file size: 10MB. Supported formats: PDF, DOC, DOCX, JPG, PNG
           </p>
         </div>
       </div>
@@ -499,7 +459,6 @@ FileUpload.propTypes = {
   value: PropTypes.any,
 };
 
-// New LinkInput component
 export const LinkInput = React.forwardRef(
   ({ label, placeholder, error, ...props }, ref) => {
     const { name } = props;
@@ -512,7 +471,7 @@ export const LinkInput = React.forwardRef(
           </div>
           <input
             ref={ref}
-            className="w-full pl-10 pr-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+            className="w-full pl-10 pr-3 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
             placeholder={placeholder}
             type="url"
             data-error-key={name}

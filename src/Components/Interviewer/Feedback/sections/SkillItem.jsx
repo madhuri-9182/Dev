@@ -1,3 +1,4 @@
+// SkillItem.jsx - Responsive skill item component
 import PropTypes from "prop-types";
 import { Controller } from "react-hook-form";
 import {
@@ -8,7 +9,6 @@ import {
 import { getColorForValue } from "../utils";
 import { useState } from "react";
 
-// Simplified prop types
 const skillItemPropTypes = {
   skillField: PropTypes.object.isRequired,
   skillIndex: PropTypes.number.isRequired,
@@ -28,7 +28,6 @@ const SkillItem = ({
   removeQuestion,
   removeSkill,
 }) => {
-  // Helper function to get error message from nested errors object
   const getErrorMessage = (path) => {
     const parts = path.split(".");
     let error = errors;
@@ -43,13 +42,13 @@ const SkillItem = ({
 
   return (
     <div
-      className="bg-[#E8F0F5] p-6 rounded-lg mb-6"
+      className="bg-[#E8F0F5] p-4 lg:p-6 rounded-lg mb-4 lg:mb-6"
       data-error-section={`skills.${skillIndex}`}
     >
       {/* Header with skill name and score */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-4">
         {/* Skill name input */}
-        <div className="w-1/3">
+        <div className="w-full lg:w-1/3">
           <Controller
             control={control}
             name={`skills.${skillIndex}.skillName`}
@@ -57,13 +56,11 @@ const SkillItem = ({
               required: "Skill name is required",
               minLength: {
                 value: 2,
-                message:
-                  "Skill name must be at least 2 characters",
+                message: "Skill name must be at least 2 characters",
               },
               maxLength: {
                 value: 95,
-                message:
-                  "Skill name cannot be more than 100 characters",
+                message: "Skill name cannot be more than 100 characters",
               },
             }}
             render={({ field }) => (
@@ -75,38 +72,28 @@ const SkillItem = ({
               />
             )}
           />
-          {getErrorMessage(
-            `skills.${skillIndex}.skillName`
-          ) && (
+          {getErrorMessage(`skills.${skillIndex}.skillName`) && (
             <span className="text-[#B10E0EE5] text-2xs">
-              {getErrorMessage(
-                `skills.${skillIndex}.skillName`
-              )}
+              {getErrorMessage(`skills.${skillIndex}.skillName`)}
             </span>
           )}
         </div>
 
         {/* Score slider and remove button */}
-        <div className="">
-          <div className="flex items-center">
-            <span className="ml-4 text-[#00000099]">
+        <div className="w-full lg:w-auto">
+          <div className="flex items-center justify-between lg:justify-start">
+            <span className="text-[#00000099]">
               <Controller
                 control={control}
                 name={`skills.${skillIndex}.score`}
                 rules={{
-                  validate: (value) =>
-                    value > 0 ||
-                    "Score must be greater than 0",
+                  validate: (value) => value > 0 || "Score must be greater than 0",
                 }}
                 render={({ field }) => (
                   <ScoreSlider
                     value={field.value}
                     onChange={field.onChange}
-                    hasError={
-                      errors?.skills?.[skillIndex]?.score
-                        ? true
-                        : false
-                    }
+                    hasError={errors?.skills?.[skillIndex]?.score ? true : false}
                     errorKey={`skills.${skillIndex}.score`}
                   />
                 )}
@@ -135,20 +122,18 @@ const SkillItem = ({
 
       {/* Questions container */}
       <div className="questions-container">
-        {skillField.questions?.map(
-          (question, questionIndex) => (
-            <QuestionAnswerPair
-              key={`${skillField.id}-q-${questionIndex}`}
-              skillIndex={skillIndex}
-              questionIndex={questionIndex}
-              control={control}
-              errors={errors}
-              getErrorMessage={getErrorMessage}
-              removeQuestion={removeQuestion}
-              showRemoveButton={questionIndex > 0}
-            />
-          )
-        )}
+        {skillField.questions?.map((question, questionIndex) => (
+          <QuestionAnswerPair
+            key={`${skillField.id}-q-${questionIndex}`}
+            skillIndex={skillIndex}
+            questionIndex={questionIndex}
+            control={control}
+            errors={errors}
+            getErrorMessage={getErrorMessage}
+            removeQuestion={removeQuestion}
+            showRemoveButton={questionIndex > 0}
+          />
+        ))}
       </div>
 
       {/* Add question button */}
@@ -165,7 +150,7 @@ const SkillItem = ({
 
       {/* Summary section */}
       <div>
-        <label className="block mb-1 font-[550] text-default">
+        <label className="block mb-1 font-[550] text-sm lg:text-default">
           Summary:
         </label>
         <Controller
@@ -175,18 +160,16 @@ const SkillItem = ({
             required: "Summary is required",
             minLength: {
               value: 2,
-              message:
-                "Summary must be at least 2 characters",
+              message: "Summary must be at least 2 characters",
             },
             maxLength: {
               value: 950,
-              message:
-                "Summary cannot be more than 1000 characters",
+              message: "Summary cannot be more than 1000 characters",
             },
           }}
           render={({ field }) => (
             <textarea
-              className="w-full px-3 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
               placeholder="Add Summary"
               rows={4}
               data-error-key={`skills.${skillIndex}.summary`}
@@ -194,13 +177,9 @@ const SkillItem = ({
             />
           )}
         />
-        {getErrorMessage(
-          `skills.${skillIndex}.summary`
-        ) && (
+        {getErrorMessage(`skills.${skillIndex}.summary`) && (
           <span className="text-[#B10E0EE5] text-2xs">
-            {getErrorMessage(
-              `skills.${skillIndex}.summary`
-            )}
+            {getErrorMessage(`skills.${skillIndex}.summary`)}
           </span>
         )}
       </div>
@@ -208,20 +187,13 @@ const SkillItem = ({
   );
 };
 
-// Component for the score slider - simplified
-const ScoreSlider = ({
-  value,
-  onChange,
-  hasError,
-  errorKey,
-}) => {
-  const trackColor = hasError
-    ? "#ffb4b4"
-    : getColorForValue(value);
+// Component for the score slider - responsive
+const ScoreSlider = ({ value, onChange, hasError, errorKey }) => {
+  const trackColor = hasError ? "#ffb4b4" : getColorForValue(value);
 
   return (
     <div className="flex gap-x-2 items-center">
-      <div className="relative flex items-center w-40 mr-3">
+      <div className="relative flex items-center w-32 lg:w-40 mr-3">
         {/* Slider track (background) */}
         <div
           className={`absolute w-full h-2 bg-[#f5f5f5] rounded-full ${
@@ -243,9 +215,7 @@ const ScoreSlider = ({
           className="absolute w-4 h-4 bg-white border-2 cursor-pointer rounded-full shadow-md transform -translate-y-0 transition-all duration-150 z-10"
           style={{
             left: `calc(${value}% - 0.5rem)`,
-            borderColor: hasError
-              ? "#B10E0EE5"
-              : trackColor,
+            borderColor: hasError ? "#B10E0EE5" : trackColor,
           }}
         ></div>
 
@@ -256,9 +226,7 @@ const ScoreSlider = ({
           max="100"
           step="5"
           value={value}
-          onChange={(e) =>
-            onChange(parseInt(e.target.value, 10))
-          }
+          onChange={(e) => onChange(parseInt(e.target.value, 10))}
           className="absolute w-full h-5 opacity-0 cursor-pointer z-20"
           aria-label="Skill proficiency score"
           data-error-key={errorKey}
@@ -267,7 +235,7 @@ const ScoreSlider = ({
 
       {/* Score display */}
       <span
-        className={`font-medium text-sm ${
+        className={`font-medium text-xs lg:text-sm ${
           hasError ? "text-[#B10E0EE5]" : "text-[#0000006b]"
         }`}
       >
@@ -277,7 +245,7 @@ const ScoreSlider = ({
   );
 };
 
-// Simplified question and answer component
+// Question and answer component - responsive
 const QuestionAnswerPair = ({
   skillIndex,
   questionIndex,
@@ -291,19 +259,12 @@ const QuestionAnswerPair = ({
     answer: "3.2rem",
   });
 
-  // Simple autosize function
   const handleTextareaChange = (field, type) => (e) => {
     const { value } = e.target;
     field.onChange(value);
 
-    // Reset height to recalculate
     e.target.style.height = "3.2rem";
-
-    // Set new height based on scrollHeight
-    const newHeight = Math.min(
-      Math.max(e.target.scrollHeight, 48),
-      80
-    );
+    const newHeight = Math.min(Math.max(e.target.scrollHeight, 48), 80);
     setTextareaHeight((prev) => ({
       ...prev,
       [type]: `${newHeight}px`,
@@ -313,11 +274,11 @@ const QuestionAnswerPair = ({
   return (
     <div className="mb-5">
       {/* Question input */}
-      <div className="flex items-start">
-        <span className="font-[550] mr-4 text-default w-6 mt-2">
+      <div className="flex items-start gap-2">
+        <span className="font-[550] text-sm lg:text-default w-6 mt-2">
           {questionIndex + 1}.
         </span>
-        <div className="w-full">
+        <div className="flex-1">
           <Controller
             control={control}
             name={`skills.${skillIndex}.questions.${questionIndex}.question`}
@@ -325,18 +286,16 @@ const QuestionAnswerPair = ({
               required: "Question is required",
               minLength: {
                 value: 2,
-                message:
-                  "Question must be at least 2 characters",
+                message: "Question must be at least 2 characters",
               },
               maxLength: {
                 value: 950,
-                message:
-                  "Question cannot be more than 1000 characters",
+                message: "Question cannot be more than 1000 characters",
               },
             }}
             render={({ field }) => (
               <textarea
-                className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
+                className="w-full px-3 lg:px-4 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
                 placeholder="Question"
                 rows={2}
                 style={{
@@ -347,10 +306,7 @@ const QuestionAnswerPair = ({
                 }}
                 data-error-key={`skills.${skillIndex}.questions.${questionIndex}.question`}
                 {...field}
-                onChange={handleTextareaChange(
-                  field,
-                  "question"
-                )}
+                onChange={handleTextareaChange(field, "question")}
               />
             )}
           />
@@ -367,10 +323,8 @@ const QuestionAnswerPair = ({
         {showRemoveButton && (
           <button
             type="button"
-            onClick={() =>
-              removeQuestion(skillIndex, questionIndex)
-            }
-            className="ml-2 text-gray-500 hover:text-[#B10E0EE5] mt-2"
+            onClick={() => removeQuestion(skillIndex, questionIndex)}
+            className="text-gray-500 hover:text-[#B10E0EE5] mt-2"
             aria-label="Remove question"
           >
             <XCircleIcon className="w-5 h-5" />
@@ -379,11 +333,11 @@ const QuestionAnswerPair = ({
       </div>
 
       {/* Answer input */}
-      <div className="flex items-start mt-4">
-        <span className="font-[550] mr-4 text-default w-6 mt-2">
+      <div className="flex items-start gap-2 mt-4">
+        <span className="font-[550] text-sm lg:text-default w-6 mt-2">
           Ans.
         </span>
-        <div className="w-full">
+        <div className="flex-1">
           <Controller
             control={control}
             name={`skills.${skillIndex}.questions.${questionIndex}.answer`}
@@ -391,18 +345,16 @@ const QuestionAnswerPair = ({
               required: "Answer is required",
               minLength: {
                 value: 2,
-                message:
-                  "Answer must be at least 2 characters",
+                message: "Answer must be at least 2 characters",
               },
               maxLength: {
                 value: 4900,
-                message:
-                  "Answer cannot be more than 5000 characters",
+                message: "Answer cannot be more than 5000 characters",
               },
             }}
             render={({ field }) => (
               <textarea
-                className="w-full px-4 py-2 text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
+                className="w-full px-3 lg:px-4 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
                 placeholder="Answer"
                 rows={2}
                 style={{
@@ -413,10 +365,7 @@ const QuestionAnswerPair = ({
                 }}
                 data-error-key={`skills.${skillIndex}.questions.${questionIndex}.answer`}
                 {...field}
-                onChange={handleTextareaChange(
-                  field,
-                  "answer"
-                )}
+                onChange={handleTextareaChange(field, "answer")}
               />
             )}
           />

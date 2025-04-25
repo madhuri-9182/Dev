@@ -36,7 +36,7 @@ const SkillsSection = ({
       <div className="flex justify-end">
         <button
           type="button"
-          className="px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg"
+          className="px-6 py-2 text-xs sm:text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg w-full sm:w-auto"
           onClick={() =>
             appendSkill({
               skillName: "",

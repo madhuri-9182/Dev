@@ -1,5 +1,5 @@
-// Feedback.jsx - Main container component
-import { useEffect } from "react";
+// Feedback.jsx - Main container component with mobile responsiveness
+import { useEffect, useState, useRef } from "react";
 import {
   useForm,
   useFieldArray,
@@ -36,7 +36,8 @@ import SkillsSection from "./sections/SkillSection";
 import SkillEvaluationSection from "./sections/SkillEvaluationSection";
 import StrengthAndImprovementSection from "./sections/StrengthAndImprovementSection";
 import OverallRemarkSection from "./sections/OverallRemarkSection";
-import ResourcesSection from "./sections/ResourcesSection"; // Import our new section
+import ResourcesSection from "./sections/ResourcesSection";
+import MobileTabNavigation from "./MobileTabNavigation";
 import { REMARK_OPTIONS } from "../../Constants/constants";
 
 // Initial form state
@@ -66,7 +67,7 @@ const DEFAULT_FORM_VALUES = {
   skillEvaluation: {
     communication: "",
     attitude: "",
-    additional: [], // Add this for custom skill evaluations
+    additional: [],
   },
   strength: "",
   improvementPoints: "",
@@ -84,7 +85,6 @@ const transformSkillsData = (skillsData) => {
 
   return Object.entries(skillsData)?.map(
     ([skillName, skillData]) => {
-      // Transform questions array to match the expected format
       let questions = [];
       
       if (skillData.questions && skillData.questions.length > 0) {
@@ -93,7 +93,6 @@ const transformSkillsData = (skillsData) => {
           answer: q.ans || "",
         }));
       } else {
-        // If no questions exist, add one empty question-answer pair
         questions = [{ question: "", answer: "" }];
       }
 
@@ -108,21 +107,17 @@ const transformSkillsData = (skillsData) => {
 };
 
 const transformFormData = (formData, interviewId) => {
-  // Create a new FormData instance
   const formDataObject = new FormData();
 
-  // Add interview ID
   formDataObject.append(
     "interview_id",
     String(interviewId)
   );
 
-  // Transform skill-based performance
   const skill_based_performance = {};
 
   formData.skills.forEach((skill) => {
     if (skill.skillName) {
-      // Transform questions to match API format
       const apiQuestions = skill.questions.map((q) => ({
         que: q.question,
         ans: q.answer,
@@ -136,13 +131,11 @@ const transformFormData = (formData, interviewId) => {
     }
   });
 
-  // Add skill-based performance as JSON string
   formDataObject.append(
     "skill_based_performance",
     JSON.stringify(skill_based_performance)
   );
 
-  // Transform skill evaluation data
   const skill_evaluation = {
     Communication:
       formData.skillEvaluation.communication.toLowerCase(),
@@ -150,7 +143,6 @@ const transformFormData = (formData, interviewId) => {
       formData.skillEvaluation.attitude.toLowerCase(),
   };
 
-  // Add additional skill evaluations if they exist
   if (
     formData.skillEvaluation.additional &&
     formData.skillEvaluation.additional.length > 0
@@ -163,13 +155,11 @@ const transformFormData = (formData, interviewId) => {
     });
   }
 
-  // Add skill evaluation as JSON string
   formDataObject.append(
     "skill_evaluation",
     JSON.stringify(skill_evaluation)
   );
 
-  // Add other form fields - ensure all values are strings
   formDataObject.append(
     "strength",
     formData.strength || ""
@@ -187,7 +177,6 @@ const transformFormData = (formData, interviewId) => {
     String(formData.score || 0)
   );
 
-  // Add the file if it exists
   if (formData.resources.file) {
     formDataObject.append(
       "attachment",
@@ -195,7 +184,6 @@ const transformFormData = (formData, interviewId) => {
     );
   }
 
-  // Add the link if it exists
   if (formData.resources.link) {
     formDataObject.append("link", formData.resources.link);
   }
@@ -208,6 +196,18 @@ const Feedback = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const interviewId = location.pathname.split("/")[3];
+
+  // State for mobile tab navigation
+  const [activeSection, setActiveSection] = useState("candidate");
+  const sectionRefs = {
+    candidate: useRef(null),
+    interviewer: useRef(null),
+    skills: useRef(null),
+    evaluation: useRef(null),
+    strength: useRef(null),
+    overall: useRef(null),
+    resources: useRef(null),
+  };
 
   // Set up react-hook-form
   const {
@@ -244,25 +244,21 @@ const Feedback = () => {
   const calculateAverageScore = (skills) => {
     if (!skills || skills.length === 0) return 0;
 
-    // Filter out skills with no name (incomplete skills)
     const validSkills = skills.filter(
       (skill) => skill.skillName
     );
 
     if (validSkills.length === 0) return 0;
 
-    // Calculate the sum of all skill scores
     const totalScore = validSkills.reduce(
       (sum, skill) =>
         sum + (parseInt(skill.score, 10) || 0),
       0
     );
 
-    // Return the average (rounded to nearest integer)
     return Math.round(totalScore / validSkills.length);
   };
 
-  // Add this after the useFieldArray declaration
   // Watch for changes in skills array to recalculate score
   const watchedSkills = useWatch({
     control,
@@ -275,6 +271,42 @@ const Feedback = () => {
       calculateAverageScore(watchedSkills);
     setValue("score", averageScore);
   }, [watchedSkills, setValue]);
+
+  // Handle scroll detection for active tab
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 150; // Account for sticky header
+
+      Object.entries(sectionRefs).forEach(([key, ref]) => {
+        if (ref.current) {
+          const offsetTop = ref.current.offsetTop;
+          const height = ref.current.offsetHeight;
+
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+            setActiveSection(key);
+          }
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Handle tab click
+  const handleTabClick = (sectionId) => {
+    const ref = sectionRefs[sectionId];
+    if (ref.current) {
+      const offset = 100; // Adjusted for mobile header height
+      const elementPosition = ref.current.offsetTop - offset;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: "smooth",
+      });
+    }
+  };
 
   // Fetch feedback data
   const { data, isLoading, isError, error } = useQuery({
@@ -318,15 +350,12 @@ const Feedback = () => {
         additional: [],
       };
 
-    // Extract the default evaluations
     const communication =
       skillEvaluationData.Communication || "";
     const attitude = skillEvaluationData.Attitude || "";
 
-    // Create the additional evaluations array
     const additional = [];
 
-    // Process all other evaluations as additional
     Object.entries(skillEvaluationData).forEach(
       ([key, value]) => {
         if (key !== "Communication" && key !== "Attitude") {
@@ -334,7 +363,7 @@ const Feedback = () => {
             name: key,
             rating:
               value.charAt(0).toUpperCase() +
-              value.slice(1), // Capitalize first letter
+              value.slice(1),
           });
         }
       }
@@ -358,22 +387,18 @@ const Feedback = () => {
       const candidate = responseData?.candidate;
       const interviewer = responseData?.interviewer;
 
-      // Transform skills data
       const transformedSkills = transformSkillsData(
         responseData?.skill_based_performance
       );
 
-      // Transform skill evaluation data
       const transformedSkillEvaluation =
         transformSkillEvaluation(
           responseData?.skill_evaluation
         );
 
-      // Check if there's an attachment
       const attachmentUrl =
         responseData?.attachment || null;
 
-      // Reset the form with all values
       reset({
         candidateDetails: {
           name: candidate.name,
@@ -408,15 +433,15 @@ const Feedback = () => {
         overallRemark: responseData?.overall_remark || "",
         score: responseData?.overall_score || 0,
         resources: {
-          file: null, // We'll load this using the createFileFromUrl function
+          file: null,
           link: responseData?.link || "",
         },
-        attachmentUrl: attachmentUrl, // Store the attachment URL to be processed
+        attachmentUrl: attachmentUrl,
       });
     }
   }, [data, reset, getValues]);
 
-  // Validate that no skill has a score of 0
+  // Validate functions
   const validateSkillScores = (formData) => {
     const invalidSkills = formData.skills.filter(
       (skill) =>
@@ -425,7 +450,6 @@ const Feedback = () => {
     );
 
     if (invalidSkills.length > 0) {
-      // Set errors for each skill with score of 0
       invalidSkills.forEach((skill, index) => {
         setValue(`skills.${index}.score`, 0, {
           shouldValidate: true,
@@ -434,16 +458,13 @@ const Feedback = () => {
         });
       });
 
-      // Find and focus the first invalid skill score
       if (invalidSkills.length > 0) {
-        // Get the index of the first invalid skill
         const firstInvalidIndex = formData.skills.findIndex(
           (skill) =>
             skill.skillName &&
             (skill.score === 0 || skill.score === "0")
         );
 
-        // Find and focus the score element
         const scoreElement = document.querySelector(
           `[data-error-key="skills.${firstInvalidIndex}.score"]`
         );
@@ -462,11 +483,9 @@ const Feedback = () => {
     return true;
   };
 
-  // Validate skill evaluations (both default and additional)
   const validateSkillEvaluations = (formData) => {
     let isValid = true;
 
-    // Check if communication rating is missing
     if (!formData.skillEvaluation.communication) {
       setValue("skillEvaluation.communication", "", {
         shouldValidate: true,
@@ -476,7 +495,6 @@ const Feedback = () => {
       isValid = false;
     }
 
-    // Check if attitude rating is missing
     if (!formData.skillEvaluation.attitude) {
       setValue("skillEvaluation.attitude", "", {
         shouldValidate: true,
@@ -486,7 +504,6 @@ const Feedback = () => {
       isValid = false;
     }
 
-    // Check additional skill evaluations
     if (
       formData.skillEvaluation.additional &&
       formData.skillEvaluation.additional.length > 0
@@ -510,7 +527,6 @@ const Feedback = () => {
     }
 
     if (!isValid) {
-      // Find and focus the first skill evaluation error
       let firstErrorElement;
 
       if (!formData.skillEvaluation.communication) {
@@ -522,7 +538,6 @@ const Feedback = () => {
           '[data-error-key="skillEvaluation.attitude"]'
         );
       } else {
-        // Find the first additional skill with missing rating
         const firstMissingIndex =
           formData.skillEvaluation.additional.findIndex(
             (item) => !item.rating
@@ -547,12 +562,10 @@ const Feedback = () => {
 
   // Form submission handler
   const onSubmit = (data) => {
-    // Validate skill scores
     if (!validateSkillScores(data)) {
       return;
     }
 
-    // Validate skill evaluations
     if (!validateSkillEvaluations(data)) {
       return;
     }
@@ -566,24 +579,19 @@ const Feedback = () => {
 
   // Manual submit handler with validation
   const handleManualSubmit = async () => {
-    // First, trigger form validation
     const isFormValid = await trigger();
 
-    // If form validation passes, then check skill scores and evaluations
     if (isFormValid) {
       const values = getValues();
 
-      // First validate skill scores
       if (!validateSkillScores(values)) {
         return;
       }
 
-      // Then validate skill evaluations
       if (!validateSkillEvaluations(values)) {
         return;
       }
 
-      // If all validations pass, submit the form
       const transformedData = transformFormData(
         values,
         interviewId
@@ -593,12 +601,11 @@ const Feedback = () => {
         data: transformedData,
       });
     } else {
-      // Use our custom error handler to focus on the first error
       handleErrors();
     }
   };
 
-  // Utility function to add a question to a skill
+  // Utility functions for questions
   const addQuestion = (skillIndex) => {
     const currentSkill = getValues(`skills.${skillIndex}`);
     const updatedSkill = {
@@ -611,35 +618,24 @@ const Feedback = () => {
     updateSkill(skillIndex, updatedSkill);
   };
 
-  // Utility function to remove a question from a skill
   const removeQuestion = (skillIndex, questionIndex) => {
-    // First explicitly clear errors for the question being removed
-    // This prevents errors from "sticking" to the next question
     clearErrors(
       `skills.${skillIndex}.questions.${questionIndex}`
     );
 
-    // Get the current skill data
     const currentSkill = getValues(`skills.${skillIndex}`);
     const updatedQuestions = [...currentSkill.questions];
 
-    // Remove the question
     updatedQuestions.splice(questionIndex, 1);
 
-    // Create updated skill with removed question
     const updatedSkill = {
       ...currentSkill,
       questions: updatedQuestions,
     };
 
-    // Update the skill in the form state
     updateSkill(skillIndex, updatedSkill);
 
-    // Clear any errors that might have been shifted to wrong positions
-    // This ensures a clean error state after question removal
     updatedQuestions.forEach((_, idx) => {
-      // Only clear errors for indices at or above the removed question
-      // as those are the ones that shifted position
       if (idx >= questionIndex) {
         clearErrors(
           `skills.${skillIndex}.questions.${idx}`
@@ -654,64 +650,86 @@ const Feedback = () => {
     return <ErrorState message={getErrorMessage(error)} />;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 my-14">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-6 py-6 my-2 lg:my-14">
+      <MobileTabNavigation 
+        activeSection={activeSection} 
+        onTabClick={handleTabClick} 
+      />
+      
       <form
         onSubmit={handleSubmit(onSubmit)}
         encType="multipart/form-data"
+        className="mt-4 lg:mt-0"
       >
-        <CandidateDetailsSection
-          register={register}
-          errors={errors}
-        />
+        <div ref={sectionRefs.candidate}>
+          <CandidateDetailsSection
+            register={register}
+            errors={errors}
+          />
+        </div>
 
-        <InterviewerDetailsSection
-          register={register}
-          errors={errors}
-        />
+        <div ref={sectionRefs.interviewer}>
+          <InterviewerDetailsSection
+            register={register}
+            errors={errors}
+          />
+        </div>
 
-        <SkillsSection
-          skillFields={skillFields}
-          register={register}
-          control={control}
-          errors={errors}
-          addQuestion={addQuestion}
-          removeQuestion={removeQuestion}
-          removeSkill={removeSkill}
-          appendSkill={appendSkill}
-        />
+        <div ref={sectionRefs.skills}>
+          <SkillsSection
+            skillFields={skillFields}
+            register={register}
+            control={control}
+            errors={errors}
+            addQuestion={addQuestion}
+            removeQuestion={removeQuestion}
+            removeSkill={removeSkill}
+            appendSkill={appendSkill}
+          />
+        </div>
 
-        <SkillEvaluationSection
-          control={control}
-          setValue={setValue}
-          errors={errors}
-          register={register}
-        />
+        <div ref={sectionRefs.evaluation}>
+          <SkillEvaluationSection
+            control={control}
+            setValue={setValue}
+            errors={errors}
+            register={register}
+          />
+        </div>
 
-        <StrengthAndImprovementSection
-          register={register}
-          errors={errors}
-        />
+        <div ref={sectionRefs.strength}>
+          <StrengthAndImprovementSection
+            register={register}
+            errors={errors}
+          />
+        </div>
 
-        <OverallRemarkSection
-          control={control}
-          register={register}
-          errors={errors}
-          remarkOptions={REMARK_OPTIONS}
-          isPending={isPending}
-        />
-        <ResourcesSection
-          register={register}
-          errors={errors}
-          setValue={setValue}
-          trigger={trigger}
-          watch={watch}
-          getValues={getValues}
-        />
-        <div className="flex justify-end mt-6 ">
+        <div ref={sectionRefs.overall}>
+          <OverallRemarkSection
+            control={control}
+            register={register}
+            errors={errors}
+            remarkOptions={REMARK_OPTIONS}
+            isPending={isPending}
+          />
+        </div>
+
+        <div ref={sectionRefs.resources}>
+          <ResourcesSection
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            trigger={trigger}
+            watch={watch}
+            getValues={getValues}
+          />
+        </div>
+
+        <div className="flex justify-end mt-6 pb-6 lg:pb-0">
           <button
             type="button"
             onClick={handleManualSubmit}
-            className={`px-6 py-2 text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg ${
+            className={`w-full lg:w-auto px-6 py-3 lg:py-2 text-default sm:text-sm bg-black hover:opacity-80 text-white font-medium rounded-lg ${
               isPending
                 ? "opacity-50 cursor-not-allowed"
                 : ""

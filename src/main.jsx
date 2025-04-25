@@ -7,7 +7,6 @@ import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
-import { isDesktop } from "react-device-detect";
 
 import App from "./App";
 import { createTheme, ThemeProvider } from "@mui/material";
@@ -28,7 +27,7 @@ const theme = createTheme({
 
 // eslint-disable-next-line react-refresh/only-export-components
 const RootComponent = () => {
-  return isDesktop ? (
+  return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
@@ -42,11 +41,6 @@ const RootComponent = () => {
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
-  ) : (
-    <div className="text-center mt-4 text-xs sm:text-base mx-8 text-[#6B6F7B] font-medium">
-      Not supported. Please use a desktop to access the
-      application.
-    </div>
   );
 };
 

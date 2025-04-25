@@ -80,6 +80,7 @@ import {
 } from "./Components";
 import RootRoute from "./Components/shared/RootRoute";
 import Recording from "./Components/recording";
+import DesktopOnly from "./Components/shared/DesktopOnly";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -131,7 +132,7 @@ const router = createBrowserRouter(
         >
           <Route
             path="client"
-            element={<NavigationLayout />}
+            element={<DesktopOnly><NavigationLayout /></DesktopOnly>}
           >
             <Route path="message" element={<Message />} />
             <Route
@@ -211,7 +212,7 @@ const router = createBrowserRouter(
         >
           <Route
             path="agency"
-            element={<NavigationLayout />}
+            element={<DesktopOnly><NavigationLayout /></DesktopOnly>}
           >
             <Route path="" element={<JobProvider />}>
               <Route
@@ -258,7 +259,7 @@ const router = createBrowserRouter(
             />
           }
         >
-          <Route element={<Layout />}>
+          <Route element={<DesktopOnly><Layout /></DesktopOnly>}>
             <Route
               path="recording/:id"
               element={<Recording />}
@@ -272,7 +273,7 @@ const router = createBrowserRouter(
         >
           <Route
             path="internal"
-            element={<NavigationLayout />}
+            element={<DesktopOnly><NavigationLayout /></DesktopOnly>}
           >
             <Route
               path="dashboard"
@@ -338,13 +339,13 @@ const router = createBrowserRouter(
                 element={<Feedback />}
               />
               <Route
-                element={<InterviewerFinance />}
+                element={<DesktopOnly><InterviewerFinance /></DesktopOnly>}
                 path="finance"
               />
             </Route>
 
             {/* Navigation layout routes */}
-            <Route element={<NavigationLayout />}>
+            <Route element={<DesktopOnly><NavigationLayout /></DesktopOnly>}>
               <Route
                 path="dashboard"
                 element={<InterviewRecord />}
@@ -373,7 +374,7 @@ const router = createBrowserRouter(
           </Route>
         </Route>
       </Route>
-      <Route path="" element={<UnauthorizedLayout />}>
+      <Route path="" element={<DesktopOnly><UnauthorizedLayout /></DesktopOnly>}>
         <Route
           path="unauthorized"
           element={<Unauthorized />}
