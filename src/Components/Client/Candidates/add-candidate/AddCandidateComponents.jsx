@@ -9,7 +9,6 @@ import {
 } from "iconsax-react";
 import {
   fileToBase64,
-  formatExperience,
 } from "../../../../utils/util";
 import {
   EMAIL_REGEX,
@@ -129,8 +128,8 @@ const ResumeTableRow = ({
     defaultValues: {
       name: item.name,
       years_of_experience: {
-        year: item.years_of_experience.year,
-        month: item.years_of_experience.month,
+        year: item.years_of_experience.years,
+        month: item.years_of_experience.months,
       },
       phone_number: item.phone_number.startsWith("+91")
         ? item.phone_number.slice(3)
@@ -151,8 +150,8 @@ const ResumeTableRow = ({
     reset({
       name: item.name,
       years_of_experience: {
-        year: item.years_of_experience.year,
-        month: item.years_of_experience.month,
+        year: item.years_of_experience.years,
+        month: item.years_of_experience.months,
       },
       phone_number: item.phone_number.startsWith("+91")
         ? item.phone_number.slice(3)
@@ -357,6 +356,19 @@ const ResumeTableRow = ({
     return item[key] || "-";
   };
 
+  const formatExperience = (experience) => {
+    const { years, months } = experience;
+  
+    if (years === 0 && months === 0) {
+      return "-";
+    }
+  
+    const year = years ? `${years} Years` : "";
+    const month = months ? `${months} Months` : "";
+  
+    return `${year} ${month}`.trim();
+  };
+
   window.removeCandidateFromData = (key) => {
     const updatedKey = key.split("candidateData-")[1];
     const updatedData = data.filter((row) => {
@@ -553,8 +565,8 @@ const ResumeTableRow = ({
                   reset({
                     name: item.name,
                     years_of_experience: {
-                      year: item.years_of_experience.year,
-                      month: item.years_of_experience.month,
+                      year: item.years_of_experience.years,
+                      month: item.years_of_experience.months,
                     },
                     phone_number:
                       item.phone_number.startsWith("+91")
