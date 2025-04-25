@@ -22,7 +22,7 @@ export const FormSection = ({
     <div className="grid grid-cols-1 lg:grid-cols-[3.5fr_8.5fr] mb-8 lg:mb-10">
       <div className="flex flex-col lg:flex-row lg:justify-between mb-4 lg:mb-0">
         <div className="flex flex-col gap-y-1 lg:mr-3">
-          <h2 className="text-lg font-bold bg-gradient-to-r from-black to-[#E41616] text-transparent bg-clip-text">
+          <h2 className="text-lg font-bold bg-gradient-to-r from-black to-[#E41616] text-transparent bg-clip-text w-fit">
             {title}
           </h2>
           <p className="text-[#000000A1] text-sm lg:mb-6">
