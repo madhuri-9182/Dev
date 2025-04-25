@@ -1,31 +1,23 @@
 // MobileTabNavigation.jsx - New component for tab navigation
 
 import PropTypes from "prop-types";
-import { 
-  User, 
-  Code2, 
-  Star, 
-  PenTool, 
-  MessageSquare, 
-  Share2 
-} from "lucide-react";
+import { Questions, Business, Improvement, Remark, Resources, Skill, User } from "../../../assets";
 
 const MobileTabNavigation = ({ activeSection, onTabClick }) => {
   const tabs = [
     { id: "candidate", icon: User, label: "Candidate" },
-    { id: "interviewer", icon: User, label: "Interviewer" },
-    { id: "skills", icon: Code2, label: "Skills" },
-    { id: "evaluation", icon: Star, label: "Evaluation" },
-    { id: "strength", icon: PenTool, label: "Feedback" },
-    { id: "overall", icon: MessageSquare, label: "Overall" },
-    { id: "resources", icon: Share2, label: "Resources" },
+    { id: "interviewer", icon: Business, label: "Interviewer" },
+    { id: "skills", icon: Questions, label: "Skills" },
+    { id: "evaluation", icon: Skill, label: "Evaluation" },
+    { id: "strength", icon: Improvement, label: "Strength" },
+    { id: "overall", icon: Remark, label: "Remark" },
+    { id: "resources", icon: Resources, label: "Resources" },
   ];
 
   return (
     <div className="lg:hidden sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
       <div className="flex overflow-x-auto scrollbar-hide">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
           return (
             <button
               key={tab.id}
@@ -36,7 +28,12 @@ const MobileTabNavigation = ({ activeSection, onTabClick }) => {
                   : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
                 }`}
             >
-              <Icon className="w-5 h-5 mb-1" />
+                 <img
+              src={tab.icon}
+              alt="icon"
+              height={20}
+              width={20}
+            />
               {tab.label}
             </button>
           );
