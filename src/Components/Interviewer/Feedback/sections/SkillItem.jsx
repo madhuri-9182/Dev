@@ -1,13 +1,13 @@
-// SkillItem.jsx - Responsive skill item component
+// SkillItem.jsx - Responsive skill item component with character counters
 import PropTypes from "prop-types";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 import {
   PlusIcon,
   XCircleIcon,
   Trash2Icon,
 } from "lucide-react";
 import { getColorForValue } from "../utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const skillItemPropTypes = {
   skillField: PropTypes.object.isRequired,
@@ -39,6 +39,21 @@ const SkillItem = ({
 
     return error.message;
   };
+
+  // Watch the summary field value
+  const summaryValue = useWatch({
+    control,
+    name: `skills.${skillIndex}.summary`,
+    defaultValue: "",
+  });
+
+  // Character count state for summary
+  const [summaryCharCount, setSummaryCharCount] = useState(0);
+
+  // Update character count when summary value changes
+  useEffect(() => {
+    setSummaryCharCount(summaryValue?.length || 0);
+  }, [summaryValue]);
 
   return (
     <div
@@ -163,25 +178,34 @@ const SkillItem = ({
               message: "Summary must be at least 2 characters",
             },
             maxLength: {
-              value: 950,
+              value: 1000,
               message: "Summary cannot be more than 1000 characters",
             },
           }}
           render={({ field }) => (
-            <textarea
-              className="w-full px-3 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
-              placeholder="Add Summary"
-              rows={4}
-              data-error-key={`skills.${skillIndex}.summary`}
-              {...field}
-            />
+            <>
+              <textarea
+                className="w-full px-3 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none"
+                placeholder="Add Summary"
+                rows={4}
+                data-error-key={`skills.${skillIndex}.summary`}
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  setSummaryCharCount(e.target.value.length);
+                }}
+              />
+              <div className="text-2xs flex justify-between items-center mt-1">
+                <span className="text-[#B10E0EE5]">
+                  {getErrorMessage(`skills.${skillIndex}.summary`)}
+                </span>
+                <span className={summaryCharCount > 1000 ? 'text-[#B10E0EE5]' : 'text-[#49454F]'}>
+                  {summaryCharCount}/1000
+                </span>
+              </div>
+            </>
           )}
         />
-        {getErrorMessage(`skills.${skillIndex}.summary`) && (
-          <span className="text-[#B10E0EE5] text-2xs">
-            {getErrorMessage(`skills.${skillIndex}.summary`)}
-          </span>
-        )}
       </div>
     </div>
   );
@@ -259,9 +283,42 @@ const QuestionAnswerPair = ({
     answer: "3.2rem",
   });
 
+  // Watch field values
+  const questionValue = useWatch({
+    control,
+    name: `skills.${skillIndex}.questions.${questionIndex}.question`,
+    defaultValue: "",
+  });
+
+  const answerValue = useWatch({
+    control,
+    name: `skills.${skillIndex}.questions.${questionIndex}.answer`,
+    defaultValue: "",
+  });
+
+  // Character count states
+  const [questionCharCount, setQuestionCharCount] = useState(0);
+  const [answerCharCount, setAnswerCharCount] = useState(0);
+
+  // Update character counts when field values change
+  useEffect(() => {
+    setQuestionCharCount(questionValue?.length || 0);
+  }, [questionValue]);
+
+  useEffect(() => {
+    setAnswerCharCount(answerValue?.length || 0);
+  }, [answerValue]);
+
   const handleTextareaChange = (field, type) => (e) => {
     const { value } = e.target;
     field.onChange(value);
+
+    // Update character count immediately for responsive feedback
+    if (type === 'question') {
+      setQuestionCharCount(value.length);
+    } else if (type === 'answer') {
+      setAnswerCharCount(value.length);
+    }
 
     e.target.style.height = "3.2rem";
     const newHeight = Math.min(Math.max(e.target.scrollHeight, 48), 80);
@@ -289,36 +346,39 @@ const QuestionAnswerPair = ({
                 message: "Question must be at least 2 characters",
               },
               maxLength: {
-                value: 950,
+                value: 1000,
                 message: "Question cannot be more than 1000 characters",
               },
             }}
             render={({ field }) => (
-              <textarea
-                className="w-full px-3 lg:px-4 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
-                placeholder="Question"
-                rows={2}
-                style={{
-                  minHeight: "3.2rem",
-                  height: textareaHeight.question,
-                  maxHeight: "80px",
-                  transition: "height 150ms ease-out",
-                }}
-                data-error-key={`skills.${skillIndex}.questions.${questionIndex}.question`}
-                {...field}
-                onChange={handleTextareaChange(field, "question")}
-              />
+              <>
+                <textarea
+                  className="w-full px-3 lg:px-4 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
+                  placeholder="Question"
+                  rows={2}
+                  style={{
+                    minHeight: "3.2rem",
+                    height: textareaHeight.question,
+                    maxHeight: "80px",
+                    transition: "height 150ms ease-out",
+                  }}
+                  data-error-key={`skills.${skillIndex}.questions.${questionIndex}.question`}
+                  {...field}
+                  onChange={handleTextareaChange(field, "question")}
+                />
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-[#B10E0EE5] text-2xs">
+                    {getErrorMessage(
+                      `skills.${skillIndex}.questions.${questionIndex}.question`
+                    )}
+                  </span>
+                  <span className={`text-2xs ${questionCharCount > 1000 ? 'text-[#B10E0EE5]' : 'text-[#49454F]'}`}>
+                    {questionCharCount}/1000
+                  </span>
+                </div>
+              </>
             )}
           />
-          {getErrorMessage(
-            `skills.${skillIndex}.questions.${questionIndex}.question`
-          ) && (
-            <div className="mb-2 mt-1 text-[#B10E0EE5] text-2xs">
-              {getErrorMessage(
-                `skills.${skillIndex}.questions.${questionIndex}.question`
-              )}
-            </div>
-          )}
         </div>
         {showRemoveButton && (
           <button
@@ -348,36 +408,39 @@ const QuestionAnswerPair = ({
                 message: "Answer must be at least 2 characters",
               },
               maxLength: {
-                value: 4900,
+                value: 5000,
                 message: "Answer cannot be more than 5000 characters",
               },
             }}
             render={({ field }) => (
-              <textarea
-                className="w-full px-3 lg:px-4 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
-                placeholder="Answer"
-                rows={2}
-                style={{
-                  minHeight: "3.2rem",
-                  height: textareaHeight.answer,
-                  maxHeight: "80px",
-                  transition: "height 150ms ease-out",
-                }}
-                data-error-key={`skills.${skillIndex}.questions.${questionIndex}.answer`}
-                {...field}
-                onChange={handleTextareaChange(field, "answer")}
-              />
+              <>
+                <textarea
+                  className="w-full px-3 lg:px-4 py-2 text-sm lg:text-default text-[#49454F] rounded-md border border-gray-300 focus:border-blue-500 outline-none resize-none overflow-y-auto"
+                  placeholder="Answer"
+                  rows={2}
+                  style={{
+                    minHeight: "3.2rem",
+                    height: textareaHeight.answer,
+                    maxHeight: "80px",
+                    transition: "height 150ms ease-out",
+                  }}
+                  data-error-key={`skills.${skillIndex}.questions.${questionIndex}.answer`}
+                  {...field}
+                  onChange={handleTextareaChange(field, "answer")}
+                />
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-[#B10E0EE5] text-2xs">
+                    {getErrorMessage(
+                      `skills.${skillIndex}.questions.${questionIndex}.answer`
+                    )}
+                  </span>
+                  <span className={`text-2xs ${answerCharCount > 5000 ? 'text-[#B10E0EE5]' : 'text-[#49454F]'}`}>
+                    {answerCharCount}/5000
+                  </span>
+                </div>
+              </>
             )}
           />
-          {getErrorMessage(
-            `skills.${skillIndex}.questions.${questionIndex}.answer`
-          ) && (
-            <div className="mb-2 text-[#B10E0EE5] text-2xs mt-1">
-              {getErrorMessage(
-                `skills.${skillIndex}.questions.${questionIndex}.answer`
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

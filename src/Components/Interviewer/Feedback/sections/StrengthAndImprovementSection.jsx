@@ -8,7 +8,12 @@ import {
 const StrengthAndImprovementSection = ({
   register,
   errors,
+  watch,
 }) => {
+
+  const strengthValue = watch('strength');
+  const improvementPointsValue = watch('improvementPoints');
+
   return (
     <FormSection
       title="Strength and Improvement"
@@ -28,6 +33,7 @@ const StrengthAndImprovementSection = ({
         })}
         error={errors.strength}
         maxLength={450}
+        value={strengthValue}
       />
       <TextArea
         label="Improvement Points"
@@ -42,6 +48,7 @@ const StrengthAndImprovementSection = ({
         })}
         error={errors.improvementPoints}
         maxLength={450}
+        value={improvementPointsValue}
       />
     </FormSection>
   );
@@ -50,6 +57,7 @@ const StrengthAndImprovementSection = ({
 StrengthAndImprovementSection.propTypes = {
   register: PropTypes.func.isRequired,
   errors: PropTypes.object,
+  watch: PropTypes.func,
 };
 
 export default StrengthAndImprovementSection;

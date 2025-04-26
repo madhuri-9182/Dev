@@ -128,8 +128,24 @@ Input.propTypes = {
 };
 
 export const TextArea = React.forwardRef(
-  ({ label, placeholder, error, ...props }, ref) => {
-    const { name } = props;
+  ({ label, placeholder, error, maxLength, ...props }, ref) => {
+    const { name, value: controlledValue } = props;
+    const [charCount, setCharCount] = useState(0);
+
+    useEffect(() => {
+      const currentValue = controlledValue || ref?.current?.value || '';
+      setCharCount(currentValue.length);
+    }, [controlledValue, ref]);
+
+    const handleChange = (e) => {
+      const value = e.target.value;
+      setCharCount(value.length);
+      
+      // Call the original onChange if it exists
+      if (props.onChange) {
+        props.onChange(e);
+      }
+    };
 
     return (
       <FormField label={label}>
@@ -139,13 +155,17 @@ export const TextArea = React.forwardRef(
           placeholder={placeholder}
           rows={4}
           data-error-key={name}
+          onChange={handleChange}
           {...props}
         />
-        {error && (
-          <p className="text-2xs text-[#B10E0EE5]">
-            {error.message}
+        <div className="text-2xs flex justify-between items-center">
+        <p className={`text-[#B10E0EE5] ${error ? '' : 'invisible'}`}>
+            {error?.message}
           </p>
-        )}
+          <p className={charCount > maxLength ? 'text-[#B10E0EE5]' : 'text-[#49454F]'}>
+          {charCount}/{maxLength}
+          </p>
+        </div>
       </FormField>
     );
   }
@@ -156,6 +176,7 @@ TextArea.propTypes = {
   placeholder: PropTypes.string,
   error: PropTypes.object,
   name: PropTypes.string,
+  maxLength: PropTypes.number,
 };
 
 export const Select = React.forwardRef(

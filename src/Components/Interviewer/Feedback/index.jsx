@@ -701,6 +701,7 @@ const Feedback = () => {
           <StrengthAndImprovementSection
             register={register}
             errors={errors}
+            watch={watch}
           />
         </div>
 
