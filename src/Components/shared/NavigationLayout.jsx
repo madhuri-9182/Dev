@@ -137,9 +137,9 @@ function NavigationLayout() {
   const navigate = useNavigate();
 
   // Check if user is an interviewer
-  const isInterviewer = ROLES.INTERVIEWER.includes(
-    auth?.role
-  );
+  // const isInterviewer = ROLES.INTERVIEWER.includes(
+  //   auth?.role
+  // );
   const isInternal = ROLES.INTERNAL.includes(auth?.role);
 
   const fullName = auth?.name ? auth?.name : "User";
@@ -211,73 +211,68 @@ function NavigationLayout() {
     : [];
 
   // When Calendar link is clicked for interviewer role
-  const handleCalendarLinkClick = async () => {
-    try {
-      // Import necessary modules only when needed (dynamic import)
-      const { getGoogleEvents } = await import(
-        "../Interviewer/api"
-      );
-      const axios = (await import("../../api/axios"))
-        .default;
-      const toast = (await import("react-hot-toast"))
-        .default;
+  // const handleCalendarLinkClick = async () => {
+  //   try {
+  //     // Import necessary modules only when needed (dynamic import)
+  //     const { getGoogleEvents } = await import(
+  //       "../Interviewer/api"
+  //     );
+  //     const axios = (await import("../../api/axios"))
+  //       .default;
+  //     const toast = (await import("react-hot-toast"))
+  //       .default;
 
-      try {
-        // Check if we can access Google Calendar events
-        const eventsResponse = await getGoogleEvents();
-        if (
-          eventsResponse &&
-          eventsResponse.status === "success"
-        ) {
-          navigate("/interviewer/calendar");
-        } else {
-          // If not, initiate Google auth flow
-          const authResponse = await axios.get(
-            "/api/google-auth/init/"
-          );
-          if (authResponse.data?.data?.url) {
-            window.location.href =
-              authResponse.data.data.url;
-          }
-        }
-      } catch (error) {
-        console.error("Error accessing calendar:", error);
-        // If API call fails, try to initiate Google auth flow
-        try {
-          const authResponse = await axios.get(
-            "/api/google-auth/init/"
-          );
-          if (authResponse.data?.data?.url) {
-            window.location.href =
-              authResponse.data.data.url;
-          }
-        } catch (authError) {
-          console.error(
-            "Error initializing Google Auth:",
-            authError
-          );
-          toast.error(
-            "Failed to connect to Google Calendar"
-          );
-        }
-      }
-    } catch (importError) {
-      console.error(
-        "Error importing modules:",
-        importError
-      );
-      // Fallback to direct navigation if imports fail
-      navigate("/interviewer/calendar");
-    }
-  };
+  //     try {
+  //       // Check if we can access Google Calendar events
+  //       const eventsResponse = await getGoogleEvents();
+  //       if (
+  //         eventsResponse &&
+  //         eventsResponse.status === "success"
+  //       ) {
+  //         navigate("/interviewer/calendar");
+  //       } else {
+  //         // If not, initiate Google auth flow
+  //         const authResponse = await axios.get(
+  //           "/api/google-auth/init/"
+  //         );
+  //         if (authResponse.data?.data?.url) {
+  //           window.location.href =
+  //             authResponse.data.data.url;
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error accessing calendar:", error);
+  //       // If API call fails, try to initiate Google auth flow
+  //       try {
+  //         const authResponse = await axios.get(
+  //           "/api/google-auth/init/"
+  //         );
+  //         if (authResponse.data?.data?.url) {
+  //           window.location.href =
+  //             authResponse.data.data.url;
+  //         }
+  //       } catch (authError) {
+  //         console.error(
+  //           "Error initializing Google Auth:",
+  //           authError
+  //         );
+  //         toast.error(
+  //           "Failed to connect to Google Calendar"
+  //         );
+  //       }
+  //     }
+  //   } catch (importError) {
+  //     console.error(
+  //       "Error importing modules:",
+  //       importError
+  //     );
+  //     // Fallback to direct navigation if imports fail
+  //     navigate("/interviewer/calendar");
+  //   }
+  // };
 
   const handleNavItemClick = (item) => {
-    // Special handling for Calendar link only when user is an interviewer
-    if (isInterviewer && item.text === "Calendar") {
-      handleCalendarLinkClick();
-    } else {
       navigate(item.link);
-    }
   };
 
   return (

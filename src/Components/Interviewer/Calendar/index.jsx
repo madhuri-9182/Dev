@@ -17,6 +17,7 @@ import moment from "moment";
 import CalendarToolbar from "./components/CalendarToolbar";
 import CalendarPopup from "./components/CalendarPopup";
 import DayHeaderContent from "./components/DayHeaderContent";
+import { LoadingState } from "../../shared/loading-error-state";
 
 // Utils
 import {
@@ -82,26 +83,43 @@ const CalendarComponent = () => {
   const [newEvent, setNewEvent] = useState(DEFAULT_EVENT);
   const [currentSelection, setCurrentSelection] =
     useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [needsGoogleSync, setNeedsGoogleSync] =
+    useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Queries and Mutations
   const { mutate: handleGoogleAuthCallback } = useMutation({
     mutationFn: (data) =>
       axios.post("/api/google-auth/callback/", data),
-    onSuccess: () => navigate("/interviewer/calendar/"),
-    onError: () => navigate("/interviewer/dashboard/"),
+    onSuccess: () => {
+      navigate("/interviewer/calendar/");
+      fetchAllEvents();
+    },
+    onError: () => {
+      navigate("/interviewer/calendar/");
+      toast.error("Failed to connect to Google Calendar");
+    },
   });
 
   const {
     data: googleEvents,
     refetch: refetchGoogleEvents,
-    error: googleEventsError,
+    isError: isGoogleEventsError,
   } = useQuery({
     queryKey: ["googleEvents"],
     queryFn: () => axios.get("/api/events/"),
     enabled: false,
     retry: 1,
     retryDelay: 1000,
+    staleTime: 5 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (isGoogleEventsError) {
+      setNeedsGoogleSync(true);
+    }
+  }, [isGoogleEventsError]);
 
   const {
     data: blockedTimes,
@@ -125,10 +143,12 @@ const CalendarComponent = () => {
     onSuccess: () => {
       refetchBlockedTimes();
       closePopup();
+      toast.success("Calendar time blocked successfully");
     },
     onError: (error) => {
       toast.error(
-        Object.values(error.response.data?.errors)[0][0]
+        Object.values(error.response.data?.errors)[0][0] ||
+          "Failed to block calendar time"
       );
     },
   });
@@ -237,38 +257,65 @@ const CalendarComponent = () => {
     };
   }, [popupVisible, currentSelection]);
 
-  /* Commented out recurrence related effect
-  useEffect(() => {
-    if (popupVisible && newEvent.showRecurrenceOptions) {
-      updatePopupPosition();
-    }
-  }, [newEvent.showRecurrenceOptions, popupVisible]);
-  */
-
-  useEffect(() => {
-    if (googleEventsError) {
-      toast.error("Error fetching Google events");
-      navigate("/interviewer/dashboard/");
-    }
-  }, [googleEventsError, navigate]);
-
   // Fetch events helper
   const fetchAllEvents = async () => {
+    setIsLoading(true);
+
     try {
+      // First fetch blocked times
+      await refetchBlockedTimes();
+
+      // Then fetch Google events
       try {
-        await refetchGoogleEvents();
+        const googleResponse = await refetchGoogleEvents();
+
+        // Check if we need to show the sync button
+        if (
+          googleResponse?.data?.status === "failed" &&
+          googleResponse?.data?.message ===
+            "OAuth token not found for the user"
+        ) {
+          setNeedsGoogleSync(true);
+        } else {
+          setNeedsGoogleSync(false);
+        }
       } catch (error) {
         console.error(
           "Error fetching Google events:",
           error
         );
-        navigate("/interviewer/dashboard/");
-        return;
+        setNeedsGoogleSync(true);
       }
-      await refetchBlockedTimes();
     } catch (error) {
-      console.error("Error fetching events:", error);
-      navigate("/interviewer/dashboard/");
+      console.error("Error fetching calendar data:", error);
+      toast.error("Failed to load calendar data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle Google Calendar sync
+  const handleGoogleSync = async () => {
+    setIsSyncing(true);
+
+    try {
+      const authResponse = await axios.get(
+        "/api/google-auth/init/"
+      );
+      if (authResponse.data?.data?.url) {
+        window.location.href = authResponse.data.data.url;
+      } else {
+        toast.error(
+          "Failed to initiate Google Calendar sync"
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Error initializing Google Auth:",
+        error
+      );
+      toast.error("Failed to connect to Google Calendar");
+      setIsSyncing(false);
     }
   };
 
@@ -591,6 +638,9 @@ const CalendarComponent = () => {
     return isInFuture && isSameDay;
   };
 
+  // Render loading screen
+  if (isLoading) return <LoadingState />;
+
   return (
     <div className="font-roboto max-w-full my-0 mx-auto">
       {/* Toolbar */}
@@ -604,6 +654,9 @@ const CalendarComponent = () => {
         handleBack={() =>
           navigate("/interviewer/dashboard/")
         }
+        needsGoogleSync={needsGoogleSync}
+        handleGoogleSync={handleGoogleSync}
+        isSyncing={isSyncing}
       />
 
       {/* Calendar */}
