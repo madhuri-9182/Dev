@@ -20,7 +20,6 @@ import SearchInput from "../../shared/SearchInput";
 import CandidateStats from "../Candidates/view-candidate/CandidateStats";
 import Empty from "../../shared/Empty";
 import { LoadingState } from "../../shared/loading-error-state";
-import { useInView } from "react-intersection-observer"; // Install this package if not already available
 
 function EngagementDashboard({ setSelectedEngagement }) {
   const [filters, setFilters] = useState({
@@ -43,17 +42,10 @@ function EngagementDashboard({ setSelectedEngagement }) {
     { label: "Declined", value: undefined },
     { label: "Pending", value: undefined },
   ]);
-  const [updatingEngagementId, setUpdatingEngagementId] =
-    useState(null);
+  const [updatingEngagementId, setUpdatingEngagementId] = useState(null);
 
   // Use a ref for the container
   const containerRef = useRef(null);
-
-  // Use react-intersection-observer for infinite scrolling
-  const { ref: loadMoreRef, inView } = useInView({
-    threshold: 0.1,
-    rootMargin: "0px 0px 200px 0px", // Load more before reaching the end
-  });
 
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -111,17 +103,27 @@ function EngagementDashboard({ setSelectedEngagement }) {
     updateDebouncedFilters(filters, searchQuery);
   }, [filters, searchQuery, updateDebouncedFilters]);
 
-  // Fetch next page when the load more element is in view
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+  // Handle scroll event for infinite loading
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current || !hasNextPage || isFetchingNextPage) return;
+    
+    const { scrollTop, clientHeight, scrollHeight } = containerRef.current;
+    // Load more data when user scrolls within 20px of the bottom
+    if (scrollHeight - scrollTop <= clientHeight + 20) {
       fetchNextPage();
     }
-  }, [
-    inView,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  ]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Add scroll event listener to container
+  useEffect(() => {
+    const currentContainer = containerRef.current;
+    if (currentContainer) {
+      currentContainer.addEventListener("scroll", handleScroll);
+      return () => {
+        currentContainer.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, [handleScroll]);
 
   // Update stats when data changes
   useEffect(() => {
@@ -199,57 +201,53 @@ function EngagementDashboard({ setSelectedEngagement }) {
         onChipClick={handleChipClick}
       />
 
-      <div
-        ref={containerRef}
-        className="overflow-y-auto max-h-[400px] flex flex-col"
-      >
-        {/* Show loading state when initially loading */}
-        {isLoading && engagementsList.length === 0 ? (
-          <LoadingState />
-        ) : (
-          <>
-            {/* Render engagements list */}
-            {engagementsList.map((engagement) => (
-              <CandidateTimeline
-                key={engagement.id}
-                onStatusChange={(status) =>
-                  onEngagementStatusChange(
-                    status,
-                    engagement
-                  )
-                }
-                engagement={engagement}
-                isUpdating={
-                  updatingEngagementId === engagement.id
-                }
-                onEngagementClick={() =>
-                  onEngagementClick(engagement)
-                }
-                org_id={state?.org_id}
-              />
-            ))}
+      <div className="relative">
+        <div
+          ref={containerRef}
+          className="overflow-y-auto max-h-[400px] flex flex-col"
+        >
+          {/* Show loading state when initially loading */}
+          {isLoading && engagementsList.length === 0 ? (
+            <LoadingState />
+          ) : (
+            <>
+              {/* Render engagements list */}
+              {engagementsList.map((engagement) => (
+                <CandidateTimeline
+                  key={engagement.id}
+                  onStatusChange={(status) =>
+                    onEngagementStatusChange(
+                      status,
+                      engagement
+                    )
+                  }
+                  engagement={engagement}
+                  isUpdating={
+                    updatingEngagementId === engagement.id
+                  }
+                  onEngagementClick={() =>
+                    onEngagementClick(engagement)
+                  }
+                  org_id={state?.org_id}
+                />
+              ))}
 
-            {/* Show empty state when no data */}
-            {!isLoading && engagementsList.length === 0 && (
-              <Empty description="No data found" />
-            )}
-
-            {/* Add a load more trigger that becomes visible when scrolling */}
-            {hasNextPage && (
-              <div
-                ref={loadMoreRef}
-                className="h-10 flex items-center justify-center"
-              >
-                {isFetchingNextPage ? (
-                  <span className="text-sm text-[#007aff] font-semibold">
-                    Loading ...
-                  </span>
-                ) : (
-                  ""
-                )}
-              </div>
-            )}
-          </>
+              {/* Show empty state when no data */}
+              {!isLoading && engagementsList.length === 0 && (
+                <Empty description="No data found" />
+              )}
+              
+              {/* Reserve space for loading more */}
+              {hasNextPage && <div className="h-10"></div>}
+            </>
+          )}
+        </div>
+        
+        {/* Fixed position loader */}
+        {isFetchingNextPage && (
+          <div className="absolute bottom-0 left-0 right-0 h-10 flex items-center justify-center bg-white bg-opacity-40">
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
         )}
       </div>
     </div>
