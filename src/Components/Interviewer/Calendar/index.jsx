@@ -138,7 +138,12 @@ const CalendarComponent = () => {
     mutationFn: (blockData) =>
       axios.post(
         "/api/interviewer/block-calendar/",
-        blockData
+        blockData,
+        {
+          params: {
+            sync: needsGoogleSync ? "False" : "True",
+          },
+        }
       ),
     onSuccess: () => {
       refetchBlockedTimes();
