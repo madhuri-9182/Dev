@@ -73,6 +73,10 @@ const DropCandidateModal = ({ onClose, id }) => {
                 label: "Others",
                 value: "OTH",
               },
+              {
+                label: "Rejected by HDIP",
+                value: "RJD",
+              },
             ].map((option, idx) => (
               <button
                 key={idx}
