@@ -10,7 +10,11 @@ import {
 import { deleteCandidate } from "../api";
 import useRoleBasedNavigate from "../../../../hooks/useRoleBaseNavigate";
 
-const DropCandidateModal = ({ onClose, id }) => {
+const DropCandidateModal = ({
+  onClose,
+  id,
+  archiveCandidate = false,
+}) => {
   const queryClient = useQueryClient();
   const navigateTo = useRoleBasedNavigate();
   const [selectedReason, setSelectedReason] = useState("");
@@ -18,20 +22,30 @@ const DropCandidateModal = ({ onClose, id }) => {
   const deleteCandidateMutation = useMutation({
     mutationFn: deleteCandidate,
     onSuccess: () => {
-      toast.success("Candidate deleted successfully");
+      toast.success(
+        `Candidate ${
+          archiveCandidate ? "archived" : "deleted"
+        } successfully`
+      );
       queryClient.invalidateQueries("candidates");
-      navigateTo("candidates");
+      if (!archiveCandidate) {
+        navigateTo("candidates");
+      }
       onClose();
     },
     onError: () => {
-      toast.error("Failed to delete candidate");
+      toast.error(
+        `Failed to ${
+          archiveCandidate ? "archive" : "delete"
+        } candidate`
+      );
     },
   });
 
   const handleDeleteCandidate = () => {
     deleteCandidateMutation.mutate({
       id,
-      reason: selectedReason,
+      reason: archiveCandidate ? "RJD" : selectedReason,
     });
   };
   return (
@@ -46,7 +60,9 @@ const DropCandidateModal = ({ onClose, id }) => {
         <div className="flex flex-col gap-6 justify-center items-center">
           <div className="flex justify-center items-center pb-2">
             <h2 className="font-semibold text-sm">
-              Reason for Dropping
+              {archiveCandidate
+                ? "Archive Candidate"
+                : "Reason for Dropping"}
             </h2>
           </div>
           <CloseSquare
@@ -55,45 +71,52 @@ const DropCandidateModal = ({ onClose, id }) => {
             onClick={onClose}
           />
           {/* Modal Content */}
-          <div className="flex flex-col gap-2">
-            {[
-              {
-                label: "Candidate Not Interested",
-                value: "CNI",
-              },
-              {
-                label: "Candidate Not Available",
-                value: "CNA",
-              },
-              {
-                label: "Candidate Not Responded",
-                value: "CNR",
-              },
-              {
-                label: "Others",
-                value: "OTH",
-              },
-              {
-                label: "Rejected by HDIP",
-                value: "RJD",
-              },
-            ].map((option, idx) => (
-              <button
-                key={idx}
-                className={`flex items-center justify-center w-[300px] py-2 rounded-lg border text-2xs font-semibold transition-all duration-200
+          {archiveCandidate ? (
+            <div className="text-default font-medium text-[#49454F]">
+              Are you sure you want to archive this
+              candidate?
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {[
+                {
+                  label: "Candidate Not Interested",
+                  value: "CNI",
+                },
+                {
+                  label: "Candidate Not Available",
+                  value: "CNA",
+                },
+                {
+                  label: "Candidate Not Responded",
+                  value: "CNR",
+                },
+                {
+                  label: "Others",
+                  value: "OTH",
+                },
+                {
+                  label: "Rejected by HDIP",
+                  value: "RJD",
+                },
+              ].map((option, idx) => (
+                <button
+                  key={idx}
+                  className={`flex items-center justify-center w-[300px] py-2 rounded-lg border text-2xs font-semibold transition-all duration-200
                     ${
                       selectedReason === option.value
                         ? "bg-[#007AFF] text-white border-[#007AFF]" // Selected state
                         : "border-[#CAC4D0] text-[#49454F] bg-white" // Default state
                     }`}
-                onClick={() =>
-                  setSelectedReason(option.value)
-                }
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+                  onClick={() =>
+                    setSelectedReason(option.value)
+                  }
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex gap-3 justify-center items-center mb-4">
@@ -101,13 +124,13 @@ const DropCandidateModal = ({ onClose, id }) => {
               className="secondary-button h-7 w-[140px]"
               onClick={onClose}
             >
-              Cancel
+              {archiveCandidate ? "No" : "Cancel"}
             </button>
             <button
               className="primary-button h-7 w-[140px]"
               onClick={handleDeleteCandidate}
             >
-              Save
+              {archiveCandidate ? "Yes" : "Save"}
             </button>
           </div>
         </div>
@@ -121,4 +144,5 @@ export default DropCandidateModal;
 DropCandidateModal.propTypes = {
   onClose: PropTypes.func,
   id: PropTypes.number,
+  archiveCandidate: PropTypes.bool,
 };
