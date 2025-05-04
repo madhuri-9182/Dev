@@ -118,7 +118,7 @@ const createInterviewerTableData = (data) => {
     getJobLabel(item.candidate.role),
     `${item.candidate.year}.${item.candidate.month} Years`,
     formatDate(item.scheduled_time),
-    formatCurrency(item.client_amount),
+    formatCurrency(item.amount),
   ]);
 };
 

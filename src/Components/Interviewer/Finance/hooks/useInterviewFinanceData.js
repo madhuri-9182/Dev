@@ -96,7 +96,7 @@ const createPaginationHandler = (pageSize = 10) => {
 
 const calculateTotalAmount = (items = []) => {
   return items.reduce((sum, item) => {
-    const amount = parseFloat(item?.client_amount);
+    const amount = parseFloat(item?.amount);
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0);
 };
@@ -149,6 +149,10 @@ const useFinanceData = (queryKey, apiFn, options = {}) => {
   // Calculate total amount
   const totalAmount = useMemo(() => {
     if (!data) return 0;
+
+    if (data?.pages[0]?.total_amount) {
+      return data.pages[0].total_amount;
+    }
 
     return data.pages.reduce((sum, page) => {
       return page.results

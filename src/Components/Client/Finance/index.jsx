@@ -370,7 +370,7 @@ const Finance = () => {
         // Calculate total amount for PDF
         const pdfTotalAmount = response.results.reduce(
           (sum, item) => {
-            const amount = parseFloat(item?.client_amount);
+            const amount = parseFloat(item?.amount);
             return sum + (isNaN(amount) ? 0 : amount);
           },
           0

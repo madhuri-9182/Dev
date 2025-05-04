@@ -87,7 +87,7 @@ const createPaginationHandler = (pageSize = 10) => {
  */
 const calculateTotalAmount = (items = []) => {
   return items.reduce((sum, item) => {
-    const amount = parseFloat(item?.client_amount);
+    const amount = parseFloat(item?.amount);
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0);
 };
@@ -136,6 +136,11 @@ export const useCurrentFinanceData = () => {
   // Calculate total amount
   const totalAmount = useMemo(() => {
     if (!data) return 0;
+
+    // Safely calculate total amount
+    if (data?.pages[0]?.total_amount) {
+      return data.pages[0].total_amount;
+    }
 
     return data.pages.reduce((sum, page) => {
       return page.results
@@ -235,6 +240,10 @@ export const useLastMonthFinanceData = () => {
       !Array.isArray(lastMonthData.results)
     )
       return 0;
+
+    if (lastMonthData?.total_amount) {
+      return lastMonthData.total_amount;
+    }
     return calculateTotalAmount(lastMonthData.results);
   }, [lastMonthData]);
 
@@ -305,6 +314,10 @@ export const useLastMonthModalData = (isModalOpen) => {
   // Calculate total amount for last month modal
   const lastMonthModalTotalAmount = useMemo(() => {
     if (!lastMonthModalData) return 0;
+
+    if (lastMonthModalData?.pages[0]?.total_amount) {
+      return lastMonthModalData?.pages[0].total_amount;
+    }
 
     return lastMonthModalData.pages.reduce((sum, page) => {
       return page.results

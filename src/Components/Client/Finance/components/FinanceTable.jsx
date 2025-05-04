@@ -135,7 +135,7 @@ const FinanceTable = memo(
                       : "N/A"}
                   </td>
                   <td className={tableStyles.standard}>
-                    {formatCurrency(item.client_amount)}
+                    {formatCurrency(item.amount)}
                   </td>
                 </tr>
               );
