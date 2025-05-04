@@ -17,8 +17,13 @@ const FinalSelectionDropdown = ({ candidate }) => {
   const optionRef = useRef(null);
 
   const dropdownOptions = [
+    { id: "R1R", name: "Round 1 Reject" },
+    { id: "R2R", name: "Round 2 Reject" },
+    { id: "R3R", name: "Round 3 Reject" },
+    { id: "R4R", name: "Round 4 Reject" },
+    { id: "OFD", name: "Offer Decline" },
+    { id: "HMR", name: "HM Reject" },
     { id: "SLD", name: "Selected" },
-    { id: "RJD", name: "Rejected" },
     { id: "HD", name: "Hold" },
   ];
 
@@ -95,7 +100,7 @@ const FinalSelectionDropdown = ({ candidate }) => {
 
       {/* Dropdown Options */}
       {isDropdownOpen && (
-        <div className="absolute left-0 mt-1 w-28 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+        <div className="absolute left-0 mt-1 w-28 bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-40 overflow-auto">
           {dropdownOptions.map((option) => (
             <div
               key={option.id}
