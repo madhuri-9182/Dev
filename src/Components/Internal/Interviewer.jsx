@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
-import { DOMAINS, SPECIALIZATIONS } from "../Constants/constants";
+import {
+  DOMAINS,
+  SPECIALIZATIONS,
+} from "../Constants/constants";
 import { debounce } from "lodash";
 import { CircularProgress } from "@mui/material";
 import * as XLSX from "xlsx";
@@ -30,6 +33,9 @@ import {
   CalendarToday,
   InsertDriveFile,
   Edit as MaterialEdit,
+  AccountBalanceOutlined,
+  AssuredWorkloadOutlined,
+  InsertLinkOutlined,
 } from "@mui/icons-material";
 
 function Interviewer() {
@@ -42,6 +48,9 @@ function Interviewer() {
     interviewer_level: "",
     skills: [],
     strength: "",
+    account_number: "",
+    ifsc_code: "",
+    social_links: {},
   });
   const [itemsSkills, setItemsSkills] = useState([]);
   const [
@@ -50,20 +59,9 @@ function Interviewer() {
     setSelectedInterviewerLevel,
   ] = useState("");
   // eslint-disable-next-line no-unused-vars
-  const [selectedStrength, setSelectedStrength] = useState("");
-
-  const handleSkillSelection = (value) => {
-    if (value && !itemsSkills.includes(value)) {
-      setItemsSkills([...itemsSkills, value]);
-    }
-  };
-
-  const removeSkill = (skillToRemove) => {
-    setItemsSkills(
-      itemsSkills.filter((skill) => skill !== skillToRemove)
-    );
-  };
-
+  const [selectedStrength, setSelectedStrength] =
+    useState("");
+  const [socialLinks, setSocialLinks] = useState([]);
   const [items, setItems] = useState([]);
   const [summary, setSummary] = useState({ results: [] });
   const [page, setPage] = useState(1);
@@ -102,7 +100,15 @@ function Interviewer() {
     setError,
     clearErrors,
     setValue,
+    watch,
   } = useForm();
+
+  // URL validation regex
+  const URL_REGEX =
+    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
+  // Watch for account number to compare with confirm account number
+  const accountNumber = watch("accountNumber");
 
   const fetchData = useCallback(
     (page, isMounted = true) => {
@@ -212,6 +218,94 @@ function Interviewer() {
     validateRoles();
   }, [items, validateRoles]);
 
+  // Function to handle social link addition
+  const handleAddSocialLink = (e) => {
+    e.preventDefault();
+    const linkValue = document
+      .getElementById("socialLink")
+      .value.trim();
+
+    if (!linkValue) return;
+
+    if (!URL_REGEX.test(linkValue)) {
+      setError("socialLink", {
+        type: "manual",
+        message: "Please enter a valid URL",
+      });
+      return;
+    }
+
+    if (socialLinks.length >= 3) {
+      setError("socialLink", {
+        type: "manual",
+        message: "Maximum 3 links can be added",
+      });
+      return;
+    }
+
+    // Determine link type
+    let linkType = "website";
+
+    if (linkValue.includes("github.com")) {
+      linkType = "github";
+    } else if (linkValue.includes("linkedin.com")) {
+      linkType = "linkedin";
+    } else if (
+      linkValue.includes("twitter.com") ||
+      linkValue.includes("x.com")
+    ) {
+      linkType = "twitter";
+    } else if (linkValue.includes("medium.com")) {
+      linkType = "medium";
+    } else if (linkValue.includes("facebook.com")) {
+      linkType = "facebook";
+    } else if (linkValue.includes("instagram.com")) {
+      linkType = "instagram";
+    } else {
+      try {
+        const url = new URL(linkValue);
+        const hostname = url.hostname;
+        // Get the domain without www. and subdomain
+        const domainParts = hostname.split(".");
+        if (domainParts.length >= 2) {
+          // Get just the main domain name (e.g., "example" from "example.com")
+          linkType = domainParts[domainParts.length - 2];
+        } else {
+          linkType = hostname;
+        }
+        // eslint-disable-next-line no-unused-vars
+      } catch (e) {
+        // If URL parsing fails, fall back to a simple extraction
+        const match = linkValue.match(
+          new RegExp("//(?:www\\.)?([^/]+)")
+        );
+        if (match && match[1]) {
+          const domain = match[1].split(".")[0];
+          linkType =
+            domain !== "www"
+              ? domain
+              : match[1].split(".")[1];
+        } else {
+          linkType = "other";
+        }
+      }
+    }
+
+    setSocialLinks([
+      ...socialLinks,
+      { type: linkType, url: linkValue },
+    ]);
+    document.getElementById("socialLink").value = "";
+    clearErrors("socialLink");
+  };
+
+  // Function to remove a social link
+  const removeSocialLink = (index) => {
+    const updatedLinks = [...socialLinks];
+    updatedLinks.splice(index, 1);
+    setSocialLinks(updatedLinks);
+  };
+
   const handleChipClick = (type, value) => {
     setFilters((prev) => ({ ...prev, [type]: value }));
   };
@@ -225,7 +319,7 @@ function Interviewer() {
     if (data.email !== editUser.email)
       updatedData.email = data.email;
     if (data.phone !== editUser.phone_number?.slice(3))
-      updatedData.phone_number = `+91${data.phone}`
+      updatedData.phone_number = `+91${data.phone}`;
     if (
       data.experience_years !==
       editUser.total_experience_years
@@ -251,6 +345,31 @@ function Interviewer() {
       updatedData.skills = itemsSkills;
     }
 
+    // Add new fields - banking details
+    if (
+      data.accountNumber &&
+      data.accountNumber !== editUser.account_number
+    ) {
+      updatedData.account_number = data.accountNumber;
+    }
+
+    if (
+      data.ifscCode &&
+      data.ifscCode !== editUser.ifsc_code
+    ) {
+      updatedData.ifsc_code = data.ifscCode;
+    }
+
+    // Add social links if any
+    if (socialLinks.length > 0) {
+      const socialLinksObj = {};
+      socialLinks.forEach((link) => {
+        socialLinksObj[link.type] = link.url;
+      });
+      updatedData.social_links = socialLinksObj;
+    }
+
+    // Make API call - simplified without file upload
     setUpdateLoading(true);
     axios
       .patch(
@@ -304,6 +423,8 @@ function Interviewer() {
       interviewer_level:
         interviewer.interviewer_level || "",
       strength: interviewer.strength,
+      accountNumber: interviewer.account_number || "",
+      ifscCode: interviewer.ifsc_code || "",
     });
     setItems(
       interviewer?.assigned_domains?.map(
@@ -311,6 +432,21 @@ function Interviewer() {
       ) || []
     );
     setItemsSkills(interviewer?.skills || []);
+
+    // Handle social links
+    setSocialLinks([]);
+    if (
+      interviewer.social_links &&
+      Object.keys(interviewer.social_links).length > 0
+    ) {
+      const links = [];
+      Object.entries(interviewer.social_links).forEach(
+        ([type, url]) => {
+          links.push({ type, url });
+        }
+      );
+      setSocialLinks(links);
+    }
   };
 
   const handleEditUserClose = () => setEditUserOpen(false);
@@ -326,10 +462,22 @@ function Interviewer() {
     setItems(items.filter((item) => item !== ItemToRemove));
   };
 
-  const STRENGTHS = SPECIALIZATIONS?.map((item)=> ({
+  const handleSkillSelection = (value) => {
+    if (value && !itemsSkills.includes(value)) {
+      setItemsSkills([...itemsSkills, value]);
+    }
+  };
+
+  const removeSkill = (skillToRemove) => {
+    setItemsSkills(
+      itemsSkills.filter((skill) => skill !== skillToRemove)
+    );
+  };
+
+  const STRENGTHS = SPECIALIZATIONS?.map((item) => ({
     label: item.name,
     value: item.id,
-  }))
+  }));
 
   const EXPERIENCES = [
     { label: "0-4 Years", value: "0-4" },
@@ -904,6 +1052,143 @@ function Interviewer() {
                   </div>
                 )}
               </div>
+
+              {/* Account Number Field */}
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px]">
+                  Account Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Account Number"
+                  {...register("accountNumber", {
+                    pattern: {
+                      value: /^[0-9]{9,18}$/,
+                      message:
+                        "Account number must be 9-18 digits only",
+                    },
+                  })}
+                  className="w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                {errors.accountNumber && (
+                  <span className="error-message">
+                    {errors.accountNumber.message}
+                  </span>
+                )}
+              </div>
+
+              {/* IFSC Code Field */}
+              <div className="p-1 flex flex-col items-start w-full">
+                <label
+                  className={`w-full font-medium text-[#6B6F7B] text-[12px] ${
+                    accountNumber
+                      ? "required-field-label"
+                      : ""
+                  }`}
+                >
+                  IFSC Code
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter IFSC Code"
+                  {...register("ifscCode", {
+                    required: {
+                      value: !!accountNumber,
+                      message:
+                        "IFSC Code is required when account number is provided",
+                    },
+                    pattern: {
+                      value: /^[A-Z]{4}0[A-Z0-9]{6}$/,
+                      message: "Invalid IFSC code format",
+                    },
+                  })}
+                  className="w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                {errors.ifscCode && (
+                  <span className="error-message">
+                    {errors.ifscCode.message}
+                  </span>
+                )}
+              </div>
+
+              {/* Social Links */}
+              <div className="p-1 flex flex-col items-start w-full">
+                <label className="w-full font-medium text-[#6B6F7B] text-[12px]">
+                  Social Links (Max 3)
+                </label>
+                <div className="flex items-center w-full gap-2">
+                  <input
+                    type="text"
+                    id="socialLink"
+                    placeholder="Enter Link"
+                    className="w-full p-1 text-[12px] border text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  {socialLinks.length < 3 && (
+                    <button
+                      type="button"
+                      onClick={handleAddSocialLink}
+                      className="bg-blue-500 text-white rounded-lg px-3 h-[32px] text-[12px]"
+                    >
+                      Add
+                    </button>
+                  )}
+                </div>
+                {errors.socialLink && (
+                  <span className="error-message">
+                    {errors.socialLink.message}
+                  </span>
+                )}
+              </div>
+
+              {socialLinks.length > 0 && (
+                <div className="p-1 w-full">
+                  <ul className="flex flex-col gap-2">
+                    {socialLinks.map((link, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center p-2 border rounded-lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-[#49454f] capitalize">
+                            {link.type}:
+                          </span>
+                          <span
+                            className="text-xs truncate text-wrap max-w-[200px] text-[#49454f] cursor-pointer hover:underline hover:text-[#007AFF]"
+                            onClick={() => {
+                              window.open(
+                                link.url,
+                                "_blank"
+                              );
+                            }}
+                          >
+                            {link.url}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeSocialLink(index)
+                          }
+                          className="text-red-500"
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z"
+                              fill="#EF4444"
+                            />
+                          </svg>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             <div className="flex flex-row-reverse mt-2">
               <button
@@ -951,6 +1236,7 @@ function Interviewer() {
             </button>
           </div>
         </Modal>
+
         {/* View Interviewer */}
         <Modal
           isOpen={viewModalOpen}
@@ -1155,6 +1441,50 @@ function Interviewer() {
                 </div>
               </div>
 
+              {/* Banking Details Section - Show only if account number exists */}
+              {selectedInterviewer.account_number && (
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                    Banking Details
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start">
+                      <AccountBalanceOutlined
+                        className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                        size={14}
+                      />
+                      <div>
+                        <p className="text-[10px] text-gray-500">
+                          Account Number
+                        </p>
+                        <p className="font-medium text-xs">
+                          {
+                            selectedInterviewer.account_number
+                          }
+                        </p>
+                      </div>
+                    </div>
+
+                    {selectedInterviewer.ifsc_code && (
+                      <div className="flex items-start">
+                        <AssuredWorkloadOutlined
+                          className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                          size={14}
+                        />
+                        <div>
+                          <p className="text-[10px] text-gray-500">
+                            IFSC Code
+                          </p>
+                          <p className="font-medium text-xs">
+                            {selectedInterviewer.ifsc_code}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Skills and Job Assignment */}
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-md">
@@ -1193,6 +1523,46 @@ function Interviewer() {
                   </div>
                 </div>
               </div>
+
+              {/* Social Links Section - Show only if social_links exists and has entries */}
+              {selectedInterviewer.social_links &&
+                Object.keys(
+                  selectedInterviewer.social_links
+                ).length > 0 && (
+                  <div className="bg-gray-50 p-4 rounded-md">
+                    <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2">
+                      Social Links
+                    </h3>
+                    <div className="space-y-2">
+                      {Object.entries(
+                        selectedInterviewer.social_links
+                      ).map(([type, url], index) => (
+                        <div
+                          key={index}
+                          className="flex items-start"
+                        >
+                          <InsertLinkOutlined
+                            className="text-indigo-500 mt-1 mr-3 flex-shrink-0"
+                            size={14}
+                          />
+                          <div>
+                            <p className="text-[10px] text-gray-500 capitalize">
+                              {type}
+                            </p>
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline text-xs"
+                            >
+                              {url}
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               {/* Resume Link */}
               {selectedInterviewer.cv && (
