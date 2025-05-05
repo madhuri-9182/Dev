@@ -29,6 +29,7 @@ function AddInterviewer() {
   const [itemsSkills, setItemsSkills] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [socialLinks, setSocialLinks] = useState([]);
   const navigate = useNavigate();
   const {
     register,
@@ -38,8 +39,16 @@ function AddInterviewer() {
     setError,
     setValue,
     clearErrors,
+    watch,
   } = useForm();
   const hasInteracted = useRef(false); // Ref to track if the user has interacted with the form
+
+  // Watch for account number to compare with confirm account number and for conditional IFSC validation
+  const accountNumber = watch("accountNumber");
+
+  // URL validation regex
+  const URL_REGEX =
+    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
   const validateRoles = useCallback(() => {
     if (items.length === 0) {
@@ -97,6 +106,13 @@ function AddInterviewer() {
     }
   }, [uploadedFile, validateFile]);
 
+  // Add effect to trigger IFSC validation when account number changes
+  useEffect(() => {
+    if (hasInteracted.current && accountNumber) {
+      trigger("ifscCode");
+    }
+  }, [accountNumber, trigger]);
+
   const handleSelection = (value) => {
     const selectedRole = value;
     hasInteracted.current = true; // Mark as interacted
@@ -142,6 +158,93 @@ function AddInterviewer() {
         message: "Please select at least one skill.",
       });
     }
+  };
+
+  // Function to add a social link
+  const addSocialLink = (e) => {
+    e.preventDefault();
+    const linkValue = document
+      .getElementById("socialLink")
+      .value.trim();
+
+    if (!linkValue) return;
+
+    if (!URL_REGEX.test(linkValue)) {
+      setError("socialLink", {
+        type: "manual",
+        message: "Please enter a valid URL",
+      });
+      return;
+    }
+
+    if (socialLinks.length >= 3) {
+      setError("socialLink", {
+        type: "manual",
+        message: "Maximum 3 links can be added",
+      });
+      return;
+    }
+
+    // Determine link type
+    let linkType = "website";
+
+    if (linkValue.includes("github.com")) {
+      linkType = "github";
+    } else if (linkValue.includes("linkedin.com")) {
+      linkType = "linkedin";
+    } else if (
+      linkValue.includes("twitter.com") ||
+      linkValue.includes("x.com")
+    ) {
+      linkType = "twitter";
+    } else if (linkValue.includes("medium.com")) {
+      linkType = "medium";
+    } else if (linkValue.includes("facebook.com")) {
+      linkType = "facebook";
+    } else if (linkValue.includes("instagram.com")) {
+      linkType = "instagram";
+    } else {
+      try {
+        const url = new URL(linkValue);
+        const hostname = url.hostname;
+        // Get the domain without www. and subdomain
+        const domainParts = hostname.split(".");
+        if (domainParts.length >= 2) {
+          // Get just the main domain name (e.g., "example" from "example.com")
+          linkType = domainParts[domainParts.length - 2];
+        } else {
+          linkType = hostname;
+        }
+        // eslint-disable-next-line no-unused-vars
+      } catch (e) {
+        // If URL parsing fails, fall back to a simple extraction
+        const match = linkValue.match(
+          new RegExp("//(?:www\\.)?([^/]+)")
+        );
+        if (match && match[1]) {
+          const domain = match[1].split(".")[0];
+          linkType =
+            domain !== "www"
+              ? domain
+              : match[1].split(".")[1];
+        } else {
+          linkType = "other";
+        }
+      }
+    }
+
+    setSocialLinks([
+      ...socialLinks,
+      { type: linkType, url: linkValue },
+    ]);
+    document.getElementById("socialLink").value = "";
+    clearErrors("socialLink");
+  };
+  // Function to remove a social link
+  const removeSocialLink = (index) => {
+    const updatedLinks = [...socialLinks];
+    updatedLinks.splice(index, 1);
+    setSocialLinks(updatedLinks);
   };
 
   const handleDrop = (e) => {
@@ -204,6 +307,30 @@ function AddInterviewer() {
       formdata.append("strength", data.strength);
       formdata.append("cv", uploadedFile);
 
+      // Add new fields only if they are entered
+      if (data.accountNumber) {
+        formdata.append(
+          "account_number",
+          data.accountNumber
+        );
+      }
+
+      if (data.ifscCode) {
+        formdata.append("ifsc_code", data.ifscCode);
+      }
+
+      // Add social links if any
+      if (socialLinks.length > 0) {
+        const socialLinksObj = {};
+        socialLinks.forEach((link) => {
+          socialLinksObj[link.type] = link.url;
+        });
+        formdata.append(
+          "social_links",
+          JSON.stringify(socialLinksObj)
+        );
+      }
+
       await axios.post(
         "/api/internal/interviewers/",
         formdata
@@ -222,7 +349,7 @@ function AddInterviewer() {
         );
       }
       toast.error(
-        errorMessages.join(", ") ||
+        errorMessages?.join(", ") ||
           "Failed to add interviewer",
         { position: "top-right" }
       );
@@ -783,7 +910,207 @@ function AddInterviewer() {
           </ul>
           <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
 
-          {/* MAIN 6 */}
+          {/* NEW FIELDS SECTION */}
+          <div className="mb-4">
+            <ul className="grid grid-cols-2 gap-4">
+              {/* Account Number */}
+              <li className="flex items-center justify-start gap-x-4">
+                <div className="w-[30%] flex items-end justify-end">
+                  <label
+                    htmlFor="accountNumber"
+                    className="w-full text-right text-[12px] text-[#6B6F7B] font-bold"
+                  >
+                    Account Number
+                  </label>
+                </div>
+                <div className="w-1/2">
+                  <input
+                    type="text"
+                    name="accountNumber"
+                    placeholder="Account Number"
+                    className="2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+                    {...register("accountNumber", {
+                      pattern: {
+                        value: /^[0-9]{9,18}$/,
+                        message:
+                          "Account number must be 9-18 digits only",
+                      },
+                    })}
+                  />
+                  {errors.accountNumber && (
+                    <span className="error-message">
+                      {errors.accountNumber.message}
+                    </span>
+                  )}
+                </div>
+              </li>
+
+              {/* Confirm Account Number */}
+              <li className="flex items-center justify-start gap-x-4">
+                <div className="w-[30%] flex items-end justify-end">
+                  <label
+                    htmlFor="confirmAccountNumber"
+                    className="w-full text-right text-[12px] text-[#6B6F7B] font-bold"
+                  >
+                    Confirm Account Number
+                  </label>
+                </div>
+                <div className="w-1/2">
+                  <input
+                    type="text"
+                    name="confirmAccountNumber"
+                    placeholder="Confirm Account Number"
+                    className="2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+                    {...register("confirmAccountNumber", {
+                      validate: (value) =>
+                        !accountNumber ||
+                        value === accountNumber ||
+                        "Account numbers do not match",
+                      pattern: {
+                        value: /^[0-9]{9,18}$/,
+                        message:
+                          "Account number must be 9-18 digits only",
+                      },
+                    })}
+                  />
+                  {errors.confirmAccountNumber && (
+                    <span className="error-message">
+                      {errors.confirmAccountNumber.message}
+                    </span>
+                  )}
+                </div>
+              </li>
+
+              {/* IFSC Code */}
+              <li className="">
+                <div className="flex items-center justify-start gap-x-4">
+                  <div className="w-[30%] flex items-end justify-end">
+                    <label
+                      htmlFor="ifscCode"
+                      className={`w-full text-right text-[12px] text-[#6B6F7B] font-bold ${
+                        accountNumber
+                          ? "required-field-label"
+                          : ""
+                      }`}
+                    >
+                      IFSC Code
+                    </label>
+                  </div>
+                  <div className="w-1/2">
+                    <input
+                      type="text"
+                      name="ifscCode"
+                      placeholder="IFSC Code"
+                      className="2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+                      {...register("ifscCode", {
+                        required: {
+                          value: !!accountNumber,
+                          message: "IFSC Code is required",
+                        },
+                        pattern: {
+                          value: /^[A-Z]{4}0[A-Z0-9]{6}$/,
+                          message:
+                            "Invalid IFSC code format",
+                        },
+                      })}
+                    />
+                    {errors.ifscCode && (
+                      <span className="error-message">
+                        {errors.ifscCode.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </li>
+
+              {/* Social Links */}
+              <li className="flex items-start justify-start gap-x-4">
+                <div className="w-[30%] flex items-end justify-end pt-2">
+                  <label
+                    htmlFor="socialLink"
+                    className="w-full text-right text-[12px] text-[#6B6F7B] font-bold"
+                  >
+                    Social Links (Max 3)
+                  </label>
+                </div>
+                <div className="w-[70%]">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="socialLink"
+                      name="socialLink"
+                      placeholder="Enter Link"
+                      className="2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
+                    />
+                    <button
+                      onClick={addSocialLink}
+                      className="bg-blue-500 text-white rounded-lg px-3 h-[32px] text-[12px]"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {errors.socialLink && (
+                    <span className="error-message">
+                      {errors.socialLink.message}
+                    </span>
+                  )}
+
+                  {socialLinks.length > 0 && (
+                    <div className="mt-2 2xl:w-[360px] xl:w-[300px]">
+                      <ul className="flex flex-col gap-2">
+                        {socialLinks.map((link, index) => (
+                          <li
+                            key={index}
+                            className="flex justify-between items-center p-2 border rounded-lg"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-[#49454f] capitalize ">
+                                {link.type}:
+                              </span>
+                              <span
+                                className="text-xs truncate text-wrap max-w-[200px] text-[#49454f] cursor-pointer hover:underline hover:text-[#007AFF]"
+                                onClick={() => {
+                                  // open the link in new tab
+                                  window.open(
+                                    link.url,
+                                    "_blank"
+                                  );
+                                }}
+                              >
+                                {link.url}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() =>
+                                removeSocialLink(index)
+                              }
+                              className="text-red-500"
+                            >
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 12 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M1.8 11.25L0.75 10.2L4.95 6L0.75 1.8L1.8 0.75L6 4.95L10.2 0.75L11.25 1.8L7.05 6L11.25 10.2L10.2 11.25L6 7.05L1.8 11.25Z"
+                                  fill="#EF4444"
+                                />
+                              </svg>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </li>
+            </ul>
+          </div>
+          <hr className=" h-[2px] rounded-full bg-[#F4F4F4] my-4" />
+
+          {/* MAIN 6 - Upload CV */}
 
           <div className="mt-4">
             <ul className="grid grid-cols-2 gap-2 ">
@@ -821,7 +1148,7 @@ function AddInterviewer() {
                       }}
                       className="sr-only"
                     />
-                    <button className="h-20 w-60 flex items-center justify-center border-2 border-dashed border-gray-500 rounded-2xl cursor-pointer bg-white hover:bg-gray-100  text-[#49454F] transition-all">
+                    <button className="h-20 w-full flex items-center justify-center border-2 border-dashed border-gray-500 rounded-2xl cursor-pointer bg-white hover:bg-gray-100  text-[#49454F] transition-all">
                       <p className="flex flex-col gap-3 items-center">
                         <LogoutCurve
                           className="rotate-90"
