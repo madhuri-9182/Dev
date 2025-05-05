@@ -25,22 +25,17 @@
       rel="stylesheet"
     />
     <title>HD Interview Platform</title>
+
+    <!-- Tawk.to Script with conditional initialization -->
     <script type="text/javascript">
       // Initial setup - will be updated dynamically
       var Tawk_API = Tawk_API || {};
       var Tawk_LoadStart = new Date();
 
-      // Initialize widget in hidden state
-      Tawk_API.autoStart = false;
-
       // Check session storage for user information
       function updateTawkBasedOnAuth() {
         var tawkUserInfo =
           sessionStorage.getItem("tawkUserInfo");
-        console.log(
-          "Tawk user info from session storage:",
-          tawkUserInfo
-        );
 
         if (tawkUserInfo) {
           try {
@@ -92,10 +87,7 @@
               }
             }
           } catch (e) {
-            console.error(
-              "Error parsing Tawk user info",
-              e
-            );
+            // Handle error silently in production
           }
         }
       }

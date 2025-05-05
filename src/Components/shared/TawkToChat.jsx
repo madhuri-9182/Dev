@@ -3,8 +3,7 @@ import useAuth from "../../hooks/useAuth";
 import { ROLES } from "../Constants/constants";
 
 /**
- * This component doesn't render anything, it just bridges between
- * React's auth state and the Tawk.to widget by using sessionStorage
+ * This component bridges between React's auth state and the Tawk.to widget
  */
 const TawkAuthBridge = () => {
   const { auth } = useAuth();
@@ -31,11 +30,11 @@ const TawkAuthBridge = () => {
       JSON.stringify(tawkUserInfo)
     );
 
-    // Dispatch an event to notify our HTML script
+    // Dispatch event to notify our HTML script
     window.dispatchEvent(new Event("tawkInfoUpdated"));
 
     return () => {
-      // No special cleanup needed
+      // No cleanup needed
     };
   }, [auth]);
 
