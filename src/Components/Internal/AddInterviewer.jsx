@@ -1042,12 +1042,14 @@ function AddInterviewer() {
                       placeholder="Enter Link"
                       className="2xl:w-[360px] xl:w-[300px] h-[32px] border border-gray-300 text-center rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px]"
                     />
-                    <button
-                      onClick={addSocialLink}
-                      className="bg-blue-500 text-white rounded-lg px-3 h-[32px] text-[12px]"
-                    >
-                      Add
-                    </button>
+                    {socialLinks.length < 3 && (
+                      <button
+                        onClick={addSocialLink}
+                        className="bg-blue-500 text-white rounded-lg px-3 h-[32px] text-[12px]"
+                      >
+                        Add
+                      </button>
+                    )}
                   </div>
                   {errors.socialLink && (
                     <span className="error-message">
