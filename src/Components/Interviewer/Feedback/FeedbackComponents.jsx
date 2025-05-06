@@ -42,7 +42,9 @@ export const FormSection = ({
         </div>
       </div>
       <div className="flex-1">
-        <div className="space-y-4 lg:space-y-6">{children}</div>
+        <div className="space-y-4 lg:space-y-6">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -74,7 +76,11 @@ export const FormField = ({
 }) => {
   return (
     <div className="">
-      <label className="block mb-1 text-sm lg:text-default font-[550] required-field-label">
+      <label
+        className={`block mb-1 text-sm lg:text-default font-[550] ${
+          optional ? "" : "required-field-label"
+        }`}
+      >
         {label}:
         {optional && (
           <span className="text-gray-500 font-normal ml-1 text-xs lg:text-sm">
@@ -128,19 +134,23 @@ Input.propTypes = {
 };
 
 export const TextArea = React.forwardRef(
-  ({ label, placeholder, error, maxLength, ...props }, ref) => {
+  (
+    { label, placeholder, error, maxLength, ...props },
+    ref
+  ) => {
     const { name, value: controlledValue } = props;
     const [charCount, setCharCount] = useState(0);
 
     useEffect(() => {
-      const currentValue = controlledValue || ref?.current?.value || '';
+      const currentValue =
+        controlledValue || ref?.current?.value || "";
       setCharCount(currentValue.length);
     }, [controlledValue, ref]);
 
     const handleChange = (e) => {
       const value = e.target.value;
       setCharCount(value.length);
-      
+
       // Call the original onChange if it exists
       if (props.onChange) {
         props.onChange(e);
@@ -159,11 +169,21 @@ export const TextArea = React.forwardRef(
           {...props}
         />
         <div className="text-2xs flex justify-between items-center">
-        <p className={`text-[#B10E0EE5] ${error ? '' : 'invisible'}`}>
+          <p
+            className={`text-[#B10E0EE5] ${
+              error ? "" : "invisible"
+            }`}
+          >
             {error?.message}
           </p>
-          <p className={charCount > maxLength ? 'text-[#B10E0EE5]' : 'text-[#49454F]'}>
-          {charCount}/{maxLength}
+          <p
+            className={
+              charCount > maxLength
+                ? "text-[#B10E0EE5]"
+                : "text-[#49454F]"
+            }
+          >
+            {charCount}/{maxLength}
           </p>
         </div>
       </FormField>
@@ -287,7 +307,8 @@ export const FileUpload = React.forwardRef(
   ) => {
     const [file, setFile] = useState(null);
     const [fileUrl, setFileUrl] = useState(null);
-    const [internalError, setInternalError] = useState(null);
+    const [internalError, setInternalError] =
+      useState(null);
     const fileInputRef = React.useRef(null);
     const { name } = props;
 
@@ -359,12 +380,16 @@ export const FileUpload = React.forwardRef(
       fileInputRef.current.click();
     };
 
-    const displayFileName = file ? file.name : defaultFileName;
-    const displayError = internalError ? { message: internalError } : error;
+    const displayFileName = file
+      ? file.name
+      : defaultFileName;
+    const displayError = internalError
+      ? { message: internalError }
+      : error;
 
     return (
       <div className="mb-4">
-        <label className="block mb-1 text-sm lg:text-default font-[550] required-field-label">
+        <label className="block mb-1 text-sm lg:text-default font-[550]">
           {label}:
           <span className="text-gray-500 font-normal ml-1 text-xs lg:text-sm">
             (Optional)
@@ -397,11 +422,16 @@ export const FileUpload = React.forwardRef(
               onClick={handleButtonClick}
               disabled={isLoading}
               className={`px-4 py-2 text-sm lg:text-default bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex items-center ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
+                isLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
               }`}
             >
               {isLoading ? (
-                <Loader size={16} className="mr-2 animate-spin" />
+                <Loader
+                  size={16}
+                  className="mr-2 animate-spin"
+                />
               ) : (
                 <Upload size={16} className="mr-2" />
               )}
@@ -417,7 +447,10 @@ export const FileUpload = React.forwardRef(
             <div className="flex items-center py-2 px-3 bg-gray-50 rounded-md border border-gray-100">
               <div className="flex-1 flex flex-col">
                 <div className="flex items-center">
-                  <FileText size={16} className="text-gray-500 mr-2" />
+                  <FileText
+                    size={16}
+                    className="text-gray-500 mr-2"
+                  />
                   {fileUrl ? (
                     <a
                       href={fileUrl}
@@ -435,7 +468,8 @@ export const FileUpload = React.forwardRef(
                 </div>
                 {file && (
                   <span className="text-xs text-gray-500 ml-6">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                    {(file.size / 1024 / 1024).toFixed(2)}{" "}
+                    MB
                   </span>
                 )}
               </div>
@@ -459,7 +493,8 @@ export const FileUpload = React.forwardRef(
           )}
 
           <p className="text-xs text-gray-500">
-            Maximum file size: 10MB. Supported formats: PDF, DOC, DOCX, JPG, PNG
+            Maximum file size: 10MB. Supported formats: PDF,
+            DOC, DOCX, JPG, PNG
           </p>
         </div>
       </div>

@@ -16,19 +16,25 @@ const ResourcesSection = ({
   setValue,
   trigger,
   watch,
+  getValues,
 }) => {
   const [isFileLoading, setIsFileLoading] = useState(false);
   const [fileError, setFileError] = useState(null);
 
   // Watch for changes in the resources values
   const resources = watch("resources");
-  const attachmentUrl = watch("attachmentUrl"); // This should be set from your API response
+  const attachmentUrl = watch("attachmentUrl");
 
   // Handle file change from upload
   const handleFileChange = (file) => {
     setValue("resources.file", file, {
       shouldValidate: true,
     });
+
+    // Clear resource validation errors when a file is added
+    if (file) {
+      trigger("resources.file");
+    }
   };
 
   // Load existing attachment if available
@@ -65,6 +71,7 @@ const ResourcesSection = ({
       title="Additional Resources"
       subtitle="Upload Files or Provide External Links Related to this Feedback"
       icon={Resources}
+      data-error-section="resources"
     >
       <FormRow>
         <FileUpload
@@ -83,6 +90,7 @@ const ResourcesSection = ({
               ? attachmentUrl.split("/").pop().split("?")[0]
               : null
           }
+          data-error-key="resources.file"
         />
 
         <LinkInput
@@ -100,7 +108,15 @@ const ResourcesSection = ({
             },
           })}
           error={errors.resources?.link}
-          onBlur={() => trigger("resources.link")}
+          onBlur={() => {
+            trigger("resources.link");
+            // If valid link is entered, clear any resource validation errors
+            const link = getValues("resources.link");
+            if (link && WEBSITE_REGEX.test(link)) {
+              trigger("resources.file");
+            }
+          }}
+          data-error-key="resources.link"
         />
       </FormRow>
     </FormSection>
@@ -108,11 +124,12 @@ const ResourcesSection = ({
 };
 
 ResourcesSection.propTypes = {
-  register: PropTypes.func,
-  errors: PropTypes.object,
-  setValue: PropTypes.func,
-  trigger: PropTypes.func,
-  watch: PropTypes.func,
+  register: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired,
+  setValue: PropTypes.func.isRequired,
+  trigger: PropTypes.func.isRequired,
+  watch: PropTypes.func.isRequired,
+  getValues: PropTypes.func.isRequired,
 };
 
 export default ResourcesSection;

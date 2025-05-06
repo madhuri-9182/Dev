@@ -86,8 +86,11 @@ const transformSkillsData = (skillsData) => {
   return Object.entries(skillsData)?.map(
     ([skillName, skillData]) => {
       let questions = [];
-      
-      if (skillData.questions && skillData.questions.length > 0) {
+
+      if (
+        skillData.questions &&
+        skillData.questions.length > 0
+      ) {
         questions = skillData.questions.map((q) => ({
           question: q.que || "",
           answer: q.ans || "",
@@ -198,7 +201,8 @@ const Feedback = () => {
   const interviewId = location.pathname.split("/")[3];
 
   // State for mobile tab navigation
-  const [activeSection, setActiveSection] = useState("candidate");
+  const [activeSection, setActiveSection] =
+    useState("candidate");
   const sectionRefs = {
     candidate: useRef(null),
     interviewer: useRef(null),
@@ -221,6 +225,7 @@ const Feedback = () => {
     trigger,
     watch,
     clearErrors,
+    setError,
   } = useForm({
     defaultValues: DEFAULT_FORM_VALUES,
     mode: "onChange",
@@ -282,7 +287,10 @@ const Feedback = () => {
           const offsetTop = ref.current.offsetTop;
           const height = ref.current.offsetHeight;
 
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + height
+          ) {
             setActiveSection(key);
           }
         }
@@ -290,8 +298,9 @@ const Feedback = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () =>
+      window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle tab click
@@ -299,8 +308,9 @@ const Feedback = () => {
     const ref = sectionRefs[sectionId];
     if (ref.current) {
       const offset = 100; // Adjusted for mobile header height
-      const elementPosition = ref.current.offsetTop - offset;
-      
+      const elementPosition =
+        ref.current.offsetTop - offset;
+
       window.scrollTo({
         top: elementPosition,
         behavior: "smooth",
@@ -560,6 +570,37 @@ const Feedback = () => {
     return true;
   };
 
+  const validateResources = (formData) => {
+    const hasFile = !!formData.resources.file;
+    const hasLink =
+      !!formData.resources.link &&
+      formData.resources.link.trim() !== "";
+
+    if (!hasFile && !hasLink) {
+      // Set a custom error for the file field
+      setError("resources.file", {
+        type: "manual",
+        message: "Please provide either a file or a link",
+      });
+
+      // Scroll to the resources section
+      const resourceSection = document.querySelector(
+        '[data-error-section="resources"]'
+      );
+
+      if (resourceSection) {
+        scrollToAndFocusElement(resourceSection);
+      }
+
+      return false;
+    }
+
+    // Clear any custom errors for resources if validation passes
+    clearErrors("resources.file");
+
+    return true;
+  };
+
   // Form submission handler
   const onSubmit = (data) => {
     if (!validateSkillScores(data)) {
@@ -567,6 +608,10 @@ const Feedback = () => {
     }
 
     if (!validateSkillEvaluations(data)) {
+      return;
+    }
+
+    if (!validateResources(data)) {
       return;
     }
 
@@ -589,6 +634,10 @@ const Feedback = () => {
       }
 
       if (!validateSkillEvaluations(values)) {
+        return;
+      }
+
+      if (!validateResources(values)) {
         return;
       }
 
@@ -651,11 +700,11 @@ const Feedback = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-6 py-6 my-2 lg:my-14">
-      <MobileTabNavigation 
-        activeSection={activeSection} 
-        onTabClick={handleTabClick} 
+      <MobileTabNavigation
+        activeSection={activeSection}
+        onTabClick={handleTabClick}
       />
-      
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         encType="multipart/form-data"
