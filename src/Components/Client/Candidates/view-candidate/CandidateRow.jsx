@@ -194,7 +194,7 @@ const StatusBadge = ({ status, candidateStatus }) => {
 
   return (
     <div
-      className={`text-2xs text-black px-[10px] py-[3px] rounded-md text-center ${getStatusClass(
+      className={`text-[10px] xl:text-2xs text-black px-[10px] py-[3px] rounded-md text-center ${getStatusClass(
         status
       )}`}
     >
@@ -213,7 +213,7 @@ const ScoreDisplay = ({ candidate, onViewCandidate }) => {
     return (
       <button
         type="button"
-        className="text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
+        className="text-2xs xl:text-xs py-2 px-3 rounded-[100px] font-medium tertiary-button"
         onClick={() => {
           onViewCandidate(candidate);
         }}
@@ -242,7 +242,7 @@ const EngagementButton = ({ candidate }) => {
   if (!isClient) return "-";
   return (
     <button
-      className=" text-2xs py-2 px-3 tertiary-button"
+      className="text-[10px] xl:text-2xs py-2 px-3 tertiary-button"
       type="button"
       onClick={() => {
         navigate("/client/engagement/form", {
