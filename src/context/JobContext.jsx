@@ -44,10 +44,10 @@ const initialState = {
 const initialDetailsState = [
   {
     id: Date.now(),
-    details: "Intro",
+    details: "Quick Intro",
     time: "5min",
     guidelines:
-      "Introduce Yourself\nAsk Introduction\nEtc.",
+      "Let them relax. Ask about their recent work.",
   },
 ];
 
