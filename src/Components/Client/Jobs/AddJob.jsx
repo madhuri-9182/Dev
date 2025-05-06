@@ -200,7 +200,6 @@ const AddJob = () => {
       Object.keys(formdata).length > 0 &&
       formdata.name
     ) {
-      console.log("Initializing form with data", formdata);
       const resetData = {
         jobRole: formdata.name || "",
         jobId: formdata.job_id || "",
