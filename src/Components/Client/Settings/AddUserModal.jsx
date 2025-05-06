@@ -12,7 +12,10 @@ import {
 import toast from "react-hot-toast";
 import { updateUser, createUser } from "./api";
 import useAllJobs from "../../../hooks/useFetchAllJobs";
-import { getJobLabel } from "../../../utils/util";
+import {
+  getJobLabel,
+  getSpecialization,
+} from "../../../utils/util";
 import {
   Input,
   FormField,
@@ -253,6 +256,9 @@ const AddUserModal = ({
       jobs.map((job) => ({
         id: job.id,
         name: getJobLabel(job.name),
+        specialization: getSpecialization(
+          job.specialization
+        ),
       })),
     [jobs]
   );
@@ -264,7 +270,13 @@ const AddUserModal = ({
         .map((jobId) => {
           const job = jobs.find((j) => j.id === jobId);
           return job
-            ? { id: jobId, name: getJobLabel(job.name) }
+            ? {
+                id: jobId,
+                name: getJobLabel(job.name),
+                specialiation: getSpecialization(
+                  job.specialization
+                ),
+              }
             : null;
         })
         .filter(Boolean),
@@ -480,21 +492,25 @@ const AddUserModal = ({
             {selectedJobs.length > 0 && (
               <div className="mt-4">
                 <div className="flex flex-wrap gap-2">
-                  {selectedJobs.map(({ id, name }) => (
-                    <span
-                      key={id}
-                      className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-2xs border border-[#CAC4D0] text-[#49454F] font-medium"
-                    >
-                      {name}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveJob(id)}
-                        className="ml-2 text-[#49454F] font-medium"
+                  {selectedJobs.map(
+                    ({ id, name, specialiation }) => (
+                      <span
+                        key={id}
+                        className="flex items-center pl-3 pr-2 py-[6px] bg-white rounded-lg text-2xs border border-[#CAC4D0] text-[#49454F] font-medium"
                       >
-                        &#10005;
-                      </button>
-                    </span>
-                  ))}
+                        {name} ({specialiation})
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemoveJob(id)
+                          }
+                          className="ml-2 text-[#49454F] font-medium"
+                        >
+                          &#10005;
+                        </button>
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             )}

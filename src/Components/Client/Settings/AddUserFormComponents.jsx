@@ -111,7 +111,9 @@ export const CustomSelect = ({
               }`}
             >
               {selectedOption
-                ? selectedOption.name
+                ? type === "jobs_assigned"
+                  ? `${selectedOption.name} (${selectedOption.specialization})`
+                  : selectedOption.name
                 : placeholder}
             </span>
           </ListboxButton>
@@ -136,7 +138,9 @@ export const CustomSelect = ({
                     }`
                   }
                 >
-                  {option.name}
+                  {type === "jobs_assigned"
+                    ? `${option.name} (${option.specialization})`
+                    : option.name}
                 </ListboxOption>
               ))}
             </ListboxOptions>
