@@ -29,12 +29,11 @@ const TawkMessenger = () => {
         widgetId="1iqg9sah9"
         onLoad={() => {
           // Optional: Set visitor info when widget loads
-          if (auth?.user?.email) {
+          if (auth?.email) {
             window.Tawk_API?.setAttributes(
               {
-                name: auth.user.name || "User",
-                email: auth.user.email,
-                id: auth.user.id,
+                name: auth?.name || "User",
+                email: auth?.email,
               },
               (error) => {
                 if (error)
