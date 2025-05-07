@@ -15,7 +15,8 @@ const TawkMessenger = () => {
   const { isVisible, tawkContainerRef } = useTawkMessenger(
     !!auth?.accessToken,
     auth?.role,
-    allowedRoles
+    allowedRoles,
+    auth
   );
 
   if (!isVisible) {
@@ -34,6 +35,8 @@ const TawkMessenger = () => {
               {
                 name: auth?.name || "User",
                 email: auth?.email,
+                sessionId: auth?.accessToken,
+                uniqueId: auth?.email,
               },
               (error) => {
                 if (error)

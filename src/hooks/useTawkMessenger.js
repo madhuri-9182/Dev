@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 export const useTawkMessenger = (
   isAuthenticated,
   userRole,
-  allowedRoles
+  allowedRoles,
+  auth
 ) => {
   const [isVisible, setIsVisible] = useState(false);
   const tawkContainerRef = useRef(null);
@@ -27,6 +28,29 @@ export const useTawkMessenger = (
       }
     }
   }, [isAuthenticated, userRole, allowedRoles]);
+
+  useEffect(() => {
+    const tawkAPI = getTawkAPI();
+
+    if (
+      !isVisible ||
+      !auth?.email ||
+      !tawkAPI?.setAttributes
+    )
+      return;
+
+    tawkAPI.setAttributes(
+      {
+        name: auth.name || "User",
+        email: auth.email,
+        uniqueId: auth?.email,
+        sessionId: auth?.accessToken,
+      },
+      (error) => {
+        if (error) console.error("Tawk API Error:", error);
+      }
+    );
+  }, [auth, isVisible]);
 
   // Handle clicks outside the widget
   useEffect(() => {
