@@ -81,7 +81,7 @@ import {
 import RootRoute from "./Components/shared/RootRoute";
 import Recording from "./Components/recording";
 import DesktopOnly from "./Components/shared/DesktopOnly";
-import TawkAuthBridge from "./Components/shared/TawkToChat";
+import TawkMessenger from "./Components/shared/TawkMessenger";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -443,7 +443,7 @@ const App = () => {
   return (
     <main>
       <RouterProvider router={router} />
-      <TawkAuthBridge />
+      <TawkMessenger />
     </main>
   );
 };
