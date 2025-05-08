@@ -32,6 +32,7 @@ const useRefreshToken = () => {
       const role = response.data.data.role;
       const name = response.data.data.name;
       const email = response.data.data.email;
+      const id = response.data.data.id;
       const is_password_change =
         response.data.data.is_password_change;
       const is_policy_and_tnc_accepted =
@@ -43,6 +44,7 @@ const useRefreshToken = () => {
         email,
         is_policy_and_tnc_accepted,
         is_password_change,
+        id,
       });
       return response.data.access;
     } catch (error) {

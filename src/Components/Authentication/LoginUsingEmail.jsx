@@ -66,6 +66,7 @@ const LoginUsingEmail = () => {
       const name = data.data.name;
       const is_password_change =
         data.data.is_password_change;
+      const id = data.data.id;
       const is_policy_and_tnc_accepted =
         data.data.is_policy_and_tnc_accepted;
       const email = getValues("email");
@@ -77,6 +78,7 @@ const LoginUsingEmail = () => {
         name,
         is_password_change,
         is_policy_and_tnc_accepted,
+        id,
       });
       reset();
 
