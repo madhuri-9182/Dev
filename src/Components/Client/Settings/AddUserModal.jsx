@@ -449,21 +449,13 @@ const AddUserModal = ({
                   <Controller
                     name="jobs_assigned"
                     control={control}
-                    rules={{
-                      validate: (value) => {
-                        if (!value || value.length === 0) {
-                          return "At least one job must be assigned";
-                        }
-                        return true;
-                      },
-                    }}
                     render={({ field }) => (
                       <FormField
                         label="Jobs Assigned"
                         error={
                           errors.jobs_assigned?.message
                         }
-                        required={true} // Required when jobs are available
+                        required={false} // Required when jobs are available
                       >
                         <CustomSelect
                           type="jobs_assigned"
