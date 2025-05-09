@@ -7,6 +7,7 @@ import {
   loginTawkUser,
   logoutTawkUser,
   setTawkWidgetVisibility,
+  getTawkAPI,
 } from "../../utils/tawkUtils";
 
 const TawkMessenger = () => {
@@ -74,7 +75,21 @@ const TawkMessenger = () => {
     }
   };
 
-  // Handle user authentication state
+  // NEW: Add cleanup effect when component unmounts
+  useEffect(() => {
+    return () => {
+      // Component unmounting, ensure Tawk is cleaned up
+      const tawkAPI = getTawkAPI();
+      if (
+        tawkAPI &&
+        typeof tawkAPI.hideWidget === "function"
+      ) {
+        tawkAPI.hideWidget();
+      }
+    };
+  }, []);
+
+  // Handle user authentication state - UPDATED
   useEffect(() => {
     if (!isWidgetReady) return;
 
@@ -88,6 +103,13 @@ const TawkMessenger = () => {
       if (isAuthenticated && userId !== previousUser) {
         // Logout previous user if needed
         if (previousUser) {
+          // Hide widget first
+          setTawkWidgetVisibility(false);
+          // Small delay
+          await new Promise((resolve) =>
+            setTimeout(resolve, 200)
+          );
+          // Then logout
           await logoutTawkUser();
         }
 
@@ -103,16 +125,32 @@ const TawkMessenger = () => {
 
         if (success) {
           currentUserRef.current = userId;
+          // Show widget after successful login
+          setTawkWidgetVisibility(true);
         } else {
           // Retry login once
           setTimeout(async () => {
-            await loginTawkUser(userData);
+            const retrySuccess = await loginTawkUser(
+              userData
+            );
             currentUserRef.current = userId;
+            if (retrySuccess) {
+              setTawkWidgetVisibility(true);
+            }
           }, 2000);
         }
       }
-      // User logged out
+      // User logged out - IMPROVED LOGOUT SEQUENCE
       else if (!isAuthenticated && previousUser) {
+        // First, hide the widget
+        setTawkWidgetVisibility(false);
+
+        // Add a small delay
+        await new Promise((resolve) =>
+          setTimeout(resolve, 200)
+        );
+
+        // Then logout
         await logoutTawkUser();
         currentUserRef.current = null;
       }
@@ -131,7 +169,11 @@ const TawkMessenger = () => {
   useEffect(() => {
     if (!isWidgetReady) return;
 
-    setTawkWidgetVisibility(isUserAllowed());
+    if (isUserAllowed() && currentUserRef.current) {
+      setTawkWidgetVisibility(true);
+    } else {
+      setTawkWidgetVisibility(false);
+    }
 
     return () => setTawkWidgetVisibility(false);
   }, [isWidgetReady, auth?.role, auth?.accessToken]);

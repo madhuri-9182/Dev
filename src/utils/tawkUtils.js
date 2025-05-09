@@ -101,11 +101,19 @@ export const loginTawkUser = async (userData) => {
   });
 };
 
-// Logout user from Tawk
+// Logout user from Tawk - UPDATED
 export const logoutTawkUser = async () => {
   const tawkAPI = getTawkAPI();
   if (!tawkAPI || typeof tawkAPI.logout !== "function")
     return false;
+
+  // First, hide the widget before logout to prevent UI interactions
+  if (typeof tawkAPI.hideWidget === "function") {
+    tawkAPI.hideWidget();
+  }
+
+  // Add a small delay before actual logout
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   return new Promise((resolve) => {
     try {
