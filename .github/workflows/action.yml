@@ -24,13 +24,24 @@ jobs:
     - name: Build project
       run: npm run build
 
+
+    - name: Prepare target directory
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          sudo mkdir -p /var/www/html/hiringdog-frontend
+          sudo chown -R $USER:$USER /var/www/html/hiringdog-frontend
+
     - name: Deploy to EC2
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "./*"
+        source: "dist/*"
         target: "/var/www/html/hiringdog-frontend"
         debug: true
 
